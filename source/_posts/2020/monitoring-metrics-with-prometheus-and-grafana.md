@@ -109,22 +109,22 @@ management:
 
 ```java
 @RestController
-@RequestMapping
-public class PrometheusMetricsEndpoint {
+@RequestMapping("/actuator")
+public class ActuatorEndpoint {
     private PrometheusScrapeEndpoint prometheusScrapeEndpoint;
 
-    public PrometheusMetricsEndpoint(PrometheusScrapeEndpoint prometheusScrapeEndpoint) {
+    public ActuatorEndpoint(PrometheusScrapeEndpoint prometheusScrapeEndpoint) {
         this.prometheusScrapeEndpoint = prometheusScrapeEndpoint;
     }
 
-    @RequestMapping(value = "/metrics", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/prometheus", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> metrics() {
         return ResponseEntity.ok(prometheusScrapeEndpoint.scrape());
     }
 }
 ```
 
-http://localhost:8080/metrics 로 접속하면 다음과 같이 프로메테우스가 수집할 수 있는 메트릭이 출력됩니다.
+http://localhost:8080/actuator/prometheus 로 접속하면 다음과 같이 프로메테우스가 수집할 수 있는 메트릭이 출력됩니다.
 
 ![](/images/2020/spring-boot-actuator-prometheus-metrics.PNG#full)  
 
@@ -137,7 +137,7 @@ scrape_configs:
   honor_timestamps: true
   scrape_interval: 15s
   scrape_timeout: 10s
-  metrics_path: /metrics
+  metrics_path: /actuator/prometheus
   scheme: http
   static_configs:
   - targets:
@@ -156,6 +156,10 @@ scrape_configs:
 추가된 대시보드에 따라 메트릭을 시각화하여 모니터링 할 수 있습니다.
 
 ![](/images/2020/grafana-dashboard-stats.PNG#full)
+
+스프링 부트 액추에이터 메트릭을 프로메테우스가 수집하며 그라파나를 통해 메트릭을 시각화할 수 있는 것을 확인했습니다.
+
+앞으로 쿠버네티스에 대한 모니터링과 알림 매니저(AlertManager)를 구성하여 슬랙 또는 이메일 등으로 알림을 받아볼 수 있습니다.
 
 ## 참고
 - [Prometheus](https://prometheus.io/)

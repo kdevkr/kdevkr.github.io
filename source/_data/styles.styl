@@ -8,6 +8,10 @@
     background: var(--content-bg-color);
 }
 
+.footer {
+    background: $snorlax-teeth;
+}
+
 .headband {
     height: 0;
 }
@@ -29,17 +33,15 @@ a.heading-anchor {
     .post-title {
         font-weight: 700;
     }
-    .post-block {
-        box-shadow: none !important;
-    }
 }
 
 .sub-menu {
-    box-shadow: none !important;
+    // background: $snorlax-toenail;
+    border-bottom: 1px solid $snorlax-toenail;
+    margin-top: -10px;
 }
-
-#sub-menu-2 {
-    box-shadow: 0 2px 0 0 rgba(0,0,0,0.12) !important;
+.post-block, .sub-menu, .comments {
+    box-shadow: none !important;
 }
 
 i.fa, i.far, i.fas {

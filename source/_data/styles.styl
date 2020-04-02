@@ -4,7 +4,8 @@
 @import "prism-onedark.css";
 
 .main {
-    padding-top: 10px;
+    padding: 10px 0;
+    background: var(--content-bg-color);
 }
 
 .headband {
@@ -24,8 +25,21 @@ a.heading-anchor {
     color: $snorlax-sole-of-foot;
 }
 
-.posts-expand .post-title {
-    font-weight: 700;
+.posts-expand {
+    .post-title {
+        font-weight: 700;
+    }
+    .post-block {
+        box-shadow: none !important;
+    }
+}
+
+.sub-menu {
+    box-shadow: none !important;
+}
+
+#sub-menu-2 {
+    box-shadow: 0 2px 0 0 rgba(0,0,0,0.12) !important;
 }
 
 i.fa, i.far, i.fas {

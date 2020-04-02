@@ -1,6 +1,6 @@
 ---
     title: 도커
-    description: 
+    description: 애플리케이션 개발, 배포, 실행을 위한 오픈 플랫폼
     comments: false
 ---
 

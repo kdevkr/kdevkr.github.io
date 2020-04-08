@@ -1,6 +1,6 @@
 ---
     title: PostgreSQL
-    description: 
+    description: The World's Most Advanced Open Source Relational Database
     comments: false
 ---
 

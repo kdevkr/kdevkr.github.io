@@ -104,7 +104,7 @@ theme_config:
               # 터미널: /terminal || terminal
               Jenkins: /jenkins || jenkins fab
               Docker: /docker || docker fab
-              K8s: /kubernetes || none
+              kubernetes: /kubernetes || none
           북마크:
               default: /bookmark/ || bookmark
               자바: /java || java fab

@@ -1,6 +1,6 @@
 ---
     title: KDB+
-    description: 
+    description: The World's Fastest Time-Series Database
     comments: false
 ---
 

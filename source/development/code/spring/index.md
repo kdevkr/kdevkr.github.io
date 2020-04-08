@@ -1,6 +1,6 @@
 ---
     title: Spring
-    description:
+    description: Spring makes programming Java quicker, easier, and safer for everybody.
     comments: false
 ---
 

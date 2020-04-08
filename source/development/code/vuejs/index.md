@@ -1,6 +1,6 @@
 ---
     title: Vue.js
-    description: 
+    description: 사용자 인터페이스 만들기 위한 프로그레시브 프레임워크
     comments: false
 ---
 

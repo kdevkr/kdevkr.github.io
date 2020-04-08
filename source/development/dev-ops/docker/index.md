@@ -136,11 +136,13 @@ docker run --detach --publish 80:80 --mount source=nginx-volume,destination=/usr
 
 #### 트래픽 로드 밸런싱하기  
 
-준비중
+![](https://docs.docker.com/ee/ucp/images/use-a-load-balancer-1.svg)
 
 #### 컨테이너 스케일아웃하기  
 
-준비중
+> https://docs.docker.com/compose/
+
+
 
 
 

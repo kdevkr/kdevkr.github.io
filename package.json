@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "hexo": "^4.2.0",
     "hexo-browsersync": "^0.3.0",
     "hexo-deployer-git": "^2.1.0",

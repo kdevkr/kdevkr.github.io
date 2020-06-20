@@ -1,13 +1,12 @@
 ---
     title: 코드
-    description: 잠만보가 알려주는 코드 이야기
     comments: false
 ---
 
-Hello World!
+## Hello World!
 
-Developers should always learn something.
+### Developers should always learn something.
+개발자는 항상 무언가를 배워야 한다.
 
-Technology continues to evolve.
-
-Let me try too. :)
+### Technology continues to evolve.
+기술은 계속 진화한다.

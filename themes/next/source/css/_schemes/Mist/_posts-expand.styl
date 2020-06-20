@@ -1,9 +1,7 @@
 // Post Expand
 // --------------------------------------------------
 .posts-expand {
-  padding-top: 0;
-
-  .home {
+  &.index {
     .post-title, .post-meta {
       text-align: $site-meta-text-align;
 
@@ -27,10 +25,6 @@
 
   .post-title, .post-meta {
     text-align: center;
-  }
-
-  .post-body img {
-    margin-left: 0;
   }
 
   .post-tags {
@@ -60,12 +54,12 @@
     // color: $grey-dim;
     background: none;
     border: 0;
-    border-bottom: 2px solid $btn-default-border-color;
+    border-bottom: 2px solid var(--btn-default-border-color);
     padding: 0;
     transition-property: border;
 
     &:hover {
-      border-bottom-color: $btn-default-hover-border-color;
+      border-bottom-color: var(--btn-default-hover-border-color);
     }
   }
 }

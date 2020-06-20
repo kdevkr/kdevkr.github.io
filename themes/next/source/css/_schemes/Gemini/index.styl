@@ -27,7 +27,7 @@ $use-seo = hexo-config('seo');
 // Desktop layout styles.
 // ==================================================
 // Post blocks.
-.content-wrap {
+.main-inner {
   background: initial;
   box-shadow: initial;
   padding: initial;
@@ -54,7 +54,6 @@ $use-seo = hexo-config('seo');
   background: var(--content-bg-color);
   border-radius: $border-radius;
   box-shadow: $box-shadow;
-  margin: auto;
   margin-top: $sidebar-offset;
   padding: $content-desktop-padding;
 }
@@ -64,7 +63,7 @@ $use-seo = hexo-config('seo');
 }
 
 // Top main padding from header to posts (default 40px).
-.posts-expand {
+.content {
   padding-top: initial;
 }
 
@@ -75,11 +74,6 @@ $use-seo = hexo-config('seo');
 
 // Pagination.
 .pagination {
-  .prev, .next, .page-number {
-    margin-bottom: initial;
-    top: initial;
-  }
-
   background: var(--content-bg-color);
   border-radius: $border-radius;
   border-top: initial;
@@ -145,13 +139,11 @@ $use-seo = hexo-config('seo');
 // ==================================================
 +tablet() {
   // Posts in blocks.
-  .content-wrap {
+  .main-inner {
     padding: $content-tablet-padding;
   }
 
   .posts-expand {
-    margin: initial;
-
     // Components inside Posts.
     .post-button {
       margin-top: ($content-tablet-padding * 2);
@@ -188,13 +180,11 @@ $use-seo = hexo-config('seo');
 // ==================================================
 +mobile() {
   // Posts in blocks.
-  .content-wrap {
+  .main-inner {
     padding: $content-mobile-padding;
   }
 
   .posts-expand {
-    margin: initial;
-
     // Components inside Posts.
     .post-button {
       margin: $sidebar-offset 0;

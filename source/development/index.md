@@ -1,6 +1,6 @@
 ---
     title: 개발 이야기
-    description: 잠만보의 코드 작성, 이슈 등을 관리합니다.
+    description: 잠만보는 어떻게 개발을 하고 있을까?
     comments: false
 ---
 

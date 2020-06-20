@@ -1,28 +1,19 @@
 @import "fonts.styl";
 @import "menu.styl";
+@import "post.styl";
 @import "pagination.styl";
 @import "prism-onedark.css";
 
-body {
-    background: $snorlax-teeth;
-}
-.main {
-    padding: 10px 0;
-    background: var(--content-bg-color);
-}
 
 .footer {
-    background: $snorlax-teeth;
+    margin-top: 20px;
+    padding: 40px 0px;
+    border-top: 1px solid #efefed;
 }
 
 .headband {
     height: 0;
 }
-
-// code {
-//     background: $snorlax-tongue
-//     color: $snorlax-teeth;
-// }
 
 .reading-progress-bar {
     background-color: $snorlax-outer-skin;
@@ -30,56 +21,4 @@ body {
 
 a.heading-anchor {
     color: $snorlax-sole-of-foot;
-}
-
-.posts-expand {
-    .post-title {
-        font-weight: 700;
-    }
-}
-
-.sub-menu {
-    // background: $snorlax-toenail;
-    border-bottom: 1px solid $snorlax-toenail;
-    margin-top: -10px;
-}
-.post-block, .sub-menu, .comments {
-    box-shadow: none !important;
-}
-
-i.fa, i.far, i.fas {
-  font-family: FontAwesome, "Font Awesome 5 Free" !important;
-}
-i.fab {
-  font-family: "Font Awesome 5 Brands" !important;
-}
-
-.menu-item .fa-none {
-    display: none;
-}
-
-+tablet() {
-    .posts-expand .post-title {
-        margin-top: 20px;
-    }
-}
-
-+mobile() {
-    .posts-expand .post-title {
-        margin-top: 20px;
-    }
-}
-
-.post-body .image-caption {
-    margin: -10px auto 15px;
-}
-.post-body img {
-    max-height: 100%;
-}
-.post-body img[src*="#wrap"] {
-    width: 100%;
-    max-height: 200px;
-}
-.pagination {
-    box-shadow: none;
 }

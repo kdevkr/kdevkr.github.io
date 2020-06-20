@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "hexo": {
-    "version": "4.2.0"
+    "version": "4.2.1"
   },
   "scripts": {
     "l": "hexo clean && hexo server",

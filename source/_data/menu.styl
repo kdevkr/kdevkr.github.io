@@ -1,13 +1,66 @@
-.menu .menu-item {
-      .badge {
-        background-color: $snorlax-beam;
-        font-weight: 400;
-      }
-}
-
 .header {
     .site-brand-container {
-        background: $snorlax-outer-skin;
+        background: $white;
         padding: 25px 10px;
+        border-bottom: 1px solid $gray;
+
+        .site-title {
+            color: $snorlax-outer-skin;
+        }
+        .site-subtitle {
+            color: $snorlax-sole-of-foot;
+        }
+    }
+
+    .header-inner {
+        box-shadow: none;
+        border-top: 1px solid $gray;
+    }
+
+    .sidebar {
+      margin-top: 0;
+
+      .sidebar-inner {
+        box-shadow: none;
+        padding: 0;
+        border-bottom: 1px solid $gray;
+
+        .sidebar-nav {
+            border-top: 1px solid $gray;
+            padding: 10px 0;
+        }
+        .sidebar-panel {
+            border-top: 1px solid $gray;
+            padding: 20px 0;
+        }
+      }
+    }
+}
+
+.menu {
+    .menu-item {
+        .badge {
+          background-color: $snorlax-beam;
+          font-weight: 400;
+        }
+
+        .fa-none {
+            display: none;
+        }
+    }
+}
+
+.sub-menu {
+    box-shadow: none !important;
+
+    .menu-item {
+        a {
+            padding: 5px 10px;
+            margin: 0;
+
+            &.menu-item-active {
+                // background: $snorlax-tongue;
+            }
+        }
     }
 }

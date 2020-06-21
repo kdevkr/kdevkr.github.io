@@ -1,12 +1,10 @@
-.header {
-    margin-bottom: -20px;
-    border-right: 1px solid $grey;
-    padding-right: 40px;
++desktop() {
+  .header {
+      margin-bottom: -20px;
+      padding-right: 40px;
 
-    .site-brand-container {
+      .site-brand-container {
         background: $white;
-        padding: 25px 10px;
-        border-bottom: 1px solid $grey;
 
         .site-title {
             color: $snorlax-outer-skin;
@@ -14,6 +12,17 @@
         .site-subtitle {
             color: $snorlax-sole-of-foot;
         }
+      }
+  }
+}
+
+.header {
+    border-right: 1px solid $grey;
+
+    .site-brand-container {
+        padding: 25px 10px;
+        border-bottom: 1px solid $grey;
+        box-shadow: none;
     }
 
     .header-inner {
@@ -38,6 +47,8 @@
             padding: 20px 0;
         }
         .back-to-top {
+          background-color: $lightgrey;
+
           &.back-to-top-on {
             margin: 0;
             padding-top: 10px;

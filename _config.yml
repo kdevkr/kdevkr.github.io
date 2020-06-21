@@ -104,23 +104,27 @@ theme_config:
     archives: /archives/ || fas fa-archive
     개발 이야기:
       default: /development/ || fab fa-dev
-      Java: /java || fab fa-java
-      Spring: /spring || fas fa-seedling
-      Vue.js: /vuejs || fab fa-vuejs
-      PostgreSQL: /postgresql || fas fa-database
-      KDB+: /kdb || fas fa-database
+      언어:
+        default: /language/ || fas fa-language
+        Java: /java || fab fa-java
+        Spring: /spring || fas fa-seedling
+        Vue.js: /vuejs || fab fa-vuejs
         # 파이썬: /python || fab fa-python
-    데브옵스:
-      default: /dev-ops || fab fa-connectdevelop
-      Jenkins: /jenkins || fab fa-jenkins
-      Docker: /docker || fab fa-docker
-      kubernetes: /kubernetes || fa-none
+      데이터베이스:
+        default: /database/ || fas fa-database
+        PostgreSQL: /postgresql || fas fa-database
+        KDB+: /kdb || fas fa-database
+      데브옵스:
+        default: /dev-ops || fab fa-connectdevelop
+        Jenkins: /jenkins || fab fa-jenkins
+        Docker: /docker || fab fa-docker
+        kubernetes: /kubernetes || fa-none
     꾸르팁:
       default: /tips/ || far fa-grin-tongue-wink
       운영체제:
         default: /os || fas fa-desktop
         윈도우즈: /windows || fab fa-windows
-        리눅스: /ubuntu || fab fa-linux
+        리눅스: /linux || fab fa-linux
         맥: /mac || fab fa-apple
     북마크:
       default: /bookmark/ || fas fa-bookmark

@@ -5,7 +5,7 @@
 
     .post-block {
       &:not(:first-child) {
-        border-top: 1.5px dashed $gray;
+        border-top: 1.5px dashed $grey;
       }
     }
 }
@@ -35,7 +35,7 @@
 
 .post-body {
     h1, h2 {
-      border-bottom: 1px solid $gray;
+      border-bottom: 1px solid $grey;
     }
     .image-caption {
         margin: -10px auto 15px;
@@ -49,9 +49,14 @@
           max-height: 200px;
         }
     }
+
+    code {
+      color: $red;
+      background-color: $lightgrey;
+    }
 }
 
 .comments {
     box-shadow: none !important;
-    border-top: 1px solid $gray;
+    border-top: 1px solid $grey;
 }

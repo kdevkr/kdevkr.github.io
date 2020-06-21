@@ -2,6 +2,12 @@
     .post-title {
         font-weight: 700;
     }
+
+    .post-block {
+      &:not(:first-child) {
+        border-top: 1.5px dashed $gray;
+      }
+    }
 }
 
 +tablet() {

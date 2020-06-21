@@ -314,10 +314,17 @@ theme_config:
       height:                  5px
 
     disqusjs:
-      enable:                    true
+      enable:                    false
       api: https://disqus.com/api/
       apikey: CDGCVo6KP89BegKLv9vN5e8tZGWVf6TeHLWtkIz4ueXChOlkwAlacaYR5YNrY3Wi
       shortname: kdevkr-github-io
+
+    utteranc:
+      enable:                     true
+      repo:                       kdevkr/kdevkr.github.io
+      pathname:                   pathname
+      theme:                      github-light
+      cdn:                        https://utteranc.es/client.js
 
     fancybox: true
 

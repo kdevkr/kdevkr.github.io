@@ -21,7 +21,7 @@ archive_dir:                     archives
 category_dir:                    categories
 i18n_dir:                        :lang
 tag_dir:                         tags
-skip_render:                     [README.md, tmp/**]
+skip_render:                     [README.md, draft/**]
 
 # Writing
 default_layout:                  post
@@ -103,24 +103,17 @@ theme_config:
   menu:
     home: / || fas fa-home
     archives: /archives/ || fas fa-archive
-    개발 이야기:
-      default: /development/ || fab fa-dev
-      언어:
-        default: /language/ || fas fa-language
-        Java: /java || fab fa-java
-        Spring: /spring || fas fa-seedling
-        Vue.js: /vuejs || fab fa-vuejs
-        # 파이썬: /python || fab fa-python
-      데이터베이스:
-        default: /database/ || fas fa-database
-        PostgreSQL: /postgresql || fas fa-database
-        KDB+: /kdb || fas fa-database
-      데브옵스:
-        default: /dev-ops || fab fa-connectdevelop
-        Jenkins: /jenkins || fab fa-jenkins
-        Docker: /docker || fab fa-docker
-        kubernetes: /kubernetes || fa-none
+    Spring: /spring || fas fa-seedling
+    Vue.js: /vuejs || fab fa-vuejs
+      # 파이썬: /python || fab fa-python
+    PostgreSQL: /database/postgresql || fas fa-database
+    KDB+: /database/kdb || fas fa-database
+    데브 옵스:
+      default: /dev-ops/ || fab fa-connectdevelop
+      Jenkins: /jenkins || fab fa-jenkins
+      Docker: /docker || fab fa-docker
+      kubernetes: /kubernetes || fas fa-dharmachakra
     꾸르팁:
       default: /tips/ || far fa-grin-tongue-wink
-      쉘: /shell/ || fas fa-desktop
+      터미널: /shell/ || fas fa-desktop
     소개: /about/ || fas fa-user

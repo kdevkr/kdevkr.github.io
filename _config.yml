@@ -11,7 +11,7 @@ timezone:                        UTC
 # URL
 url:                             https://kdevkr.github.io
 root:                            /
-permalink:                       archives/:title/
+permalink:                       :title/
 permalink_defaults:
 
 # Directory
@@ -27,7 +27,7 @@ skip_render:                     [README.md, tmp/**]
 default_layout:                  post
 render_drafts:                   false
 titlecase:                       true
-external_link:                   false
+external_link:                   true
 post_asset_folder:               true
 future:                          false
 
@@ -38,7 +38,7 @@ tag_map:
 
 # Date / Time format
 date_format:                     YYYY-MM-DD
-time_format:                     H:mm:ss
+time_format:                     HH:mm:ss
 
 # Pagination
 per_page:                        10
@@ -84,10 +84,11 @@ category_generator:
   per_page:                  10
 
 archive_generator:
+  enabled:                   false
   per_page:                  10
   yearly:                    true
   monthly:                   true
-  daily:                     false
+  daily:                     true
   order_by:                  -date
 
 tag_generator:
@@ -121,19 +122,5 @@ theme_config:
         kubernetes: /kubernetes || fa-none
     꾸르팁:
       default: /tips/ || far fa-grin-tongue-wink
-      운영체제:
-        default: /os || fas fa-desktop
-        윈도우즈: /windows || fab fa-windows
-        리눅스: /linux || fab fa-linux
-        맥: /mac || fab fa-apple
-    북마크:
-      default: /bookmark/ || fas fa-bookmark
-      자바: /java || fab fa-java
-      스프링: /spring || fas fa-seedling
-      자바스크립트: /javascript || fab fa-js-square
-      데이터베이스: /database || fas fa-database
-      데브옵스: /dev-ops || fab fa-connectdevelop
-      도구: /tool || fas fa-tools
-      리뷰: /review || fas fa-retweet
-
+      쉘: /shell/ || fas fa-desktop
     소개: /about/ || fas fa-user

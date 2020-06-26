@@ -60,24 +60,24 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external:                true
-    family:                  Arita Dotum
+    family:                  Roboto
     size:                    1
 
   # Font settings for site title (.site-title).
   title:
     external:                true
-    family:                  Mapo Peace Full
-    size:                    1.25
+    family:                  Jua
+    size:                    1.5
 
   # Font settings for headlines (<h1> to <h6>).
   headings:
     external:                true
-    family:                  Arita Dotum
+    family:                  Roboto
 
   # Font settings for posts (.post-body).
   posts:
     external:                true
-    family:                  Noto Serif KR
+    family:                  Roboto
 
   # Font settings for <code> and code blocks.
   codes:
@@ -115,7 +115,7 @@ safari_rainbow:              true
 
 custom_scrollbar:            true
 
-site_state:                  true
+site_state:                  false
 
 social:
     GitHub:                  https://github.com/kdevkr || fab fa-github
@@ -130,12 +130,20 @@ motion:
     enable:                  false
 
 toc:
-    enable:                  true
-    number:                  true
-    wrap:                    true
+  enable: true
+  # Automatically add list number to toc.
+  number: true
+  # If true, all words will placed on next lines if header width longer then sidebar width.
+  wrap: false
+  # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
+  expand_all: false
+  # Maximum heading depth of generated toc.
+  max_depth: 3
 
 sidebar:
-    display:                 always
+    position:                left
+    width:                   240
+    display:                 hide
     scrollpercent:           true
     b2t:                     true
 
@@ -225,10 +233,18 @@ note:
   #  - flat      flat callout style with background, like on Mozilla or StackOverflow.
   #  - disabled  disable all CSS styles import of note tag.
   style: modern
-  icons: false
+  icons: true
   # Offset lighter of background in % for modern and flat styles (modern: -12 | 12; flat: -18 | 6).
   # Offset also applied to label tag variables. This option can work with disabled note tag.
   light_bg_offset: 0
+
+post_meta:
+  item_text: true
+  created_at: true
+  updated_at:
+    enable: false
+    another_day: true
+  categories: true
 
 exif:
   enable: true

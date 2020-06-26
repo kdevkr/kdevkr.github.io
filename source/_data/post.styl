@@ -1,36 +1,48 @@
 .posts-expand {
-    .post-title {
-        font-weight: 700;
-    }
-
     .post-block {
       &:not(:first-child) {
         border-top: 1.5px dashed $grey;
       }
+      box-shadow: none !important;
+
+      .post-header {
+
+        .post-title {
+            font-weight: 700;
+            font-size: 2em;
+
+            +tablet-mobile() {
+                font-size: 1.5em;
+            }
+        }
+
+        .post-description {
+            font-size: 1.2em;
+        }
+
+        .post-meta {
+            font-size: 0.8em;
+            margin-bottom: 0;
+
+            +tablet-mobile() {
+                font-size: 0.65em;
+            }
+        }
+      }
     }
 }
 
-+tablet() {
-    .posts-expand .post-title {
-        margin-top: 20px;
+.archive {
+    .post-block {
+        box-shadow: none !important;
+
+        .collection-year {
+            margin: 20px 0 10px 0;
+        }
+        .post-header {
+            margin: 10px 0;
+        }
     }
-}
-
-+mobile() {
-    .posts-expand .post-title {
-        margin-top: 20px;
-    }
-}
-
-.post-block {
-  box-shadow: none !important;
-
-  .post-meta {
-      margin-bottom: 0;
-  }
-  .post-body {
-      padding-top: 20px;
-  }
 }
 
 .post-body {

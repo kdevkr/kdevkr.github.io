@@ -4,7 +4,7 @@
     comments: false
 ---
 
-![](/images/logo/spring.png)  
+![](/images/logo/spring.png#compact)  
 
 ##### [RestTemplate와 WebClient로 Open API를 사용하는 방법 비교하기](compare-how-to-use-open-api-using-rest-template-and-web-client/)
 

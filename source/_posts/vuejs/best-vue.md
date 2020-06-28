@@ -1,9 +1,18 @@
 ---
   title: Best Vue
-  date: 2020-06-24 00:00
+  date: 2021-06-24 00:00
   categories: [개발 이야기]
   tags: [Vue.js]
+
+  header: true
+  toc:
+    enable: true
 ---
+
+{% note warning %}
+#### 알려드립니다.
+본 글을 아직 작성이 완료되지 않았습니다.
+{% endnote %}
 
 안녕하세요. `Vue.js`를 기반으로 애플리케이션을 개발하고 있는 잠만보입니다.
 본 글에서는 어떻게 애플리케이션 코드를 작성하는 것이 좋은가에 대해서 알아봅니다.
@@ -194,8 +203,8 @@ Nullish coalescing operator와 Optional chaining 문법은 null 또는 undefined
 이번 섹션에서는 Vue.js 애플리케이션 코드를 작성하는 것에 대하여 살펴보겠습니다. 기본적인 자바스크립트 스타일 가이드처럼 Vue 개발자들이 선호하는 코드 작성 스타일을 따르는게 좋습니다.
 
 
-## Naming Convention
-먼저, 이름 규칙에 대해서 알아봅니다. 
+<!-- ## Naming Convention
+먼저, 이름 규칙에 대해서 알아봅니다.
 
 ### Multi-word component names
 
@@ -230,4 +239,4 @@ Nullish coalescing operator와 Optional chaining 문법은 null 또는 undefined
 
 ### Component/instance options order
 
-### Element attribute order
+### Element attribute order -->

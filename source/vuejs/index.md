@@ -6,14 +6,17 @@
 
 ![](/images/logo/vuejs.png#compact)
 
-#### Vue.js 튜토리얼
-> Vue.js 튜토리얼은 공식 가이드 문서를 참고하여 작성되었습니다.
+## Leaning Vue.js
 
-- [Single File Component](vuejs-tutorial/single-file-component)
+- [Best Vue](best-vue)
 
-#### Best Vue
-> Vue 애플리케이션 코드를 효율적으로 작성하는 것을 알아봅니다.
+## Advanced Tips
 
+### Vue.js Editor
+Vue.js 코드 작성을 위한 에디터 도구의 선택은 자신에게 맞는 것을 선택하면 됩니다.
+다만, Vue.js 개발자들이 주로 `Atom` 또는 `VSCode`를 사용합니다.
 
-#### Reference
+저는 개인적으로 사용자 인터페이스 측면으로 고려할때 VSCode 보다 Atom을 선호합니다.
+
+## Reference
 - [Vue.js 2 공식 가이드](https://kr.vuejs.org/v2/guide/index.html)

@@ -4,7 +4,7 @@
     comments: false
 ---
 
-![](/images/logo/vuejs.png)
+![](/images/logo/vuejs.png#compact)
 
 #### Vue.js 튜토리얼
 > Vue.js 튜토리얼은 공식 가이드 문서를 참고하여 작성되었습니다.

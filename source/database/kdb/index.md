@@ -4,7 +4,7 @@
     comments: false
 ---
 
-![](https://www.intel.in/content/dam/www/public/us/en/images/logos/4x3/kx-logo-4x3.png.rendition.intel.web.480.360.png)
+![](https://www.intel.in/content/dam/www/public/us/en/images/logos/4x3/kx-logo-4x3.png.rendition.intel.web.480.360.png#compact)
 
 #### KDB 튜토리얼
 

@@ -1,6 +1,6 @@
 ---
     title: KDB 튜토리얼 - 자바 클라이언트
-    date: 2020-03-08
+    date: 2020-03-08 09:00
     categories: [개발 이야기]
     tags: [KDB, Q]
 ---
@@ -110,6 +110,6 @@ Object[] y = r.y;
 
 이상으로 KDB 튜토리얼을 마칩니다.
 
-## 참고 
+## 참고
 
 - [Using Java with kdb+](https://code.kx.com/v2/interfaces/java-client-for-q/)

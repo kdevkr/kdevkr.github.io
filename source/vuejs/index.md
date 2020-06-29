@@ -2,6 +2,8 @@
     title: Vue.js
     description: The Progressive JavaScript Framework
     comments: false
+    toc:
+      enable: false
 ---
 
 ![](/images/logo/vuejs.png#compact)

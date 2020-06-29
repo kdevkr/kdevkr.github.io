@@ -8,14 +8,14 @@
 
 ![](/images/logo/postgres.png#compact)
 
-## Learning PostgreSQL
+## 👨‍💻 Learning PostgreSQL
 
 - [Table](table)
 - [View](view)
 - [PL/pgSQL Function](plpgsql)
 - [Exception Handling](exception-handling)
 
-## Advanced Tips
+## 🔥 Advanced Tips
 
 #### Postgres with Docker
 ```sh
@@ -35,11 +35,6 @@ $ psql test_db -U mambo
 ```
 
 
-
-
-
-
-
-## Reference
+## 🔖 References
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/current/index.html)  
 - [Awesome Postgres](https://github.com/dhamaniasad/awesome-postgres)  

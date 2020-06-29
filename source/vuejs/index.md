@@ -6,11 +6,11 @@
 
 ![](/images/logo/vuejs.png#compact)
 
-## Leaning Vue.js
+## 👨‍💻 Leaning Vue.js
 
 - [Best Vue](best-vue)
 
-## Advanced Tips
+## 🔥 Advanced Tips
 
 ### Vue.js Editor
 Vue.js 코드 작성을 위한 에디터 도구의 선택은 자신에게 맞는 것을 선택하면 됩니다.
@@ -18,5 +18,5 @@ Vue.js 코드 작성을 위한 에디터 도구의 선택은 자신에게 맞는
 
 저는 개인적으로 사용자 인터페이스 측면으로 고려할때 VSCode 보다 Atom을 선호합니다.
 
-## Reference
+## 🔖 References
 - [Vue.js 2 공식 가이드](https://kr.vuejs.org/v2/guide/index.html)

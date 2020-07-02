@@ -5,14 +5,14 @@
     tags: [KDB, Q]
 ---
 
-1. [KDB 튜토리얼 - 설치 및 접속](/archives/kdb-tutorial/install-and-connection)
-2. [KDB 튜토리얼 - 변수 할당 및 테이블 생성](/archives/kdb-tutorial/assign-variables-and-tables)
+1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)
+2. [KDB 튜토리얼 - 변수 할당 및 테이블 생성](../assign-variables-and-tables)
 3. **KDB 튜토리얼 - Q-SQL**
-4. [KDB 튜토리얼 - 그룹핑과 집계](/archives/kdb-tutorial/grouping-and-aggregation)
-5. [KDB 튜토리얼 - 파일 다루기](/archives/kdb-tutorial/file)
-6. [KDB 튜토리얼 - 네임스페이스](/archives/kdb-tutorial/namespace)
-7. [KDB 튜토리얼 - 함수](/archives/kdb-tutorial/function)
-8. [KDB 튜토리얼 - 자바 클라이언트](/archives/kdb-tutorial/java-client)
+4. [KDB 튜토리얼 - 그룹핑과 집계](../grouping-and-aggregation)
+5. [KDB 튜토리얼 - 파일 다루기](../file)
+6. [KDB 튜토리얼 - 네임스페이스](../namespace)
+7. [KDB 튜토리얼 - 함수](../function)
+8. [KDB 튜토리얼 - 자바 클라이언트](../java-client)
 
 ## 들어가며
 이번 글에서는 일반적인 데이터베이스에서 사용하는 SQL 구문을 사용할 수 있도록 KDB+가 지원하는 q-sql에 대해서 알아봅니다.
@@ -35,9 +35,9 @@ time: ("diiiiiiiiii";enlist",") 0: `:data/dataset/time.csv
 이제 Q-SQL을 배우러 가보실까요?
 
 ## Q-SQL
-Q-SQL 표현식은 종속절, `by`, `from` 그리고 `where`과 같은 고유 문법 규칙이 있습니다. 
+Q-SQL 표현식은 종속절, `by`, `from` 그리고 `where`과 같은 고유 문법 규칙이 있습니다.
 
-컬럼에 대한 구분은 콤마(,)입니다. 
+컬럼에 대한 구분은 콤마(,)입니다.
 
 ### SELECT
 SELECT는 테이블의 컬럼을 선택할 수 있습니다.

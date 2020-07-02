@@ -17,18 +17,18 @@ Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고
 
 일단 먼저 `그래들 프로젝트`를 만들어야 한다.
 
-![](/images/internship/01.png)
+![](/spring/images/gradle-01.png)
 
 ### 웹 애플리케이션 디렉토리 구조
 일반적인 자바 웹 애플리케이션 구조는 다음과 같다.
 
-![](/images/internship/03.png)
+![](/spring/images/gradle-03.png)
 
 그런데 그래들 프로젝트를 만들면 프로젝트 구조에 `src/main/java`와 `src/test/java`와 같은 모듈 디렉토리가 없을 수 있다.
 
 이럴 때 `Preference`에서 `Gradle` 찾아 `Create directories for empty content roots automatically`를 활성화하면 `프로젝트 루트`에 모듈 디렉토리가 없을 경우 자동으로 만들어준다.
 
-![](/images/internship/02.png)
+![](/spring/images/gradle-02.png)
 
 #### webapp
 webapp 디렉토리는 웹 애플리케이션의 특별한 폴더이다.
@@ -37,7 +37,7 @@ webapp 디렉토리는 웹 애플리케이션의 특별한 폴더이다.
 
 그리고 그 안에 `WEB-INF` 폴더 까지 만들자
 
-![](/images/internship/03.png)
+![](/spring/images/gradle-03.png)
 
 ## Spring Web MVC
 
@@ -200,7 +200,7 @@ public InternalResourceViewResolver viewResolver() {
 
 일반적으로는 톰캣을 설치하고 `Edit Configurations...`를 통해 톰캣 서버로 실행할 수 있는 환경을 추가해야한다.
 
-![](/images/internship/10.png)
+![](/spring/images/gradle-10.png)
 
 ### 임베디드 톰캣
 
@@ -249,7 +249,7 @@ public class Application {
 
 `http://localhost:8080/`으로 접속해보자.
 
-![](/images/internship/11.png)
+![](/spring/images/gradle-11.png)
 
 ## 참고
 

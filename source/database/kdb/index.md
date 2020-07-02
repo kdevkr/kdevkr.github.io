@@ -19,6 +19,9 @@
 - [함수](/kdb-tutorial/function)
 - [자바 클라이언트](kdb-tutorial/java-client)
 
+## 🔥 Advanced Tips
+- 테이블 스키마 변경하기
+- 시간 다루기
 
 ## 🛠 Libraries
 

@@ -5,17 +5,17 @@
     tags: [KDB, Q]
 ---
 
-1. [KDB 튜토리얼 - 설치 및 접속](/archives/kdb-tutorial/install-and-connection)
+1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)
 2. **KDB 튜토리얼 - 변수 할당 및 테이블 생성**
-3. [KDB 튜토리얼 - Q-SQL](/archives/kdb-tutorial/q-sql)
-4. [KDB 튜토리얼 - 그룹핑과 집계](/archives/kdb-tutorial/grouping-and-aggregation)
-5. [KDB 튜토리얼 - 파일 다루기](/archives/kdb-tutorial/file)
-6. [KDB 튜토리얼 - 네임스페이스](/archives/kdb-tutorial/namespace)
-7. [KDB 튜토리얼 - 함수](/archives/kdb-tutorial/function)
-8. [KDB 튜토리얼 - 자바 클라이언트](/archives/kdb-tutorial/java-client)
+3. [KDB 튜토리얼 - Q-SQL](../q-sql)
+4. [KDB 튜토리얼 - 그룹핑과 집계](../grouping-and-aggregation)
+5. [KDB 튜토리얼 - 파일 다루기](../file)
+6. [KDB 튜토리얼 - 네임스페이스](../namespace)
+7. [KDB 튜토리얼 - 함수](../function)
+8. [KDB 튜토리얼 - 자바 클라이언트](../java-client)
 
 ## 들어가며
-KDB+는 일반적인 데이터베이스와는 약간 다릅니다. 그것은 [데이터 유형](https://code.kx.com/q/basics/datatypes/)에서도 확인할 수 있습니다. 
+KDB+는 일반적인 데이터베이스와는 약간 다릅니다. 그것은 [데이터 유형](https://code.kx.com/q/basics/datatypes/)에서도 확인할 수 있습니다.
 
 |N|Name|Literal|Java|
 |---|---|---|---|
@@ -78,11 +78,11 @@ tab:([] x:1 2 3; y:2 4 6)
 t:([] name:`Dent`Beeblebrox`Prefect; iq:98 42 126)
 
 flip `name`iq!(`Dent`Beeblebrox`Prefect;98 42 126)
-    
-name       iq 
+
+name       iq
 --------------
-Dent       98 
-Beeblebrox 42 
+Dent       98
+Beeblebrox 42
 Prefect    126
 ```
 
@@ -113,10 +113,10 @@ t:([] name:`symbol$(); iq:`int$())
 t
 select from t
 
-name       iq 
+name       iq
 --------------
-Dent       98 
-Beeblebrox 42 
+Dent       98
+Beeblebrox 42
 Prefect    126
 ```
 
@@ -141,10 +141,10 @@ v:flip `name`iq!(`Dent`Beeblebrox`Prefect;98 42 126)
 k:flip (enlist `eid)!enlist 1001 1002 1003
 kv: k!v
 
-eid | name       iq 
+eid | name       iq
 ----| --------------
-1001| Dent       98 
-1002| Beeblebrox 42 
+1001| Dent       98
+1002| Beeblebrox 42
 1003| Prefect    126
 ```
 
@@ -163,10 +163,10 @@ eid| name iq
 t:([] eid:1001 1002 1003; name:`Dent`Beeblebrox`Prefect; iq:98 42 126)
 kv: `eid xkey t
 
-eid | name       iq 
+eid | name       iq
 ----| --------------
-1001| Dent       98 
-1002| Beeblebrox 42 
+1001| Dent       98
+1002| Beeblebrox 42
 1003| Prefect    126
 ```
 
@@ -176,10 +176,10 @@ eid | name       iq
 kv:([eid:1001 1002 1003] name:`Dent`Beeblebrox`Prefect; iq:98 42 126)
 () xkey kv
 
-eid  name       iq 
+eid  name       iq
 -------------------
-1001 Dent       98 
-1002 Beeblebrox 42 
+1001 Dent       98
+1002 Beeblebrox 42
 1003 Prefect    126
 ```
 
@@ -188,18 +188,18 @@ eid  name       iq
 ```q
 1!t
 
-eid | name       iq 
+eid | name       iq
 ----| --------------
-1001| Dent       98 
-1002| Beeblebrox 42 
+1001| Dent       98
+1002| Beeblebrox 42
 1003| Prefect    126
 
 0!kv
 
-eid  name       iq 
+eid  name       iq
 -------------------
-1001 Dent       98 
-1002 Beeblebrox 42 
+1001 Dent       98
+1002 Beeblebrox 42
 1003 Prefect    126
 ```
 

@@ -5,17 +5,17 @@
     tags: [KDB, Q]
 ---
 
-1. [KDB 튜토리얼 - 설치 및 접속](/archives/kdb-tutorial/install-and-connection)
-2. [KDB 튜토리얼 - 변수 할당 및 테이블 생성](/archives/kdb-tutorial/assign-variables-and-tables)
-3. [KDB 튜토리얼 - Q-SQL](/archives/kdb-tutorial/q-sql)
-4. [KDB 튜토리얼 - 그룹핑과 집계](/archives/kdb-tutorial/grouping-and-aggregation)
+1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)
+2. [KDB 튜토리얼 - 변수 할당 및 테이블 생성](../assign-variables-and-tables)
+3. [KDB 튜토리얼 - Q-SQL](../q-sql)
+4. [KDB 튜토리얼 - 그룹핑과 집계](../grouping-and-aggregation)
 5. **KDB 튜토리얼 - 파일 다루기**
-6. [KDB 튜토리얼 - 네임스페이스](/archives/kdb-tutorial/namespace)
-7. [KDB 튜토리얼 - 함수](/archives/kdb-tutorial/function)
-8. [KDB 튜토리얼 - 자바 클라이언트](/archives/kdb-tutorial/java-client)
+6. [KDB 튜토리얼 - 네임스페이스](../namespace)
+7. [KDB 튜토리얼 - 함수](../function)
+8. [KDB 튜토리얼 - 자바 클라이언트](../java-client)
 
 ## 들어가며
-KDB+에서 파일을 다루는 방법에 대해서 알아봅니다. 메모리(RDB)에 존재하는 데이터를 디스크(HDB)에 저장하거나 반대로 디스크에 존재하는 데이터를 메모리에 불러올 수 있습니다. 
+KDB+에서 파일을 다루는 방법에 대해서 알아봅니다. 메모리(RDB)에 존재하는 데이터를 디스크(HDB)에 저장하거나 반대로 디스크에 존재하는 데이터를 메모리에 불러올 수 있습니다.
 
 자 그럼 파일을 다루는 법을 배우러 가보실까요?
 
@@ -131,7 +131,7 @@ save `patient
 `:patient
 
 / 현재 컨텍스트의 patient를 삭제합니다.
-delete patient from `. 
+delete patient from `.
 
 / 현재 컨텍스트에 patient 테이블이 없습니다.
 patient
@@ -162,7 +162,7 @@ KDB+는 바이너리 뿐만 아니라 `csv`, `txt`, `xls`, `xml`형식으로 저
  txt     plain text
  xls     Excel spreadsheet
  xml     Extensible Markup Language (XML)
- 
+
 / save x.extension
 save `:data/patient.csv
 save `:data/patient.txt
@@ -246,7 +246,7 @@ new_test     | 1          0          3          18         5          0         
 new_negative | 0          0          3          18         4          0          22         9          41         58         44         46         44         38         87         48         60         171        308        133        549        869        983        1276       1110       758        469        499        333        943        1050       1265       1778       2100       2404       2772       5155       6129       7742       9275       7130       15857      13904      17481      16000     
 new_confirmed| 1          0          0          0          1          0          1          1          0          0          2          5          1          3          0          1          2          5          1          0          3          0          1          0          0          0          0          1          1          1          20         53         100        229        169        231        144        284        505        571        813        1062       600        516        438       
 new_released | 0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          1          1          0          0          1          1          0          3          0          0          2          0          1          2          4          0          1          1          0          6          0          0          3          0          1          3          3          7          47        
-new_deceased | 0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0 
+new_deceased | 0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0          0
 ```
 
 이번에는 파일을 저장하고 불러오며 파일을 다루는 방법에 대해서 알아보았습니다. 이제 다른 시스템(자바 애플리케이션 등)에서 필요한 데이터를 추출하여 파일로 저장하여 사용할 수 있게 되었습니다.

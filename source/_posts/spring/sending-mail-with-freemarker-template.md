@@ -6,10 +6,10 @@ banner:
     url: https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png
 ---
 
-![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#center)
+![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#compact)
 
 ### 스프링 프레임워크의 이메일 지원
-스프링 프레임워크에서는 이메일을 발송할 수 있도록 `org.springframework.mail` 패키지를 제공한다. 
+스프링 프레임워크에서는 이메일을 발송할 수 있도록 `org.springframework.mail` 패키지를 제공한다.
 
 `MailSender` 인터페이스는 메일 발송 기능을 가지는 최상위 인터페이스이며 스프링 프레임워크는 이 보다 더 좋은 기능을 제공하도록 확장한 `JavaMailSender` 인터페이스를 포함한다.
 
@@ -21,12 +21,12 @@ compile('javax.mail:mail:1.4.7')
 ```
 
 ##### JavaMailSenderImpl
-스프링 프레임워크는 `JavaMailSender` 인터페이스의 구현체인 `JavaMailSenderImpl` 클래스를 제공하며 
+스프링 프레임워크는 `JavaMailSender` 인터페이스의 구현체인 `JavaMailSenderImpl` 클래스를 제공하며
 
 우리는 굳이 JavaMailSender 구현체를 만들지 않아도 이 JavaMailSenderImpl를 사용하여 메일을 발송하는 기능을 만들 수 있다.
 
 ##### MimeMessageHelper
-스프링 프레임워크는 `javax.mail.internet.MimeMessage` 클래스에 각종 설정들(제목이나 첨부파일 등)을 쉽게 지정할 수 있도록 헬퍼 클래스를 제공한다. 
+스프링 프레임워크는 `javax.mail.internet.MimeMessage` 클래스에 각종 설정들(제목이나 첨부파일 등)을 쉽게 지정할 수 있도록 헬퍼 클래스를 제공한다.
 
 ### 이메일 발송을 위한 SMTP 서버
 이메일을 송수신하는 서버를 SMTP(Simple Mail Transfer Protocol) 서버라고 한다.
@@ -42,7 +42,7 @@ SMTP 메일 서버를 구축하는 것 대신에 우리가 많이 사용하는 �
 #### 구글 SMTP 활성화
 구글 SMTP 서버를 이용하기 위해서는 구글 이메일 계정의 [`보안 수준이 낮은 앱의 액세스`](https://myaccount.google.com/lesssecureapps)를 허용해야 한다.
 
-![](/images/2019/google-less-secure-apps.png)
+![](/spring/images/google-less-secure-apps.png)
 
 이후 [SMTP 서버 이용시 필요한 정보](https://support.google.com/mail/answer/7126229?visit_id=636885550269950209-1570087438&rd=1)는 다음과 같다.
 

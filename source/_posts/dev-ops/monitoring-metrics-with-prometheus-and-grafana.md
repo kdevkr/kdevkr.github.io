@@ -13,7 +13,7 @@
 
 ![](https://prometheus.io/assets/architecture.png)
 
-[프로메테우스(Prometheus)](https://prometheus.io/)는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다. 
+[프로메테우스(Prometheus)](https://prometheus.io/)는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다.
 
 위 아키텍처 그림에서 Exporter는 프로메테우스가 수집할 수 있는 메트릭을 제공하는 에이전트입니다. 프로메테우스 조직에서 제공하는 공식 Exporter 뿐만 아니라 PostgreSQL 또는 [Micrometer](https://micrometer.io/docs/registry/prometheus)와 같은 [서드 파티 Exporter](https://prometheus.io/docs/instrumenting/exporters/)가 있습니다. 주로 사용되는 대부분의 시스템에 대한 Exporter가 있으니 찾아서 프로메테우스에 Exporter로 적용하면 됩니다.
 
@@ -80,11 +80,11 @@ docker run -d --name=grafana -p 3000:3000 grafana/grafana
 ### 프로메테우스 데이터 소스 추가
 그라파나 시스템에 접속하여 프로메테우스를 데이터 소스로 추가합니다.
 
-![](/images/2020/grafana-datasource-prometheus-configuration.PNG#full)
+![](/dev-ops/images/grafana-datasource-prometheus-configuration.PNG#full)
 
 그라파나가 기본으로 제공하는 프로메테우스 대시보드를 선택하여 시각화된 프로메테우스 메트릭을 확인합니다.
 
-![](/images/2020/grafana-datasource-prometheus-dashboard.PNG#full)
+![](/dev-ops/images/grafana-datasource-prometheus-dashboard.PNG#full)
 
 ### Spring Boot Actuator 메트릭 모니터링
 스프링 부트 액추에이터를 사용중인 경우 프로메테우스의 [Micromiter Exporter](https://micrometer.io/docs/registry/prometheus)를 쉽게 적용할 수 있습니다.
@@ -126,7 +126,7 @@ public class ActuatorEndpoint {
 
 http://localhost:8080/actuator/prometheus 로 접속하면 다음과 같이 프로메테우스가 수집할 수 있는 메트릭이 출력됩니다.
 
-![](/images/2020/spring-boot-actuator-prometheus-metrics.PNG#full)  
+![](/spring/images/spring-boot-actuator-prometheus-metrics.PNG#full)  
 
 #### Prometheus Scrap Configuration
 프로메테우스가 엑추에이터가 제공하는 메트릭을 수집하도록 설정합니다.
@@ -146,16 +146,16 @@ scrape_configs:
 
 프로메테우스를 재실행하면 수집 목록에 추가된 것을 확인할 수 있습니다.
 
-![](/images/2020/prometheus-scraping-targets.PNG#full)
+![](/dev-ops/images/prometheus-scraping-targets.PNG#full)
 
 #### JVM Actuator Dashboard
 그라파나 대시보드 중 [JVM (Micrometer)](https://grafana.com/grafana/dashboards/4701) 또는 [JVM (Actuator)](https://grafana.com/grafana/dashboards/9568)를 대시보드로 추가합니다.
 
-![](/images/2020/grafana-dashboard-import.PNG#full)
+![](/dev-ops/images/grafana-dashboard-import.PNG#full)
 
 추가된 대시보드에 따라 메트릭을 시각화하여 모니터링 할 수 있습니다.
 
-![](/images/2020/grafana-dashboard-stats.PNG#full)
+![](/dev-ops/images/grafana-dashboard-stats.PNG#full)
 
 스프링 부트 액추에이터 메트릭을 프로메테우스가 수집하며 그라파나를 통해 메트릭을 시각화할 수 있는 것을 확인했습니다.
 
@@ -164,5 +164,3 @@ scrape_configs:
 ## 참고
 - [Prometheus](https://prometheus.io/)
 - [Grafana](https://grafana.com/grafana/)
-
-

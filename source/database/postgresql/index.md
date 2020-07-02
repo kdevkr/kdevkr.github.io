@@ -10,6 +10,7 @@
 
 ## 👨‍💻 Learning PostgreSQL
 
+- [Install with docker](install)
 - [Table](table)
 - [View](view)
 - [PL/pgSQL Function](plpgsql)

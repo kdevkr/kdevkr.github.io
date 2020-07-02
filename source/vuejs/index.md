@@ -13,6 +13,7 @@
 - [Best Vue](best-vue)
 
 ## 🔥 Advanced Tips
+- [스프링 부트 애플리케이션과 VueJS 통합하기](spring-boot-application-with-vuejs)
 
 ### Vue.js Editor
 Vue.js 코드 작성을 위한 에디터 도구의 선택은 자신에게 맞는 것을 선택하면 됩니다.

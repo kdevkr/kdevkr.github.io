@@ -1,9 +1,10 @@
 ---
     title: Gradle과 함께 스프링 프레임워크 프로젝트 구성하기
     date: 2019-02-01
-    categories: [개발 이야기, 그래들, 스프링]
-    banner:
-        url: https://cdn.greenhouse.io/external_greenhouse_job_boards/logos/000/001/539/original/Logo_einfarbig_40_KB_Gradle-145_2x.png?1490258779
+    categories: [개발 이야기]
+    tags:
+      - Spring
+      - Gradle
 ---
 
 Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고 톰캣으로 웹 애플리케이션을 구동해보자.
@@ -30,7 +31,7 @@ Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고
 ![](/images/internship/02.png)
 
 #### webapp
-webapp 디렉토리는 웹 애플리케이션의 특별한 폴더이다. 
+webapp 디렉토리는 웹 애플리케이션의 특별한 폴더이다.
 
 `src/main/webapp` 디렉토리를 만들자.
 
@@ -70,7 +71,7 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(ServletContext container) {
-        // 
+        //
     }
 }
 ```
@@ -125,7 +126,7 @@ dispatcher.addMapping("/");
 AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 context.setConfigLocation("com.demo.app");
 servletContext.addListener(new ContextLoaderListener(context));
-        
+
 ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
 dispatcher.setLoadOnStartup(1);
 dispatcher.addMapping("/");
@@ -149,7 +150,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter implements WebApplication
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.setConfigLocation("com.demo.app");
         servletContext.addListener(new ContextLoaderListener(context));
-        
+
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");

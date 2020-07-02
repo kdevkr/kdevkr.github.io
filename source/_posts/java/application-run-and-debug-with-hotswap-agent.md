@@ -34,7 +34,7 @@ DCEVM은 OpenJDK 7/8에 대한 클래스 재정의 기능을 향상시키는 프
 sudo java -jar DCEVM-8u181-installer-build2.jar
 ```
 
-![](/images/2020/dcevm-8u181-installer-build2.png)
+![](/spring/images/dcevm-8u181-installer-build2.png)
 
 ### HotSwapAgent  
 

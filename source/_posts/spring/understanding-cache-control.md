@@ -1,10 +1,14 @@
 ---
 title: 초보 개발자가 이해하는 캐시 정책
 date: 2018-06-09 21:21:18
-categories: [개발 이야기, 자바]
+categories: [개발 이야기]
+tags:
+  - Java
+  - Cache
 ---
 
-![](/images/logo/spring.png)
+## 들어가며
+웹 애플리케이션에서 서버가 클라이언트에게 제공하는 정적 리소스들의 캐시 정책을 이해하는 것은 굉장히 중요한 부분이라고 생각합니다.
 
 ## The Cache-Control Header
 

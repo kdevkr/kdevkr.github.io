@@ -12,7 +12,7 @@ HTTP는 하이퍼텍스트 통신 프로토콜으로 서버와 클라이언트�
 
 REST 클라이언트 앱인 `Postman`은 다음과 같은 `Content-Type`을 제공한다.
 
-![](/images/2018/01.png)
+![](/spring/images/postman-content-type.png)
 
 일반적인 HTML 폼으로 전송할 때는 `x-www-form-urlencoded` 또는 `multipart/form-data`로 전송된다고 알고 있다.
 

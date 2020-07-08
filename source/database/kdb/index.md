@@ -20,9 +20,9 @@
 - [자바 클라이언트](kdb-tutorial/java-client)
 
 ## 🔥 Advanced Tips
-- 테이블 스키마 변경하기
-- 시간 다루기
-
+- [Prometheus Exporter](prometheus-exporter)
+- [Common q](common-q)
+ 
 ## 🛠 Libraries
 
 - [Kdb+ Database Examples](https://github.com/timeseries/kdb)  

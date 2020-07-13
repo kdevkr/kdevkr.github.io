@@ -11,12 +11,10 @@
 ## 👨‍💻 Learning PostgreSQL
 
 - [Install with docker](install)
-- [Table](table)
-- [View](view)
-- [PL/pgSQL Function](plpgsql)
-- [Exception Handling](exception-handling)
 
 ## 🔥 Advanced Tips
+
+- [PostgreSQL Monitoring](monitoring)
 
 ## 🔖 References
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/current/index.html)  

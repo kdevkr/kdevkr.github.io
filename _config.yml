@@ -108,12 +108,8 @@ theme_config:
       # 파이썬: /python || fab fa-python
     PostgreSQL: /database/postgresql || fas fa-database
     KDB+: /database/kdb || fas fa-database
-    InfluxDB: /database/influxdb || fas fa-database
-    데브 옵스:
-      default: /dev-ops/ || fab fa-connectdevelop
-      Jenkins: /jenkins || fab fa-jenkins
-      Docker: /docker || fab fa-docker
-      kubernetes: /kubernetes || fas fa-dharmachakra
+    Docker: /dev-ops//docker || fab fa-docker
+    kubernetes: /dev-ops//kubernetes || fas fa-dharmachakra
     꾸르팁:
       default: /tips/ || far fa-grin-tongue-wink
       터미널: /shell/ || fas fa-desktop

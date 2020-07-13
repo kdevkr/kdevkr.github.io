@@ -37,3 +37,14 @@ $ sudo add-apt-repository \
 $ sudo apt-get update
 $ sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
+
+## 도커 컴포즈 설치하기
+리눅스에서 도커 컴포즈를 이용하기 위해서는 별도로 설치해야합니다.
+
+```sh
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+$ sudo chmod +x /usr/local/bin/docker-compose
+$ docker-compose --version
+docker-compose version 1.26.2, build eefe0d31
+```

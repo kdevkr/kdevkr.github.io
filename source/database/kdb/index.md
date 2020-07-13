@@ -21,8 +21,8 @@
 
 ## 🔥 Advanced Tips
 - [Prometheus Exporter](prometheus-exporter)
-- [Common q](common-q)
- 
+- [System Common Logging](system-common-logging)
+
 ## 🛠 Libraries
 
 - [Kdb+ Database Examples](https://github.com/timeseries/kdb)  

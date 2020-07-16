@@ -337,7 +337,7 @@
 <p>YAML 파일을 리소스로 불러오기만 하면 쉽게 프로퍼티로 변환할 수 있습니다.</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">YamlPropertiesFactoryBean yamlPropertiesFactoryBean = <span class="keyword">new</span> YamlPropertiesFactoryBean();</span><br><span class="line">yamlPropertiesFactoryBean.setResources(<span class="keyword">new</span> ClassPathResource(<span class="string">"application-test.yml"</span>));</span><br><span class="line">Properties properties = yamlPropertiesFactoryBean.getObject();</span><br></pre></td></tr></table></figure>
 <h2 id="YamlPropertySourceLoader">YamlPropertySourceLoader</h2>
-<p><a href="https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/env/YamlPropertySourceLoader.java" target="_blank" rel="noopener">YamlPropertySourceLoader</a>는 스프링 부트에서 제공하는 로더 클래스로써 <code>.yml</code> 또는 <code>.yaml</code>로 끝나는 파일을 PropertySource로 넣어주는 역할을 합니다.</p>
+<p><a href="https://github.com/spring-projects/spring-boot/blob/oligarch/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/env/YamlPropertySourceLoader.java" target="_blank" rel="noopener">YamlPropertySourceLoader</a>는 스프링 부트에서 제공하는 로더 클래스로써 <code>.yml</code> 또는 <code>.yaml</code>로 끝나는 파일을 PropertySource로 넣어주는 역할을 합니다.</p>
 <h3 id="Dependencies-2">Dependencies</h3>
 <p>YamlPropertySourceLoader는 org.springframework.boot.env 패키지에 포함되어있습니다.</p>
 <figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">implementation(<span class="string">"org.springframework.boot:spring-boot:2.2.4.RELEASE"</span>)</span><br></pre></td></tr></table></figure>

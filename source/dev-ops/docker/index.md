@@ -10,6 +10,7 @@
 
 ## 👨‍💻 Learning Docker
 - [도커 엔진 설치하기](install-docker-engine)
+- [스토리지 사용하기](use-storage)
 
 ## 🔥 Advanced Tips
 - [Docker-Compose](docker-compose)  

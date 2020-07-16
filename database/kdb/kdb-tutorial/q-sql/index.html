@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="KDB 튜토리얼 - 설치 및 접속 KDB 튜토리얼 - 변수 할당 및 테이블 생성 KDB 튜토리얼 - Q-SQL KDB 튜토리얼 - 그룹핑과 집계 KDB 튜토리얼 - 파일 다루기 KDB 튜토리얼 - 네임스페이스 KDB 튜토리얼 - 함수 KDB 튜토리얼 - 자바 클라이언트  들어가며 이번 글에서는 일반적인 데이터베이스에서 사용하는 SQL 구문을 사용할 수 있">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDB 튜토리얼 - Q-SQL">
+<meta property="og:url" content="https://kdevkr.github.io/database/kdb/kdb-tutorial/q-sql/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="KDB 튜토리얼 - 설치 및 접속 KDB 튜토리얼 - 변수 할당 및 테이블 생성 KDB 튜토리얼 - Q-SQL KDB 튜토리얼 - 그룹핑과 집계 KDB 튜토리얼 - 파일 다루기 KDB 튜토리얼 - 네임스페이스 KDB 튜토리얼 - 함수 KDB 튜토리얼 - 자바 클라이언트  들어가며 이번 글에서는 일반적인 데이터베이스에서 사용하는 SQL 구문을 사용할 수 있">
+<meta property="og:locale" content="ko_KR">
+<meta property="article:published_time" content="2020-03-05T15:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="KDB">
+<meta property="article:tag" content="Q">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/q-sql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>KDB 튜토리얼 - Q-SQL | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#들어가며"><span class="nav-number">1.</span> <span class="nav-text">들어가며</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#데이터-불러오기"><span class="nav-number">1.1.</span> <span class="nav-text">데이터 불러오기</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-SQL"><span class="nav-number">2.</span> <span class="nav-text">Q-SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SELECT"><span class="nav-number">2.1.</span> <span class="nav-text">SELECT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WHERE"><span class="nav-number">2.2.</span> <span class="nav-text">WHERE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ORDER-BY"><span class="nav-number">2.3.</span> <span class="nav-text">ORDER BY</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DELETE"><span class="nav-number">2.4.</span> <span class="nav-text">DELETE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고"><span class="nav-number">3.</span> <span class="nav-text">참고</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/q-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KDB 튜토리얼 - Q-SQL
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-05 15:00:00" itemprop="dateCreated datePublished" datetime="2020-03-05T15:00:00Z">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ol>
+<li><a href="../install-and-connection">KDB 튜토리얼 - 설치 및 접속</a></li>
+<li><a href="../assign-variables-and-tables">KDB 튜토리얼 - 변수 할당 및 테이블 생성</a></li>
+<li><strong>KDB 튜토리얼 - Q-SQL</strong></li>
+<li><a href="../grouping-and-aggregation">KDB 튜토리얼 - 그룹핑과 집계</a></li>
+<li><a href="../file">KDB 튜토리얼 - 파일 다루기</a></li>
+<li><a href="../namespace">KDB 튜토리얼 - 네임스페이스</a></li>
+<li><a href="../function">KDB 튜토리얼 - 함수</a></li>
+<li><a href="../java-client">KDB 튜토리얼 - 자바 클라이언트</a></li>
+</ol>
+<h2 id="들어가며">들어가며</h2>
+<p>이번 글에서는 일반적인 데이터베이스에서 사용하는 SQL 구문을 사용할 수 있도록 KDB+가 지원하는 q-sql에 대해서 알아봅니다.</p>
+<p>알아보기 전에 필요한 데이터를 준비하기 위하여 국내에 COVID-19 확산으로 인해 발생한 정보를 CSV로 구성한 <a href="https://github.com/jihoo-kim/Coronavirus-Dataset" target="_blank" rel="noopener">Coronavirus-Dataset</a>를 불러오도록 하겠습니다.</p>
+<h3 id="데이터-불러오기">데이터 불러오기</h3>
+<p>CSV 파일에 저장된 데이터를 테이블로 불러오는 것은 파일을 다루는 챕터에서 알아볼 내용이지만 우선 데이터를 불러오도록 하겠습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">patient: `id` <span class="built_in">xkey</span> (<span class="string">"isissssiiiddds"</span>;<span class="built_in">enlist</span><span class="string">","</span>) <span class="number">0</span>: `:data/dataset/patient.<span class="built_in">csv</span></span><br><span class="line">route: `id <span class="built_in">xkey</span> (<span class="string">"idsssff"</span>;<span class="built_in">enlist</span><span class="string">","</span>) <span class="number">0</span>: `:data/dataset/route.<span class="built_in">csv</span></span><br><span class="line">time: (<span class="string">"diiiiiiiiii"</span>;<span class="built_in">enlist</span><span class="string">","</span>) <span class="number">0</span>: `:data/dataset/time.<span class="built_in">csv</span></span><br></pre></td></tr></table></figure>
+<p>네 데이터를 불러오는 것은 끝났습니다.</p>
+<p>간단하게 설명하자면 <code>xkey</code>로 테이블에 대한 키를 지정하였고 isissssiiiddds와 같이 데이터의 형식을 지정하였으며 CSV로 구성되었기에 ,를 구분자로 사용했습니다.</p>
+<p>이제 Q-SQL을 배우러 가보실까요?</p>
+<h2 id="Q-SQL">Q-SQL</h2>
+<p>Q-SQL 표현식은 종속절, <code>by</code>, <code>from</code> 그리고 <code>where</code>과 같은 고유 문법 규칙이 있습니다.</p>
+<p>컬럼에 대한 구분은 콤마(,)입니다.</p>
+<h3 id="SELECT">SELECT</h3>
+<p>SELECT는 테이블의 컬럼을 선택할 수 있습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">/ <span class="keyword">select</span> [<span class="built_in">cols</span>] [<span class="keyword">by</span> groups] <span class="keyword">from</span> t [<span class="built_in">where</span> filters]</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">from</span> patient</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>KDB+는 모든 컬럼을 선택할 때 와일드카드를 사용하지 않습니다.</p>
+</blockquote>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> sex, infection_order, infection_reason, confirmed_date, released_date, deceased_date <span class="keyword">from</span> patient</span><br><span class="line"></span><br><span class="line">sex    infection_order infection_reason                  confirmed_date released_date deceased_date</span><br><span class="line">---------------------------------------------------------------------------------------------------</span><br><span class="line">female <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.20</span>     <span class="number">2020.02</span><span class="number">.06</span>                 </span><br><span class="line">male   <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.24</span>     <span class="number">2020.02</span><span class="number">.05</span>                 </span><br><span class="line">male   <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.26</span>     <span class="number">2020.02</span><span class="number">.12</span>                 </span><br><span class="line">male   <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.27</span>     <span class="number">2020.02</span><span class="number">.09</span>                 </span><br><span class="line">male   <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.03</span><span class="number">.02</span>                 </span><br><span class="line">male   <span class="number">2</span>               contact with patient              <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.02</span><span class="number">.19</span>                 </span><br><span class="line">male   <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.02</span><span class="number">.15</span>                 </span><br><span class="line">female <span class="number">1</span>               visit to Wuhan                    <span class="number">2020.01</span><span class="number">.31</span>     <span class="number">2020.02</span><span class="number">.12</span></span><br></pre></td></tr></table></figure>
+<h3 id="WHERE">WHERE</h3>
+<p>WHERE는 여러가지 조건절을 표현할 수 있습니다.</p>
+<h4 id="">=</h4>
+<p><code>=</code>는 가장 일반적인 비교입니다.</p>
+<p>코로나 바이러스로 인해 사망한 여성을 구분하고자 하면 다음과 같습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">from</span> patient <span class="built_in">where</span> sex = `female, state = `deceased</span><br><span class="line"></span><br><span class="line">id  | sex    birth_year country region           <span class="built_in">group</span>                    infection_reason     infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">----| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">38</span>  | female <span class="number">1963</span>       Korea   Daegu                                                                                                     <span class="number">2020.02</span><span class="number">.18</span>                   <span class="number">2020.02</span><span class="number">.23</span>    deceased</span><br><span class="line"><span class="number">205</span> | female <span class="number">1965</span>       Korea   Gyeongsangbuk-<span class="keyword">do</span> Cheongdo Daenam Hospital                                                                 <span class="number">2020.02</span><span class="number">.22</span>                   <span class="number">2020.02</span><span class="number">.21</span>    deceased</span><br><span class="line"><span class="number">925</span> | female <span class="number">1951</span>       Korea   Gyeongsangbuk-<span class="keyword">do</span> Shincheonji Church       contact with patient                                            <span class="number">2020.02</span><span class="number">.25</span>                   <span class="number">2020.02</span><span class="number">.24</span>    deceased</span><br><span class="line"><span class="number">2614</span>| female <span class="number">1943</span>       Korea   Daegu                                                                                                     <span class="number">2020.02</span><span class="number">.29</span>                   <span class="number">2020.03</span><span class="number">.01</span>    deceased</span><br><span class="line"><span class="number">2769</span>| female <span class="number">1934</span>       Korea   Daegu                                                                                                     <span class="number">2020.02</span><span class="number">.29</span>                   <span class="number">2020.03</span><span class="number">.02</span>    deceased</span><br><span class="line"><span class="number">4046</span>| female <span class="number">1962</span>       Korea   Daegu                                                                                                     <span class="number">2020.03</span><span class="number">.01</span>                   <span class="number">2020.03</span><span class="number">.01</span>    deceased</span><br></pre></td></tr></table></figure>
+<h4 id="in">in</h4>
+<p><code>in</code> 키워드는 컬럼의 데이터가 조건을 포함하는 것을 표현합니다.</p>
+<p>국내 확진자 중 중국 국적인 사람을 찾고 싶다면 다음과 같이 사용합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">from</span> patient <span class="built_in">where</span> country in `China</span><br><span class="line"></span><br><span class="line">id | sex    birth_year country region              <span class="built_in">group</span>                         infection_reason              infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">---| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">1</span>  | female <span class="number">1984</span>       China   filtered at airport                               visit to Wuhan                <span class="number">1</span>                           <span class="number">45</span>             <span class="number">2020.01</span><span class="number">.20</span>     <span class="number">2020.02</span><span class="number">.06</span>                  released</span><br><span class="line"><span class="number">12</span> | male   <span class="number">1971</span>       China   capital area                                      contact with patient in Japan <span class="number">2</span>                           <span class="number">422</span>            <span class="number">2020.02</span><span class="number">.01</span>     <span class="number">2020.02</span><span class="number">.18</span>                  released</span><br><span class="line"><span class="number">14</span> | female <span class="number">1980</span>       China   capital area                                      contact with patient          <span class="number">3</span>               <span class="number">12</span>          <span class="number">3</span>              <span class="number">2020.02</span><span class="number">.02</span>     <span class="number">2020.02</span><span class="number">.18</span>                  released</span><br><span class="line"><span class="number">23</span> | female <span class="number">1962</span>       China   capital area                                      visit to Wuhan                <span class="number">1</span>                           <span class="number">23</span>             <span class="number">2020.02</span><span class="number">.06</span>     <span class="number">2020.02</span><span class="number">.29</span>                  released</span><br><span class="line"><span class="number">27</span> | female <span class="number">1982</span>       China   capital area                                      visit to China                <span class="number">1</span>                           <span class="number">40</span>             <span class="number">2020.02</span><span class="number">.09</span>                                 isolated</span><br><span class="line"><span class="number">28</span> | female <span class="number">1989</span>       China   capital area                                      contact with patient          <span class="number">2</span>               <span class="number">3</span>           <span class="number">1</span>              <span class="number">2020.02</span><span class="number">.10</span>     <span class="number">2020.02</span><span class="number">.17</span>                  released</span><br><span class="line"><span class="number">755</span>| male   <span class="number">1954</span>       China   capital area        Eunpyeong St. Mary's Hospital                                                                          <span class="number">2020.02</span><span class="number">.24</span>                                 isolated</span><br><span class="line"><span class="number">924</span>| female <span class="number">1945</span>       China   capital area                                      visit to China                                                           <span class="number">2020.02</span><span class="number">.25</span>                                 isolated</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>country는 심볼 데이터 유형입니다.</p>
+</blockquote>
+<h4 id="like">like</h4>
+<p><code>like</code> 키워드는 패턴 매칭을 제공합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">/ x like y</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">from</span> patient <span class="built_in">where</span> infection_reason like <span class="string">"*Wuhan*"</span></span><br><span class="line"></span><br><span class="line">id| sex    birth_year country region              <span class="built_in">group</span> infection_reason   infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">--| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">1</span> | female <span class="number">1984</span>       China   filtered at airport       visit to Wuhan     <span class="number">1</span>                           <span class="number">45</span>             <span class="number">2020.01</span><span class="number">.20</span>     <span class="number">2020.02</span><span class="number">.06</span>                  released</span><br><span class="line"><span class="number">2</span> | male   <span class="number">1964</span>       Korea   filtered at airport       visit to Wuhan     <span class="number">1</span>                           <span class="number">75</span>             <span class="number">2020.01</span><span class="number">.24</span>     <span class="number">2020.02</span><span class="number">.05</span>                  released</span><br><span class="line"><span class="number">3</span> | male   <span class="number">1966</span>       Korea   capital area              visit to Wuhan     <span class="number">1</span>                           <span class="number">16</span>             <span class="number">2020.01</span><span class="number">.26</span>     <span class="number">2020.02</span><span class="number">.12</span>                  released</span><br><span class="line"><span class="number">4</span> | male   <span class="number">1964</span>       Korea   capital area              visit to Wuhan     <span class="number">1</span>                           <span class="number">95</span>             <span class="number">2020.01</span><span class="number">.27</span>     <span class="number">2020.02</span><span class="number">.09</span>                  released</span><br><span class="line"><span class="number">5</span> | male   <span class="number">1987</span>       Korea   capital area              visit to Wuhan     <span class="number">1</span>                           <span class="number">31</span>             <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.03</span><span class="number">.02</span>                  released</span><br><span class="line"><span class="number">7</span> | male   <span class="number">1991</span>       Korea   capital area              visit to Wuhan     <span class="number">1</span>                           <span class="number">9</span>              <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.02</span><span class="number">.15</span>                  released</span><br><span class="line"><span class="number">8</span> | female <span class="number">1957</span>       Korea   Jeollabuk-<span class="keyword">do</span>              visit to Wuhan     <span class="number">1</span>                           <span class="number">113</span>            <span class="number">2020.01</span><span class="number">.31</span>     <span class="number">2020.02</span><span class="number">.12</span>                  released</span><br><span class="line"><span class="number">13</span>| male   <span class="number">1992</span>       Korea   filtered at airport       residence in Wuhan <span class="number">1</span>                           <span class="number">0</span>              <span class="number">2020.02</span><span class="number">.02</span>     <span class="number">2020.02</span><span class="number">.24</span>                  released</span><br><span class="line"><span class="number">23</span>| female <span class="number">1962</span>       China   capital area              visit to Wuhan     <span class="number">1</span>                           <span class="number">23</span>             <span class="number">2020.02</span><span class="number">.06</span>     <span class="number">2020.02</span><span class="number">.29</span>                  released</span><br><span class="line"><span class="number">24</span>| male   <span class="number">1992</span>       Korea   filtered at airport       residence in Wuhan <span class="number">1</span>                           <span class="number">0</span>              <span class="number">2020.02</span><span class="number">.06</span>     <span class="number">2020.02</span><span class="number">.27</span>                  released</span><br></pre></td></tr></table></figure>
+<h4 id="within">within</h4>
+<p><code>within</code>은 범위에 포함되는 것을 표현합니다.</p>
+<p>예를 들어, 2020년 1월 확진자 중에 2차 이후 감염자를 찾으려면 다음과 같습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">from</span> patient <span class="built_in">where</span> confirmed_date within (<span class="number">2020.01</span><span class="number">.01</span>;<span class="number">2020.01</span><span class="number">.31</span>), infection_order &gt;= <span class="number">2</span></span><br><span class="line"></span><br><span class="line">id| sex    birth_year country region       <span class="built_in">group</span> infection_reason     infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">--| ----------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">6</span> | male   <span class="number">1964</span>       Korea   capital area       contact with patient <span class="number">2</span>               <span class="number">3</span>           <span class="number">17</span>             <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.02</span><span class="number">.19</span>                  released</span><br><span class="line"><span class="number">9</span> | female <span class="number">1992</span>       Korea   capital area       contact with patient <span class="number">2</span>               <span class="number">5</span>           <span class="number">2</span>              <span class="number">2020.01</span><span class="number">.31</span>     <span class="number">2020.02</span><span class="number">.24</span>                  released</span><br><span class="line"><span class="number">10</span>| female <span class="number">1966</span>       Korea   capital area       contact with patient <span class="number">3</span>               <span class="number">6</span>           <span class="number">43</span>             <span class="number">2020.01</span><span class="number">.31</span>     <span class="number">2020.02</span><span class="number">.19</span>                  released</span><br><span class="line"><span class="number">11</span>| male   <span class="number">1995</span>       Korea   capital area       contact with patient <span class="number">3</span>               <span class="number">6</span>           <span class="number">0</span>              <span class="number">2020.01</span><span class="number">.31</span>     <span class="number">2020.02</span><span class="number">.10</span>                  released</span><br></pre></td></tr></table></figure>
+<h3 id="ORDER-BY">ORDER BY</h3>
+<p>SELECT 결과를 정렬하기 위해서는 <code>xasc</code> 또는 <code>xdesc</code> 키워드를 사용합니다.</p>
+<p>예를 들어, 접촉자 수(contact_number)가 많은 수로 정렬하면 다음과 같습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">`contact_number <span class="built_in">xdesc</span> <span class="keyword">select</span> <span class="keyword">from</span> patient</span><br><span class="line"></span><br><span class="line">id  | sex    birth_year country region              <span class="built_in">group</span>                    infection_reason                  infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">----| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">31</span>  | female <span class="number">1959</span>       Korea   Daegu               Shincheonji Church                                                                     <span class="number">1160</span>           <span class="number">2020.02</span><span class="number">.18</span>                                 isolated</span><br><span class="line"><span class="number">16</span>  | female <span class="number">1977</span>       Korea   Gwangju                                      visit to Thailand                 <span class="number">1</span>                           <span class="number">450</span>            <span class="number">2020.02</span><span class="number">.04</span>     <span class="number">2020.02</span><span class="number">.19</span>                  released</span><br><span class="line"><span class="number">12</span>  | male   <span class="number">1971</span>       China   capital area                                 contact with patient in Japan     <span class="number">2</span>                           <span class="number">422</span>            <span class="number">2020.02</span><span class="number">.01</span>     <span class="number">2020.02</span><span class="number">.18</span>                  released</span><br><span class="line"><span class="number">17</span>  | male   <span class="number">1982</span>       Korea   capital area                                 contact with patient in Singapore <span class="number">2</span>                           <span class="number">290</span>            <span class="number">2020.02</span><span class="number">.05</span>     <span class="number">2020.02</span><span class="number">.12</span>                  released</span><br></pre></td></tr></table></figure>
+<h3 id="DELETE">DELETE</h3>
+<p>DELETE 키워드는 데이터 또는 항목을 제거합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> patient <span class="built_in">where</span> released_date &lt; <span class="number">2020.03</span><span class="number">.01</span></span><br><span class="line"></span><br><span class="line">id| sex  birth_year country region       <span class="built_in">group</span> infection_reason     infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">--| --------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">5</span> | male <span class="number">1987</span>       Korea   capital area       visit to Wuhan       <span class="number">1</span>                           <span class="number">31</span>             <span class="number">2020.01</span><span class="number">.30</span>     <span class="number">2020.03</span><span class="number">.02</span>                  released</span><br><span class="line"><span class="number">83</span>| male <span class="number">1944</span>       Korea   capital area       contact with patient <span class="number">3</span>               <span class="number">6</span>                          <span class="number">2020.02</span><span class="number">.20</span>     <span class="number">2020.03</span><span class="number">.01</span>                  released</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> birth_year <span class="keyword">from</span> patient</span><br><span class="line"></span><br><span class="line">id| sex    country region              <span class="built_in">group</span>                    infection_reason                  infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">--| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line"><span class="number">1</span> | female China   filtered at airport                          visit to Wuhan                    <span class="number">1</span>                           <span class="number">45</span>             <span class="number">2020.01</span><span class="number">.20</span>     <span class="number">2020.02</span><span class="number">.06</span>                  released</span><br><span class="line"><span class="number">2</span> | male   Korea   filtered at airport                          visit to Wuhan                    <span class="number">1</span>                           <span class="number">75</span>             <span class="number">2020.01</span><span class="number">.24</span>     <span class="number">2020.02</span><span class="number">.05</span>                  released</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> id <span class="keyword">from</span> patient</span><br><span class="line"></span><br><span class="line">sex    birth_year country region              <span class="built_in">group</span>                    infection_reason                  infection_order infected_by contact_number confirmed_date released_date deceased_date state   </span><br><span class="line">-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span><br><span class="line">female <span class="number">1984</span>       China   filtered at airport                          visit to Wuhan                    <span class="number">1</span>                           <span class="number">45</span>             <span class="number">2020.01</span><span class="number">.20</span>     <span class="number">2020.02</span><span class="number">.06</span>                  released</span><br><span class="line">male   <span class="number">1964</span>       Korea   filtered at airport                          visit to Wuhan                    <span class="number">1</span>                           <span class="number">75</span>             <span class="number">2020.01</span><span class="number">.24</span>     <span class="number">2020.02</span><span class="number">.05</span>                  released</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> patient</span><br><span class="line"></span><br><span class="line">id| sex birth_year country region <span class="built_in">group</span> infection_reason infection_order infected_by contact_number confirmed_date released_date deceased_date state</span><br><span class="line">--| ------------------------------------------------------------------------------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>patient 테이블에 결과를 할당해야 반영됩니다.</p>
+</blockquote>
+<p>다음 시간에는 그룹핑과 집계에 대해 알아볼 것입니다.</p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://code.kx.com/q/basics/qsql/" target="_blank" rel="noopener">Reference - Q-SQL</a></li>
+<li><a href="https://code.kx.com/q4m3/9_Queries_q-sql/#90-overview" target="_blank" rel="noopener">Q Mortals - Queries</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/KDB/" rel="tag"># KDB</a>
+              <a href="/tags/Q/" rel="tag"># Q</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/database/kdb/kdb-tutorial/assign-variables-and-tables/" rel="prev" title="KDB 튜토리얼 - 변수 할당 및 테이블 생성">
+      <i class="fa fa-chevron-left"></i> KDB 튜토리얼 - 변수 할당 및 테이블 생성
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/database/kdb/kdb-tutorial/namespace/" rel="next" title="KDB 튜토리얼 - 네임스페이스">
+      KDB 튜토리얼 - 네임스페이스 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="오픈 소스 모니터링 시스템인 프로메테우스(Prometheus)와 오픈 소스 분석 시스템인 그라파나(Grafana)를 활용하면 메트릭에 대한 모니터링 대시보드를 구성할 수 있습니다. 프로메테우스  프로메테우스(Prometheus)는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다. 위 아키텍처 그림">
+<meta property="og:type" content="article">
+<meta property="og:title" content="프로메테우스와 그라파나를 활용한 메트릭 모니터링">
+<meta property="og:url" content="https://kdevkr.github.io/dev-ops/monitoring-metrics-with-prometheus-and-grafana/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="오픈 소스 모니터링 시스템인 프로메테우스(Prometheus)와 오픈 소스 분석 시스템인 그라파나(Grafana)를 활용하면 메트릭에 대한 모니터링 대시보드를 구성할 수 있습니다. 프로메테우스  프로메테우스(Prometheus)는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다. 위 아키텍처 그림">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://prometheus.io/assets/architecture.png">
+<meta property="og:image" content="https://kdevkr.github.io/dev-ops/images/grafana-datasource-prometheus-configuration.PNG#full">
+<meta property="og:image" content="https://kdevkr.github.io/dev-ops/images/grafana-datasource-prometheus-dashboard.PNG#full">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/spring-boot-actuator-prometheus-metrics.PNG#full">
+<meta property="og:image" content="https://kdevkr.github.io/dev-ops/images/prometheus-scraping-targets.PNG#full">
+<meta property="og:image" content="https://kdevkr.github.io/dev-ops/images/grafana-dashboard-import.PNG#full">
+<meta property="og:image" content="https://kdevkr.github.io/dev-ops/images/grafana-dashboard-stats.PNG#full">
+<meta property="article:published_time" content="2020-03-25T00:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="Prometheus">
+<meta property="article:tag" content="Grafana">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://prometheus.io/assets/architecture.png">
+
+<link rel="canonical" href="https://kdevkr.github.io/dev-ops/monitoring-metrics-with-prometheus-and-grafana/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>프로메테우스와 그라파나를 활용한 메트릭 모니터링 | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#프로메테우스"><span class="nav-number">1.</span> <span class="nav-text">프로메테우스</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#설치-및-구성"><span class="nav-number">1.1.</span> <span class="nav-text">설치 및 구성</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#그라파나"><span class="nav-number">2.</span> <span class="nav-text">그라파나</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#설치-및-구성-2"><span class="nav-number">2.1.</span> <span class="nav-text">설치 및 구성</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#프로메테우스와-그라파나"><span class="nav-number">3.</span> <span class="nav-text">프로메테우스와 그라파나</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#프로메테우스-데이터-소스-추가"><span class="nav-number">3.1.</span> <span class="nav-text">프로메테우스 데이터 소스 추가</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Boot-Actuator-메트릭-모니터링"><span class="nav-number">3.2.</span> <span class="nav-text">Spring Boot Actuator 메트릭 모니터링</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고"><span class="nav-number">4.</span> <span class="nav-text">참고</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/dev-ops/monitoring-metrics-with-prometheus-and-grafana/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          프로메테우스와 그라파나를 활용한 메트릭 모니터링
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-25T00:00:00Z">2020-03-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>오픈 소스 모니터링 시스템인 프로메테우스(Prometheus)와 오픈 소스 분석 시스템인 그라파나(Grafana)를 활용하면 메트릭에 대한 모니터링 대시보드를 구성할 수 있습니다.</p>
+<h2 id="프로메테우스">프로메테우스</h2>
+<p><img data-src="https://prometheus.io/assets/architecture.png" alt=""></p>
+<p><a href="https://prometheus.io/" target="_blank" rel="noopener">프로메테우스(Prometheus)</a>는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다.</p>
+<p>위 아키텍처 그림에서 Exporter는 프로메테우스가 수집할 수 있는 메트릭을 제공하는 에이전트입니다. 프로메테우스 조직에서 제공하는 공식 Exporter 뿐만 아니라 PostgreSQL 또는 <a href="https://micrometer.io/docs/registry/prometheus" target="_blank" rel="noopener">Micrometer</a>와 같은 <a href="https://prometheus.io/docs/instrumenting/exporters/" target="_blank" rel="noopener">서드 파티 Exporter</a>가 있습니다. 주로 사용되는 대부분의 시스템에 대한 Exporter가 있으니 찾아서 프로메테우스에 Exporter로 적용하면 됩니다.</p>
+<h3 id="설치-및-구성">설치 및 구성</h3>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run --name=prometheus -d -p 9090:9090 -v <span class="variable">$pwd</span>/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus</span><br></pre></td></tr></table></figure>
+<p>도커 이미지의 기본 구성 파일은 다음과 같습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line">  <span class="attr">scrape_interval:</span>     <span class="string">15s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line">  <span class="attr">evaluation_interval:</span> <span class="string">15s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line">  <span class="attr">alertmanagers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to '/metrics'</span></span><br><span class="line">    <span class="comment"># scheme defaults to 'http'.</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span> <span class="string">['localhost:9090']</span></span><br></pre></td></tr></table></figure>
+<h2 id="그라파나">그라파나</h2>
+<p><a href="https://grafana.com/grafana/" target="_blank" rel="noopener">그라파나(Grafana)</a>는 여러가지 데이터베이스에 저장된 메트릭을 시각화하여 보여주는 대시보드 솔루션입니다.</p>
+<p><a href="https://play.grafana.org/d/000000012/grafana-play-home?orgId=1" target="_blank" rel="noopener">라이브 데모</a></p>
+<p>그라파나는 대표적인 Graphite, InfluxDB, Prometheus, Elasticsearch, AWS CloudWatch 이외에도 30개가 넘는 <a href="https://grafana.com/grafana/plugins?direction=asc&amp;orderBy=weight&amp;type=datasource" target="_blank" rel="noopener">데이터 소스</a>를 지원합니다.</p>
+<h3 id="설치-및-구성-2">설치 및 구성</h3>
+<p>본 글에서는 간단하게 <a href="https://grafana.com/grafana/download?platform=docker" target="_blank" rel="noopener">도커 이미지</a>를 통해 그라파나 컨테이너를 실행합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run -d --name=grafana -p 3000:3000 grafana/grafana</span><br></pre></td></tr></table></figure>
+<p>설치가 완료되었으면 <a href="http://localhost:3000" target="_blank" rel="noopener">http://localhost:3000</a> 으로 접속하여 관리자 계정으로 로그인 후 초기 비밀번호를 변경합니다.</p>
+<blockquote>
+<p>관리자 계정명과 초기 비밀번호는 <code>admin</code>입니다.</p>
+</blockquote>
+<h2 id="프로메테우스와-그라파나">프로메테우스와 그라파나</h2>
+<p>프로메테우스에 저장된 메트릭을 그라파나를 활용하여 시각화할 수 있습니다.</p>
+<h3 id="프로메테우스-데이터-소스-추가">프로메테우스 데이터 소스 추가</h3>
+<p>그라파나 시스템에 접속하여 프로메테우스를 데이터 소스로 추가합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-datasource-prometheus-configuration.PNG#full" alt=""></p>
+<p>그라파나가 기본으로 제공하는 프로메테우스 대시보드를 선택하여 시각화된 프로메테우스 메트릭을 확인합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-datasource-prometheus-dashboard.PNG#full" alt=""></p>
+<h3 id="Spring-Boot-Actuator-메트릭-모니터링">Spring Boot Actuator 메트릭 모니터링</h3>
+<p>스프링 부트 액추에이터를 사용중인 경우 프로메테우스의 <a href="https://micrometer.io/docs/registry/prometheus" target="_blank" rel="noopener">Micromiter Exporter</a>를 쉽게 적용할 수 있습니다.</p>
+<h4 id="Micrometer-Registry-Prometheus">Micrometer Registry Prometheus</h4>
+<p>프로메테우스가 메트릭을 수집할 수 있도록 HTTP 엔드포인트를 구성합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">implementation <span class="string">'org.springframework.boot:spring-boot-starter-actuator'</span></span><br><span class="line">implementation <span class="string">'io.micrometer:micrometer-registry-prometheus'</span></span><br></pre></td></tr></table></figure>
+<p>두 의존성을 가지는 프로젝트를 생성한 뒤 기본 매니지먼트 서버를 비활성화하고 별도의 HTTP 엔드포인트를 구현합니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">server:</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">-1</span></span><br></pre></td></tr></table></figure>
+<p><code>micrometer-registry-prometheus</code>가 의존성으로 존재하면 자동으로 <code>PrometheusScrapeEndpoint</code> 빈이 컨텍스트에 등록됩니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/actuator"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActuatorEndpoint</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> PrometheusScrapeEndpoint prometheusScrapeEndpoint;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ActuatorEndpoint</span><span class="params">(PrometheusScrapeEndpoint prometheusScrapeEndpoint)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.prometheusScrapeEndpoint = prometheusScrapeEndpoint;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/prometheus"</span>, method = &#123;RequestMethod.GET, RequestMethod.POST&#125;, produces = MediaType.TEXT_PLAIN_VALUE)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title">metrics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ResponseEntity.ok(prometheusScrapeEndpoint.scrape());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://localhost:8080/actuator/prometheus" target="_blank" rel="noopener">http://localhost:8080/actuator/prometheus</a> 로 접속하면 다음과 같이 프로메테우스가 수집할 수 있는 메트릭이 출력됩니다.</p>
+<p><img data-src="/spring/images/spring-boot-actuator-prometheus-metrics.PNG#full" alt=""></p>
+<h4 id="Prometheus-Scrap-Configuration">Prometheus Scrap Configuration</h4>
+<p>프로메테우스가 엑추에이터가 제공하는 메트릭을 수집하도록 설정합니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">jvm</span></span><br><span class="line">  <span class="attr">honor_timestamps:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">scrape_interval:</span> <span class="string">15s</span></span><br><span class="line">  <span class="attr">scrape_timeout:</span> <span class="string">10s</span></span><br><span class="line">  <span class="attr">metrics_path:</span> <span class="string">/actuator/prometheus</span></span><br><span class="line">  <span class="attr">scheme:</span> <span class="string">http</span></span><br><span class="line">  <span class="attr">static_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">$&#123;your-host-ip&#125;:8080</span></span><br></pre></td></tr></table></figure>
+<p>프로메테우스를 재실행하면 수집 목록에 추가된 것을 확인할 수 있습니다.</p>
+<p><img data-src="/dev-ops/images/prometheus-scraping-targets.PNG#full" alt=""></p>
+<h4 id="JVM-Actuator-Dashboard">JVM Actuator Dashboard</h4>
+<p>그라파나 대시보드 중 <a href="https://grafana.com/grafana/dashboards/4701" target="_blank" rel="noopener">JVM (Micrometer)</a> 또는 <a href="https://grafana.com/grafana/dashboards/9568" target="_blank" rel="noopener">JVM (Actuator)</a>를 대시보드로 추가합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-dashboard-import.PNG#full" alt=""></p>
+<p>추가된 대시보드에 따라 메트릭을 시각화하여 모니터링 할 수 있습니다.</p>
+<p><img data-src="/dev-ops/images/grafana-dashboard-stats.PNG#full" alt=""></p>
+<p>스프링 부트 액추에이터 메트릭을 프로메테우스가 수집하며 그라파나를 통해 메트릭을 시각화할 수 있는 것을 확인했습니다.</p>
+<p>앞으로 쿠버네티스에 대한 모니터링과 알림 매니저(AlertManager)를 구성하여 슬랙 또는 이메일 등으로 알림을 받아볼 수 있습니다.</p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://prometheus.io/" target="_blank" rel="noopener">Prometheus</a></li>
+<li><a href="https://grafana.com/grafana/" target="_blank" rel="noopener">Grafana</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Prometheus/" rel="tag"># Prometheus</a>
+              <a href="/tags/Grafana/" rel="tag"># Grafana</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/vuejs/spring-boot-application-with-vuejs/" rel="prev" title="스프링 부트 애플리케이션과 VueJS 통합하기">
+      <i class="fa fa-chevron-left"></i> 스프링 부트 애플리케이션과 VueJS 통합하기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/database/postgresql/install/" rel="next" title="PostgreSQL - Install">
+      PostgreSQL - Install <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

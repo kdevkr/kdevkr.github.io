@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="잠만보의 개발 블로그">
+<meta property="og:url" content="https://kdevkr.github.io/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:locale" content="ko_KR">
+<meta property="article:author" content="Mambo">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kdevkr.github.io/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content index posts-expand">
+          
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/dev-ops/docker/install-docker-engine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/dev-ops/docker/install-docker-engine/" class="post-title-link" itemprop="url">Docker - 도커 엔진 설치하기</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-16 12:37:57" itemprop="dateCreated datePublished" datetime="2020-07-16T12:37:57Z">2020-07-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>도커 컨테이너 환경을 경험해보기 위해서는 컨테이너 구동을 위한 도커 엔진을 설치해야합니다. MacOS 또는 윈도우 환경에서는 Docker Desktop을 설치하면 자동으로 도커 엔진이 설치됩니다. 다만, 우분투와 같은 리눅스 서버는 도커 데스크탑을 제공하지 않으므로 직접 바이너리 패키지를 받아 설치해야합니다.</p>
+<h2 id="도커-엔진-설치하기">도커 엔진 설치하기</h2>
+<p>우분투 리눅스에서 도커 엔진을 설치하기 위해서는 다음의 64비트 버전이 필요합니다.</p>
+<ul>
+<li>Ubuntu Focal 20.04</li>
+<li>Ubuntu Bionic 18.04</li>
+<li>Ubuntu Xenial 16.04</li>
+</ul>
+<p>Docker Engine is supported on x86_64 (or amd64), armhf, and arm64 architectures.</p>
+<h3 id="리파지토리-설정">리파지토리 설정</h3>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br><span class="line"></span><br><span class="line">$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="line"></span><br><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">   <span class="variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="string">   stable"</span></span><br></pre></td></tr></table></figure>
+<h3 id="도커-엔진-패키지-설치">도커 엔진 패키지 설치</h3>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<h2 id="도커-컴포즈-설치하기">도커 컴포즈 설치하기</h2>
+<p>리눅스에서 도커 컴포즈를 이용하기 위해서는 별도로 설치해야합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo curl -L <span class="string">"https://github.com/docker/compose/releases/download/1.26.2/docker-compose-<span class="variable">$(uname -s)</span>-<span class="variable">$(uname -m)</span>"</span> -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">$ sudo chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line">$ docker-compose --version</span><br><span class="line">docker-compose version 1.26.2, build eefe0d31</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/dev-ops/docker/use-storage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/dev-ops/docker/use-storage/" class="post-title-link" itemprop="url">Docker - 스토리지 사용하기</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-14 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-14T00:00:00Z">2020-07-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>기본적으로 도커 컨테이너에서 발생하는 데이터는 컨테이너 공간에 저장되어 컨테이너가 삭제되는 순간 데이터가 같이 삭제되는 구조를 가지고 있습니다. 이에 도커는 볼륨이라는 매커니즘을 제공하여 컨테이너가 삭제되어도 데이터를 유지할 수 있도록 영속성을 제공합니다.</p>
+<h2 id="스토리지">스토리지</h2>
+<p>도커에서 데이터를 유지하기 위해 제공하는 스토리지 유형에는 볼륨과 마운트가 있습니다. 일반적으로 호스트 영역과 연결하는 것이 바인드 마운트이며 볼륨은 도커가 관리하는 영역에 데이터를 유지하는 공간을 만들어내는 것입니다.</p>
+<p><img data-src="https://docs.docker.com/storage/images/types-of-mounts.png" alt=""></p>
+<p><code>볼륨 영역</code>(리눅스에서 /var/lib/docker/volumes/)은 도커에서 관리하기 때문에 도커 프로세스가 아닌 경우 데이터를 수정할 수 없게 됩니다. 따라서, 도커에서 데이터를 유지하는 가장 좋은 방법은 볼륨을 사용하는 것일 수 있습니다.</p>
+<p><code>바인드 마운트</code>는 호스트 디렉토리를 사용하기 때문에 언제든지 영역에 접근하고 데이터를 수정할 수 있습니다. 단, 호스트 프로세스에서 해당 영역을 사용하거나 접근할 수 있기 때문에 이를 인지하고 사용해야 합니다.</p>
+<p><code>tmpfs 마운트</code>는 호스트 메모리 영역에 데이터를 저장합니다. 예를 들어, 쿠버네티스 스크릿의 경우 비밀번호, OAuth 토큰, SSH 키와 같은 민감한 정보들은 호스트 메모리에 저장합니다.</p>
+<h3 id="바인드-마운트-연습하기">바인드 마운트 연습하기</h3>
+<p>도커 이미지로 구성한 <a href="https://github.com/kdevkr/docker-kdb" target="_blank" rel="noopener">Docker KDB+</a>는 KDB+를 우분투 컨테이너에서 구동하도록 되어있습니다. KDB+가 실행될 때 호출되는 <code>q.q</code>라는 q 스크립트 파일이 있습니다. 기본으로 이미지에 포함되어 있는 q.q 스크립트 대신에 실행할 스크립트를 바인드 마운트를 통해 연결할 수 있습니다.</p>
+<p><code>Hello Mambo!</code>라는 메시지를 KDB+ 실행할 때 출력하기 위하여 q.q 파일을 만들어 다음과 같이 스크립트를 작성합니다. 이 파일은 <code>/home/mambo/kdb</code> 경로에 있다고 가정합니다.</p>
+<figure class="highlight q"><figcaption><span>q.q</span></figcaption><table><tr><td class="code"><pre><span class="line">.<span class="built_in">system</span>.out.println:&#123;<span class="number">-1</span> <span class="built_in">raze</span>[<span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P],<span class="string">" "</span>,x;&#125;;</span><br><span class="line">.<span class="built_in">system</span>.out.println <span class="string">"Hello Mambo!"</span>;</span><br></pre></td></tr></table></figure>
+<p>그런 다음 도커 컨테이너를 실행할 때 <code>-v</code> 옵션으로 앞서 작성한 q.q 파일을 이미지에 존재하는 파일로 대체하도록 지정합니다.</p>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -d --name kdb -v /home/mambo/kdb/q.q:/root/q/q.q -e ON_STARTUP=/root/q/q.q -p 5000:5000 kdb</span></span><br></pre></td></tr></table></figure>
+<p>그러면 해당 스크립트 파일이 대체되어 다음과 같이 컨테이너 로그로 출력되는 것을 확인할 수 있습니다.</p>
+<figure class="highlight zsh"><table><tr><td class="code"><pre><span class="line">$ docker logs kdb</span><br><span class="line">0</span><br><span class="line">Welcome to kdb+ 32bit edition</span><br><span class="line">For support please see http://groups.google.com/d/forum/personal-kdbplus</span><br><span class="line">Tutorials can be found at http://code.kx.com</span><br><span class="line">To <span class="built_in">exit</span>, <span class="built_in">type</span> \\</span><br><span class="line">To remove this startup msg, edit q.q</span><br><span class="line">2020.07.15 12:14:13 Hello Mambo!</span><br></pre></td></tr></table></figure>
+<h3 id="볼륨-마운트-연습하기">볼륨 마운트 연습하기</h3>
+<p>도커 컨테이너에 볼륨을 마운트하는 것을 해보겠습니다. 먼저 <code>docker inspect</code> 명령으로 컨테이너에서 사용중인 볼륨이 있는지를 확인합니다.</p>
+<p>컨테이너에 대한 마운트 부분을 추출하기 위하여 <a href="https://stackoverflow.com/questions/30133664/how-do-you-list-volumes-in-docker-containers" target="_blank" rel="noopener">How do you list volumes in docker containers?</a>에서 알려주는대로 명령어를 실행합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker inspect -f <span class="string">'&#123;&#123; .Mounts &#125;&#125;'</span> kdb</span><br><span class="line">[&#123;<span class="built_in">bind</span>  /home/mambo/kdb/q.q /root/q/q.q   <span class="literal">true</span> rprivate&#125;]</span><br></pre></td></tr></table></figure>
+<p>현재 KDB 컨테이너는 바인드 마운트에 대한 정보는 있으나 볼륨에 대한 정보는 존재하지 않음을 확인할 수 있습니다. 결국 KDB+ 데이터는 컨테이너 영역에 존재하므로 데이터를 유지하기 위하여 볼륨을 사용해야 합니다.</p>
+<p>우선 KDB 컨테이너에서 사용할 볼륨을 생성합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker create volume --name kdb-volume</span><br><span class="line">$ docker volume ls</span><br><span class="line">DRIVER      VOLUME NAME</span><br><span class="line"><span class="built_in">local</span>       kdb-volume</span><br></pre></td></tr></table></figure>
+<p>기존 KDB 컨테이너를 삭제한 후 앞서 생성하였던 KDB 볼륨을 마운트합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker stop kdb</span><br><span class="line">$ docker rm kdb</span><br><span class="line"></span><br><span class="line">$ docker run -d --name kdb -v kdb-volume:/root/q -v /home/mambo/kdb/q.q:/root/q/q.q -e ON_STARTUP=/root/q/q.q -p 5000:5000 kdb</span><br></pre></td></tr></table></figure>
+<p>다시 컨테이너에 대한 마운트 부분을 확인하면 다음과 같이 볼륨을 사용하고 있는 것을 알 수 있습니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker inspect -f <span class="string">'&#123;&#123; .Mounts &#125;&#125;'</span> kdb                                                                                       </span><br><span class="line">[&#123;volume kdb-volume /var/lib/docker/volumes/kdb-volume/_data /root/q <span class="built_in">local</span> z <span class="literal">true</span> &#125; &#123;<span class="built_in">bind</span>  /home/mambo/kdb/q.q /root/q/q.q   <span class="literal">true</span> rprivate&#125;]</span><br></pre></td></tr></table></figure>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://docs.docker.com/storage/" target="_blank" rel="noopener">Manage data in Docker</a></li>
+<li><a href="https://stackoverflow.com/questions/30133664/how-do-you-list-volumes-in-docker-containers" target="_blank" rel="noopener">How do you list volumes in docker containers?</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/system-common-logging/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/kdb/system-common-logging/" class="post-title-link" itemprop="url">KDB - System Common Logging</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-08 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-08T00:00:00Z">2020-07-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>KDB+/q 스크립트에서 로그 메시지를 출력하는 방법과 함께 <code>Log4j</code>와 같이 로그 레벨 기반의 로깅 시스템을 적용하기 위한 방법에 대해서 알아봅니다.</p>
+<h2 id="System-Common-Logging">System Common Logging</h2>
+<h3 id="Write-in-Console">Write in Console</h3>
+<p>KDB+에서 콘솔에 값을 출력하기 위한 방법은 여러가지가 있습니다.</p>
+<ul>
+<li><a href="https://code.kx.com/q/ref/display/" target="_blank" rel="noopener">!Display</a></li>
+<li><a href="https://code.kx.com/q/ref/show/" target="_blank" rel="noopener">show</a></li>
+<li>-1 또는 -2</li>
+</ul>
+<p>기본 <code>q.q</code> 파일의 내용에서처럼 <code>-1</code>과 <code>-2</code>를 이용하여 문자열을 출력할 수 있습니다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="number">-1</span><span class="string">"Welcome to kdb+ 32bit edition\nFor support please see http://groups.google.com/d/forum/personal-kdbplus\nTutorials can be found at http://code.kx.com\nTo exit, type \\\\\nTo remove this startup msg, edit q.q"</span>;</span><br></pre></td></tr></table></figure>
+<p>단, <code>!Display</code> 와 <code>show</code>는 따옴표가 그대로 출력되므로 감안하고 사용하시기 바랍니다.</p>
+<h3 id="System-out-println">System.out.println</h3>
+<p>자바에서 가장 기본적인 로그 출력 함수는 <code>System.out.println</code>입니다. 그렇다면 q 스크립트에서 사용할 기본 메시지 출력 함수를 만들어봅시다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line">.<span class="built_in">system</span>.out.println:&#123;<span class="number">-1</span> <span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P,<span class="string">" "</span>,x;&#125;</span><br><span class="line">/ join strings using <span class="built_in">raze</span></span><br><span class="line">.<span class="built_in">system</span>.out.println:&#123;<span class="number">-1</span> <span class="built_in">raze</span>[(<span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P;<span class="string">" "</span>;x)];&#125;</span><br></pre></td></tr></table></figure>
+<p>로컬 타임스탬프에서 날짜와 시간을 추출하여 하나의 문자열로 만든 후 파라미터로 받은 문자열 x를 결합하여 콘솔로 출력합니다.</p>
+<h3 id="Logging-with-LogLevel">Logging with LogLevel</h3>
+<p>기본 메시지 출력 함수를 정의해보았으나 이를 사용하기에는 뭔가 좀 불편한 부분이 있습니다. <code>Log4j</code>와 같은 라이브러리는 로그 레벨에 따라 로그를 출력할지 말지를 결정합니다. 우리도 기본 메시지 출력 함수를 로그 레벨에 따라 출력되도록 확장해봅시다.</p>
+<p>먼저, <code>.system</code> 네임스페이스에 데이터베이스에 대한 로그 레벨 변수를 만들겠습니다.<br>
+로그 레벨은 다음과 같이 error, info, warn, debug, trace로 구성합니다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line">\d .<span class="built_in">system</span></span><br><span class="line">logLevel: <span class="number">0</span></span><br><span class="line"></span><br><span class="line">/ 로그 출력 형식</span><br><span class="line"><span class="number">-1</span> <span class="built_in">raze</span>[<span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P],<span class="string">" "</span>,<span class="string">"INFO"</span>,<span class="string">" - "</span>,<span class="string">"Hello World"</span>]</span><br></pre></td></tr></table></figure>
+<p>로그 출력함수는 <code>날짜 시간 로그레벨 - 메시지</code> 형식으로 출력합니다. 이제 로그레벨별로 로그 함수를 정의합니다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line">.<span class="built_in">system</span>.log:&#123;if[x &lt;= .<span class="built_in">system</span>.logLevel;<span class="number">-1</span> <span class="built_in">raze</span>[<span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P],<span class="string">" "</span>,y,<span class="string">" - "</span>,z]&#125;</span><br><span class="line"></span><br><span class="line">.log.error: .<span class="built_in">system</span>.log[<span class="number">0</span>;<span class="string">"[ERROR]"</span>]</span><br><span class="line">.log.info: .<span class="built_in">system</span>.log[<span class="number">1</span>;<span class="string">"[INFO]"</span>]</span><br><span class="line">.log.warn: .<span class="built_in">system</span>.log[<span class="number">2</span>;<span class="string">"[WARN]"</span>]</span><br><span class="line">.log.debug: .<span class="built_in">system</span>.log[<span class="number">3</span>;<span class="string">"[DEBUG]"</span>]</span><br><span class="line">.log.trace: .<span class="built_in">system</span>.log[<span class="number">4</span>;<span class="string">"[TRACE]"</span>]</span><br></pre></td></tr></table></figure>
+<p>그러면 이제 시스템 로그 레벨을 디버그로 설정하고 디버그 단위로 출력하면 시스템 로그로 남기게 됩니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">.<span class="built_in">system</span>.logLevel:<span class="number">3</span></span><br><span class="line">.log.debug <span class="string">"Hello World"</span></span><br><span class="line"></span><br><span class="line">/ <span class="number">2020.07</span><span class="number">.08</span> <span class="number">09</span>:<span class="number">10</span>:<span class="number">54</span> [DEBUG] - Hello World</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/postgresql/monitoring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/postgresql/monitoring/" class="post-title-link" itemprop="url">PostgreSQL - Monitoring</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-08 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-08T00:00:00Z">2020-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>저는 PostgreSQL를 주 관계형 데이터베이스로 사용하고 있습니다. 최근 프로메테우스와 그라파나를 연계하여 모니터링 대시보드를 구성하는 것을 연습해보고 있습니다. <code>PostgresSQL</code>를 위한 <a href="https://github.com/wrouesnel/postgres_exporter" target="_blank" rel="noopener">Prometheus Exporter</a>를 제공하고 있으므로 이를 활용해보도록 하겠습니다.</p>
+<p>본 글은 프로메테우스와 그라파나가 설치되어있다는 가정하에 진행됩니다. 만약, 프로메테우스 또는 그라파나가 구성되어있지 않다면 다음 링크들을 참고하여 설치하시기 바랍니다.</p>
+<ul>
+<li><a href="https://prometheus.io/docs/prometheus/latest/installation/#using-docker" target="_blank" rel="noopener">Prometheus Installation Using Docker</a></li>
+<li><a href="https://grafana.com/docs/grafana/latest/installation/docker/" target="_blank" rel="noopener">Run Grafana Docker image</a></li>
+</ul>
+<h2 id="PostgreSQL-Server-Exporter">PostgreSQL Server Exporter</h2>
+<p><a href="https://github.com/wrouesnel/postgres_exporter" target="_blank" rel="noopener">wrouesnel/postgres_exporter</a>는 포스트그레 서버 매트릭을 위한 Prometheus Exporter 입니다. 도커를 이용하면 쉽게 PostgreSQL Exporter를 실행할 수 있습니다.</p>
+<h3 id="도커-이미지-설치">도커 이미지 설치</h3>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -d --name=postgres_exporter --net=host -e DATA_SOURCE_NAME=<span class="string">"postgresql://postgres:password@localhost:5432/postgres?sslmode=disable"</span> wrouesnel/postgres_exporter</span></span><br></pre></td></tr></table></figure>
+<p>이제 <a href="http://localhost:9187/metrics" target="_blank" rel="noopener">http://localhost:9187/metrics</a> 에서 PostgreSQL 서버 매트릭을 확인할 수 있습니다.</p>
+<p><img data-src="/database/postgresql/images/prometheus-exporter-metrics.png" alt=""></p>
+<h3 id="프로메테우스-타겟-적용">프로메테우스 타겟 적용</h3>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">metrics_path:</span> <span class="string">/metrics</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">localhost:9187</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/database/postgresql/images/prometheus-targets.png" alt=""></p>
+<h3 id="그라파나-대시보드-추가">그라파나 대시보드 추가</h3>
+<p>Grafana Labs에서 <code>wrouesnel/postgres_exporter</code>으로 수집된 매트릭을 기반으로 구성한 대시보드를 찾아 추가합니다.</p>
+<p>저는 <a href="https://grafana.com/grafana/dashboards/9628" target="_blank" rel="noopener">PostgreSQL Database by Lucas Estienne</a> 대시보드를 추가하겠습니다.</p>
+<p><img data-src="/database/postgresql/images/grafana-dashboard.png" alt=""></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/prometheus-exporter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/kdb/prometheus-exporter/" class="post-title-link" itemprop="url">KDB - Prometheus Exporter</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-03T00:00:00Z">2020-07-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>2020년 5월에 <a href="https://github.com/KxSystems/prometheus-kdb-exporter" target="_blank" rel="noopener">KxSystems/prometheus-kdb-exporter</a> 프로젝트가 추가되어 프로메테우스로 KDB+ 에 대한 모니터링을 할 수 있게 되었습니다.</p>
+<p>이번 글에서는 Prometheus Exporter를 KDB+에 적용하고 모니터링하는 것에 대하여 설명하겠습니다.</p>
+<h2 id="🛠-Prometheus-Exporter-for-KDB">🛠 Prometheus Exporter for KDB+</h2>
+<p>프로젝트 예제에서는 KDB+를 구동하면서 Exporter를 실행하는 것을 설명합니다. 하지만, 저는 KDB+ 구동과 상관없이 Prometheus Exporter를 원할때 추가할 수 있도록 스크립트를 불러오도록 하겠습니다.</p>
+<h3 id="Dynamic-Load-exporter-q">Dynamic Load exporter.q</h3>
+<p>프로젝트에서 제공하는 <code>exporter.q</code>와 <code>extract.q</code>를 불러올 수 있도록 파일을 복사합니다.</p>
+<p>저는 KDB+ 구동 시 실행되는 <code>q.q</code> 파일 하위에 <code>prometheus-exporter</code>라는 폴더를 만들었습니다.</p>
+<p><img data-src="/database/kdb/images/prometheus-exporter-dir.png" alt=""></p>
+<p>q 에서는 <code>\</code> 또는 <code>system</code> 을 통해 시스템 명령어를 수행할 수 있습니다.</p>
+<p>예를 들어, q에서 바라보는 현재 디렉토리가 <code>q/data</code>라고 한다면 다음과 같이 디렉토리를 이동하고 파일을 불러올 수 있게 됩니다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="built_in">system</span> <span class="string">"cd ../prometheus-exporter"</span></span><br><span class="line"><span class="built_in">system</span> <span class="string">"l exporter.q"</span></span><br><span class="line"><span class="built_in">system</span> <span class="string">"cd ../data"</span></span><br></pre></td></tr></table></figure>
+<h3 id="KDB-Prometheus-Metrics">KDB+ Prometheus Metrics</h3>
+<p>exporter.q가 정상적으로 불러와졌다면 브라우저로 <code>/metrics</code> 경로로 접속하여 Prometheus Metrics를 확인할 수 있습니다.</p>
+<p><img data-src="/database/kdb/images/kdb-prometheus-metrics.png" alt=""></p>
+<p>이제 프로메테우스가 이 주소를 통해 매트릭을 수집할 수 있도록 설정하면 됩니다.</p>
+<figure class="highlight"><figcaption><span>prometheus.yaml</span></figcaption><table><tr><td class="code"><pre><span class="line">global:</span><br><span class="line">  scrape_interval: 15s</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  evaluation_interval: 15s</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets: []</span><br><span class="line">    scheme: http</span><br><span class="line">    timeout: 10s</span><br><span class="line">    api_version: v1</span><br><span class="line">scrape_configs:</span><br><span class="line">- job_name: prometheus</span><br><span class="line">  honor_timestamps: true</span><br><span class="line">  scrape_interval: 1m</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  metrics_path: /metrics</span><br><span class="line">  scheme: http</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets:</span><br><span class="line">    - localhost:9090</span><br><span class="line"></span><br><span class="line">- job_name: kdb</span><br><span class="line">  honor_timestamps: true</span><br><span class="line">  scrape_interval: 15s</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets:</span><br><span class="line">    - localhost:5000</span><br></pre></td></tr></table></figure>
+<h2 id="🖥-Grafana-Dashboard">🖥 Grafana Dashboard</h2>
+<p>다음의 링크를 통해 그라파나 대시보드를 구성할 수 있는 json 정보를 확인할 수 있습니다.</p>
+<p><a href="https://github.com/KxSystems/prometheus-kdb-exporter/blob/master/examples/DockerCompose/grafana-config/dashboards/kdb-dashboard.json" target="_blank" rel="noopener">https://github.com/KxSystems/prometheus-kdb-exporter/blob/master/examples/DockerCompose/grafana-config/dashboards/kdb-dashboard.json</a></p>
+<p>그라파나 대시보드 Import 기능을 통해 KDB+ 대시보드를 구성합니다.</p>
+<p><img data-src="/database/kdb/images/import-grafana-dashboard-for-kdb.png" alt=""></p>
+<p>이제 그라파나가 프로메테우스로 수집된 KDB+ 정보를 시각화 할 수 있습니다.</p>
+<p><img data-src="/database/kdb/images/grafana-kdb-dashbaord.png" alt=""></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/postgresql/install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/postgresql/install/" class="post-title-link" itemprop="url">PostgreSQL - Install</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-02 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-02T00:00:00Z">2020-07-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="들어가며">들어가며</h2>
+<p>PostgreSQL에 입문하기 위한 가장 첫단계는 PostgreSQL을 설치하는 것입니다.</p>
+<p><a href="https://www.postgresql.org/download/" target="_blank" rel="noopener">공식 홈페이지</a>에서 여러가지 운영체제 환경에 대한 바이너리 패키지를 제공합니다.</p>
+<h2 id="설치">설치</h2>
+<p>실제 애플리케이션 프로덕션 환경이 아니라면 직접 <code>바이너리 패키지</code>를 다운받아 설치하는 것보다는 <code>도커 컨테이너</code>로 구동하는 것이 좋습니다.</p>
+<h3 id="도커-이미지-다운로드">도커 이미지 다운로드</h3>
+<p>도커 <code>pull</code> 명령어를 통해 PostgreSQL 이미지를 다운로드하고 컨테이너를 실행합니다.</p>
+<figure class="highlight zsh"><table><tr><td class="code"><pre><span class="line">$ sudo docker pull postgres:9.6.18-alpine</span><br><span class="line">$ sudo docker run --name postgres -d -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:9.6.18-alpine</span><br></pre></td></tr></table></figure>
+<p>PostgreSQL 도커 컨테이너가 실행되었다면 다음과 같이 쉘로 접속합니다.</p>
+<figure class="highlight zsh"><table><tr><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it postgres /bin/bash</span><br></pre></td></tr></table></figure>
+<p><code>root</code> 사용자에서 <code>postgres</code> 사용자로 전환하여 데이터베이스에 접근합니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cat /etc/passwd | grep postgre</span><br><span class="line">postgres:...:/var/lib/postgresql:/bin/sh</span><br><span class="line"></span><br><span class="line">$ su postgres</span><br><span class="line">$ psql</span><br></pre></td></tr></table></figure>
+<h3 id="CREATE-DATABASE-AND-USER">CREATE DATABASE AND USER</h3>
+<p>데이터베이스를 생성하고 데이터베이스에 접근할 수 있는 사용자를 만들어봅니다.</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> test_db;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> mambo <span class="keyword">WITH</span> <span class="keyword">ENCRYPTED</span> <span class="keyword">PASSWORD</span> <span class="string">'mambo'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> <span class="keyword">DATABASE</span> test_db <span class="keyword">TO</span> mambo;</span><br></pre></td></tr></table></figure>
+<h3 id="PostgreSQL-Interactive-Terminal">PostgreSQL Interactive Terminal</h3>
+<p>이제 psql을 이용하여 <code>mambo</code> 사용자로 <code>test_db</code> 데이터베이스에 접속할 수 있습니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ psql test_db -U mambo</span><br></pre></td></tr></table></figure>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://www.postgresql.org/docs/current/sql-createuser.html" target="_blank" rel="noopener">PostgreSQL - CREATE USER</a></li>
+<li><a href="https://www.postgresql.org/docs/current/sql-createdatabase.html" target="_blank" rel="noopener">PostgreSQL - CREATE DATABASE</a></li>
+<li><a href="https://www.postgresql.org/docs/current/sql-grant.html" target="_blank" rel="noopener">PostgreSQL - GRANT</a></li>
+<li><a href="https://www.postgresql.org/docs/current/app-psql.html" target="_blank" rel="noopener">PostgreSQL - psql</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/dev-ops/monitoring-metrics-with-prometheus-and-grafana/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/dev-ops/monitoring-metrics-with-prometheus-and-grafana/" class="post-title-link" itemprop="url">프로메테우스와 그라파나를 활용한 메트릭 모니터링</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-25T00:00:00Z">2020-03-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>오픈 소스 모니터링 시스템인 프로메테우스(Prometheus)와 오픈 소스 분석 시스템인 그라파나(Grafana)를 활용하면 메트릭에 대한 모니터링 대시보드를 구성할 수 있습니다.</p>
+<h2 id="프로메테우스">프로메테우스</h2>
+<p><img data-src="https://prometheus.io/assets/architecture.png" alt=""></p>
+<p><a href="https://prometheus.io/" target="_blank" rel="noopener">프로메테우스(Prometheus)</a>는 메트릭을 수집(Scraping)하여 시계열(Timeseries) 데이터베이스에 저장하는 모니터링 솔루션입니다.</p>
+<p>위 아키텍처 그림에서 Exporter는 프로메테우스가 수집할 수 있는 메트릭을 제공하는 에이전트입니다. 프로메테우스 조직에서 제공하는 공식 Exporter 뿐만 아니라 PostgreSQL 또는 <a href="https://micrometer.io/docs/registry/prometheus" target="_blank" rel="noopener">Micrometer</a>와 같은 <a href="https://prometheus.io/docs/instrumenting/exporters/" target="_blank" rel="noopener">서드 파티 Exporter</a>가 있습니다. 주로 사용되는 대부분의 시스템에 대한 Exporter가 있으니 찾아서 프로메테우스에 Exporter로 적용하면 됩니다.</p>
+<h3 id="설치-및-구성">설치 및 구성</h3>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run --name=prometheus -d -p 9090:9090 -v <span class="variable">$pwd</span>/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus</span><br></pre></td></tr></table></figure>
+<p>도커 이미지의 기본 구성 파일은 다음과 같습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line">  <span class="attr">scrape_interval:</span>     <span class="string">15s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line">  <span class="attr">evaluation_interval:</span> <span class="string">15s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line">  <span class="attr">alertmanagers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to '/metrics'</span></span><br><span class="line">    <span class="comment"># scheme defaults to 'http'.</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">targets:</span> <span class="string">['localhost:9090']</span></span><br></pre></td></tr></table></figure>
+<h2 id="그라파나">그라파나</h2>
+<p><a href="https://grafana.com/grafana/" target="_blank" rel="noopener">그라파나(Grafana)</a>는 여러가지 데이터베이스에 저장된 메트릭을 시각화하여 보여주는 대시보드 솔루션입니다.</p>
+<p><a href="https://play.grafana.org/d/000000012/grafana-play-home?orgId=1" target="_blank" rel="noopener">라이브 데모</a></p>
+<p>그라파나는 대표적인 Graphite, InfluxDB, Prometheus, Elasticsearch, AWS CloudWatch 이외에도 30개가 넘는 <a href="https://grafana.com/grafana/plugins?direction=asc&amp;orderBy=weight&amp;type=datasource" target="_blank" rel="noopener">데이터 소스</a>를 지원합니다.</p>
+<h3 id="설치-및-구성-2">설치 및 구성</h3>
+<p>본 글에서는 간단하게 <a href="https://grafana.com/grafana/download?platform=docker" target="_blank" rel="noopener">도커 이미지</a>를 통해 그라파나 컨테이너를 실행합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run -d --name=grafana -p 3000:3000 grafana/grafana</span><br></pre></td></tr></table></figure>
+<p>설치가 완료되었으면 <a href="http://localhost:3000" target="_blank" rel="noopener">http://localhost:3000</a> 으로 접속하여 관리자 계정으로 로그인 후 초기 비밀번호를 변경합니다.</p>
+<blockquote>
+<p>관리자 계정명과 초기 비밀번호는 <code>admin</code>입니다.</p>
+</blockquote>
+<h2 id="프로메테우스와-그라파나">프로메테우스와 그라파나</h2>
+<p>프로메테우스에 저장된 메트릭을 그라파나를 활용하여 시각화할 수 있습니다.</p>
+<h3 id="프로메테우스-데이터-소스-추가">프로메테우스 데이터 소스 추가</h3>
+<p>그라파나 시스템에 접속하여 프로메테우스를 데이터 소스로 추가합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-datasource-prometheus-configuration.PNG#full" alt=""></p>
+<p>그라파나가 기본으로 제공하는 프로메테우스 대시보드를 선택하여 시각화된 프로메테우스 메트릭을 확인합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-datasource-prometheus-dashboard.PNG#full" alt=""></p>
+<h3 id="Spring-Boot-Actuator-메트릭-모니터링">Spring Boot Actuator 메트릭 모니터링</h3>
+<p>스프링 부트 액추에이터를 사용중인 경우 프로메테우스의 <a href="https://micrometer.io/docs/registry/prometheus" target="_blank" rel="noopener">Micromiter Exporter</a>를 쉽게 적용할 수 있습니다.</p>
+<h4 id="Micrometer-Registry-Prometheus">Micrometer Registry Prometheus</h4>
+<p>프로메테우스가 메트릭을 수집할 수 있도록 HTTP 엔드포인트를 구성합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">implementation <span class="string">'org.springframework.boot:spring-boot-starter-actuator'</span></span><br><span class="line">implementation <span class="string">'io.micrometer:micrometer-registry-prometheus'</span></span><br></pre></td></tr></table></figure>
+<p>두 의존성을 가지는 프로젝트를 생성한 뒤 기본 매니지먼트 서버를 비활성화하고 별도의 HTTP 엔드포인트를 구현합니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">server:</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">-1</span></span><br></pre></td></tr></table></figure>
+<p><code>micrometer-registry-prometheus</code>가 의존성으로 존재하면 자동으로 <code>PrometheusScrapeEndpoint</code> 빈이 컨텍스트에 등록됩니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/actuator"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActuatorEndpoint</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> PrometheusScrapeEndpoint prometheusScrapeEndpoint;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ActuatorEndpoint</span><span class="params">(PrometheusScrapeEndpoint prometheusScrapeEndpoint)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.prometheusScrapeEndpoint = prometheusScrapeEndpoint;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/prometheus"</span>, method = &#123;RequestMethod.GET, RequestMethod.POST&#125;, produces = MediaType.TEXT_PLAIN_VALUE)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title">metrics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ResponseEntity.ok(prometheusScrapeEndpoint.scrape());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://localhost:8080/actuator/prometheus" target="_blank" rel="noopener">http://localhost:8080/actuator/prometheus</a> 로 접속하면 다음과 같이 프로메테우스가 수집할 수 있는 메트릭이 출력됩니다.</p>
+<p><img data-src="/spring/images/spring-boot-actuator-prometheus-metrics.PNG#full" alt=""></p>
+<h4 id="Prometheus-Scrap-Configuration">Prometheus Scrap Configuration</h4>
+<p>프로메테우스가 엑추에이터가 제공하는 메트릭을 수집하도록 설정합니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">jvm</span></span><br><span class="line">  <span class="attr">honor_timestamps:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">scrape_interval:</span> <span class="string">15s</span></span><br><span class="line">  <span class="attr">scrape_timeout:</span> <span class="string">10s</span></span><br><span class="line">  <span class="attr">metrics_path:</span> <span class="string">/actuator/prometheus</span></span><br><span class="line">  <span class="attr">scheme:</span> <span class="string">http</span></span><br><span class="line">  <span class="attr">static_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">targets:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">$&#123;your-host-ip&#125;:8080</span></span><br></pre></td></tr></table></figure>
+<p>프로메테우스를 재실행하면 수집 목록에 추가된 것을 확인할 수 있습니다.</p>
+<p><img data-src="/dev-ops/images/prometheus-scraping-targets.PNG#full" alt=""></p>
+<h4 id="JVM-Actuator-Dashboard">JVM Actuator Dashboard</h4>
+<p>그라파나 대시보드 중 <a href="https://grafana.com/grafana/dashboards/4701" target="_blank" rel="noopener">JVM (Micrometer)</a> 또는 <a href="https://grafana.com/grafana/dashboards/9568" target="_blank" rel="noopener">JVM (Actuator)</a>를 대시보드로 추가합니다.</p>
+<p><img data-src="/dev-ops/images/grafana-dashboard-import.PNG#full" alt=""></p>
+<p>추가된 대시보드에 따라 메트릭을 시각화하여 모니터링 할 수 있습니다.</p>
+<p><img data-src="/dev-ops/images/grafana-dashboard-stats.PNG#full" alt=""></p>
+<p>스프링 부트 액추에이터 메트릭을 프로메테우스가 수집하며 그라파나를 통해 메트릭을 시각화할 수 있는 것을 확인했습니다.</p>
+<p>앞으로 쿠버네티스에 대한 모니터링과 알림 매니저(AlertManager)를 구성하여 슬랙 또는 이메일 등으로 알림을 받아볼 수 있습니다.</p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://prometheus.io/" target="_blank" rel="noopener">Prometheus</a></li>
+<li><a href="https://grafana.com/grafana/" target="_blank" rel="noopener">Grafana</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/vuejs/spring-boot-application-with-vuejs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/vuejs/spring-boot-application-with-vuejs/" class="post-title-link" itemprop="url">스프링 부트 애플리케이션과 VueJS 통합하기</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-08 13:00:00" itemprop="dateCreated datePublished" datetime="2020-03-08T13:00:00Z">2020-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="스프링-부트-애플리케이션과-VueJS-통합하기">스프링 부트 애플리케이션과 VueJS 통합하기</h2>
+<p>본 프로젝트는 스프링 부트 애플리케이션과 Webpack과 같은 번들러와 함께 개발할 경우에 어떻게 수시로 번들링되는 파일을 스프링 부트 애플리케이션에서 배포할 수 있는지를 알아보는 예제입니다.</p>
+<h3 id="스프링-애플리케이션의-배포">스프링 애플리케이션의 배포</h3>
+<p>먼저, 스프링 애플리케이션이 어떻게 정적 파일을 배포하는지를 이해해야 합니다. 스프링 애플리케이션은 톰캣과 같은 WAS와 함께 동작합니다. 클래스패스에 있는 정적 파일을 빌드 과정에서 포함되어 톰캣이 정적 파일로 배포할 수 있습니다.</p>
+<blockquote>
+<p>현재 프로젝트 경로에 존재하는 파일이 톰캣이 배포할 수 있는 파일과 다를 수 있다는 말입니다. 이해하셨나요?</p>
+</blockquote>
+<h4 id="Update-clasess-and-resources">Update clasess and resources</h4>
+<p>첫번째 방법은 스프링 부트 애플리케이션에 포함된 내장 톰캣이 배포하는 정적 파일을 갱신하는 것입니다.</p>
+<p><img data-src="/spring/images/configuration-update-classes-and-resources.PNG" alt=""></p>
+<p>Webpack에서 만드는 번들링 파일을 현재 프로젝트의 클래스패스에 생성되게 하면 됩니다. 그러면 현재 클래스패스의 리소스가 변경되었다고 감지하여 애플리케이션을 업데이트하게 됩니다.</p>
+<p>그런데 단점이 있습니다. 클래스패스의 리소스가 변경되는 것을 감지하고 다시 리소스를 업데이트하기 까지의 시간이 걸립니다.</p>
+<h3 id="Webpack-프록시-서버">Webpack 프록시 서버</h3>
+<p>톰캣이 배포하는 리소스를 변경하는 것은 하나의 방법이지만 수시로 번들링되는 것을 빠른 시간안에 적용하여 확인하는 것에는 어려움이 있습니다. 그래서 다른 방법으로 이 번들링되는 파일들을 대신 처리하여 주는 프록시 서버를 만드는 것입니다.</p>
+<p>프록시 서버를 구성하는 방법은 두가지가 있습니다.</p>
+<ul>
+<li>webpack + express + <a href="https://github.com/webpack/webpack-dev-middleware" target="_blank" rel="noopener">webpack-dev-middleware</a></li>
+<li><a href="https://github.com/webpack/webpack-dev-server" target="_blank" rel="noopener">webpack-dev-server</a></li>
+</ul>
+<p>하나는 Express 노드 서버를 구성하고 <code>webpack-dev-middleware</code>를 적용하는 것입니다.</p>
+<p>두번째는 webpack 그룹이 제공하는 <code>webpack-dev-server</code>를 이용하는 것입니다.</p>
+<blockquote>
+<p>어느 방법이든지 상관 없습니다. 행위는 똑같으니까요</p>
+</blockquote>
+<h4 id="webpack-dev-server">webpack-dev-server</h4>
+<p>저는 기존에 사용하던 express 서버가 없으므로 간단하게 webpack-dev-server를 활용합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i -D webpack-dev-server</span><br></pre></td></tr></table></figure>
+<p>webpack-dev-server 모듈을 설치하고 Webpack의 devServer 설정을 구성합니다.</p>
+<blockquote>
+<p>webpack-dev-server가 webpack.config.js의 devServer 설정에 따라 실행됩니다.</p>
+</blockquote>
+<p><strong>webpack.config.js</strong></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">    output: &#123;</span><br><span class="line">        filename: <span class="string">'[name].js'</span>,</span><br><span class="line">        path: path.resolve(__dirname, <span class="string">'src/main/resources/dist'</span>),</span><br><span class="line">        publicPath: <span class="string">'/'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    devServer: &#123;</span><br><span class="line">        inline: <span class="literal">true</span>,</span><br><span class="line">        hot: <span class="literal">true</span>,</span><br><span class="line">        contentBase: path.resolve(__dirname, <span class="string">'src/main/resources/dist'</span>),</span><br><span class="line">        publicPath: <span class="string">'/dist/'</span>,</span><br><span class="line">        filename: <span class="string">'[name].js'</span>,</span><br><span class="line">        host:  <span class="string">'localhost'</span>,</span><br><span class="line">        port: <span class="number">8081</span>,</span><br><span class="line">        proxy: &#123;</span><br><span class="line">            <span class="string">'**'</span>: <span class="string">'http://localhost:8080/'</span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>기본 번들링 파일이 생성되는 위치는 <code>src/main/resources/dist</code>로 빌드시에도 번들링된 파일을 배포할 수 있도록 하였으며 <code>webpack-dev-server</code>는 <code>src/main/resources/dist</code>에 있는 정적 파일들을 <code>/dist/</code>를 기준으로 배포하게 합니다.</p>
+<p>그리고 모든 경로에 대하여 애플리케이션 실행 주소를 바라보게 <code>proxy</code> 설정을 합니다.</p>
+<p><strong>package.json</strong></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">        <span class="attr">"webpack"</span>: <span class="string">"webpack --config webpack.config.js"</span>,</span><br><span class="line">        <span class="attr">"dev"</span>: <span class="string">"webpack -d --config webpack.config.js --watch"</span>,</span><br><span class="line">        <span class="attr">"dev:server"</span>: <span class="string">"webpack-dev-server"</span></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>webpack-dev-server를 구동할 수 있도록 NPM 스크립트를 만들고 실행합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm run dev:server</span><br><span class="line"></span><br><span class="line">&gt; webpack-dev-server</span><br><span class="line"></span><br><span class="line">i ｢wds｣: Project is running at http://localhost:8081/</span><br><span class="line">i ｢wds｣: webpack output is served from /dist/</span><br><span class="line">i ｢wds｣: Content not from webpack is served from C:\Users\K\git\spring-demo-vuejs\src\main\resources\dist</span><br></pre></td></tr></table></figure>
+<h4 id="프록시-서버를-통해-개발하기">프록시 서버를 통해 개발하기</h4>
+<p>프록시 서버도 구동되었으니 브라우저에서 <code>8081</code> 포트로 접근하여 개발하면 됩니다.</p>
+<p>네트워크 탭으로 확인해보면 프록시 서버가 <code>/dist/</code> 경로를 기준으로 번들링된 파일을 제공하는 것을 확인할 수 있습니다.</p>
+<p><img data-src="/vuejs/images/webpack-dev-server-network.PNG" alt=""></p>
+<h3 id="초기-데이터-적재">초기 데이터 적재</h3>
+<p>많은 분들이 궁금해하시는 부분일 것 같습니다. 애석하게도 번들링되는 파일에 애플리케이션의 데이터를 적재하는 것은 불가능 합니다. 그래서 번들링되는 스크립트에서 데이터를 불러올 수 있도록 몇가지 방법을 고려해봐야합니다.</p>
+<h4 id="Object-defineProperty-그리고-freeze">Object.defineProperty 그리고 freeze</h4>
+<p>첫번째 방법은 스프링 애플리케이션이 제공하는 <code>.html</code> 파일에 스크립트 블록을 만들어 변경되지 않는 오브젝트를 만드는 것입니다.</p>
+<ul>
+<li>Object.defineProperty : 오브젝트의 새로운 속성을 정의합니다.</li>
+<li>Object.freeze : 오브젝트를 변경되지 않도록 동결시킵니다.</li>
+</ul>
+<p>다음은 위 정적 함수들을 사용하여 변경되지 않는 데이터 속성을 만드는 예제입니다.</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">Object</span>.defineProperty(<span class="built_in">window</span>, <span class="string">'state'</span>, &#123;</span></span><br><span class="line"><span class="actionscript">        enumerable: <span class="literal">false</span>,</span></span><br><span class="line"><span class="actionscript">        configurable: <span class="literal">false</span>,</span></span><br><span class="line"><span class="actionscript">        writable: <span class="literal">false</span>,</span></span><br><span class="line">        value: &#123;</span><br><span class="line"><span class="actionscript">            id: <span class="string">"$&#123;state.id&#125;"</span>,</span></span><br><span class="line"><span class="actionscript">            name: <span class="string">"$&#123;state.name&#125;"</span>,</span></span><br><span class="line"><span class="actionscript">            origin: <span class="string">"$&#123;state.origin&#125;"</span></span></span><br><span class="line"><span class="actionscript">            <span class="comment">// ,$&#123;_csrf.parameterName&#125;: "$&#123;_csrf.token&#125;"</span></span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"><span class="javascript">    <span class="built_in">Object</span>.freeze(<span class="built_in">window</span>.state);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>state</code>는 애플리케이션이 제공하는 모델 속성입니다.</p>
+<blockquote>
+<p>본 예제에서는 프리마커 템플릿 엔진을 사용하고 있습니다.</p>
+</blockquote>
+<h4 id="초기-데이터-API-호출">초기 데이터 API 호출</h4>
+<p>두번째는 스크립트 파일 로드시 초기 데이터를 받아오는 API를 호출하는 방법입니다.</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    data() &#123;</span><br><span class="line">        <span class="keyword">this</span>.getState()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            state: <span class="built_in">window</span>.state</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">        getState() &#123;</span><br><span class="line">            <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">state</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                <span class="keyword">let</span> response = <span class="keyword">await</span> $http.get(<span class="string">'/api/state'</span>)</span><br><span class="line">                <span class="keyword">return</span> response</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            state().then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.state = res.data</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="끝마치며">끝마치며</h2>
+<p>제가 설명하는 방법이 올바른 것은 아닙니다. 다만, 이런 방법이 있다는 것을 알고 도입을 고려하시기 바랍니다. 또한, 어떠한 경우든 사용자의 개인정보와 같은 보호가 필요한 데이터는 초기 데이터로 적재하지 않도록 하시기 바랍니다.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/java-client/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/kdb/kdb-tutorial/java-client/" class="post-title-link" itemprop="url">KDB 튜토리얼 - 자바 클라이언트</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-08 09:00:00" itemprop="dateCreated datePublished" datetime="2020-03-08T09:00:00Z">2020-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ol>
+<li><a href="../install-and-connection">KDB 튜토리얼 - 설치 및 접속</a></li>
+<li><a href="../assign-variables-and-tables">KDB 튜토리얼 - 변수 할당 및 테이블 생성</a></li>
+<li><a href="../q-sql">KDB 튜토리얼 - Q-SQL</a></li>
+<li><a href="../grouping-and-aggregation">KDB 튜토리얼 - 그룹핑과 집계</a></li>
+<li><a href="../file">KDB 튜토리얼 - 파일 다루기</a></li>
+<li><a href="../namespace">KDB 튜토리얼 - 네임스페이스</a></li>
+<li><a href="../function">KDB 튜토리얼 - 함수</a></li>
+<li><strong>KDB 튜토리얼 - 자바 클라이언트</strong></li>
+</ol>
+<h2 id="들어가며">들어가며</h2>
+<p>우리는 KDB+에 직접 접근하여 변수 할당, 테이블 생성, 함수 생성, 데이터 저장등을 해왔습니다. 자바 애플리케이션에서 일반적인 데이터베이스로 접근할 때 데이터소스를 이용하는 것처럼 다양한 애플리케이션에서 사용할 수 있는 클라이언트 API를 제공합니다.</p>
+<p>이번 시간에는 자바 애플리케이션에서 KDB+에 접근하여 함수를 호출하거나 응답을 받을 수 있는 <a href="https://github.com/KxSystems/javakdb" target="_blank" rel="noopener">javakdb</a> 클라이언트를 사용해보고자 합니다.</p>
+<h2 id="c-java">c.java</h2>
+<p><code>c.java</code>는 TCP/IP로 kdb+와 Java 간의 통신을 위한 드라이버입니다.</p>
+<p>이 드라이버는 다음과 같은 기능을 제공합니다.</p>
+<ul>
+<li>kdb+ 쿼리</li>
+<li>kdb+ 퍼블리셔 구독</li>
+<li>kdb+ 컨슈머로 퍼블리싱</li>
+</ul>
+<p>그 중에서 우리는 kdb+ 쿼리 기능을 사용할 것입니다.</p>
+<h3 id="Connection">Connection</h3>
+<p><code>c</code> 생성자는 새로운 커넥션 인스턴스를 만듭니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">c c = <span class="keyword">new</span> c(<span class="string">"localhost"</span>,<span class="number">5600</span>,<span class="string">"kdev:kdev"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="메시지-보내기">메시지 보내기</h3>
+<p><code>c.k</code> 또는 <code>c.ks</code> 함수를 통해 <code>c</code> 클라이언트가 KDB+로 메시지를 보내고 응답을 받을 수 있습니다.</p>
+<ul>
+<li>c.k() : 동기 메시지</li>
+<li>c.ks() : 비동기 메시지</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">c.ks(<span class="string">"-1\"Hello World\""</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// in log</span></span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure>
+<h3 id="메시지-응답-가져오기">메시지 응답 가져오기</h3>
+<p><code>.Q.w[]</code> 메시지를 보내어 현재 메모리 사용량 통계 정보를 응답받아 표시해보겠습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">".Q.w[]"</span>);</span><br><span class="line"><span class="keyword">if</span>(k <span class="keyword">instanceof</span> kx.c.Dict) &#123;</span><br><span class="line">    kx.c.Dict dict = (kx.c.Dict) k;</span><br><span class="line"></span><br><span class="line">    String[] keys = (String[]) dict.x;</span><br><span class="line">    <span class="keyword">long</span>[] values = (<span class="keyword">long</span>[]) dict.y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">        String key = keys[i];</span><br><span class="line">        <span class="keyword">long</span> value = values[i];</span><br><span class="line">        System.out.println(key + <span class="string">":"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// system console</span></span><br><span class="line">used:<span class="number">775792</span></span><br><span class="line">heap:<span class="number">67108864</span></span><br><span class="line">peak:<span class="number">67108864</span></span><br><span class="line">wmax:<span class="number">0</span></span><br><span class="line">mmap:<span class="number">0</span></span><br><span class="line">mphy:<span class="number">2085904384</span></span><br><span class="line">syms:<span class="number">799</span></span><br><span class="line">symw:<span class="number">29324</span></span><br></pre></td></tr></table></figure>
+<p><code>.Q.w[]</code> 결과는 사전이므로 <code>kx.c.Dict</code> 오브젝트로 키와 값을 구분하여 가져올 수 있습니다.</p>
+<h4 id="JSON-응답">JSON 응답</h4>
+<p>메시지 응답이 문자열인 경우 char[] 오브젝트를 결과로 받습니다. char[]를 String으로 변환하면 JSON String으로 가져올 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">".j.j select from patient where sex = `female, state = `deceased"</span>);</span><br><span class="line">String r = <span class="keyword">new</span> String((<span class="keyword">char</span>[]) k);</span><br><span class="line">System.out.println(r);</span><br></pre></td></tr></table></figure>
+<p><em>System Console</em></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">[&#123;<span class="attr">"id"</span>:<span class="number">38</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1963</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-18"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-23"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">205</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1965</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Gyeongsangbuk-do"</span>,<span class="attr">"group"</span>:<span class="string">"Cheongdo Daenam Hospital"</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-22"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-21"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">925</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1951</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Gyeongsangbuk-do"</span>,<span class="attr">"group"</span>:<span class="string">"Shincheonji Church"</span>,<span class="attr">"infection_reason"</span>:<span class="string">"contact with patient"</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-25"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-24"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">2614</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1943</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-29"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">2769</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1934</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-29"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-02"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">4046</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1962</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;]</span><br></pre></td></tr></table></figure>
+<h4 id="Table-응답">Table 응답</h4>
+<p>메시지 응답이 테이블일 경우에는 <code>kx.c.Flip</code> 오브젝트로 컬럼과 값을 구분하여 가져올 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">"select from time"</span>);</span><br><span class="line">kx.c.Flip r = (kx.c.Flip) k;</span><br><span class="line">String[] x = r.x;</span><br><span class="line">Object[] y = r.y;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>왠만하면 JSON 으로 변환해서 응답받고 이를 자바 빈 오브젝트로 변환하는게 좋을 것 같습니다.</p>
+</blockquote>
+<p>이제 우리는 자바 애플리케이션에서도 메시지를 호출하여 함수를 실행할수도 있고 응답을 받을 수도 있습니다.</p>
+<p>이상으로 KDB 튜토리얼을 마칩니다.</p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://code.kx.com/v2/interfaces/java-client-for-q/" target="_blank" rel="noopener">Using Java with kdb+</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/database/kdb/kdb-tutorial/function/" class="post-title-link" itemprop="url">KDB 튜토리얼 - 함수</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-07 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-07T00:00:00Z">2020-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ol>
+<li><a href="../install-and-connection">KDB 튜토리얼 - 설치 및 접속</a></li>
+<li><a href="../assign-variables-and-tables">KDB 튜토리얼 - 변수 할당 및 테이블 생성</a></li>
+<li><a href="../q-sql">KDB 튜토리얼 - Q-SQL</a></li>
+<li><a href="../grouping-and-aggregation">KDB 튜토리얼 - 그룹핑과 집계</a></li>
+<li><a href="../file">KDB 튜토리얼 - 파일 다루기</a></li>
+<li><a href="../namespace">KDB 튜토리얼 - 네임스페이스</a></li>
+<li><strong>KDB 튜토리얼 - 함수</strong></li>
+<li><a href="../java-client">KDB 튜토리얼 - 자바 클라이언트</a></li>
+</ol>
+<h2 id="들어가며">들어가며</h2>
+<p>이번 시간에는 일반적인 데이터베이스의 Function을 만드는 것 처럼 KDB+에 함수를 만들고 호출하는 것을 알아봅니다.</p>
+<h2 id="함수">함수</h2>
+<p>함수 또한 변수와 테이블처럼 컨택스트에 할당할 수 있습니다.</p>
+<h3 id="함수-정의하기">함수 정의하기</h3>
+<p>함수 정의는 중괄호와 매개변수로 이루어진 표현식입니다.</p>
+<p>{[p1;…;pn] e1; …; em}</p>
+<p>다음은 라디안 함수를 정의한 것입니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">PI: acos <span class="number">-1</span></span><br><span class="line">radian:&#123;x * PI % <span class="number">180.0</span>&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>매개변수 <code>[]</code>는 생략할 수 있습니다.</p>
+</blockquote>
+<h4 id="함수로-데이터-추가하기">함수로 데이터 추가하기</h4>
+<p>함수 안에서 테이블에 데이터를 추가하려면 <code>table,:data</code>를 이용해야합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">.fn.insert.patient:&#123;patient,:x <span class="number">1</span>b&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="함수-사용하기">함수 사용하기</h3>
+<p>함수를 사용할때 매개변수는 대괄호에 표현합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">radian[<span class="number">37.547889</span>]</span><br><span class="line"><span class="number">0.6553343</span></span><br><span class="line"></span><br><span class="line">radian <span class="number">37.547889</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>매개변수가 하나일 경우 대괄호를 생략할 수 있어요</p>
+</blockquote>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://code.kx.com/q4m3/6_Functions/" target="_blank" rel="noopener">Q Mortals - Functions</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="다음 페이지"></i></a>
+  </nav>
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

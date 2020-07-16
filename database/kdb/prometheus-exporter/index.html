@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="들어가며 2020년 5월에 KxSystems&#x2F;prometheus-kdb-exporter 프로젝트가 추가되어 프로메테우스로 KDB+ 에 대한 모니터링을 할 수 있게 되었습니다. 이번 글에서는 Prometheus Exporter를 KDB+에 적용하고 모니터링하는 것에 대하여 설명하겠습니다. 🛠 Prometheus Exporter for KDB+ 프로젝트 예제">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDB - Prometheus Exporter">
+<meta property="og:url" content="https://kdevkr.github.io/database/kdb/prometheus-exporter/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="들어가며 2020년 5월에 KxSystems&#x2F;prometheus-kdb-exporter 프로젝트가 추가되어 프로메테우스로 KDB+ 에 대한 모니터링을 할 수 있게 되었습니다. 이번 글에서는 Prometheus Exporter를 KDB+에 적용하고 모니터링하는 것에 대하여 설명하겠습니다. 🛠 Prometheus Exporter for KDB+ 프로젝트 예제">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://kdevkr.github.io/database/kdb/images/prometheus-exporter-dir.png">
+<meta property="og:image" content="https://kdevkr.github.io/database/kdb/images/kdb-prometheus-metrics.png">
+<meta property="og:image" content="https://kdevkr.github.io/database/kdb/images/import-grafana-dashboard-for-kdb.png">
+<meta property="og:image" content="https://kdevkr.github.io/database/kdb/images/grafana-kdb-dashbaord.png">
+<meta property="article:published_time" content="2020-07-03T00:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="Prometheus">
+<meta property="article:tag" content="Grafana">
+<meta property="article:tag" content="KDB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kdevkr.github.io/database/kdb/images/prometheus-exporter-dir.png">
+
+<link rel="canonical" href="https://kdevkr.github.io/database/kdb/prometheus-exporter/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>KDB - Prometheus Exporter | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#들어가며"><span class="nav-number">1.</span> <span class="nav-text">들어가며</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#🛠-Prometheus-Exporter-for-KDB"><span class="nav-number">2.</span> <span class="nav-text">🛠 Prometheus Exporter for KDB+</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dynamic-Load-exporter-q"><span class="nav-number">2.1.</span> <span class="nav-text">Dynamic Load exporter.q</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KDB-Prometheus-Metrics"><span class="nav-number">2.2.</span> <span class="nav-text">KDB+ Prometheus Metrics</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#🖥-Grafana-Dashboard"><span class="nav-number">3.</span> <span class="nav-text">🖥 Grafana Dashboard</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/prometheus-exporter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KDB - Prometheus Exporter
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-03T00:00:00Z">2020-07-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="들어가며">들어가며</h2>
+<p>2020년 5월에 <a href="https://github.com/KxSystems/prometheus-kdb-exporter" target="_blank" rel="noopener">KxSystems/prometheus-kdb-exporter</a> 프로젝트가 추가되어 프로메테우스로 KDB+ 에 대한 모니터링을 할 수 있게 되었습니다.</p>
+<p>이번 글에서는 Prometheus Exporter를 KDB+에 적용하고 모니터링하는 것에 대하여 설명하겠습니다.</p>
+<h2 id="🛠-Prometheus-Exporter-for-KDB">🛠 Prometheus Exporter for KDB+</h2>
+<p>프로젝트 예제에서는 KDB+를 구동하면서 Exporter를 실행하는 것을 설명합니다. 하지만, 저는 KDB+ 구동과 상관없이 Prometheus Exporter를 원할때 추가할 수 있도록 스크립트를 불러오도록 하겠습니다.</p>
+<h3 id="Dynamic-Load-exporter-q">Dynamic Load exporter.q</h3>
+<p>프로젝트에서 제공하는 <code>exporter.q</code>와 <code>extract.q</code>를 불러올 수 있도록 파일을 복사합니다.</p>
+<p>저는 KDB+ 구동 시 실행되는 <code>q.q</code> 파일 하위에 <code>prometheus-exporter</code>라는 폴더를 만들었습니다.</p>
+<p><img data-src="/database/kdb/images/prometheus-exporter-dir.png" alt=""></p>
+<p>q 에서는 <code>\</code> 또는 <code>system</code> 을 통해 시스템 명령어를 수행할 수 있습니다.</p>
+<p>예를 들어, q에서 바라보는 현재 디렉토리가 <code>q/data</code>라고 한다면 다음과 같이 디렉토리를 이동하고 파일을 불러올 수 있게 됩니다.</p>
+<figure class="highlight q"><figcaption><span>kdb+/q</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="built_in">system</span> <span class="string">"cd ../prometheus-exporter"</span></span><br><span class="line"><span class="built_in">system</span> <span class="string">"l exporter.q"</span></span><br><span class="line"><span class="built_in">system</span> <span class="string">"cd ../data"</span></span><br></pre></td></tr></table></figure>
+<h3 id="KDB-Prometheus-Metrics">KDB+ Prometheus Metrics</h3>
+<p>exporter.q가 정상적으로 불러와졌다면 브라우저로 <code>/metrics</code> 경로로 접속하여 Prometheus Metrics를 확인할 수 있습니다.</p>
+<p><img data-src="/database/kdb/images/kdb-prometheus-metrics.png" alt=""></p>
+<p>이제 프로메테우스가 이 주소를 통해 매트릭을 수집할 수 있도록 설정하면 됩니다.</p>
+<figure class="highlight"><figcaption><span>prometheus.yaml</span></figcaption><table><tr><td class="code"><pre><span class="line">global:</span><br><span class="line">  scrape_interval: 15s</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  evaluation_interval: 15s</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets: []</span><br><span class="line">    scheme: http</span><br><span class="line">    timeout: 10s</span><br><span class="line">    api_version: v1</span><br><span class="line">scrape_configs:</span><br><span class="line">- job_name: prometheus</span><br><span class="line">  honor_timestamps: true</span><br><span class="line">  scrape_interval: 1m</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  metrics_path: /metrics</span><br><span class="line">  scheme: http</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets:</span><br><span class="line">    - localhost:9090</span><br><span class="line"></span><br><span class="line">- job_name: kdb</span><br><span class="line">  honor_timestamps: true</span><br><span class="line">  scrape_interval: 15s</span><br><span class="line">  scrape_timeout: 10s</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets:</span><br><span class="line">    - localhost:5000</span><br></pre></td></tr></table></figure>
+<h2 id="🖥-Grafana-Dashboard">🖥 Grafana Dashboard</h2>
+<p>다음의 링크를 통해 그라파나 대시보드를 구성할 수 있는 json 정보를 확인할 수 있습니다.</p>
+<p><a href="https://github.com/KxSystems/prometheus-kdb-exporter/blob/master/examples/DockerCompose/grafana-config/dashboards/kdb-dashboard.json" target="_blank" rel="noopener">https://github.com/KxSystems/prometheus-kdb-exporter/blob/master/examples/DockerCompose/grafana-config/dashboards/kdb-dashboard.json</a></p>
+<p>그라파나 대시보드 Import 기능을 통해 KDB+ 대시보드를 구성합니다.</p>
+<p><img data-src="/database/kdb/images/import-grafana-dashboard-for-kdb.png" alt=""></p>
+<p>이제 그라파나가 프로메테우스로 수집된 KDB+ 정보를 시각화 할 수 있습니다.</p>
+<p><img data-src="/database/kdb/images/grafana-kdb-dashbaord.png" alt=""></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Prometheus/" rel="tag"># Prometheus</a>
+              <a href="/tags/Grafana/" rel="tag"># Grafana</a>
+              <a href="/tags/KDB/" rel="tag"># KDB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/database/postgresql/install/" rel="prev" title="PostgreSQL - Install">
+      <i class="fa fa-chevron-left"></i> PostgreSQL - Install
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/database/postgresql/monitoring/" rel="next" title="PostgreSQL - Monitoring">
+      PostgreSQL - Monitoring <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

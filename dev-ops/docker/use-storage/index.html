@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="들어가며 기본적으로 도커 컨테이너에서 발생하는 데이터는 컨테이너 공간에 저장되어 컨테이너가 삭제되는 순간 데이터가 같이 삭제되는 구조를 가지고 있습니다. 이에 도커는 볼륨이라는 매커니즘을 제공하여 컨테이너가 삭제되어도 데이터를 유지할 수 있도록 영속성을 제공합니다. 스토리지 도커에서 데이터를 유지하기 위해 제공하는 스토리지 유형에는 볼륨과 마운트가 있습니다">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker - 스토리지 사용하기">
+<meta property="og:url" content="https://kdevkr.github.io/dev-ops/docker/use-storage/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="들어가며 기본적으로 도커 컨테이너에서 발생하는 데이터는 컨테이너 공간에 저장되어 컨테이너가 삭제되는 순간 데이터가 같이 삭제되는 구조를 가지고 있습니다. 이에 도커는 볼륨이라는 매커니즘을 제공하여 컨테이너가 삭제되어도 데이터를 유지할 수 있도록 영속성을 제공합니다. 스토리지 도커에서 데이터를 유지하기 위해 제공하는 스토리지 유형에는 볼륨과 마운트가 있습니다">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://docs.docker.com/storage/images/types-of-mounts.png">
+<meta property="article:published_time" content="2020-07-14T00:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Volume">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://docs.docker.com/storage/images/types-of-mounts.png">
+
+<link rel="canonical" href="https://kdevkr.github.io/dev-ops/docker/use-storage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>Docker - 스토리지 사용하기 | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#들어가며"><span class="nav-number">1.</span> <span class="nav-text">들어가며</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#스토리지"><span class="nav-number">2.</span> <span class="nav-text">스토리지</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#바인드-마운트-연습하기"><span class="nav-number">2.1.</span> <span class="nav-text">바인드 마운트 연습하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#볼륨-마운트-연습하기"><span class="nav-number">2.2.</span> <span class="nav-text">볼륨 마운트 연습하기</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고"><span class="nav-number">3.</span> <span class="nav-text">참고</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/dev-ops/docker/use-storage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker - 스토리지 사용하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-07-14 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-14T00:00:00Z">2020-07-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="들어가며">들어가며</h2>
+<p>기본적으로 도커 컨테이너에서 발생하는 데이터는 컨테이너 공간에 저장되어 컨테이너가 삭제되는 순간 데이터가 같이 삭제되는 구조를 가지고 있습니다. 이에 도커는 볼륨이라는 매커니즘을 제공하여 컨테이너가 삭제되어도 데이터를 유지할 수 있도록 영속성을 제공합니다.</p>
+<h2 id="스토리지">스토리지</h2>
+<p>도커에서 데이터를 유지하기 위해 제공하는 스토리지 유형에는 볼륨과 마운트가 있습니다. 일반적으로 호스트 영역과 연결하는 것이 바인드 마운트이며 볼륨은 도커가 관리하는 영역에 데이터를 유지하는 공간을 만들어내는 것입니다.</p>
+<p><img data-src="https://docs.docker.com/storage/images/types-of-mounts.png" alt=""></p>
+<p><code>볼륨 영역</code>(리눅스에서 /var/lib/docker/volumes/)은 도커에서 관리하기 때문에 도커 프로세스가 아닌 경우 데이터를 수정할 수 없게 됩니다. 따라서, 도커에서 데이터를 유지하는 가장 좋은 방법은 볼륨을 사용하는 것일 수 있습니다.</p>
+<p><code>바인드 마운트</code>는 호스트 디렉토리를 사용하기 때문에 언제든지 영역에 접근하고 데이터를 수정할 수 있습니다. 단, 호스트 프로세스에서 해당 영역을 사용하거나 접근할 수 있기 때문에 이를 인지하고 사용해야 합니다.</p>
+<p><code>tmpfs 마운트</code>는 호스트 메모리 영역에 데이터를 저장합니다. 예를 들어, 쿠버네티스 스크릿의 경우 비밀번호, OAuth 토큰, SSH 키와 같은 민감한 정보들은 호스트 메모리에 저장합니다.</p>
+<h3 id="바인드-마운트-연습하기">바인드 마운트 연습하기</h3>
+<p>도커 이미지로 구성한 <a href="https://github.com/kdevkr/docker-kdb" target="_blank" rel="noopener">Docker KDB+</a>는 KDB+를 우분투 컨테이너에서 구동하도록 되어있습니다. KDB+가 실행될 때 호출되는 <code>q.q</code>라는 q 스크립트 파일이 있습니다. 기본으로 이미지에 포함되어 있는 q.q 스크립트 대신에 실행할 스크립트를 바인드 마운트를 통해 연결할 수 있습니다.</p>
+<p><code>Hello Mambo!</code>라는 메시지를 KDB+ 실행할 때 출력하기 위하여 q.q 파일을 만들어 다음과 같이 스크립트를 작성합니다. 이 파일은 <code>/home/mambo/kdb</code> 경로에 있다고 가정합니다.</p>
+<figure class="highlight q"><figcaption><span>q.q</span></figcaption><table><tr><td class="code"><pre><span class="line">.<span class="built_in">system</span>.out.println:&#123;<span class="number">-1</span> <span class="built_in">raze</span>[<span class="string">" "</span><span class="built_in">sv</span> <span class="built_in">string</span><span class="type">`date</span><span class="type">`second</span>$.z.P],<span class="string">" "</span>,x;&#125;;</span><br><span class="line">.<span class="built_in">system</span>.out.println <span class="string">"Hello Mambo!"</span>;</span><br></pre></td></tr></table></figure>
+<p>그런 다음 도커 컨테이너를 실행할 때 <code>-v</code> 옵션으로 앞서 작성한 q.q 파일을 이미지에 존재하는 파일로 대체하도록 지정합니다.</p>
+<figure class="highlight docker"><table><tr><td class="code"><pre><span class="line">docker <span class="keyword">run</span><span class="bash"> -d --name kdb -v /home/mambo/kdb/q.q:/root/q/q.q -e ON_STARTUP=/root/q/q.q -p 5000:5000 kdb</span></span><br></pre></td></tr></table></figure>
+<p>그러면 해당 스크립트 파일이 대체되어 다음과 같이 컨테이너 로그로 출력되는 것을 확인할 수 있습니다.</p>
+<figure class="highlight zsh"><table><tr><td class="code"><pre><span class="line">$ docker logs kdb</span><br><span class="line">0</span><br><span class="line">Welcome to kdb+ 32bit edition</span><br><span class="line">For support please see http://groups.google.com/d/forum/personal-kdbplus</span><br><span class="line">Tutorials can be found at http://code.kx.com</span><br><span class="line">To <span class="built_in">exit</span>, <span class="built_in">type</span> \\</span><br><span class="line">To remove this startup msg, edit q.q</span><br><span class="line">2020.07.15 12:14:13 Hello Mambo!</span><br></pre></td></tr></table></figure>
+<h3 id="볼륨-마운트-연습하기">볼륨 마운트 연습하기</h3>
+<p>도커 컨테이너에 볼륨을 마운트하는 것을 해보겠습니다. 먼저 <code>docker inspect</code> 명령으로 컨테이너에서 사용중인 볼륨이 있는지를 확인합니다.</p>
+<p>컨테이너에 대한 마운트 부분을 추출하기 위하여 <a href="https://stackoverflow.com/questions/30133664/how-do-you-list-volumes-in-docker-containers" target="_blank" rel="noopener">How do you list volumes in docker containers?</a>에서 알려주는대로 명령어를 실행합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker inspect -f <span class="string">'&#123;&#123; .Mounts &#125;&#125;'</span> kdb</span><br><span class="line">[&#123;<span class="built_in">bind</span>  /home/mambo/kdb/q.q /root/q/q.q   <span class="literal">true</span> rprivate&#125;]</span><br></pre></td></tr></table></figure>
+<p>현재 KDB 컨테이너는 바인드 마운트에 대한 정보는 있으나 볼륨에 대한 정보는 존재하지 않음을 확인할 수 있습니다. 결국 KDB+ 데이터는 컨테이너 영역에 존재하므로 데이터를 유지하기 위하여 볼륨을 사용해야 합니다.</p>
+<p>우선 KDB 컨테이너에서 사용할 볼륨을 생성합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker create volume --name kdb-volume</span><br><span class="line">$ docker volume ls</span><br><span class="line">DRIVER      VOLUME NAME</span><br><span class="line"><span class="built_in">local</span>       kdb-volume</span><br></pre></td></tr></table></figure>
+<p>기존 KDB 컨테이너를 삭제한 후 앞서 생성하였던 KDB 볼륨을 마운트합니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker stop kdb</span><br><span class="line">$ docker rm kdb</span><br><span class="line"></span><br><span class="line">$ docker run -d --name kdb -v kdb-volume:/root/q -v /home/mambo/kdb/q.q:/root/q/q.q -e ON_STARTUP=/root/q/q.q -p 5000:5000 kdb</span><br></pre></td></tr></table></figure>
+<p>다시 컨테이너에 대한 마운트 부분을 확인하면 다음과 같이 볼륨을 사용하고 있는 것을 알 수 있습니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ docker inspect -f <span class="string">'&#123;&#123; .Mounts &#125;&#125;'</span> kdb                                                                                       </span><br><span class="line">[&#123;volume kdb-volume /var/lib/docker/volumes/kdb-volume/_data /root/q <span class="built_in">local</span> z <span class="literal">true</span> &#125; &#123;<span class="built_in">bind</span>  /home/mambo/kdb/q.q /root/q/q.q   <span class="literal">true</span> rprivate&#125;]</span><br></pre></td></tr></table></figure>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://docs.docker.com/storage/" target="_blank" rel="noopener">Manage data in Docker</a></li>
+<li><a href="https://stackoverflow.com/questions/30133664/how-do-you-list-volumes-in-docker-containers" target="_blank" rel="noopener">How do you list volumes in docker containers?</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Volume/" rel="tag"># Volume</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/database/kdb/system-common-logging/" rel="prev" title="KDB - System Common Logging">
+      <i class="fa fa-chevron-left"></i> KDB - System Common Logging
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/dev-ops/docker/install-docker-engine/" rel="next" title="Docker - 도커 엔진 설치하기">
+      Docker - 도커 엔진 설치하기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

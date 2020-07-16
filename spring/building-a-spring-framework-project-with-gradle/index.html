@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고 톰캣으로 웹 애플리케이션을 구동해보자. 그래들 프로젝트 만들기 인텔리제이로 스프링 프레임워크를 선택해서 프로젝트를 만들게 되면 메이븐과 XML 기반으로 구성된다. 이렇게 하지 않고 프로젝트 관리 도구로 그래들을 사용하면서 스프링 웹 MVC 애플리케이션을 구성하자. 일단 먼저 그래들">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gradle과 함께 스프링 프레임워크 프로젝트 구성하기">
+<meta property="og:url" content="https://kdevkr.github.io/spring/building-a-spring-framework-project-with-gradle/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고 톰캣으로 웹 애플리케이션을 구동해보자. 그래들 프로젝트 만들기 인텔리제이로 스프링 프레임워크를 선택해서 프로젝트를 만들게 되면 메이븐과 XML 기반으로 구성된다. 이렇게 하지 않고 프로젝트 관리 도구로 그래들을 사용하면서 스프링 웹 MVC 애플리케이션을 구성하자. 일단 먼저 그래들">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-01.png">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-03.png">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-02.png">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-03.png">
+<meta property="og:image" content="https://docs.spring.io/spring/docs/4.3.22.RELEASE/spring-framework-reference/htmlsingle/images/mvc.png#center">
+<meta property="og:image" content="https://docs.spring.io/spring/docs/4.3.22.RELEASE/spring-framework-reference/htmlsingle/images/mvc-context-hierarchy.png">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-10.png">
+<meta property="og:image" content="https://kdevkr.github.io/spring/images/gradle-11.png">
+<meta property="article:published_time" content="2019-02-01T00:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Gradle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kdevkr.github.io/spring/images/gradle-01.png">
+
+<link rel="canonical" href="https://kdevkr.github.io/spring/building-a-spring-framework-project-with-gradle/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>Gradle과 함께 스프링 프레임워크 프로젝트 구성하기 | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#그래들-프로젝트-만들기"><span class="nav-number">1.</span> <span class="nav-text">그래들 프로젝트 만들기</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#웹-애플리케이션-디렉토리-구조"><span class="nav-number">1.1.</span> <span class="nav-text">웹 애플리케이션 디렉토리 구조</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Web-MVC"><span class="nav-number">2.</span> <span class="nav-text">Spring Web MVC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#라이브러리-의존성"><span class="nav-number">2.1.</span> <span class="nav-text">라이브러리 의존성</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-MVC-Architecture"><span class="nav-number">2.2.</span> <span class="nav-text">Spring MVC Architecture</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-MVC-Configuration"><span class="nav-number">2.3.</span> <span class="nav-text">Spring MVC Configuration</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Run-on-Server"><span class="nav-number">3.</span> <span class="nav-text">Run on Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#임베디드-톰캣"><span class="nav-number">3.1.</span> <span class="nav-text">임베디드 톰캣</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고"><span class="nav-number">4.</span> <span class="nav-text">참고</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/spring/building-a-spring-framework-project-with-gradle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Gradle과 함께 스프링 프레임워크 프로젝트 구성하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2019-02-01 00:00:00" itemprop="dateCreated datePublished" datetime="2019-02-01T00:00:00Z">2019-02-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고 톰캣으로 웹 애플리케이션을 구동해보자.</p>
+<h2 id="그래들-프로젝트-만들기">그래들 프로젝트 만들기</h2>
+<p><code>인텔리제이</code>로 스프링 프레임워크를 선택해서 프로젝트를 만들게 되면 <code>메이븐</code>과 <code>XML</code> 기반으로 구성된다.</p>
+<p>이렇게 하지 않고 프로젝트 관리 도구로 <code>그래들</code>을 사용하면서 스프링 웹 MVC 애플리케이션을 구성하자.</p>
+<p>일단 먼저 <code>그래들 프로젝트</code>를 만들어야 한다.</p>
+<p><img data-src="/spring/images/gradle-01.png" alt=""></p>
+<h3 id="웹-애플리케이션-디렉토리-구조">웹 애플리케이션 디렉토리 구조</h3>
+<p>일반적인 자바 웹 애플리케이션 구조는 다음과 같다.</p>
+<p><img data-src="/spring/images/gradle-03.png" alt=""></p>
+<p>그런데 그래들 프로젝트를 만들면 프로젝트 구조에 <code>src/main/java</code>와 <code>src/test/java</code>와 같은 모듈 디렉토리가 없을 수 있다.</p>
+<p>이럴 때 <code>Preference</code>에서 <code>Gradle</code> 찾아 <code>Create directories for empty content roots automatically</code>를 활성화하면 <code>프로젝트 루트</code>에 모듈 디렉토리가 없을 경우 자동으로 만들어준다.</p>
+<p><img data-src="/spring/images/gradle-02.png" alt=""></p>
+<h4 id="webapp">webapp</h4>
+<p>webapp 디렉토리는 웹 애플리케이션의 특별한 폴더이다.</p>
+<p><code>src/main/webapp</code> 디렉토리를 만들자.</p>
+<p>그리고 그 안에 <code>WEB-INF</code> 폴더 까지 만들자</p>
+<p><img data-src="/spring/images/gradle-03.png" alt=""></p>
+<h2 id="Spring-Web-MVC">Spring Web MVC</h2>
+<p>이제 프로젝트에 스프링 웹 애플리케이션을 만들어보자.</p>
+<h3 id="라이브러리-의존성">라이브러리 의존성</h3>
+<p><code>build.gradle</code>의 의존성 항목에 <code>Spring Web MVC 3.4.8.RELEASE</code>를 추가하자.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">'org.springframework:spring-webmvc:4.3.8.RELEASE'</span></span><br><span class="line">    providedCompile <span class="string">'javax.servlet:javax.servlet-api:4.0.1'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Spring-MVC-Architecture">Spring MVC Architecture</h3>
+<p>스프링 웹 MVC의 구성은 다음과 같다.</p>
+<p><img data-src="https://docs.spring.io/spring/docs/4.3.22.RELEASE/spring-framework-reference/htmlsingle/images/mvc.png#center" alt=""></p>
+<p>모든 요청에 대하여 우선적으로 받는 <code>DispatcherServlet</code>(위 그림에서 FrontController)를 서블릿 컨텍스트에 등록해야하고 톰캣이 그 컨텍스트로 서버를 동작시킨다.</p>
+<p>톰캣은 <code>web.xml</code>이라는 배포 서술자에 따라 서버를 동작시키는데 스프링은 <code>WebApplicationInitializer</code>의 구현체로 그 역할을 대신할 수 있게 해준다.</p>
+<h4 id="WebApplicationInitializer">WebApplicationInitializer</h4>
+<p><code>WebApplicationInitializer</code> 구현체를 만들면 코드 기반 설정을 감지하고 자동으로 서블릿 3+ 컨테이너를 초기화한다. 여기에 <code>DispatcherServlet</code>을 ServletContext에 등록하자.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyWebApplicationInitializer</span> <span class="keyword">implements</span> <span class="title">WebApplicationInitializer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStartup</span><span class="params">(ServletContext container)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="DispatcherServlet">DispatcherServlet</h4>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyWebApplicationInitializer</span> <span class="keyword">implements</span> <span class="title">WebApplicationInitializer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStartup</span><span class="params">(ServletContext container)</span> </span>&#123;</span><br><span class="line">        ServletRegistration.Dynamic registration = container.addServlet(<span class="string">"dispatcher"</span>, <span class="keyword">new</span> DispatcherServlet());</span><br><span class="line">        registration.setLoadOnStartup(<span class="number">1</span>);</span><br><span class="line">        registration.addMapping(<span class="string">"/"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>기본 DispatcherServlet을 등록하고 톰캣을 통해 서버를 실행시키면 다음과 같은 오류를 내뿜으며 실행이 되지 않는다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">org.apache.catalina.core.StandardContext loadOnStartup</span><br><span class="line">심각: Servlet [dispatcher] in web application [] <span class="function">threw <span class="title">load</span><span class="params">()</span> exception</span></span><br><span class="line"><span class="function">java.io.FileNotFoundException: Could not open ServletContext resource [/WEB-INF/dispatcher-servlet.xml]</span></span><br></pre></td></tr></table></figure>
+<p>기본으로 <code>WEB-INF</code> 디렉토리에 있는 <code>[servlet-name]-servlet.xml</code>파일을 읽어 초기화하도록 되어있기 때문이다.</p>
+<p>그래서 우리는 애플리케이션 컨텍스트를 만들어 디스패쳐 서블릿에 넣어주자.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">AnnotationConfigWebApplicationContext context = <span class="keyword">new</span> AnnotationConfigWebApplicationContext();</span><br><span class="line">context.scan(<span class="string">"com.demo.app"</span>);</span><br><span class="line"></span><br><span class="line">ServletRegistration.Dynamic dispatcher = servletContext.addServlet(<span class="string">"dispatcher"</span>, <span class="keyword">new</span> DispatcherServlet(context));</span><br><span class="line">dispatcher.setLoadOnStartup(<span class="number">1</span>);</span><br><span class="line">dispatcher.addMapping(<span class="string">"/"</span>);</span><br></pre></td></tr></table></figure>
+<p>그러면 아래와 같이 디스패처 서블릿이 <code>독립적인 서블릿 웹 컨텍스트</code>를 가진다.</p>
+<p><img data-src="https://docs.spring.io/spring/docs/4.3.22.RELEASE/spring-framework-reference/htmlsingle/images/mvc-context-hierarchy.png" alt=""></p>
+<p>위 그림에서 확인할 수 있듯이 독립적인 서블릿 웹 컨텍스트를 가지므로 다른 스프링 모듈(스프링은 모듈간 결합이 가능하다)에서 서블릿 웹 컨텍스트에 등록되어 <code>관리되는 빈들을 공유할 수 없다</code>.</p>
+<p>스프링은 각 <code>애플리케이션 컨텍스트(빈 팩토리)</code>의 빈들을 공통으로 관리할 수 있도록 <code>ContextLoader</code>를 제공한다.</p>
+<p><code>ContextLoaderListener</code>로 애플리케이션 컨텍스트를 등록하고 서블릿 컨텍스트에 이 리스너를 추가하자.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">AnnotationConfigWebApplicationContext context = <span class="keyword">new</span> AnnotationConfigWebApplicationContext();</span><br><span class="line">context.setConfigLocation(<span class="string">"com.demo.app"</span>);</span><br><span class="line">servletContext.addListener(<span class="keyword">new</span> ContextLoaderListener(context));</span><br><span class="line"></span><br><span class="line">ServletRegistration.Dynamic dispatcher = servletContext.addServlet(<span class="string">"dispatcher"</span>, <span class="keyword">new</span> DispatcherServlet(context));</span><br><span class="line">dispatcher.setLoadOnStartup(<span class="number">1</span>);</span><br><span class="line">dispatcher.addMapping(<span class="string">"/"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="Spring-MVC-Configuration">Spring MVC Configuration</h3>
+<p>서블릿 컨테이너에 디스패쳐 서블릿까지 등록했으면 스프링 웹 MVC를 활성화해야한다.</p>
+<h4 id="EnableWebMvc">@EnableWebMvc</h4>
+<p>스프링 웹 MVC는 간단하게 @Configuration가 명시된 설정 클래스에 @EnableWebMvc 어노테이션을 명시하면 된다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages = <span class="string">"com.demo.app"</span>)</span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MvcConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> <span class="keyword">implements</span> <span class="title">WebApplicationInitializer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStartup</span><span class="params">(ServletContext servletContext)</span> </span>&#123;</span><br><span class="line">        AnnotationConfigWebApplicationContext context = <span class="keyword">new</span> AnnotationConfigWebApplicationContext();</span><br><span class="line">        context.setConfigLocation(<span class="string">"com.demo.app"</span>);</span><br><span class="line">        servletContext.addListener(<span class="keyword">new</span> ContextLoaderListener(context));</span><br><span class="line"></span><br><span class="line">        ServletRegistration.Dynamic dispatcher = servletContext.addServlet(<span class="string">"dispatcher"</span>, <span class="keyword">new</span> DispatcherServlet(context));</span><br><span class="line">        dispatcher.setLoadOnStartup(<span class="number">1</span>);</span><br><span class="line">        dispatcher.addMapping(<span class="string">"/"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Controller">@Controller</h4>
+<p>스프링 웹 MVC를 활성화 했으면 요청을 담당하는 컨트롤러를 <code>@Controller</code>를 명시해서 등록할 수 있다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HomeController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">(Model model)</span> </span>&#123;</span><br><span class="line">        model.addAttribute(<span class="string">"message"</span>, <span class="string">"Hello"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"index"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이 상태로 &quot;/&quot;에 접속해보자. 그러면 다음과 같이 <code>ViewResolver</code>를 설정하라고 알려준다.</p>
+<h4 id="ViewResolver">ViewResolver</h4>
+<p>컨트롤러 내에 <code>@RequestMapping</code>이 붙은 메소드가 문자열을 응답하면 해당 이름을 가진 뷰로 응답하도록 처리된다.</p>
+<p>그런데 위에서는 그 뷰를 처리할 수 있는 뷰 리졸버가 빈으로 등록되어 있지 않았던 것이다.</p>
+<p>뷰 리졸버는 <code>InternalResourceViewResolver</code>, <code>FreemarkerViewResolver</code> 등 많은 종류가 있는데</p>
+<p>우리는 JSP 템플릿을 처리하기 위해 사용하는 <code>InternalResourceViewResolver</code>를 등록해보자.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> InternalResourceViewResolver <span class="title">viewResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    InternalResourceViewResolver viewResolver = <span class="keyword">new</span> InternalResourceViewResolver();</span><br><span class="line">    viewResolver.setPrefix(<span class="string">"/WEB-INF/views/"</span>);</span><br><span class="line">    viewResolver.setSuffix(<span class="string">".jsp"</span>);</span><br><span class="line">    <span class="keyword">return</span> viewResolver;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Run-on-Server">Run on Server</h2>
+<p>자바 웹 애플리케이션을 구동시키기 위해서는 톰캣같은 서블릿 엔진이 필요하다.</p>
+<p>일반적으로는 톰캣을 설치하고 <code>Edit Configurations...</code>를 통해 톰캣 서버로 실행할 수 있는 환경을 추가해야한다.</p>
+<p><img data-src="/spring/images/gradle-10.png" alt=""></p>
+<h3 id="임베디드-톰캣">임베디드 톰캣</h3>
+<p>아파치는 굳이 톰캣을 설치하지 않고도 구동할 수 있도록 <a href="https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core/9.0.14" target="_blank" rel="noopener"><code>Tomcat Embed</code></a>를 제공한다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">compile <span class="string">group:</span> <span class="string">'org.apache.tomcat.embed'</span>, <span class="string">name:</span> <span class="string">'tomcat-embed-core'</span>, <span class="string">version:</span> <span class="string">'9.0.14'</span></span><br><span class="line">compile <span class="string">group:</span> <span class="string">'org.apache.tomcat.embed'</span>, <span class="string">name:</span> <span class="string">'tomcat-embed-jasper'</span>, <span class="string">version:</span> <span class="string">'9.0.14'</span></span><br></pre></td></tr></table></figure>
+<p>그래들로 위 라이브러리들을 임포트했다면 <code>Application.java</code>를 만들어 톰캣을 구동시키도록 작성하자.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> LifecycleException </span>&#123;</span><br><span class="line">        Tomcat tomcat = <span class="keyword">new</span> Tomcat();</span><br><span class="line">        Connector connector = tomcat.getConnector();</span><br><span class="line">        connector.setURIEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line"></span><br><span class="line">        tomcat.addWebapp(<span class="string">"/"</span>, <span class="keyword">new</span> File(<span class="string">"src/main/webapp"</span>).getAbsolutePath());</span><br><span class="line"></span><br><span class="line">        tomcat.setPort(<span class="number">8080</span>);</span><br><span class="line">        tomcat.start();</span><br><span class="line">        tomcat.getServer().await();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이제 <code>Application.java</code>를 실행하면 다음 로그처럼 <code>톰캣</code>이 구동된다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">2</span>월 <span class="number">09</span>, <span class="number">2019</span> <span class="number">8</span>:<span class="number">07</span>:<span class="number">13</span> 오후 org.springframework.web.context.support.AnnotationConfigWebApplicationContext loadBeanDefinitions</span><br><span class="line">정보: Found <span class="number">2</span> annotated classes in <span class="keyword">package</span> [com.demo.app]</span><br><span class="line"><span class="number">2</span>월 <span class="number">09</span>, <span class="number">2019</span> <span class="number">8</span>:<span class="number">07</span>:<span class="number">14</span> 오후 org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping register</span><br><span class="line">정보: Mapped <span class="string">"&#123;[],methods=[GET]&#125;"</span> onto <span class="keyword">public</span> java.lang.String com.demo.app.controller.HomeController.index(org.springframework.ui.Model)</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>월 <span class="number">09</span>, <span class="number">2019</span> <span class="number">8</span>:<span class="number">07</span>:<span class="number">14</span> 오후 org.springframework.web.servlet.DispatcherServlet initServletBean</span><br><span class="line">정보: FrameworkServlet <span class="string">'dispatcher'</span>: initialization completed in <span class="number">14</span> ms</span><br><span class="line"><span class="number">2</span>월 <span class="number">09</span>, <span class="number">2019</span> <span class="number">8</span>:<span class="number">07</span>:<span class="number">14</span> 오후 org.apache.coyote.AbstractProtocol start</span><br><span class="line">정보: Starting ProtocolHandler [<span class="string">"http-nio-8080"</span>]</span><br></pre></td></tr></table></figure>
+<p>정말 구동되어 서버가 JSP를 처리할 수 있을까?</p>
+<p><code>http://localhost:8080/</code>으로 접속해보자.</p>
+<p><img data-src="/spring/images/gradle-11.png" alt=""></p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://github.com/kdevkr/spring-demo-configuration/tree/master/spring-demo-java" target="_blank" rel="noopener">Java Configuration</a></li>
+<li><a href="https://stackoverflow.com/questions/45169586/how-do-i-embed-tomcat-in-a-spring-framework-mvc-application" target="_blank" rel="noopener">How do I embed Tomcat in a Spring Framework MVC application?</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/Gradle/" rel="tag"># Gradle</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/spring/managing-i18n-messages-with-xml/" rel="prev" title="XML로 다국어 메시지 관리하기">
+      <i class="fa fa-chevron-left"></i> XML로 다국어 메시지 관리하기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/spring/sending-mail-with-freemarker-template/" rel="next" title="프리마커 템플릿으로 이메일 발송하기">
+      프리마커 템플릿으로 이메일 발송하기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

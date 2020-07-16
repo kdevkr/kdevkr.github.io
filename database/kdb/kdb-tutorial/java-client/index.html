@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic|Binggrae-Bold:300,300italic,400,400italic,700,700italic|yg-jalnan:300,300italic,400,400italic,700,700italic|Noto Sans KR:300,300italic,400,400italic,700,700italic|Jetbrains Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","width":240,"display":"hide","scrollpercent":true,"b2t":true,"padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="KDB 튜토리얼 - 설치 및 접속 KDB 튜토리얼 - 변수 할당 및 테이블 생성 KDB 튜토리얼 - Q-SQL KDB 튜토리얼 - 그룹핑과 집계 KDB 튜토리얼 - 파일 다루기 KDB 튜토리얼 - 네임스페이스 KDB 튜토리얼 - 함수 KDB 튜토리얼 - 자바 클라이언트  들어가며 우리는 KDB+에 직접 접근하여 변수 할당, 테이블 생성, 함수 생성, 데이">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KDB 튜토리얼 - 자바 클라이언트">
+<meta property="og:url" content="https://kdevkr.github.io/database/kdb/kdb-tutorial/java-client/index.html">
+<meta property="og:site_name" content="잠만보의 개발 블로그">
+<meta property="og:description" content="KDB 튜토리얼 - 설치 및 접속 KDB 튜토리얼 - 변수 할당 및 테이블 생성 KDB 튜토리얼 - Q-SQL KDB 튜토리얼 - 그룹핑과 집계 KDB 튜토리얼 - 파일 다루기 KDB 튜토리얼 - 네임스페이스 KDB 튜토리얼 - 함수 KDB 튜토리얼 - 자바 클라이언트  들어가며 우리는 KDB+에 직접 접근하여 변수 할당, 테이블 생성, 함수 생성, 데이">
+<meta property="og:locale" content="ko_KR">
+<meta property="article:published_time" content="2020-03-08T09:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-16T12:37:57.052Z">
+<meta property="article:author" content="Mambo">
+<meta property="article:tag" content="KDB">
+<meta property="article:tag" content="Q">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/java-client/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <title>KDB 튜토리얼 - 자바 클라이언트 | 잠만보의 개발 블로그</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before, .use-motion .logo-line-after {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="잠만보의 개발 블로그" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line-before"></i>
+      <h1 class="site-title">잠만보의 개발 블로그</h1>
+      <i class="logo-line-after"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">잠만보가 알려주는 개발 이야기</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fas fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>아카이브<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-spring">
+
+    <a href="/spring" rel="section"><i class="fas fa-seedling fa-fw"></i>Spring</a>
+
+  </li>
+        <li class="menu-item menu-item-vue.js">
+
+    <a href="/vuejs" rel="section"><i class="fab fa-vuejs fa-fw"></i>Vue.js</a>
+
+  </li>
+        <li class="menu-item menu-item-postgresql">
+
+    <a href="/database/postgresql" rel="section"><i class="fas fa-database fa-fw"></i>PostgreSQL</a>
+
+  </li>
+        <li class="menu-item menu-item-kdb+">
+
+    <a href="/database/kdb" rel="section"><i class="fas fa-database fa-fw"></i>KDB+</a>
+
+  </li>
+        <li class="menu-item menu-item-docker">
+
+    <a href="/dev-ops/docker" rel="section"><i class="fab fa-docker fa-fw"></i>Docker</a>
+
+  </li>
+        <li class="menu-item menu-item-kubernetes">
+
+    <a href="/dev-ops/kubernetes" rel="section"><i class="fas fa-dharmachakra fa-fw"></i>kubernetes</a>
+
+  </li>
+        
+            
+  <li class="menu-item menu-item-꾸르팁">
+
+    <a href="/tips/" rel="section"><i class="far fa-grin-tongue-wink fa-fw"></i>꾸르팁</a>
+
+  </li>
+
+
+      
+        <li class="menu-item menu-item-소개">
+
+    <a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>소개</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#들어가며"><span class="nav-number">1.</span> <span class="nav-text">들어가며</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-java"><span class="nav-number">2.</span> <span class="nav-text">c.java</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection"><span class="nav-number">2.1.</span> <span class="nav-text">Connection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#메시지-보내기"><span class="nav-number">2.2.</span> <span class="nav-text">메시지 보내기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#메시지-응답-가져오기"><span class="nav-number">2.3.</span> <span class="nav-text">메시지 응답 가져오기</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고"><span class="nav-number">3.</span> <span class="nav-text">참고</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="reading-progress-bar"></div>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/database/kdb/kdb-tutorial/java-client/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="잠만보의 개발 블로그">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KDB 튜토리얼 - 자바 클라이언트
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2020-03-08 09:00:00" itemprop="dateCreated datePublished" datetime="2020-03-08T09:00:00Z">2020-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B0%9C%EB%B0%9C-%EC%9D%B4%EC%95%BC%EA%B8%B0/" itemprop="url" rel="index"><span itemprop="name">개발 이야기</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <ol>
+<li><a href="../install-and-connection">KDB 튜토리얼 - 설치 및 접속</a></li>
+<li><a href="../assign-variables-and-tables">KDB 튜토리얼 - 변수 할당 및 테이블 생성</a></li>
+<li><a href="../q-sql">KDB 튜토리얼 - Q-SQL</a></li>
+<li><a href="../grouping-and-aggregation">KDB 튜토리얼 - 그룹핑과 집계</a></li>
+<li><a href="../file">KDB 튜토리얼 - 파일 다루기</a></li>
+<li><a href="../namespace">KDB 튜토리얼 - 네임스페이스</a></li>
+<li><a href="../function">KDB 튜토리얼 - 함수</a></li>
+<li><strong>KDB 튜토리얼 - 자바 클라이언트</strong></li>
+</ol>
+<h2 id="들어가며">들어가며</h2>
+<p>우리는 KDB+에 직접 접근하여 변수 할당, 테이블 생성, 함수 생성, 데이터 저장등을 해왔습니다. 자바 애플리케이션에서 일반적인 데이터베이스로 접근할 때 데이터소스를 이용하는 것처럼 다양한 애플리케이션에서 사용할 수 있는 클라이언트 API를 제공합니다.</p>
+<p>이번 시간에는 자바 애플리케이션에서 KDB+에 접근하여 함수를 호출하거나 응답을 받을 수 있는 <a href="https://github.com/KxSystems/javakdb" target="_blank" rel="noopener">javakdb</a> 클라이언트를 사용해보고자 합니다.</p>
+<h2 id="c-java">c.java</h2>
+<p><code>c.java</code>는 TCP/IP로 kdb+와 Java 간의 통신을 위한 드라이버입니다.</p>
+<p>이 드라이버는 다음과 같은 기능을 제공합니다.</p>
+<ul>
+<li>kdb+ 쿼리</li>
+<li>kdb+ 퍼블리셔 구독</li>
+<li>kdb+ 컨슈머로 퍼블리싱</li>
+</ul>
+<p>그 중에서 우리는 kdb+ 쿼리 기능을 사용할 것입니다.</p>
+<h3 id="Connection">Connection</h3>
+<p><code>c</code> 생성자는 새로운 커넥션 인스턴스를 만듭니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">c c = <span class="keyword">new</span> c(<span class="string">"localhost"</span>,<span class="number">5600</span>,<span class="string">"kdev:kdev"</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="메시지-보내기">메시지 보내기</h3>
+<p><code>c.k</code> 또는 <code>c.ks</code> 함수를 통해 <code>c</code> 클라이언트가 KDB+로 메시지를 보내고 응답을 받을 수 있습니다.</p>
+<ul>
+<li>c.k() : 동기 메시지</li>
+<li>c.ks() : 비동기 메시지</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">c.ks(<span class="string">"-1\"Hello World\""</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// in log</span></span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure>
+<h3 id="메시지-응답-가져오기">메시지 응답 가져오기</h3>
+<p><code>.Q.w[]</code> 메시지를 보내어 현재 메모리 사용량 통계 정보를 응답받아 표시해보겠습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">".Q.w[]"</span>);</span><br><span class="line"><span class="keyword">if</span>(k <span class="keyword">instanceof</span> kx.c.Dict) &#123;</span><br><span class="line">    kx.c.Dict dict = (kx.c.Dict) k;</span><br><span class="line"></span><br><span class="line">    String[] keys = (String[]) dict.x;</span><br><span class="line">    <span class="keyword">long</span>[] values = (<span class="keyword">long</span>[]) dict.y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">        String key = keys[i];</span><br><span class="line">        <span class="keyword">long</span> value = values[i];</span><br><span class="line">        System.out.println(key + <span class="string">":"</span> + value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// system console</span></span><br><span class="line">used:<span class="number">775792</span></span><br><span class="line">heap:<span class="number">67108864</span></span><br><span class="line">peak:<span class="number">67108864</span></span><br><span class="line">wmax:<span class="number">0</span></span><br><span class="line">mmap:<span class="number">0</span></span><br><span class="line">mphy:<span class="number">2085904384</span></span><br><span class="line">syms:<span class="number">799</span></span><br><span class="line">symw:<span class="number">29324</span></span><br></pre></td></tr></table></figure>
+<p><code>.Q.w[]</code> 결과는 사전이므로 <code>kx.c.Dict</code> 오브젝트로 키와 값을 구분하여 가져올 수 있습니다.</p>
+<h4 id="JSON-응답">JSON 응답</h4>
+<p>메시지 응답이 문자열인 경우 char[] 오브젝트를 결과로 받습니다. char[]를 String으로 변환하면 JSON String으로 가져올 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">".j.j select from patient where sex = `female, state = `deceased"</span>);</span><br><span class="line">String r = <span class="keyword">new</span> String((<span class="keyword">char</span>[]) k);</span><br><span class="line">System.out.println(r);</span><br></pre></td></tr></table></figure>
+<p><em>System Console</em></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">[&#123;<span class="attr">"id"</span>:<span class="number">38</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1963</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-18"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-23"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">205</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1965</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Gyeongsangbuk-do"</span>,<span class="attr">"group"</span>:<span class="string">"Cheongdo Daenam Hospital"</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-22"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-21"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">925</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1951</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Gyeongsangbuk-do"</span>,<span class="attr">"group"</span>:<span class="string">"Shincheonji Church"</span>,<span class="attr">"infection_reason"</span>:<span class="string">"contact with patient"</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-25"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-02-24"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">2614</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1943</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-29"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">2769</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1934</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-02-29"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-02"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;,&#123;<span class="attr">"id"</span>:<span class="number">4046</span>,<span class="attr">"sex"</span>:<span class="string">"female"</span>,<span class="attr">"birth_year"</span>:<span class="number">1962</span>,<span class="attr">"country"</span>:<span class="string">"Korea"</span>,<span class="attr">"region"</span>:<span class="string">"Daegu"</span>,<span class="attr">"group"</span>:<span class="string">""</span>,<span class="attr">"infection_reason"</span>:<span class="string">""</span>,<span class="attr">"infection_order"</span>:<span class="literal">null</span>,<span class="attr">"infected_by"</span>:<span class="literal">null</span>,<span class="attr">"contact_number"</span>:<span class="literal">null</span>,<span class="attr">"confirmed_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"released_date"</span>:<span class="string">""</span>,<span class="attr">"deceased_date"</span>:<span class="string">"2020-03-01"</span>,<span class="attr">"state"</span>:<span class="string">"deceased"</span>&#125;]</span><br></pre></td></tr></table></figure>
+<h4 id="Table-응답">Table 응답</h4>
+<p>메시지 응답이 테이블일 경우에는 <code>kx.c.Flip</code> 오브젝트로 컬럼과 값을 구분하여 가져올 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object k = c.k(<span class="string">"select from time"</span>);</span><br><span class="line">kx.c.Flip r = (kx.c.Flip) k;</span><br><span class="line">String[] x = r.x;</span><br><span class="line">Object[] y = r.y;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>왠만하면 JSON 으로 변환해서 응답받고 이를 자바 빈 오브젝트로 변환하는게 좋을 것 같습니다.</p>
+</blockquote>
+<p>이제 우리는 자바 애플리케이션에서도 메시지를 호출하여 함수를 실행할수도 있고 응답을 받을 수도 있습니다.</p>
+<p>이상으로 KDB 튜토리얼을 마칩니다.</p>
+<h2 id="참고">참고</h2>
+<ul>
+<li><a href="https://code.kx.com/v2/interfaces/java-client-for-q/" target="_blank" rel="noopener">Using Java with kdb+</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/KDB/" rel="tag"># KDB</a>
+              <a href="/tags/Q/" rel="tag"># Q</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/database/kdb/kdb-tutorial/function/" rel="prev" title="KDB 튜토리얼 - 함수">
+      <i class="fa fa-chevron-left"></i> KDB 튜토리얼 - 함수
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/vuejs/spring-boot-application-with-vuejs/" rel="next" title="스프링 부트 애플리케이션과 VueJS 통합하기">
+      스프링 부트 애플리케이션과 VueJS 통합하기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    
+  
+  <div class="comments">
+  <script src="https://utteranc.es/client.js" repo="kdevkr/kdevkr.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>
+  </div>
+  
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+<script>
+function getExif(target) {
+  const tags = {"FocalLength":"{value}mm","FNumber":"f/{value}","ExposureTime":"{value}s"};
+  EXIF.getData(target, function() {
+    let result = [];
+    for (let [key, value] of Object.entries(tags)) {
+      let data = EXIF.getTag(this, key);
+      if (key === 'ExposureTime' && data <= 0.25) {
+        data = '1/' + parseInt(1 / data);
+      }
+      if (data) result.push(value.replace('{value}', data));
+    }
+    if (result.length > 0) {
+      const box = document.createElement('div');
+      target.wrap(box);
+      box.classList.add('exif-container');
+      box.insertAdjacentHTML('beforeend', `<div class="exif-metabar"><span>${result.join(' ')}</span></div>`);
+    }
+  });
+}
+
+[...document.querySelectorAll('.post-body img')].forEach(element => {
+  if (element.complete) getExif(element);
+  // `lazyload` compatible
+  element.addEventListener('load', () => {
+    getExif(element);
+  });
+});
+</script>
+
+    </div>
+</body>
+</html>

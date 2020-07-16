@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <url>
+        <loc>https://kdevkr.github.io</loc>
+        <changefreq>daily</changefreq>
+        <priority>1</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/vuejs/</loc>
+        <lastmod>2020-07-16T12:37:57.080Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/spring/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/common/deploying-github-pages-with-travis-ci.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/shell/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/docker.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/git.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/nvm-sh.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/rtl88x2bu.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/mac/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/mac/use-oh-my-zsh-to-make-the-terminal-useful-and-beautiful.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/windows/</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/tips/os/linux/rabbitmq.html</loc>
+        <lastmod>2020-07-16T12:37:57.076Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/database/postgresql/</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/database/postgresql/timestamp-range.html</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/docker/</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/kubernetes/</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/kubernetes/learning.html</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/kubernetes/load-balancing.html</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/kubernetes/monitoring.html</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/dev-ops/kubernetes/workload.html</loc>
+        <lastmod>2020-07-16T12:37:57.060Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/database/kdb/</loc>
+        <lastmod>2020-07-16T12:37:57.056Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://kdevkr.github.io/about/</loc>
+        <lastmod>2020-07-16T12:37:57.052Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+</urlset>
+<!-- XML Sitemap generated by Hexo SEO Friendly Sitemap Generator -->

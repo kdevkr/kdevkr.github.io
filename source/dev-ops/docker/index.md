@@ -11,9 +11,11 @@
 ## 👨‍💻 Learning Docker
 - [도커 엔진 설치하기](install-docker-engine)
 - [스토리지 사용하기](use-storage)
+- [도커 이미지 빌드하기](build-dockerfile)
 
 ## 🔥 Advanced Tips
-- [Docker-Compose](docker-compose)  
+- [도커 컴포즈 사용하기](docker-compose)  
+- [프라이빗 도커 레지스트리 구성하기](configure-private-docker-registry)
 
 ## 🔖 References  
 - [What is a Container?](https://www.docker.com/resources/what-container)

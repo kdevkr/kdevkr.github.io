@@ -14,7 +14,7 @@
 - [쿠버네티스 개념 이해하기](understand-k8s-concepts)
 
 ## 🔥 Advanced Tips
-- [쿠버네티스 큐브컨트롤 액세스 구성하기](organize-k8s-cluster-access-for-kubectl)
+- [쿠버네티스 큐브컨트롤 액세스 구성하기](organize-cluster-access-for-kubectl)
 - [쿠버네티스 모니터링 시스템 적용하기](apply-k8s-monitoring-system)
 
 ## 🔖 References  

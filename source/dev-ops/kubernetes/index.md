@@ -9,10 +9,13 @@
 ![](/images/logo/kubernetes.jpg#compact)
 
 ## 👨‍💻 Learning Kubernetes  
-- [쿠버네티스 학습하기](learning.html)
-- [쿠버네티스 워크로드](workload.html)
-- [쿠버네티스 로드 밸런싱](load-balancing.html)
-- [쿠버네티스 모니터링](monitoring.html)
+- [쿠버네티스 클러스터 시작하기](install-k8s-cluster)
+- [쿠버네티스 큐브컨트롤을 이용하여 클러스터와 통신하기](communicate-k8s-cluster-using-kubectl)
+- [쿠버네티스 개념 이해하기](understand-k8s-concepts)
+
+## 🔥 Advanced Tips
+- [쿠버네티스 큐브컨트롤 액세스 구성하기](organize-k8s-cluster-access-for-kubectl)
+- [쿠버네티스 모니터링 시스템 적용하기](apply-k8s-monitoring-system)
 
 ## 🔖 References  
 - [쿠버네티스 튜토리얼](https://kubernetes.io/ko/docs/tutorials/)

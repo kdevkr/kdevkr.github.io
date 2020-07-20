@@ -7,7 +7,9 @@
     - Kubectl
 ---
 
-## 들어가며
+![](/images/logo/kubernetes.jpg)
+
+## 들어가며  
 지난번 우리는 미니큐브를 설치하여 쿠버네티스 클러스터를 시작하였습니다. 쿠버네티스가 관리해주기 바라는 애플리케이션의 상태를 직접 조작하는 것이 아닌 쿠버네티스 클러스터에게 원하는 상태를 알려주어야 합니다. 클러스터로 원하는 상태를 알려주기 위해서는 `쿠버네티스 API`를 사용해야 합니다.
 
 ## 큐브컨트롤 사용하기
@@ -16,8 +18,7 @@
 ### 큐브컨트롤 설치
 쿠버네티스 클러스터 구현체가 내장하고 있는 큐브컨트롤을 이용하거나 직접 큐브컨트롤을 설치할 수 있습니다.  
 
-{% tabs Unique name %}
-<!-- tab Snap -->
+**Snap**
 `snap` 패키지를 지원하는 리눅스라면 쉽게 `kubectl`을 설치할 수 있습니다.
 만약, snap 패키지를 지원하지 않는 환경이라면 [kubectl를 설치 및 설정](https://kubernetes.io/ko/docs/tasks/tools/install-kubectl/)을 참고하시기 바랍니다.
 
@@ -27,14 +28,12 @@ kubectl 1.18.6 from Canonical✓ installed
 
 $ kubectl verison --client
 ```
-<!-- endtab -->
-<!-- tab Minikube -->
+
+**Minikube**
 ```zsh Zsh
 $ alias kubectl="minikube kubectl --"
 $ kubectl version --client
 ```
-<!-- endtab -->
-{% endtabs %}
 
 ### 큐브컨트롤 확장
 큐브컨트롤은 명령어에 대한 `자동 완성`을 지원하므로 이를 활성화 할 수 있습니다.

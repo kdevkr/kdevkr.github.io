@@ -14,8 +14,6 @@
 
 ## 🔥 Advanced Tips
 
-- [PostgreSQL Monitoring](monitoring)
-
 ## 🔖 References
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/current/index.html)  
 - [Awesome Postgres](https://github.com/dhamaniasad/awesome-postgres)  

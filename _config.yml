@@ -104,6 +104,7 @@ theme_config:
   menu:
     home: / || fas fa-home
     archives: /archives/ || fas fa-archive
+    Java: /java || fab fa-java
     Spring: /spring || fas fa-seedling
     Vue.js: /vuejs || fab fa-vuejs
     KDB+: /database/kdb || fas fa-database

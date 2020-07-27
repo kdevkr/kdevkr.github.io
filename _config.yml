@@ -110,5 +110,4 @@ theme_config:
     Docker: /dev-ops//docker || fab fa-docker
     kubernetes: /dev-ops//kubernetes || fas fa-dharmachakra
     꾸르팁: /tips/ || far fa-grin-tongue-wink
-    TIL: /TIL || fab fa-dev
     소개: /about/ || fas fa-user

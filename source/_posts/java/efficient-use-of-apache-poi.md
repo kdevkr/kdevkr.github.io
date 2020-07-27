@@ -1,7 +1,8 @@
 ---
 title: Apache POI 효율적으로 사용하기
-categories: [개발 이야기]
 date: 2019-05-29
+categories:
+  - TIL
 banner:
     url: https://poi.apache.org/images/group-logo.png
 ---
@@ -29,13 +30,13 @@ POI를 사용해서 엑셀을 생성하는 예제를 검색하면 대부분 다�
 ```java
 public void example() {
     HSSFWorkbook workbook = new HSSFWorkbook();
-    
+
     workbook.createFont()
     workbook.createCellStyle()
 }
 ```
 
-해당 함수들을 사용해야하는 것은 맞다. 하지만, 여기서 중요한 사실이 있다. 
+해당 함수들을 사용해야하는 것은 맞다. 하지만, 여기서 중요한 사실이 있다.
 
 해당 함수들을 호출할 때마다 워크북에 새로운 폰트 정보와 셀 스타일 정보가 저장된다.
 
@@ -48,7 +49,7 @@ public void example() {
 
 ### 워크북 생성시 폰트와 스타일을 저장하여 사용하자
 
-위에서 언급한 문제를 해결할 수 있는 방법은 다음과 같다. 
+위에서 언급한 문제를 해결할 수 있는 방법은 다음과 같다.
 
 1.  워크북에서 사용하는 폰트 및 스타일을 미리 생성해놓는 방법
 2.  워크북에서 사용하는 폰트 및 스타일을 저장하여 사용하는 방법
@@ -61,14 +62,14 @@ public void example() {
 
 ```java
 public class Workbook {
-	
+
 	private HSSFWorkbook workbook = null;
 	private HSSFSheet sheet = null;
 	private HSSFCell firstCell = null;
-	
+
 	private Map<Integer, HSSFFont> fontMap = new HashMap<>(); // 폰트
 	private FontStyle defaultFontStyle = null;
-	
+
 	private Map<Integer, HSSFCellStyle> styleMap = new HashMap<>(); // 스타일
 ```
 

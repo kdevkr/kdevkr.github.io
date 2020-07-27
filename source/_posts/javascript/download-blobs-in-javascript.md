@@ -1,12 +1,12 @@
 ---
-    title: 자바스크립트에서 블롭 데이터 다운받기
-    date: 2020-02-10
-    categories:
-        - 개발 이야기
-    tags:
-        - JavaScript
-        - Blob
-        - FileSaver
+title: 자바스크립트에서 블롭 데이터 다운받기
+date: 2020-02-10
+categories:
+  - TIL
+tags:
+  - JavaScript
+  - Blob
+  - FileSaver
 ---
 
 ## 들어가며
@@ -73,7 +73,7 @@ $axios({
 }).then(res => {
     const contentDisposition = ContentDisposition.parse(res.headers['content-disposition'])
     const blob = new Blob([res.data])
-    
+
     saveAs(blob, contentDisposition.parameters.filename)
 })
 ```

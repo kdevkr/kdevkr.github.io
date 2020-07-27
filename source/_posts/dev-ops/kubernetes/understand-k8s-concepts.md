@@ -85,7 +85,7 @@ spec:
 
 파드처럼 레플리카셋도 직접 기술할 수 있으나 더 상위 개념의 워크로드 리소스인 디플로이먼트에 포함되어 사용되는 것을 권장합니다.
 
-```zsh
+```zsh Zsh
 $ kubectl apply -f https://kubernetes.io/examples/controllers/frontend.yaml
 replicaset.apps/frontend created
 
@@ -121,15 +121,14 @@ spec:
         - containerPort: 80
 ```
 
-```zsh
+다음과 같이 위 쿠버네티스 오브젝트 문서를 통해 디플로이먼트를 반영할 수 있습니다.
+```zsh Zsh
 $ kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
 $ kubectl get deployments
 $ kubectl get rs
 ```
 
-{% note warning %}
-#### 작성중입니다
-{% endnote %}
+다음 [쿠버네티스 고급 개념 이해하기](../understand-k8s-concepts-advanced)에서 이어집니다.
 
 ## 참고
 - [Kubernetes Docs - Concepts](https://kubernetes.io/ko/docs/concepts/)

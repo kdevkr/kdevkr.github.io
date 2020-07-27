@@ -1,8 +1,10 @@
 ---
-    title: KDB 튜토리얼 - Q-SQL
-    date: 2020-03-05 15:00
-    categories: [개발 이야기]
-    tags: [KDB, Q]
+title: KDB 튜토리얼 - Q-SQL
+date: 2020-03-05 15:00
+categories:
+  - KDB
+tags:
+  - Q
 ---
 
 1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)

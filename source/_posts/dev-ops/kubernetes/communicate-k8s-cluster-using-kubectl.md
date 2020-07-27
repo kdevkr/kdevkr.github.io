@@ -1,10 +1,10 @@
 ---
-  date: 2020-07-19
-  title: K8S - 큐브컨트롤을 이용하여 클러스터와 통신하기
-  categories:
-    - Kubernetes
-  tags:
-    - Kubectl
+date: 2020-07-19
+title: K8S - 큐브컨트롤을 이용하여 클러스터와 통신하기
+categories:
+  - Kubernetes
+tags:
+  - Kubectl
 ---
 
 ![](/images/logo/kubernetes.jpg)

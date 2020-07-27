@@ -1,11 +1,11 @@
 ---
-  date: 2020-07-19
-  title: K8S - 쿠버네티스 모니터링 시스템 적용하기
-  categories:
-    - Kubernetes
-  tags:
-    - Monitoring
-    - Dashboard
+date: 2020-07-19
+title: K8S - 쿠버네티스 모니터링 시스템 적용하기
+categories:
+  - Kubernetes
+tags:
+  - Monitoring
+  - Dashboard
 ---
 
 ![](/images/logo/kubernetes.jpg)

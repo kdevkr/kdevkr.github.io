@@ -1,10 +1,9 @@
 ---
-    title: Gradle과 함께 스프링 프레임워크 프로젝트 구성하기
-    date: 2019-02-01
-    categories: [개발 이야기]
-    tags:
-      - Spring
-      - Gradle
+title: Gradle과 함께 스프링 프레임워크 프로젝트 구성하기
+date: 2019-02-01
+tags:
+  - Spring
+  - Gradle
 ---
 
 Gradle Project를 만들어 스프링 웹 MVC 애플리케이션을 구성하고 톰캣으로 웹 애플리케이션을 구동해보자.

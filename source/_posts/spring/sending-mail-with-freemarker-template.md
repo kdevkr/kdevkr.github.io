@@ -1,9 +1,6 @@
 ---
 title: 프리마커 템플릿으로 이메일 발송하기
 date: 2019-03-19
-categories: [개발 이야기]
-banner:
-    url: https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png
 ---
 
 ![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#compact)

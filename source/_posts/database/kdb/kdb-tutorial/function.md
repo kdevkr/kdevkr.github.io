@@ -1,8 +1,10 @@
 ---
-    title: KDB 튜토리얼 - 함수
-    date: 2020-03-07
-    categories: [개발 이야기]
-    tags: [KDB, Q]
+title: KDB 튜토리얼 - 함수
+date: 2020-03-07
+categories:
+  - KDB
+tags:
+  - Q
 ---
 
 1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)

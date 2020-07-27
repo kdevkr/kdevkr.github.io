@@ -2,9 +2,8 @@
 title: 자바스크립트에서 블롭 데이터 다운받기
 date: 2020-02-10
 categories:
-  - TIL
-tags:
   - JavaScript
+tags:
   - Blob
   - FileSaver
 ---

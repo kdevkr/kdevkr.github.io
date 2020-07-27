@@ -1,8 +1,8 @@
 ---
-    date: 2020-07-08
-    title: KDB - System Common Logging
-    tags:
-      - KDB
+date: 2020-07-08
+title: KDB - System Common Logging
+tags:
+  - KDB
 ---
 
 ## 들어가며

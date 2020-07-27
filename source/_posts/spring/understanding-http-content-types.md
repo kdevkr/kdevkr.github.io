@@ -1,9 +1,6 @@
 ---
 title: 초보 개발자가 이해하는 HTTP Content-Type
 date: 2018-12-13
-categories: [개발 이야기, HTTP]
-banner:
-    url: https://dpsvdv74uwwos.cloudfront.net/statics/img/ogimage/Importance-content-type-header-http-requests.png
 ---
 
 HTTP는 하이퍼텍스트 통신 프로토콜으로 서버와 클라이언트가 서로 통신하기 위하여 요청과 응답을 받는다.

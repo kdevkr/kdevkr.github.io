@@ -1,11 +1,9 @@
 ---
-    title: 초보가 이해하는 스프링 시큐리티
-    date: 2017-03-29
-    categories:
-        - 개발 이야기
-    tags:
-        - Spring
-        - Spring Security
+title: 초보가 이해하는 스프링 시큐리티
+date: 2017-03-29
+tags:
+  - Spring
+  - Spring Security
 ---
 
 > 본 글은 OKKY에 공유된 [초보가 이해하는 스프링 시큐리티](https://okky.kr/article/382738) 입니다.

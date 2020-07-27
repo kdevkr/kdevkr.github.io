@@ -1,8 +1,8 @@
 ---
-  title: Docker - 프라이빗 도커 레지스트리 구성하기
-  date: 2020-07-17
-  tags:
-    - Docker Registry
+title: Docker - 프라이빗 도커 레지스트리 구성하기
+date: 2020-07-17
+tags:
+  - Docker Registry
 ---
 
 ## 들어가며

@@ -1,7 +1,6 @@
 ---
 title: 초보 개발자가 이해하는 캐시 정책
 date: 2018-06-09 21:21:18
-categories: [개발 이야기]
 tags:
   - Java
   - Cache

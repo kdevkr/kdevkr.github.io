@@ -1,10 +1,10 @@
 ---
-  date: 2020-07-19
-  title: K8S - 쿠버네티스 큐브컨트롤 액세스 구성하기
-  categories:
-    - Kubernetes
-  tags:
-    - Cluster Access
+date: 2020-07-19
+title: K8S - 쿠버네티스 큐브컨트롤 액세스 구성하기
+categories:
+  - Kubernetes
+tags:
+  - Cluster Access
 ---
 
 ![](/images/logo/kubernetes.jpg)

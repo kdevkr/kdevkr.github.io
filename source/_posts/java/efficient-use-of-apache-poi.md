@@ -2,9 +2,7 @@
 title: Apache POI 효율적으로 사용하기
 date: 2019-05-29
 categories:
-  - TIL
-banner:
-    url: https://poi.apache.org/images/group-logo.png
+  - Java
 ---
 
 ![](https://poi.apache.org/images/group-logo.png#center)

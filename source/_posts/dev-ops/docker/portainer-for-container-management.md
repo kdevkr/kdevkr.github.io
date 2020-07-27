@@ -1,11 +1,11 @@
 ---
-  title: Docker - 컨테이너 관리를 위한 Portainer
-  date: 2020-07-18
-  categories:
-    - Docker
-  tags:
-    - Docker Management
-    - Portatiner
+title: Docker - 컨테이너 관리를 위한 Portainer
+date: 2020-07-18
+categories:
+  - Docker
+tags:
+  - Docker Management
+  - Portatiner
 ---
 
 ## 들어가며

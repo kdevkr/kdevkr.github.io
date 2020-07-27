@@ -1,9 +1,6 @@
 ---
-    title: XML로 다국어 메시지 관리하기
-    date: 2019-01-26
-    categories: [개발 이야기, 스프링]
-    banner:
-        url: https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png
+title: XML로 다국어 메시지 관리하기
+date: 2019-01-26
 ---
 
 ![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#center)

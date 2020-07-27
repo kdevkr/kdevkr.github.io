@@ -1,10 +1,10 @@
 ---
-  title: Docker - 도커 컴포즈 사용하기
-  date: 2020-07-16
-  categories:
-    - Docker
-  tags:
-    - Docker Compose
+title: Docker - 도커 컴포즈 사용하기
+date: 2020-07-16
+categories:
+  - Docker
+tags:
+  - Docker Compose
 ---
 
 ## 들어가며

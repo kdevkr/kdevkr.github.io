@@ -1,10 +1,10 @@
 ---
-    date: 2020-07-03
-    title: KDB - Prometheus Exporter
-    tags:
-      - KDB
-      - Prometheus
-      - Grafana
+date: 2020-07-03
+title: KDB - Prometheus Exporter
+tags:
+  - KDB
+  - Prometheus
+  - Grafana
 ---
 
 ## 들어가며

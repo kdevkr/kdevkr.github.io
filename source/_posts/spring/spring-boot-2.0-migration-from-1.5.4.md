@@ -1,15 +1,13 @@
 ---
-    title: 스프링 부트 1.5.4에서 2.0으로 마이그레이션 하기
-    date: 2020-01-21
-    categories: [개발 이야기]
-    tags: [스프링 부트, 마이그레이션, 삽질]
+title: 스프링 부트 1.5.4에서 2.0으로 마이그레이션 하기
+date: 2020-01-21
 ---
 
 ## 들어가며
 현재 개발중인 프로젝트에서 JVM 기반으로 ES6 기반의 자바스크립트를 실행해야하는 요구사항이 있어 이를 지원하는 JDK 9 이상으로 자바 버전을 올려야하는 상황이 발생하였습니다. 😑
 
 > [Nashorn JavaScript Engine in JDK 9](https://www.oracle.com/corporate/features/nashorn-javascript-engine-jdk9.html)에서 ES6 지원을 확인할 수 있습니다.
-> 
+>
 > 좀 더 알아보니 OpenJDK에서는 Jashorn 엔진을 제외한다고 명시했습니다.
 > \- https://openjdk.java.net/jeps/335
 > 나중에는 [GraalVM의 GraalJS](https://github.com/graalvm/graaljs) 쪽으로 선회하는 방법이 좋겠습니다.
@@ -43,7 +41,7 @@
 #### Gradle 버전 업그레이드
 gradle 명령 또는 버전을 명시해서 버전을 업그레이드 할 수 있습니다.
 
-업그레이드할 Gradle 버전은 `5.6.4`입니다. 
+업그레이드할 Gradle 버전은 `5.6.4`입니다.
 [Gradle 릴리즈 노트](https://docs.gradle.org/5.6.4/release-notes.html)에 따르면 그루비 컴파일 속도가 빨라졌다고하여 4.10.3이 아닌 5.6.4로 결정하였습니다.
 
 > 추후 문제가 발생하여 최종적으로는 6.1로 다시 업그레이드했습니다.
@@ -103,7 +101,7 @@ dependencies {
 Gradle 버전을 업그레이드하여도 빌드 및 구동이 정상적으로 되니 다음 영역으로 넘어가겠습니다.
 
 ### Spring Boot ✅
-이제 대망의 스프링 부트 프레임워크의 버전을 업그레이드할 차례입니다. 
+이제 대망의 스프링 부트 프레임워크의 버전을 업그레이드할 차례입니다.
 
 두근두근 🤪
 > 자 이제 시작이야. 내꿈을, 내꿈을 위한 여행. XXX.
@@ -210,7 +208,7 @@ ext {
 **_Spring Boot Gradle Plugin의 많은 부분이 개선되었습니다. 이제 의존성 관리 플러그인을 자동으로 적용하지 않으므로 이제 직접 명시해야 합니다._**  
 ```groovy
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management' 
+apply plugin: 'io.spring.dependency-management'
 ```
 
 - `bootRepackage` 태스크가 `bootJar`와 `bootWar`로 대체되었습니다. 더이상 `jar`와 `war` 태스크가 관여하지 않습니다.
@@ -265,7 +263,7 @@ management.server.servlet.context-path=
 management.server.ssl.enabled=
 ```
 
-**임베디드 톰캣 커스터마이저 코드 변경** 
+**임베디드 톰캣 커스터마이저 코드 변경**
 임베디드 컨테이너 패키지가 리팩토링되어 기존의 톰캣 커스터마이즈를 위한 클래스를 변경해야합니다.
 
 |Before|After|
@@ -280,13 +278,13 @@ management.server.ssl.enabled=
 [Relaxed Binding](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide#relaxed-binding)이 변경되면서 org.springframework.boot.bind의 RelaxedPropertyResolver가 삭제되었는데 spring-boot-admin:1.5.7에서 RelaxedPropertyResolver를 참조하므로 더이상 사용할 수 없게 되어 버전을 업그레이드 하였습니다.
 
 ```
-Exception encountered during context initialization - 
-cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [net.ion.VppApplication]; 
+Exception encountered during context initialization -
+cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [net.ion.VppApplication];
 
-nested exception is java.lang.IllegalStateException: 
-Could not evaluate condition on de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration due to org/springframework/boot/bind/RelaxedPropertyResolver not found. 
+nested exception is java.lang.IllegalStateException:
+Could not evaluate condition on de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration due to org/springframework/boot/bind/RelaxedPropertyResolver not found.
 
-Make sure your own configuration does not rely on that class. 
+Make sure your own configuration does not rely on that class.
 This can also happen if you are @ComponentScanning a springframework package (e.g. if you put a @ComponentScan in the default package by mistake)
 ```
 
@@ -306,7 +304,7 @@ This can also happen if you are @ComponentScanning a springframework package (e.
 > 그래서 업그레이드를 시도하고 있죠
 
 **_기본적으로 [빈 오버라이딩](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding)을 허용하지 않도록 변경되었습니다._**
-> 같은 유형의 빈을 다시 정의하는 것을 방지하는 기능인데 다시 정의하는 것들이 있어서 
+> 같은 유형의 빈을 다시 정의하는 것을 방지하는 기능인데 다시 정의하는 것들이 있어서
 
 **_자동 구성 제외에 대한 일관성을 제공합니다. `@EnableAutoConfiguration`, `@SpringBootApplication`, `@ImportAutoConfiguration` 또는 `spring.autoconfigure.exclude`로 정의합니다._**
 > 다양항 방식으로 자동 구성을 끌 수 있겠네요
@@ -374,13 +372,13 @@ public Health healthForComponent(@Selector String component) {
 **_@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)로 별도의 랜덤 포트를 적용할 수 있습니다._**
 > 테스트 시 포트 문제가 해결될 듯 합니다.
 
-그외 변경된 부분이 더 있으므로 [릴리즈 노트](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes)를 참고하시길 바랍니다. 
+그외 변경된 부분이 더 있으므로 [릴리즈 노트](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes)를 참고하시길 바랍니다.
 
 ##### 문제점 해결 ⚠️
 
 **빈 오버라이딩 허용 안됨**
 ```
-The bean 'freeMarkerConfiguration', defined in class path resource [org/springframework/boot/autoconfigure/freemarker/FreeMarkerServletWebConfiguration.class], could not be registered. 
+The bean 'freeMarkerConfiguration', defined in class path resource [org/springframework/boot/autoconfigure/freemarker/FreeMarkerServletWebConfiguration.class], could not be registered.
 A bean with that name has already been defined in class path resource [../config/MailConfig.class] and overriding is disabled.
 ```
 
@@ -396,7 +394,7 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 }
 
 class MailConfig {
-    
+
     // @Deprecated
     @Bean
     public freemarker.template.Configuration freeMarkerConfiguration() throws IOException, TemplateException {
@@ -504,7 +502,7 @@ All of them match the consumer attributes:
 이와 관련하여 스프링 부트 깃허브에 [Dependency resolution fails with Gradle 5.3.x to 5.6.x](https://github.com/spring-projects/spring-boot/issues/19783) 이슈가 올라와있어 확인해보니 다음과 같은 답변이 있었습니다.
 
 ```
-The problem’s caused by spring-boot-dependencies upgrading from Kotlin Coroutines 1.3.2 to 1.3.3. 
+The problem’s caused by spring-boot-dependencies upgrading from Kotlin Coroutines 1.3.2 to 1.3.3.
 Unfortunately this affects pure-Java projects as the Kotlin Coroutines bom is imported in the spring-boot-dependencies bom.
 
 You should be able to work around the problem by overriding the version of the Kotlin Coroutines bom that is imported by Boot’s dependency management:
@@ -523,16 +521,16 @@ ext['kotlin-coroutines.version']='1.3.2'
 3. Spring Boot 2.2.4.RELEASE 업그레이드 _(2020-01-20)_
 
 >  https://github.com/spring-projects/spring-boot/issues/19783#issuecomment-577604150
->  결론적으로 제가 업그레이드를 시도했을때는 마침 문제가 있었고 😥 현재는 해결방법이 명확히 존재합니다. 
+>  결론적으로 제가 업그레이드를 시도했을때는 마침 문제가 있었고 😥 현재는 해결방법이 명확히 존재합니다.
 
 ### JDK ✅
 마지막으로 빌드되는 JDK 버전을 업그레이드해야합니다.
 
-#### OpenJDK 10 
+#### OpenJDK 10
 
 ##### 문제점 확인 ⚠️
 
-**_JDK9(Java SE 9) 이상에서 JAXB(javax.xml.bind) 클래스 못 찾음 문제_** 
+**_JDK9(Java SE 9) 이상에서 JAXB(javax.xml.bind) 클래스 못 찾음 문제_**
 
 https://blog.leocat.kr/notes/2019/02/12/java-cannot-find-jaxb-from-jdk9-and-above
 

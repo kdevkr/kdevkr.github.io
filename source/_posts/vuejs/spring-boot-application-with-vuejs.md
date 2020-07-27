@@ -1,10 +1,9 @@
 ---
-    title: 스프링 부트 애플리케이션과 VueJS 통합하기
-    date: 2020-03-08 13:00
-    categories: [개발 이야기]
-    tags:
-        - Spring Boot
-        - Vue.js
+title: 스프링 부트 애플리케이션과 VueJS 통합하기
+date: 2020-03-08
+tags:
+  - Spring Boot
+  - Vue.js
 ---
 
 ## 스프링 부트 애플리케이션과 VueJS 통합하기

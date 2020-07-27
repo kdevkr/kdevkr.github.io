@@ -1,9 +1,6 @@
 ---
 title: 비밀번호 암호화 하기
-categories: [개발 이야기]
 date: 2019-03-20
-banner:
-    url: https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png
 ---
 
 ![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#center)
@@ -11,7 +8,7 @@ banner:
 자바에서 비밀번호 암호화를 구현하기 위해서는 [개인정보보호법과 JAVA를 이용한 암호화 구현(SHA256, AES256)](http://github.kindler.io/java-encrypt) 또는 [Hashing Passwords in Java with BCrypt](https://www.stubbornjava.com/posts/hashing-passwords-in-java-with-bcrypt)와 같이 바이트 연산을 하는 코드를 작성해야 한다.
 
 ## 스프링 시큐리티
-스프링 프레임워크의 시큐리티 모듈은 보안 관련된 기능을 제공해준다. 
+스프링 프레임워크의 시큐리티 모듈은 보안 관련된 기능을 제공해준다.
 
 시큐리티 모듈이 제공하는 `org.springframework.security.crypto.password.PasswordEncoder `인터페이스를 통해 쉽게 비밀번호를 암호화하는 방법을 알아보자.
 
@@ -50,7 +47,7 @@ public PasswordEncoder passwordEncoder() {
 ```
 
 #### 암호화
-비밀번호를 암호화하는 것은 쉽다. 
+비밀번호를 암호화하는 것은 쉽다.
 
 암호화되지 않은 비밀번호만 넘겨주면 알아서 내부적으로 해시를 만들어 암호화된 비밀번호를 반환한다.
 
@@ -61,7 +58,7 @@ String encode(CharSequence rawPassword);
 우리는 회원가입 또는 비밀번호 수정 시에 PasswordEncoder의 위 함수를 통해 암호화된 비밀번호를 저장해주면 된다.
 
 #### 암호화된 비밀번호 비교
-스프링 시큐리티의 PasswordEncoder가 추구하는 것은 단방향 암호화이다. 
+스프링 시큐리티의 PasswordEncoder가 추구하는 것은 단방향 암호화이다.
 
 그러므로 다시 암호화된 비밀번호를 복호화해서 비교하는 것이 아닌 암호화되지 않은 비밀번호를 다른 해시로 암호화해서 같은 값을 가지는지 비교한다.
 

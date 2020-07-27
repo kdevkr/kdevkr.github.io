@@ -1,8 +1,10 @@
 ---
-    title: RestTemplate와 WebClient로 Open API를 사용하는 방법 비교하기
-    date: 2020-01-31
-    categories: [개발 이야기]
-    tags: [RestTemplate, WebClient, Open API]
+title: RestTemplate와 WebClient로 Open API를 사용하는 방법 비교하기
+date: 2020-01-31
+tags:
+  - RestTemplate
+  - WebClient
+  - Open API
 ---
 
 ## 들어가며
@@ -45,7 +47,7 @@
 
 <!-- tab WebClient -->
 ### WebClient
-`WebClient`는 리액티브 스택을 지원할 수 있도록 [Reactor Netty](https://github.com/reactor/reactor-netty)를 사용하여 논-블로킹으로 HTTP 요청을 수행하는 리액티브 클라이언트입니다. 
+`WebClient`는 리액티브 스택을 지원할 수 있도록 [Reactor Netty](https://github.com/reactor/reactor-netty)를 사용하여 논-블로킹으로 HTTP 요청을 수행하는 리액티브 클라이언트입니다.
 
 #### Example
 이제 RestTemplate와 비교하여 똑같은 동작을 해보겠습니다.

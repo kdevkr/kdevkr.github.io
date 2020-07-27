@@ -1,10 +1,10 @@
 ---
-  date: 2020-07-22
-  title: K8S - 쿠버네티스 도구 모음
-  categories:
-    - Kubernetes
-  tags:
-    - Awesome
+date: 2020-07-22
+title: K8S - 쿠버네티스 도구 모음
+categories:
+  - Kubernetes
+tags:
+  - Awesome
 ---
 
 ![](/images/logo/kubernetes.jpg)

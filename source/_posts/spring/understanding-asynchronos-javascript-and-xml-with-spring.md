@@ -1,11 +1,9 @@
 ---
-    title: 초보 개발자들을 위한 AJAX에 대한 정리
-    date: 2017-02-13
-    categories:
-        - 개발 이야기
-    tags:
-        - Spring
-        - AJAX
+title: 초보 개발자들을 위한 AJAX에 대한 정리
+date: 2017-02-13
+tags:
+  - Spring
+  - AJAX
 ---
 
 > 본 글은 https://github.com/kdevkr/spring-demo-ajax 에서 제공했던 정보입니다.
@@ -296,4 +294,3 @@ public void api(final ModelMap map){
 > ModelMap에 추가하여 JSON 형태로 출력할 수 있게 됩니다.
 
 참조 : http://ismydream.tistory.com/139
-

@@ -1,10 +1,10 @@
 ---
-  title: K8S - 쿠버네티스 클러스터 설치하기
-  date: 2020-07-18
-  categories:
-    - Kubernetes
-  tags:
-    - Cluster
+title: K8S - 쿠버네티스 클러스터 설치하기
+date: 2020-07-18
+categories:
+  - Kubernetes
+tags:
+  - Cluster
 ---
 
 ![](/images/logo/kubernetes.jpg)

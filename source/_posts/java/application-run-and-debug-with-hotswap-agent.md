@@ -2,9 +2,8 @@
 title: 자바 애플리케이션에 HotSwap 적용하기
 date: 2020-02-09
 categories:
-  - TIL
-tags:
   - Java
+tags:
   - HotSwapAgent
 ---
 

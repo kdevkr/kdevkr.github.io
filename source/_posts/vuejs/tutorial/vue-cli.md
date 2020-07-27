@@ -1,11 +1,11 @@
 ---
-  date: 2020-07-18
-  title: Vue Tutorial - Vue CLI
-  categories:
-    - Vue
-  tags:
-    - Vue Tutorial
-    - Vue CLI
+date: 2020-07-18
+title: Vue Tutorial - Vue CLI
+categories:
+  - Vue
+tags:
+  - Vue Tutorial
+  - Vue CLI
 ---
 
 ## 들어가며

@@ -1,9 +1,9 @@
 ---
-  title: Docker - 스토리지 사용하기
-  date: 2020-07-14
-  tags:
-    - Docker
-    - Volume
+title: Docker - 스토리지 사용하기
+date: 2020-07-14
+tags:
+  - Docker
+  - Volume
 ---
 
 ## 들어가며

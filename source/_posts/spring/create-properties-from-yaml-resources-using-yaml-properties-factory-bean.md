@@ -1,8 +1,10 @@
 ---
-    title: YamlPropertiesFactoryBean으로 YAML 프로퍼티 만들기
-    date: 2020-01-25
-    categories: [개발 이야기]
-    tags: [Spring, Yaml, Properties]
+title: YamlPropertiesFactoryBean으로 YAML 프로퍼티 만들기
+date: 2020-01-25
+tags:
+  - Spring
+  - Yaml
+  - Properties
 ---
 
 ## 들어가며

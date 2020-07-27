@@ -1,8 +1,10 @@
 ---
-    title: KDB 튜토리얼 - 자바 클라이언트
-    date: 2020-03-08 09:00
-    categories: [개발 이야기]
-    tags: [KDB, Q]
+title: KDB 튜토리얼 - 자바 클라이언트
+date: 2020-03-08 09:00
+categories:
+  - KDB
+tags:
+  - Q
 ---
 
 1. [KDB 튜토리얼 - 설치 및 접속](../install-and-connection)

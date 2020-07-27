@@ -1,10 +1,11 @@
 ---
-    title: 프로메테우스와 그라파나를 활용한 메트릭 모니터링
-    date: 2020-03-25
-    categories: [개발 이야기]
-    tags:
-     - Prometheus
-     - Grafana
+title: 프로메테우스와 그라파나를 활용한 메트릭 모니터링
+date: 2020-03-25
+categories:
+  - Dev Ops
+tags:
+  - Prometheus
+  - Grafana
 ---
 
 오픈 소스 모니터링 시스템인 프로메테우스(Prometheus)와 오픈 소스 분석 시스템인 그라파나(Grafana)를 활용하면 메트릭에 대한 모니터링 대시보드를 구성할 수 있습니다.

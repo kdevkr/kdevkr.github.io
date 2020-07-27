@@ -1,10 +1,10 @@
 ---
-  date: 2020-07-19
-  title: K8S - 쿠버네티스 개념 이해하기
-  categories:
-    - Kubernetes
-  tags:
-    - Concepts
+date: 2020-07-19
+title: K8S - 쿠버네티스 개념 이해하기
+categories:
+  - Kubernetes
+tags:
+  - Concepts
 ---
 
 ![](/images/logo/kubernetes.jpg)  

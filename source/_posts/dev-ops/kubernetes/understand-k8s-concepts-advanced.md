@@ -1,12 +1,12 @@
 ---
-  date: 2020-07-21
-  title: K8S - 쿠버네티스 고급 개념 이해하기
-  categories:
-    - Kubernetes
-  tags:
-    - Service
-    - Network
-    - Volume
+date: 2020-07-21
+title: K8S - 쿠버네티스 고급 개념 이해하기
+categories:
+  - Kubernetes
+tags:
+  - Service
+  - Network
+  - Volume
 ---
 
 ![](/images/logo/kubernetes.jpg)

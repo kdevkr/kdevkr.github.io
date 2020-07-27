@@ -1,9 +1,9 @@
 ---
-    title: KDB+
-    description: The World's Fastest Time-Series Database
-    comments: false
-    toc:
-      enable: false
+title: KDB+
+description: The World's Fastest Time-Series Database
+comments: false
+toc:
+  enable: false
 ---
 
 ![](https://www.intel.in/content/dam/www/public/us/en/images/logos/4x3/kx-logo-4x3.png.rendition.intel.web.480.360.png#compact)
@@ -19,17 +19,6 @@
 - [함수](/kdb-tutorial/function)
 - [자바 클라이언트](kdb-tutorial/java-client)
 
-## 🔥 Advanced Tips
+## 🔥 Mambo Tips
 - [Prometheus Exporter](prometheus-exporter)
 - [System Common Logging](system-common-logging)
-
-## 🛠 Libraries
-
-- [Kdb+ Database Examples](https://github.com/timeseries/kdb)  
-- [Q Tips: Fast, Scalable and Maintainable Kdb+](https://github.com/psaris/qtips)  
-- [kdb+ Core Libraries and Utilities](https://github.com/BuaBook/kdb-common)
-
-
-## 🔖 References
-- [Kdb+ and q documentation](https://code.kx.com/q/)  
-- [Java API for kdb+](https://code.kx.com/q/wp/java-api/)

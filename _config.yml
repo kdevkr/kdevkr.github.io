@@ -1,8 +1,8 @@
 ## configuration
 
 # Site
-title:                           잠만보의 개발 블로그
-subtitle:                        잠만보가 알려주는 개발 이야기
+title:                           잠만보
+subtitle:                        Today I Learned
 author:                          Mambo
 description:
 language:                        ko
@@ -100,12 +100,4 @@ theme_config:
   # ---------------------------------------------------------------
   menu:
     home: / || fas fa-home
-    archives: /archives/ || fas fa-archive
-    Java: /java || fab fa-java
-    Spring: /spring || fas fa-seedling
-    Vue.js: /vuejs || fab fa-vuejs
-    KDB+: /database/kdb || fas fa-database
-    # Docker: /dev-ops//docker || fab fa-docker
-    # kubernetes: /dev-ops//kubernetes || fas fa-dharmachakra
-    꾸르팁: /tips/ || far fa-grin-tongue-wink
     소개: /about/ || fas fa-user

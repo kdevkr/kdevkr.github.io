@@ -257,6 +257,9 @@ disable_baidu_transformation: true
 canonical: true
 seo: true
 
+google_site_verification:        LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg
+naver_site_verification:         967670e7891eb52e115709ce4890e2e8f576a1e5
+
 vendors:
   pjax: //cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js
   pace: //cdn.jsdelivr.net/npm/pace-js@1/pace.min.js

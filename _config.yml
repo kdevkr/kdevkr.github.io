@@ -100,4 +100,5 @@ theme_config:
   # ---------------------------------------------------------------
   menu:
     home: / || fas fa-home
+    archives: /archives/ || fas fa-archive
     소개: /about/ || fas fa-user

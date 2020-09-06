@@ -1,5 +1,5 @@
 ---
-title: 초보 개발자가 이해하는 HTTP Content-Type
+title: HTTP Content-Type을 이해해야합니다
 date: 2018-12-13
 ---
 

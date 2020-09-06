@@ -1,8 +1,6 @@
 ---
 title: 자바스크립트에서 블롭 데이터 다운받기
 date: 2020-02-10
-categories:
-  - JavaScript
 tags:
   - Blob
   - FileSaver
@@ -36,7 +34,6 @@ Blob 객체는 IE 10부터 지원하므로 IE 9에서 사용하기 위해서는 
 
 ```js
 import ContentDisposition from 'content-disposition'
-import { saveAs } from 'file-saver'
 
 window.$download = function(url, params) {
     $axios({

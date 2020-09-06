@@ -108,7 +108,7 @@ theme_config:
     Spring: /spring || fas fa-seedling
     Vue.js: /vuejs || fab fa-vuejs
     KDB+: /database/kdb || fas fa-database
-    Docker: /dev-ops//docker || fab fa-docker
-    kubernetes: /dev-ops//kubernetes || fas fa-dharmachakra
+    # Docker: /dev-ops//docker || fab fa-docker
+    # kubernetes: /dev-ops//kubernetes || fas fa-dharmachakra
     꾸르팁: /tips/ || far fa-grin-tongue-wink
     소개: /about/ || fas fa-user

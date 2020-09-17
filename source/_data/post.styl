@@ -6,28 +6,12 @@
       box-shadow: none !important;
 
       .post-header {
-
-        .post-title {
-            font-size: 1.75em;
-            font-family: 'yg-jalnan';
-
-            +tablet-mobile() {
-                font-size: 1.35em;
-            }
-        }
-
-        .post-description {
-            font-size: 1.15em;
-            font-family: 'Binggrae-Bold';
-        }
-
+        margin-bottom: 0;
+        padding-bottom: 2rem;
+        border-bottom: 1.5px dashed $grey;
+          
         .post-meta {
-            font-size: 0.8em;
             margin-bottom: 0;
-
-            +tablet-mobile() {
-                font-size: 0.65em;
-            }
         }
       }
 
@@ -44,12 +28,13 @@
         .collection-year {
             margin: 20px 0 10px 0;
         }
+        .collection-title {
+            .collection-header {
+                display: none;
+            }
+        }
         .post-header {
             margin: 10px 0;
-
-            .post-title {
-               font-family: 'Noto Sans KR';
-            }
         }
     }
 }
@@ -81,9 +66,27 @@
         }
     }
 
+    *:not(pre) > code {
+        font-family: 'Noto Sans KR';
+    }
+
     code {
       color: $red;
-      background-color: $lightgrey;
+      background-color: $white;
+      border: 1px solid $grey;
+      padding: 2px 6px;
+    }
+    
+    a {
+        color: $green;
+        border-bottom: 0;
+        &:hover {
+            text-decoration: underline;
+        }
+        
+        code {
+            color: $green;
+        }
     }
 }
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "hexo": {
-    "version": "4.2.1"
+    "version": "5.2.0"
   },
   "scripts": {
     "l": "hexo clean && hexo server",
@@ -20,27 +20,27 @@
   },
   "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "hexo": "^4.2.1",
+    "hexo": "^5.1.1",
     "hexo-browsersync": "^0.3.0",
     "hexo-deployer-git": "^2.1.0",
     "hexo-filter-emoji": "^2.2.1",
-    "hexo-filter-responsive-images": "^1.5.0",
-    "hexo-generator-alias": "^0.1.3",
+    "hexo-front-matter": "^2.0.0",
+    "hexo-fs": "^3.1.0",
+    "hexo-generator-alias": "^1.0.0",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",
-    "hexo-generator-feed": "^2.2.0",
-    "hexo-generator-indexed": "^1.2.0",
-    "hexo-generator-searchdb": "^1.3.0",
+    "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-indexed": "^1.2.1",
+    "hexo-generator-searchdb": "^1.3.2",
     "hexo-generator-seo-friendly-sitemap": "0.0.25",
     "hexo-generator-tag": "^1.0.0",
-    "hexo-next-exif": "github:theme-next/hexo-next-exif",
     "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
     "hexo-renderer-markdown-it": "^4.1.0",
-    "hexo-renderer-stylus": "^1.1.0",
-    "hexo-renderer-swig": "^1.1.0",
-    "hexo-server": "^1.0.0",
-    "highlight.js": "^10.1.1",
+    "hexo-renderer-marked": "^3.2.0",
+    "hexo-renderer-stylus": "^2.0.1",
+    "hexo-server": "^2.0.0",
+    "hexo-util": "^2.4.0",
+    "highlight.js": "^10.1.2",
     "markdown-it-named-headings": "^1.1.0"
   }
 }

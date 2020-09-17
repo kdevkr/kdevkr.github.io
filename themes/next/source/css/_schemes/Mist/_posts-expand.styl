@@ -2,7 +2,7 @@
 // --------------------------------------------------
 .posts-expand {
   &.index {
-    .post-title, .post-meta {
+    .post-header {
       text-align: $site-meta-text-align;
 
       +mobile() {
@@ -10,8 +10,8 @@
       }
     }
 
-    .post-meta {
-      margin: 5px 0 20px 0;
+    .post-meta-container {
+      margin-top: 5px;
     }
   }
 
@@ -23,7 +23,8 @@
     margin-top: 120px;
   }
 
-  .post-title, .post-meta {
+  .post-header {
+    margin-bottom: 20px;
     text-align: center;
   }
 
@@ -31,12 +32,12 @@
     text-align: left;
 
     a {
-      background: $whitesmoke;
+      background: var(--content-bg-color);
       border-bottom: none;
       padding: 1px 5px;
 
       &:hover {
-        background: $grey-light;
+        background: var(--menu-item-bg-color);
       }
     }
   }
@@ -51,7 +52,6 @@
   text-align: left;
 
   .btn {
-    // color: $grey-dim;
     background: none;
     border: 0;
     border-bottom: 2px solid var(--btn-default-border-color);

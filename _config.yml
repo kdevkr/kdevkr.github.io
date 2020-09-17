@@ -27,7 +27,8 @@ skip_render:                     [README.md, draft/**]
 default_layout:                  post
 render_drafts:                   false
 titlecase:                       true
-external_link:                   true
+external_link:                   
+    enable:                      true
 post_asset_folder:               true
 future:                          false
 
@@ -102,3 +103,6 @@ theme_config:
     home: / || fas fa-home
     archives: /archives/ || fas fa-archive
     소개: /about/ || fas fa-user
+    
+  google_site_verification:        LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg
+  naver_site_verification:         967670e7891eb52e115709ce4890e2e8f576a1e5

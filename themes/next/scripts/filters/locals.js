@@ -2,16 +2,15 @@
 
 'use strict';
 
-const path = require('path');
 const keys = ['toc', 'reward_settings', 'quicklink'];
 
 hexo.extend.filter.register('template_locals', locals => {
-  const { env, config } = hexo;
+  const { version, config } = hexo;
   const { __, theme, page } = locals;
   const { i18n } = hexo.theme;
   // Hexo & NexT version
-  locals.hexo_version = env.version;
-  locals.next_version = require(path.normalize('../../package.json')).version;
+  locals.hexo_version = version;
+  locals.next_version = require('../../package.json').version;
   // Language & Config
   locals.title = __('title') !== 'title' ? __('title') : config.title;
   locals.subtitle = __('subtitle') !== 'subtitle' ? __('subtitle') : config.subtitle;
@@ -24,7 +23,7 @@ hexo.extend.filter.register('template_locals', locals => {
   locals.ccURL = 'https://creativecommons.org/' + (theme.creative_commons.license === 'zero' ? 'publicdomain/zero/1.0/' : 'licenses/' + theme.creative_commons.license + '/4.0/') + (theme.creative_commons.language || '');
   // PJAX
   locals.pjax = theme.pjax ? ' data-pjax' : '';
-  // Front matter
+  // Front-matter
   keys.forEach(key => {
     page[key] = { ...theme[key], ...page[key] };
   });

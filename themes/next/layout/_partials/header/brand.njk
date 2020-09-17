@@ -2,9 +2,9 @@
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="{{ __('accessibility.nav_toggle') }}">
       {%- if theme.menu %}
-        <span class="toggle-line toggle-line-first"></span>
-        <span class="toggle-line toggle-line-middle"></span>
-        <span class="toggle-line toggle-line-last"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
       {%- endif %}
     </div>
   </div>
@@ -15,9 +15,9 @@
     {%- endif %}
 
     <a href="{{ config.root }}" class="brand" rel="start">
-      <i class="logo-line-before"></i>
+      <i class="logo-line"></i>
       <h1 class="site-title">{{ title }}</h1>
-      <i class="logo-line-after"></i>
+      <i class="logo-line"></i>
     </a>
     {%- if subtitle %}
       <p class="site-subtitle" itemprop="description">{{ subtitle }}</p>

@@ -1,6 +1,6 @@
 ---
 title: 컨테이너 오케스트레이션 이해하기
-date: 2020-10-08
+date: 2021-10-08
 categories:
   - DevOps
 tags:

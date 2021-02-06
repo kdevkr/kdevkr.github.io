@@ -2,7 +2,7 @@
 // --------------------------------------------------
 .posts-expand {
   &.index {
-    .post-header {
+    .post-title, .post-meta {
       text-align: $site-meta-text-align;
 
       +mobile() {
@@ -10,8 +10,8 @@
       }
     }
 
-    .post-meta-container {
-      margin-top: 5px;
+    .post-meta {
+      margin: 5px 0 20px 0;
     }
   }
 
@@ -23,21 +23,24 @@
     margin-top: 120px;
   }
 
-  .post-header {
-    margin-bottom: 20px;
+  .post-title, .post-meta {
     text-align: center;
+  }
+
+  .post-body img {
+    margin-left: 0;
   }
 
   .post-tags {
     text-align: left;
 
     a {
-      background: var(--content-bg-color);
+      background: $whitesmoke;
       border-bottom: none;
       padding: 1px 5px;
 
       &:hover {
-        background: var(--menu-item-bg-color);
+        background: $grey-light;
       }
     }
   }
@@ -52,6 +55,7 @@
   text-align: left;
 
   .btn {
+    // color: $grey-dim;
     background: none;
     border: 0;
     border-bottom: 2px solid var(--btn-default-border-color);

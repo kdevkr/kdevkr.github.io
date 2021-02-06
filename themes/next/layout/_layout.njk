@@ -51,5 +51,6 @@
   {%- if theme.pjax %}
     </div>
   {%- endif %}
+  {{ partial('_third-party/adsense/index.njk', {}, {cache: theme.cache.enable}) }}
 </body>
 </html>

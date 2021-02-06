@@ -4,22 +4,28 @@ if (hexo-config('darkmode')) {
     }
 
     .header {
+        border-right-color: $border-color;
+
         .header-inner {
             background-color: $body-bg-color; 
-            box-shadow: none;  
-        }
+            box-shadow: none;
+            border-top-color: $border-color;
+            border-left: 1px solid $border-color;
 
-        .site-brand-container {
-            border-bottom-color: $black-light;
+            .site-brand-container {
+                border-bottom-color: $border-color;
+            }
         }
 
         .site-nav {
-            border-bottom: 1px solid $black-light;
-
             .menu-item {
                 .menu-item-active {
                     color: $link-hover-color;
                 }    
+            }
+
+            +mobile() {
+                border-bottom: 1px solid $border-color;
             }
         }
     }
@@ -28,11 +34,24 @@ if (hexo-config('darkmode')) {
         
         .sidebar-inner {
             background-color: $body-bg-color;
-            box-shadow: none;  
+            border-bottom-color: $border-color;
+            box-shadow: none;
+
+            .sidebar-nav {
+                border-top-color: $border-color;
+                border-left: 1px solid $border-color;
+            }
+
+            .sidebar-panel {
+                border-top-color: $border-color;
+                border-left: 1px solid $border-color;
+            }
         }
     }
 
     .main-inner > {
+        width: calc(100% - 242px);
+        
         .sub-menu, .post-block, .tabs-comment, .comments, .pagination {
             background: $body-bg-color;
             box-shadow: none;
@@ -53,7 +72,40 @@ if (hexo-config('darkmode')) {
         .comments {
             background-color: $body-bg-color;
             box-shadow: none;
+            border-top-color: $border-color;
+        }
+    }
+
+    .archive {
+        .post-block {
+            .post-content {
+                &:before {
+                    background-color: $black-light;
+                }
+            }
+        }
+    }
+
+    .post-block {
+        .post-header {
+            +mobile() {
+                margin-bottom: 1rem;
+            }
         }
 
+        .post-body {
+            h1 {
+                border-top-color: $border-color;
+            }
+            h1, h2 {
+                border-bottom-color: $border-color;
+                padding-bottom: 5px;
+            }
+        }
+        .post-footer {
+            .post-nav {
+                border-top-color: $border-color;
+            }
+        }
     }
 }

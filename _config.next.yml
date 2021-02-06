@@ -70,7 +70,7 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external:                true
-    family:                  Noto Sans KR
+    family:                  Roboto, Noto Sans KR
 
   # Font settings for site title (.site-title).
   title:

@@ -6,7 +6,7 @@
     "version": "5.2.0"
   },
   "scripts": {
-    "l": "hexo clean && hexo server",
+    "l": "hexo server",
     "p": "hexo clean && hexo deploy -g"
   },
   "repository": {

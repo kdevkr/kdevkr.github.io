@@ -1,0 +1,113 @@
+/* header */
+.header {
+    border-right: 1px solid $grey;
+
+    .header-inner {
+        box-shadow: none;
+        border-top: 1px solid $grey;
+
+        .site-brand-container {
+            padding: 25px 10px;
+            background-color: $brand-bg-color;
+            border-bottom: 1px solid $grey-lighter;
+            box-shadow: none;
+
+            .site-nav-toggle, .site-nav-right {
+                .toggle {
+                    color: $text-color;
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+
+                    .toggle-line {
+                        background: $text-color;
+                    }
+                }
+            }
+
+            .site-meta {
+                .site-subtitle {
+                    color: $text-color;
+                }
+            }
+        }
+    }
+
+}
+
+
+/* header > menu */
+.menu {
+    .menu-item {
+        .badge {
+        background-color: $orange;
+        font-weight: 400;
+        }
+
+        .menu-item-active {
+            .badge {
+                animation-name: pulse;
+                animation-duration: 1.5s;
+                animation-iteration-count: infinite;
+            }    
+        }
+
+        .fa-none {
+            display: none;
+        }
+    }
+}
+
+
+/* header > sidebar */
+.sidebar {
+    margin-top: 0;
+
+    .sidebar-inner {
+        box-shadow: none;
+        padding: 0;
+        border-bottom: 1px solid $grey;
+
+        .sidebar-nav {
+            border-top: 1px solid $grey;
+            padding: 10px 0;
+
+            .site-state-wrap {
+                .site-state {
+                    .site-state-item {
+                        .site-state-item-name {
+                            text-transform: uppercase;  
+                        }
+                    }
+                }
+            }
+        }
+        .sidebar-panel {
+            border-top: 1px solid $grey;
+            padding: 20px 0;
+        }
+        .back-to-top {
+            background-color: $lightgrey;
+
+            &.back-to-top-on {
+                margin: 0;
+                padding-top: 10px;
+                padding-bottom: 5px;
+                border-top: 1px solid $grey;
+            }
+        }
+    }
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}

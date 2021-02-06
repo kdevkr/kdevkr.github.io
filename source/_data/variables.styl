@@ -15,6 +15,25 @@ $white = rgb(255, 255, 255);
 $grey = #efefed;
 $lightgrey = #f8f8f8;
 
-$body-bg-color = $white;
-
 $link-decoration-color = $snorlax-sole-of-foot;
+
+$headband-color = transparent;
+$brand-bg-color = $white;
+$brand-color = $black-deep;
+$brand-hover-color = $black-deep;
+
+if (hexo-config('darkmode')) {
+    $body-bg-color = $body-bg-color-dark;
+    $text-color = $grey-light;
+    $link-color = $grey-lighter;
+    $link-hover-color = $black-light;
+
+    $brand-bg-color = $body-bg-color;
+    $brand-color = $text-color;
+    $brand-hover-color = $grey-light;
+
+    $highlight-background = $black-dim;
+    $highlight-foreground = $text-color;
+
+    $blockquote-color = $text-color;
+}

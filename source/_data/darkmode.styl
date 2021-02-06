@@ -1,0 +1,59 @@
+if (hexo-config('darkmode')) {
+    body {
+        color: $text-color;
+    }
+
+    .header {
+        .header-inner {
+            background-color: $body-bg-color; 
+            box-shadow: none;  
+        }
+
+        .site-brand-container {
+            border-bottom-color: $black-light;
+        }
+
+        .site-nav {
+            border-bottom: 1px solid $black-light;
+
+            .menu-item {
+                .menu-item-active {
+                    color: $link-hover-color;
+                }    
+            }
+        }
+    }
+
+    .sidebar {
+        
+        .sidebar-inner {
+            background-color: $body-bg-color;
+            box-shadow: none;  
+        }
+    }
+
+    .main-inner > {
+        .sub-menu, .post-block, .tabs-comment, .comments, .pagination {
+            background: $body-bg-color;
+            box-shadow: none;
+
+            &:not(:first-child):not(.sub-menu) {
+                border-radius: $border-radius;
+                box-shadow: none;
+            }
+        }
+        &.archive {
+            .post-content {
+                &:before {
+                    background: $black-light;
+                }
+            }
+        }
+
+        .comments {
+            background-color: $body-bg-color;
+            box-shadow: none;
+        }
+
+    }
+}

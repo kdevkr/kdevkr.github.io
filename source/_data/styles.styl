@@ -1,29 +1,32 @@
 @import "fonts.styl";
-@import "menu.styl";
+@import "header.styl";
 @import "post.styl";
 @import "pagination.styl";
 @import "main.styl";
-
-.footer {
-    margin-top: 20px;
-    padding: 40px 0px;
-    border-top: 1px solid #efefed;
-}
-
-.headband {
-    height: 0;
-}
+@import "darkmode.styl";
 
 .reading-progress-bar {
   background-color: $green;
   border-radius: 5px;
 }
+
 .pace {
   .pace-progress {
     background-color: $green !important;
   }
 }
 
-a.heading-anchor {
-    color: $snorlax-sole-of-foot;
+.headband {
+  background-color: $headband-color;  
+}
+
+/* footer */
+.footer {
+  .footer-inner {
+    text-align: right;
+
+    +tablet-mobile() {
+      padding-right: 0.5em;
+    }
+  }  
 }

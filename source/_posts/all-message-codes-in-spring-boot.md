@@ -61,10 +61,35 @@ public class MessageSourceConfig {
 ### spring.messages.basename
 ReloadableResourceBundleMessageSource를 확장하는 클래스를 만들었지만 스프링 부트의 기본 `spring.messages.basename` 값인 `messages`으로 메시지 프로퍼티를 가져올 수 없습니다.
 
-내부적인 코드 이슈로 인하여 클래스패스에 위치한 `messages.properties`을 리소스로 가져오지 못합니다.
+ReloadableResourceBundleMessageSource에서 사용중인 ResourceLoader가 DefaultResourceLoader이므로 클래스패스에 위치한 `messages.properties`을 리소스로 가져오지 못합니다.
 
 따라서, spring.messages.basename에 클래스패스를 포함하여 명시합니다.
 
 ```properties
 spring.messages.basename=classpath:/messages
 ```
+
+## Messages API
+이제 ExtendReloadableResourceBundleMessageSource를 통해 메시지 정보를 가져올 수 있게 되고 API로도 제공하여 프론트엔드 클라이언트에서도 동일한 메시지 코드를 활용할 수 있습니다.
+
+```java
+@GetMapping(value = "/messages")
+public ResponseEntity<Object> messages(Locale locale) {
+    ExtendReloadableResourceBundleMessageSource messageSource = (ExtendReloadableResourceBundleMessageSource) this.messageSource;
+    Map<String, Object> messages = new HashMap<>();
+
+    Properties allMessages = messageSource.getMessages(locale);
+
+    Set<Map.Entry<Object, Object>> entries = allMessages.entrySet();
+    for(Map.Entry<Object, Object> entry : entries) {
+        Object key = entry.getKey();
+        Object value = entry.getValue();
+
+        messages.put((String) key, value);
+    }
+
+    return ResponseEntity.ok(messages);
+}
+```
+
+감사합니다.

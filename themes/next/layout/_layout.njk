@@ -20,19 +20,6 @@
       {%- if theme.sidebar.display !== 'remove' %}
         {% block sidebar %}{% endblock %}
       {%- endif %}
-
-      {%- if theme.google_adsense.client_id %}
-        <!-- AdSense Display -->
-        <ins class="adsbygoogle"
-            style="display:block"
-            data-ad-client="{{theme.google_adsense.client_id}}"
-            data-ad-slot="3137426518"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-      {%- endif %}
     </header>
 
     {{ partial('_partials/widgets.njk', {}, {cache: theme.cache.enable}) }}
@@ -42,6 +29,24 @@
       {% block content %}{% endblock %}
       {%- include '_partials/comments.njk' -%}
     </div>
+    
+    {%- if theme.google_adsense.client_id %}
+      <aside class="adsense-block">
+        <div class="adsense-block-wrapper">
+          <!-- AdSense Display -->
+          <ins class="adsbygoogle"
+              style="display:block"
+              data-ad-client="{{theme.google_adsense.client_id}}"
+              data-ad-slot="3137426518"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+          <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+      </aside>
+    {%- endif %}
+
   </main>
 
   <footer class="footer">

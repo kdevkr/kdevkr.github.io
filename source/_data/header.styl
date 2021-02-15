@@ -1,15 +1,16 @@
 /* header */
 .header {
+    // border-top: 1px solid $grey;
     border-right: 1px solid $grey;
 
     .header-inner {
         box-shadow: none;
-        border-top: 1px solid $grey;
+        // border-top: 1px solid $grey;
 
         .site-brand-container {
             padding: 25px 10px;
             background-color: $brand-bg-color;
-            border-bottom: 1px solid $grey-lighter;
+            border-bottom: 1px solid $grey;
             box-shadow: none;
 
             .site-nav-toggle, .site-nav-right {
@@ -63,6 +64,7 @@
 /* header > sidebar */
 .sidebar {
     margin-top: 0;
+    top: 0;
 
     .sidebar-inner {
         box-shadow: none;
@@ -95,6 +97,11 @@
                 padding-top: 10px;
                 padding-bottom: 5px;
                 border-top: 1px solid $grey;
+            }
+        }
+        .post-toc {
+            ol {
+                padding-left: 15px;
             }
         }
     }

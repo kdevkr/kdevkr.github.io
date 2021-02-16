@@ -1,4 +1,8 @@
 .main {
+
+  * {
+    box-shadow: none !important;
+  }
   
   .header {
     +tablet-mobile() {
@@ -7,8 +11,8 @@
   }
 
   .main-inner {
-    +mobile() {
-      padding: 5px 0 0 0;
+    +tablet-mobile() {
+      padding: 10px 0;
     }
   }
 }

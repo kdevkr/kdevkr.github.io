@@ -30,6 +30,20 @@
             .site-meta {
                 .site-subtitle {
                     color: $text-color;
+
+                    +mobile() {
+                        margin-top: 5px;
+                    }
+                }
+
+                +mobile() {
+                    display: flex;
+                    align-content: center;
+                    justify-content: center;
+                }
+
+                +tablet-mobile() {
+                    padding: 0;
                 }
             }
         }
@@ -88,6 +102,14 @@
         .sidebar-panel {
             border-top: 1px solid $grey;
             padding: 20px 0;
+
+            .links-of-author {
+                .links-of-author-item {
+                    a {
+                        padding: 5px 0;
+                    }
+                }
+            }
         }
         .back-to-top {
             background-color: $lightgrey;

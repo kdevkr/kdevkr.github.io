@@ -66,13 +66,14 @@ Go 언어는 자바와는 다르게 애플리케이션을 개발할 때 필요�
 
 > 필요한 기능이 표준 라이브러리에 없는 경우 개발자들이 구현해서 깃허브 리파지토리에 공유된 패키지를 다운받을 수 있어요.
 
-외부 라이브러리인 rsc.io/quote 패키지를 다운받고 함수에서 사용해봅니다.
+외부 라이브러리인 rsc.io/quote 패키지를 로컬 환경에 다운받아서 우리의 main 패키지에서 사용해봅시다. `go get` 명령어를 사용해서 와부 패키지를 다운받읍시다.
+
 ```sh Windows Terminal
 C:\Users\Mambo\go\src\learning>go get -u rsc.io/quote
-go: downloading rsc.io/quote v1.5.2
+code in directory C:\Users\Mambo\go\src\rsc.io\quote\v3 expects import "rsc.io/quote"
 ```
 
-그리고 패키지에 포함된 함수를 사용하도록 코드를 변경한 뒤 실행합니다.
+이렇게 다운받은 라이브러리는 GOPATH의 src 폴더 밑에 존재합니다. 그래서 quote라는 패키지는 $GOPATH/src/rsc.io/quote에 있습니다. 이제 import 키워드로 quote 패키지를 포함시키고 실행해봅시다.
 
 ```go main.go
 package main
@@ -85,23 +86,22 @@ func main() {
 }
 ```
 
-> rsc.io/quote 패키지와 Go 함수가 빨간색으로 표시됩니다.
-
 ```sh Windows Terminal
 C:\Users\Mambo\go\src\learning>go run main.go
-main.go:4:8: cannot find module providing package rsc.io/quote: working directory is not part of a module
+..\rsc.io\quote\quote.go:8:8: code in directory C:\Users\Mambo\go\src\rsc.io\quote\v3 expects import "rsc.io/quote"
+..\rsc.io\quote\v3\quote.go:8:8: cannot find package "rsc.io/sampler" in any of:
+        C:\Go\src\rsc.io\sampler (from $GOROOT)
+        C:\Users\Mambo\go\src\rsc.io\sampler (from $GOPATH)
 ```
 
-작업 폴더에서 모듈 부분을 찾을 수 없다고 합니다. 모듈에 대해서 찾아봐야겠습니다.
+> 튜토리얼과 다르게 오류가 납니다... 다른 부분은 현재 프로젝트 폴더에 고 모듈 파일을 생성하지 않았다는 점이에요.
+
+대부분의 패키지가 고 모듈을 사용하고 있으므로 GOPATH 모드로는 패키지가 내부적으로 사용하는 의존성을 제대로 못가져오는 것 같습니다. 
 
 ### Go Modules
-튜토리얼 문서 상에는 의존성을 추적하기 위해서 신규 [모듈(Module)](https://golang.org/doc/tutorial/getting-started#code)을 초기화 하는 과정이 있습니다. 
+제가 튜토리얼을 그대로 따라하지 않았던 것이 문제였습니다. 바로 패키지에서 사용되는 의존성을 관리하기 위한 모듈이라는 파일을 추가하는 것입니다. 그러나 Go 블로그에 [Using Go Modules](https://blog.golang.org/using-go-modules)이라는 글을 참고해보면...
 
-> 그래서 모듈이 뭔데...
-
-Go 블로그에 [Using Go Modules](https://blog.golang.org/using-go-modules)이라는 글이 있으니 읽어봅시다. ... 영어에 거부감이 있으니 [번역본](https://johngrib.github.io/wiki/golang-mod/)을 참고하죠.
-
-> 번역본이 없었다면 파파고나 구글 번역으로 사용 했...
+> 어지러우니까 [번역본](https://johngrib.github.io/wiki/golang-mod/)을 참고할래요.
 
 1. 모듈은 Go의 의존성 관리 도구이다.
 2. 모듈은 프로젝트 루트 경로에 위치하는 go.mod 파일에 정의 된 패키지 모음이다.
@@ -116,6 +116,112 @@ C:\Users\Mambo\go\src\learning>go version
 go version go1.15.8 windows/amd64
 ```
 
-> 다시 작성중입니다.
+제가 생각한바로는 굳이 모듈 파일을 만들지 않아도 기존의 GOPATH 모드로 동작하겠네 였습니다만 외부에서 가져오는 패키지가 모듈을 사용하고 있으면 모듈 파일로 관련된 의존성을 추적해야하나봅니다. `go mod init` 명령어로 모듈 파일을 만들어보죠.
+
+```sh Windows Terminal
+C:\Users\Mambo\go\src\learning>go mod init learning
+go: creating new go.mod: module learning
+```
+
+그리고 main.go에서 선언한 rsc.io/quote 패키지에 대한 정보를 go.mod 파일과 맞추기 위해 `go mod tidy` 명령어를 수행합니다.
+
+```sh Windows Terminal
+C:\Users\Mambo\go\src\learning>go mod tidy -v
+go: finding module for package rsc.io/quote
+go: downloading rsc.io/quote v1.5.2
+go: found rsc.io/quote in rsc.io/quote v1.5.2
+```
+
+> 모듈 파일이 없을때와는 달리 rsc.io/quote 패키지에 대해서 특정 버전을 가져오네요.
+
+결국 외부 패키지를 제대로 사용하기 위해서는 GOPATH가 아닌 고 모듈로 의존성 버전까지 추적해야하는 것 같습니다. 그냥 무조건 go.mod 파일을 만드는게 좋겠습니다.
+
+> 이 글을 작성하는 도중 [Go 1.16](https://golang.org/doc/go1.16)이 릴리즈되었는데 고 모듈 모드가 기본적으로 활성화된다고 합니다.
+
+## Write Web App
+저의 관심은 Go 언어로 웹 애플리케이션을 작성하는 것입니다. Go 표준 라이브러리인 `net/http`로 웹 서버를 쉽게 작성할 수 있습니다. 그리고 자바 웹 애플리케이션을 만들때 주로 사용되는 스프링 프레임워크처럼 Go 언어로 작성된 웹 프레임워크도 있습니다.
+
+- [gin](https://github.com/gin-gonic/gin)
+- [echo](https://github.com/labstack/echo)
+
+http 패키지로 간단하게 웹 서버를 만들어서 실행해본 뒤 `gin` 웹 프레임워크를 패키지로 가져와서 웹 애플리케이션을 작성해봅시다.
+
+### net/http
+
+```Go main.go
+package main
+
+import (
+    "fmt"
+    "log"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "User Agent: %s\n", r.UserAgent())
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+이제 애플리케이션을 실행하면 콘솔에 아무런 내용도 찍히지는 않지만 localhost:8080 주소로 접근하면 다음과 같이 클라이언트 정보가 표시됩니다.
+
+![](../images/posts/learning-go-helloworld-web.png)
+
+### gin
+
+이제 웹 애플리케이션을 gin 프레임워크로 작성해보죠.
+
+> 아몰랑. 그냥 웹 프레임워크 씁시다.
+
+```sh Windows Terminal
+C:\Users\Mambo\go\src\learning>go get -u github.com/gin-gonic/gin
+C:\Users\Mambo\go\src\learning>go mod tidy
+```
+
+gin 패키지를 다운받았으니 gin 패키지를 활용하여 웹 애플리케이션을 작성하고 실행합니다.
+
+```go main.go
+package main
+
+import (
+    "github.com/gin-gonic/gin"
+    "log"
+)
+
+func handler(c *gin.Context) {
+    c.String(200, "%s\n", c.Request.UserAgent())
+}
+
+func main() {
+    r := gin.Default()
+    r.GET("/", handler)
+    log.Fatal(r.Run(":8080"))
+}
+```
+
+```sh Windows Terminal
+C:\Users\Mambo\go\src\learning>go run main.go
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /                         --> main.handler (3 handlers)
+[GIN-debug] Listening and serving HTTP on :8080
+```
+
+http와 동일하게 클라이언트 정보가 출력되지만 콘솔에 요청에 대한 로그도 출력됩니다.
+
+![](../images/posts/learning-go-helloworld-web.png)
+```sh Windows Terminal
+[GIN] 2021/02/16 - 23:38:00 | 200 |            0s |             ::1 | GET      "/"
+```
+
+고 언어로 애플리케이션을 작성하는 법과 함께 gin 이라는 웹 프레임워크로 웹 애플리케이션을 간단하게 작성해서 실행해보았습니다. 이어지는 자바 개발자가 Go를 배우는 이야기 3탄에서는 실제로 토이 프로젝트를 진행해나가면서 좀 더 Go 언어에 빠져보도록 하겠습니다.
 
 감사합니다.

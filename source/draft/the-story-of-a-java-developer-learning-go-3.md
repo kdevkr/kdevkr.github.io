@@ -1,11 +1,82 @@
 ---
 title: 자바 개발자가 Go를 배우는 이야기 3탄
-date: 2021-02-14 15:00:00
+date: 2021-02-17 15:00:00
 ---
 
-자바 개발자가 Go를 배우는 이야기 2탄에서는 Go 프로젝트 구조와 간단한 웹 애플리케이션을 작성해보았습니다. 이제부터는 실제로 토이 프로젝트에 적용될 기능을 위해 추가해야되는 라이브러리들을 검색하고 몇가지 테스트 코드를 작성해볼 예정입니다.
+![](../images/posts/gopher03.png#compact)
 
-2021년에 만들어볼 토이 프로젝트는 에너지 관련으로 포함해야하는 기능은 다음과 같습니다.
+Go 언어로 웹 애플리케이션을 작성하고 실행하는 것은 굉장히 쉬웠습니다. 자바로 웹 애플리케이션을 작성하고 실행하기 위해서는 서블릿이라는 개념도 알아야되고 톰캣과 같은 서블릿 컨테이너를 실행하여 서블릿을 배포하는 것도 알아야합니다. 반면에 Go 언어는 표준 라이브러리로 제공하는 `net/http` 패키지 만으로도 간단한 웹 애플리케이션을 작성할 수 있었으며 `gin`과 같은 웹 프레임워크으로도 작성할 수 있었습니다.
+
+물론 자바 웹 애플리케이션을 작성할 때 스프링 프레임워크 또는 스프링 부트 프로젝트로 일반적인 서블릿 또는 JSP 보다는 쉽게 애플리케이션을 실행할 수 있습니다. 그러나 실제로 애플리케이션을 개발할 때 필요한 의존성 라이브러리가 추가됨에 따라 만들어지는 애플리케이션이 점점 무거워지는 것을 체감할 수 있습니다.
+
+> 특히나 애플리케이션을 빌드하는데 걸리는 시간이 어마어마하죠?.
+
+## Diff Java
+클라이언트 정보를 출력하는 애플리케이션을 스프링 부트로 만들어보고 비교해봅시다. 우선 그레이들(Gradle)을 빌드 및 의존성 관리 도구로 사용하는 스프링 부트 프로젝트를 시작하면 그레이들을 다운받는데 걸린 시간은 다음과 같습니다.
+
+```sh
+Download https://services.gradle.org/distributions/gradle-6.8.2-bin.zip finished, took 2 s 549 ms (107.84 MB)
+Starting Gradle Daemon...
+Gradle Daemon started in 3 s 975 ms
+
+BUILD SUCCESSFUL in 1m 29s
+```
+
+그리고 스프링 부트 애플리케이션에 클라이언트 정보를 출력하는 핸들러 함수를 작성합니다.
+
+```java DemoApplication.java
+@RestController
+@SpringBootApplication
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<String> handler(@RequestHeader("user-agent") String userAgent) {
+        return ResponseEntity.ok(userAgent);
+    }
+
+}
+```
+
+이제 스프링 부트 애플리케이션을 실행해볼까요?
+
+```sh Debug Console
+2021-02-18 00:13:59.245  INFO 8372 --- [           main] com.example.demo.DemoApplication         : Starting DemoApplication using Java 11.0.7 on DESKTOP-OJJ4TB3 with PID 8372 (C:\Users\Mambo\sample-web\build\classes\java\main started by Mambo in C:\Users\Mambo\sample-web)
+2021-02-18 00:13:59.248  INFO 8372 --- [           main] com.example.demo.DemoApplication         : No active profile set, falling back to default profiles: default
+2021-02-18 00:13:59.903  INFO 8372 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-02-18 00:13:59.911  INFO 8372 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-02-18 00:13:59.911  INFO 8372 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-02-18 00:13:59.983  INFO 8372 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-02-18 00:13:59.983  INFO 8372 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 685 ms
+2021-02-18 00:14:00.117  INFO 8372 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-02-18 00:14:00.259  INFO 8372 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-02-18 00:14:00.268  INFO 8372 --- [           main] com.example.demo.DemoApplication         : Started DemoApplication in 1.313 seconds (JVM running for 2.981)
+2021-02-18 00:14:05.269  INFO 8372 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-02-18 00:14:05.270  INFO 8372 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2021-02-18 00:14:05.270  INFO 8372 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+```
+
+> 간단한 웹 애플리케이션이 실행되기까지 걸리는 시간 약 3초...
+
+이번에는 그레이들로 애플리케이션을 빌드해봅시다. 얼마나 걸릴까요?
+
+```sh Windows Terminal
+PS C:\Users\Mambo\sample-web> .\gradlew build -x test
+BUILD SUCCESSFUL in 20s
+4 actionable tasks: 4 executed
+```
+
+다음은 빌드된 파일 용량입니다.
+
+![](../images/posts/learning-go-build-size-diff.png)
+
+> Go 언어로 작성된 웹 애플리케이션 실행 파일 용량이 생각보다 크지가 않네요.
+
+## Go Packages
+2021년에 만들어보고자 하는 토이 프로젝트는 에너지 분야와 관련해서 스마트 미터에 대해 시뮬레이션 전력 데이터를 제공하는 애플리케이션입니다. 그래서 다음과 같은 기능이 포함되어야합니다.
 
 - 국내 전력 수급 현황 및 수급 예보 정보 모니터링
 - 특정 지역에 대한 시간별 날씨 모니터링
@@ -13,8 +84,7 @@ date: 2021-02-14 15:00:00
 - 일자별 전력량 데이터를 CSV 포맷으로 다운로드
 - MQTT 퍼블리싱 에이전트
 
-## Packages
-위에서 언급한 기능과 관련된 라이브러리들을 검색해보죠.
+이 기능들과 관련된 패키지가 어떤 것이 있는지 찾아볼까요?
 
 ### 국내 전력 수급 현황 및 수급 예보 정보 모니터링
 
@@ -84,7 +154,7 @@ Debugger finished with exit code 0
 
 ```ps
 === RUN   TestApiToken
-apiUrl: https://openapi.kpx.or.kr/openapi/forecast1dMaxBaseDate/getForecast1dMaxBaseDate?ServiceKey=BOlhjPxOGUanamCqkOUCCP7QqmQh%2B%2FxuyFGZemgQTBTBb%2FQntgjS6TKcNW7l%2Bu4rEc%2ByqUlvNKI04a0p%2FM%2BNfQ%3D%3D
+apiUrl: https://openapi.kpx.or.kr/openapi/forecast1dMaxBaseDate/getForecast1dMaxBaseDate?ServiceKey=BOlhjP**********
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response><header><resultCode>00</resultCode><resultMsg>OK</resultMsg><pageNo>1</pageNo><numOfRows>1000</numOfRows><totalCount>1</totalCount><pageSize>1</pageSize><startPage>1</startPage></header><body><items><item><fcDate>2021-02-14</fcDate><fcStime>23</fcStime><fcEtime>00</fcEtime><fcMaxload>59300</fcMaxload><fcReservePwr>29749</fcReservePwr><fcLevel>0</fcLevel></item></items></body></response>
 --- PASS: TestApiToken (0.24s)
 PASS

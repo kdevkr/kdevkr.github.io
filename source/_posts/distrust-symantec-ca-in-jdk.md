@@ -1,5 +1,6 @@
 ---
 title: 시만텍 CA 인증서를 신뢰하지 않음
+date: 2021-03-21
 tags:
 - Symantec Root CA
 - Distrust

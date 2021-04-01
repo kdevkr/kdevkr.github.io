@@ -28,7 +28,7 @@
 }
 
 .post-body {
-    text-align: inherit;
+    // text-align: inherit;
     letter-spacing: 0.01rem;
     line-height: 2rem;
     word-break: break-all;
@@ -81,6 +81,65 @@
             color: $green;
         }
     }
+}
+
+.posts-collapse .post-content {
+  &:before {
+    display: none;
+  }
+
+  .post-header {
+    border-bottom: none;
+    padding-left: 0;
+    margin-left: 0;
+    font-family: $font-family-logo;
+
+    &:before {
+      display: none;
+    }
+
+    .post-meta-container {
+      display: block;
+
+      time {
+        // background-color: $snorlax-tongue;
+        color: $snorlax-tongue;
+        padding: 2px;
+      }
+    }
+  }
+
+  .collection-title {
+    display: none;
+  }
+  .collection-year {
+    font-family: $font-family-headings;
+    &:before {
+      display: none;
+    }
+    .collection-header {
+      margin-left: 0;
+    }
+  }
+}
+
+.posts-expand {
+  .post-meta-container {
+    font-family: $font-family-logo;
+  }
+  .post-title {
+    margin-top: 20px;
+
+    +tablet-desktop() {
+      font-size: $font-size-headings-base + 0.5em;
+    }
+  }
+}
+
+.post-toc-wrap {
+  .post-toc {
+    font-family: $font-family-base;
+  }  
 }
 
 .comments {

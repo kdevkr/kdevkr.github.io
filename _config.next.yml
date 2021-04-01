@@ -75,12 +75,12 @@ font:
   # Font settings for site title (.site-title).
   title:
     external:                true
-    family:                  Binggrae-Bold
+    family:                  Gmarket Sans, Binggrae-Bold
 
   # Font settings for headlines (<h1> to <h6>).
   headings:
     external:                true
-    family:                  Binggrae-Bold
+    family:                  Gmarket Sans B
 
   # Font settings for posts (.post-body).
   posts:

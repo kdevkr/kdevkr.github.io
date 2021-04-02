@@ -10,7 +10,7 @@ date: 2021-01-23
 ## Spring Initializr
 스프링 부트 프로젝트는 [Spring Initializr](https://start.spring.io/)에서 쉽게 여러분이 스프링 부트 애플리케이션을 시작할 수 있도록 지원합니다. 저는 메이븐(Maven)이 아닌 `그래들(Gradle)` 프로젝트를 선호하며 언어는 `Java`로 개발합니다.
 
-![](../images/posts/spring-initializr.png)
+![](/images/posts/spring-initializr.png)
 
 그리고 위와 같이 프로젝트에서 사용할 의존성(Dependencies)를 찾아 선택합니다. 이렇게 만들어지는 스프링 부트 프로젝트는 다음과 같은 디렉토리 구조를 가지게 됩니다.
 

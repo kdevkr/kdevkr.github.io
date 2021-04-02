@@ -28,7 +28,7 @@ tags:
 
 위 그림에서처럼 여러분이 웹 브라우저를 통해 어떤 웹 사이트로 접근하는 것도 위와 같은 메시지를 요청하고 응답받습니다. 예를 들어, OKKY 사이트에 접속하기 위해서 `okky.kr` 주소를 입력하면 웹 브라우저가 대신해서 다음과 같은 정보로 HTTP 메시지를 보내고 응답을 받은 것을 브라우저에서 보여주는 것입니다.
 
-![[GET] okky.kr](../images/posts/http-requests-responses-01.png)
+![[GET] okky.kr](/images/posts/http-requests-responses-01.png)
 
 > 지금 이 글을 보고 계시니까 이 과정은 다 이해하실테지요 :)
 
@@ -53,11 +53,11 @@ Accept 헤더의 값은 `<MIME_type>/<MIME_subtype>` 형태로 구성하는데 �
 #### Content-Type
 Content-Type 헤더는 HTTP 메시지에 포함된 데이터의 형태를 알려주는 값이라고 했습니다. OKKY에 로그인하기 위해서 구글 OAuth 인증에 대한 HTTP 요청 정보를 확인해보면 다음과 같이 구성됨을 확인할 수 있습니다.
 
-![구글 계정으로 인증 시 요청 메시지](../images/posts/http-requests-responses-02.png)
+![구글 계정으로 인증 시 요청 메시지](/images/posts/http-requests-responses-02.png)
 
 구글 계정으로 인증 시 포함하는 요청 데이터가 `폼 데이터` 형태로 구성되어있다는 것을 알려주기 위해서 Content-Type에 `application/x-www-form-urlencoded`을 지정하였습니다.
 
-![구글 계정으로 인증 시 응답 메시지](../images/posts/http-requests-responses-03.png)
+![구글 계정으로 인증 시 응답 메시지](/images/posts/http-requests-responses-03.png)
 
 구글 인증 서버는 구글 계정 인증에 대한 결과가 JSON 형태의 문자열인 것을 알려주기 위해서 Content-Type에 `application/json`을 지정한 것을 확인할 수 있습니다. 이렇게 서버로 어떤 데이터가 포함되어야하는 요청이라면 요청 메시지를 구성하고 메시지 형태에 따라 Content-Type을 지정해야함을 알 수 있습니다.
 
@@ -87,17 +87,17 @@ protected void doDispatch(HttpServletRequest request, HttpServletResponse respon
 ### HandlerAdapter
 HandlerAdapter는 인터페이스로 추상화되어있으니 실제 동작을 수행하는 구현체를 찾아야 합니다.
 
-![HandlerAdapter 구현체](../images/posts/http-requests-responses-04.png)
+![HandlerAdapter 구현체](/images/posts/http-requests-responses-04.png)
 
 다른 클래스와 달리 AbstractHandlerMethodAdapter는 추상클래스로 되어있으니 한번 더 클래스를 찾아봅니다.
 
-![RequestMappingHandlerAdapter](../images/posts/http-requests-responses-05.png)
+![RequestMappingHandlerAdapter](/images/posts/http-requests-responses-05.png)
 
 한번이라도 스프링의 컨트롤러를 작성하신분들이라면 눈에 들어오는 것이 있습니다. 바로 `RequestMapping` 어노테이션입니다. RequestMappingHandlerAdapter 클래스의 주석을 살펴보면 핸들러 함수에 선언된 RequestMapping을 지원하는 AbstractHandlerMethodAdapter의 `확장`이라고 합니다. 그러니까 여러분이 @RequestMapping이나 @GetMapping, @PostMapping등의 어노테이션을 선언하여 컨트롤러의 핸들러 함수를 작성하면 RequestMappingHandlerAdapter를 통해 처리가 수행된다는 거죠.
 
 직접 찾아보시는 분들이라면 RequestMappingHandlerAdapter의 수많은 함수 중에서 handleInternal으로 요청이 처리됨을 확인할 수 있을겁니다. 그리고 invokeHandlerMethod를 호출해서 여러분이 작성한 핸들러 함수를 실행합니다. 
 
-![Spring 4.2+ invokeHandlerMethod](../images/posts/http-requests-responses-06.png)
+![Spring 4.2+ invokeHandlerMethod](/images/posts/http-requests-responses-06.png)
 
 > 위 invokeHandlerMethod는 스프링 5 기준의 코드인데 스프링 4.2가 명시되어있는 것을 보면 이전에는 다른 함수를 호출했을 것 같습니다. 스프링 4.2 이전 버전으로 개발하고 있으신 분들이라면 직접 찾아보시기 바랍니다. 귀찮아요...ㅠㅠ
 
@@ -223,7 +223,7 @@ public void handleReturnValue(@Nullable Object returnValue, MethodParameter retu
 #### HandlerMethodReturnValueHandler
 HandlerMethodReturnValueHandler 구현체를 찾아보면 다음과 같이 나옵니다.
 
-![HandlerMethodReturnValueHandler 구현체](../images/posts/http-requests-responses-07.png)
+![HandlerMethodReturnValueHandler 구현체](/images/posts/http-requests-responses-07.png)
 
 사실 HandlerMethodReturnValueHandler 구현체 목록은 스프링 공식 레퍼런스를 참고하시는 분들이라면 [Handler Methods Return Values](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-return-types)에서 확인하셨을 겁니다.
 

@@ -22,7 +22,7 @@ tags:
 
 다음은 HTTP 요청 클라이언트 중 하나인 Postman으로 멀티파트 폼 데이터 형식으로 파일 데이터를 전송할 때 확인할 수 있는 예시입니다.
 
-![멀티파트 폼 데이터 예시](../images/posts/spring-multipart-uploads-01.png)
+![멀티파트 폼 데이터 예시](/images/posts/spring-multipart-uploads-01.png)
 
 ## 멀티파트 리졸버
 스프링의 디스패처 서블릿은 HTTP 요청에 대해서 멀티파트 유형의 데이터가 포함된 요청인지 확인하는 멀티파트 필터(MultipartFilter)로 요청에 대한 처리를 위임하며 멀티파트 필터는 멀티파트 리졸버(MultipartResolver)를 사용하여 멀티파트 관련 요청인지 확인하는 과정을 수행합니다.
@@ -46,11 +46,11 @@ public interface MultipartResolver {
 
 스프링 5의 웹 모듈을 살펴보면 멀티파트 필터(MultipartFilter)에서 루트 애플리케이션 컨텍스트에 **filterMultipartResolver** 이름의 빈을 찾지 못하는 경우 자체적으로 StandardServletMultipartResolver를 기본적으로 사용하도록 되어있습니다. 따라서, 클라이언트의 HTTP 요청은 멀티파트 필터를 거쳐 StandardServletMultipartResolver에 의해 멀티파트 데이터 유형인지를 확인합니다.
 
-![멀티파트 유형 여부](../images/posts/spring-multipart-uploads-02.png)
+![멀티파트 유형 여부](/images/posts/spring-multipart-uploads-02.png)
 
 앞서 포스트맨 클라이언트에서 요청한 멀티파트 폼 데이터는 컨텐트 타입이 multipart/로 시작하므로 멀티파트 유형의 요청이며 resolveMultipart 함수에 의해 기본 HttpServletRequest가 멀티파트 관련 함수를 제공하는 MultipartHttpServletRequest로 감싸져있는 요청 클래스로 리턴하게됩니다.
 
-![디버그로 확인해본 MultipartHttpServletRequest](../images/posts/spring-multipart-uploads-03.png)
+![디버그로 확인해본 MultipartHttpServletRequest](/images/posts/spring-multipart-uploads-03.png)
 
 위 그림처럼 멀티파트 리졸버에 의해 래핑된 MultipartHttpServletRequest에서 임베디드 톰캣의 임시 폴더에 저장된 파일을 확인할 수 있습니다. 이렇게 멀티파트 리졸버에 의해 생성된 임시 파일들은 최종적으로 cleanupMultipart 함수에 의해 정리됩니다.
 
@@ -76,7 +76,7 @@ public interface MultipartResolver {
 
 RequestMappingHandlerAdapter에서 기본적으로 적용되는 HandlerMethodArgumentResolver 순서를 보면 RequestParamMethodArgumentResolver가 RequestPartMethodArgumentResolver 보다 우선적으로 추가되는 것을 확인할 수 있습니다. 따라서, RequestPartMethodArgumentResolver는 RequestParamMethodArgumentResolver에 의해 처리되지 않은 매개변수에 대해 데이터 바인딩을 수행하게 됩니다.
 
-![HandlerMethodArgumentResolver 순서](../images/posts/spring-multipart-uploads-04.png)
+![HandlerMethodArgumentResolver 순서](/images/posts/spring-multipart-uploads-04.png)
 
 직접 테스트를 해보면 @RequestParam과 @RequestPart 모두 매개변수에 선언하더라도 RequestParamMethodArgumentResolver에 의해 먼저 처리됨을 확인할 수 있습니다.
 

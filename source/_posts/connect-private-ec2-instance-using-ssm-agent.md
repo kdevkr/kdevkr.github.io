@@ -17,11 +17,11 @@ AWS는 이러한 SSH에 대한 단점을 보완하기 위하여 `AWS Systems Man
 ## AWS Systems Manager 관리형 인스턴스 활성화
 EC2 인스턴스를 AWS 시스템 매니저에 관리형 인스턴스로 등록하기 위해서 `빠른 설정`을 통해 시스템 매니저가 EC2 인스턴스 관리를 위한 IAM 역할을 생성하고 등록할 수 있습니다.
 
-![](../images/posts/aws-ssm-quick-setup.png)
+![](/images/posts/aws-ssm-quick-setup.png)
 
 > 2021년 2월 19일 현재까지 호스트 관리 기능만 제공합니다.
 
-![](../images/posts/aws-ssm-systems-manager-managed-instances.png)
+![](/images/posts/aws-ssm-systems-manager-managed-instances.png)
 
 ### EC2 인스턴스 SSM 에이전트
 AWS 시스템 매니저를 통해 EC2 인스턴스에 접근하기 위해서는 해당 인스턴스 내에 SSM 에이전트가 설치되어있어야합니다. 
@@ -37,17 +37,17 @@ AWS 시스템 매니저를 통해 EC2 인스턴스에 접근하기 위해서는 
 ### EC2 인스턴스 IAM 역할 지정
 AWS 시스템 매니저의 빠른 설정을 수행하면 `AmazonSSMRoleForInstancesQuickSetup` IAM 역할이 생성됩니다. EC2 인스턴스에 대해 이 IAM 역할을 지정하면 SSM 에이전트를 통해 인스턴스에 접근할 수 있는 권한을 부여되고 세션 매니저가 활성화 됩니다.
 
-![IAM 역할이 지정되지 않은 인스턴스](../images/posts/aws-ssm-connect-instance-console-failed.png)
+![IAM 역할이 지정되지 않은 인스턴스](/images/posts/aws-ssm-connect-instance-console-failed.png)
 
 위 AmazonSSMRoleForInstancesQuickSetup IAM 역할이 없으므로 SSM 에이전트로 인스턴스에 연결할 수 없습니다. 아래와 같이 
 
-![](../images/posts/aws-ssm-instance-modify-iam-role.png)
+![](/images/posts/aws-ssm-instance-modify-iam-role.png)
 
-![](../images/posts/aws-ssm-set-iam-role.png)
+![](/images/posts/aws-ssm-set-iam-role.png)
 
 > 이제 AWS 시스템 매니저가 EC2 인스턴스를 관리형 인스턴스로 등록할거에요.
 
-![관리형 인스턴스 활성화](../images/posts/aws-ssm-connect-instance-console.png)
+![관리형 인스턴스 활성화](/images/posts/aws-ssm-connect-instance-console.png)
 
 이제 EC2 인스턴스에 세션 매니저로 연결을 수행하거나 시스템 매니저에서 관리형 인스턴스에 세션을 연결할 수 있습니다.
 
@@ -57,23 +57,23 @@ AWS 시스템 매니저의 빠른 설정을 수행하면 `AmazonSSMRoleForInstan
 ### AWS CLI 설치
 각 환경에 맞는 AWS CLI 인스톨러를 실행하여 AWS CLI를 설치합니다.
 
-![](../images/posts/aws-ssm-install-aws-cli-2-for-windows.png)
+![](/images/posts/aws-ssm-install-aws-cli-2-for-windows.png)
 
 ### 크레덴셜 프로파일 설정
 AWS CLI을 사용하기 위하여 `AmazonSSMManagedInstanceCore` 정책이 부여된 크레덴셜을 프로파일로 등록합니다.
 
-![](../images/posts/aws-ssm-configure-aws-cli-profile.png)
+![](/images/posts/aws-ssm-configure-aws-cli-profile.png)
 
 #### AmazonSSMManagedInstanceCore 정책
 
-![](../images/posts/aws-ssm-iam-role-AmazonSSMRoleForInstancesQuickSetup.png)
+![](/images/posts/aws-ssm-iam-role-AmazonSSMRoleForInstancesQuickSetup.png)
 
 > AmazonEC2RoleforSSM 정책은 Deprecated 되었어요!
 
 ### SSM 세션 시작하기
 AWS SSM CLI의 `start-session` 명령어로 관리형 인스턴스에 대한 세션을 시작할 수 있습니다.
 
-![](../images/posts/aws-ssm-cli-start-session.png)
+![](/images/posts/aws-ssm-cli-start-session.png)
 
 #### SSM 포트 포워딩
 세션을 시작할 때 포트 번호를 파라미터로 제공하여 SSH에서 처럼 포트 포워딩을 수행할 수 있습니다. 이때 파라미터 중 `portNumber`는 관리형 인스턴스의 포트이고 `localPortNumber`는 현재 로컬 호스트의 포트임을 감안하시기 바랍니다.

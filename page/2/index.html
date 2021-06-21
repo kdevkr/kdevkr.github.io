@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/favicon/favicon.ico" color="#222">
+  <meta name="google-site-verification" content="LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+KR:300,300italic,400,400italic,700,700italic%7CGmarket+Sans:300,300italic,400,400italic,700,700italic%7CBinggrae-Bold:300,300italic,400,400italic,700,700italic%7CGmarket+Sans+B:300,300italic,400,400italic,700,700italic%7CJetbrains+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"width":240,"scrollpercent":true,"b2t":true},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mambo">
+<meta property="og:url" content="https://kdevkr.github.io/page/2/index.html">
+<meta property="og:site_name" content="Mambo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Mambo">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kdevkr.github.io/page/2/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Mambo</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+  
+  <script data-ad-client="ca-pub-9304279418886145" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Mambo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Mambo</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Today I Learned 🔥</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">15</span></a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/learning-rabbitmq/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mambo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/learning-rabbitmq/" class="post-title-link" itemprop="url">러닝 래빗MQ</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-30 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-30T00:00:00Z">2021-03-30</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>안녕하세요 맘보(Mambo)입니다. 제가 부족하다고 느끼는 기술 스택 중 하나는 <code>메시지 큐(MQ)</code>입니다. 메시지 큐는 더 많은 트래픽을 처리하기 위하여 데이터를 비동기로 처리하거나 서로 다른 시스템에서도 데이터를 활용할 수 있도록 사용하는데요. 현재 일하고 있는 회사에서 진행하는 프로젝트에서는 메시지 큐를 도입하지 않아서 메시지 큐에 대한 기술 경험이 전무한 상태입니다. 따라서, 간단하게나마 메시지 큐에 대해서 알아보고 언제라도 메시지 큐를 도입할 수 있게 준비하고자 합니다.</p>
+<h2 id="메시지-큐"><a href="#메시지-큐" class="headerlink" title="메시지 큐"></a>메시지 큐</h2><h3 id="메시지-큐를-활용한-개발-경험"><a href="#메시지-큐를-활용한-개발-경험" class="headerlink" title="메시지 큐를 활용한 개발 경험"></a>메시지 큐를 활용한 개발 경험</h3><p>카카오 또는 우아한 형제들과 같이 대용량 트래픽을 처리하는 서비스들의 채용 공고를 보면 메시지 큐에 대한 경험이 우대 사항으로 있는 것을 확인할 수 있습니다. 모든 프로젝트에 메시지 큐를 도입할 필요성은 없지만 빠르게 생성되는 데이터를 처리하기 위해서 메시지 큐는 필수적으로 사용해야하는 기술임을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/learning-rabbitmq-01.png" alt="카카오 인터랙션플랫폼셀 서비스 개발자 채용공고"></p>
+<p><img data-src="/images/posts/learning-rabbitmq-02.png" alt="배민주문서비스 개발자 채용공고"></p>
+<p>위와 같이 트래픽이 많은 서비스를 개발하는 직군의 경우 메시지 처리 기술에 대한 경험을 우대하는 것을 확인할 수 있습니다. 개발자로 일하면서 대용량 트래픽을 처리하는 서비스를 개발하는 회사로 갈 수 있을지는 모르겠습니다. 😅</p>
+<blockquote>
+<p>저런 회사가서 일 해보고 싶긴하네요…</p>
+</blockquote>
+<h3 id="메시지-큐-시스템"><a href="#메시지-큐-시스템" class="headerlink" title="메시지 큐 시스템"></a>메시지 큐 시스템</h3><p>메시지 큐를 제공하는 메시지 큐 시스템은 상당히 많습니다. 위 공고에서 확인할 수 있는 <a target="_blank" rel="noopener" href="https://kafka.apache.org/"><code>Apache Kafka</code></a>부터 시작해서 <a target="_blank" rel="noopener" href="https://activemq.apache.org/"><code>ActiveMQ</code></a>, <a target="_blank" rel="noopener" href="https://zeromq.org/"><code>ZeroMQ</code></a>, <a target="_blank" rel="noopener" href="http://pulsar.apache.org/"><code>Apache Pulsar</code></a>, <a target="_blank" rel="noopener" href="https://nats.io/"><code>NATS</code></a> 그리고 <code>RabbitMQ</code>와 같은 것들이 있죠. 아파치 카프카는 분산 메시지 스트리밍 환경을 제공하는 오픈소스 시스템으로 많은 기업들이 사용하고 관심있는 듯 합니다. </p>
+<p><a target="_blank" rel="noopener" href="https://www.confluent.io/blog/kafka-fastest-messaging-system/">Benchmarking Apache Kafka, Apache Pulsar, and RabbitMQ: Which is the Fastest?</a></p>
+<p>아파치 카프카에 대해서는 나중에 추가적으로 학습해볼 예정이고 오늘 알아볼 메시지 큐 시스템은 <a target="_blank" rel="noopener" href="https://www.amqp.org/">AMQP(Advanced Message Queuing Protocol)</a> 기반의 <code>래빗MQ(RabbitMQ)</code> 입니다. <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/">래빗MQ</a>는 <code>Pivotal</code>에서 개발한 오픈소스 메시지 큐 브로커로써 <a target="_blank" rel="noopener" href="https://spring.io/projects/spring-amqp">스프링 AMQP</a> 프로젝트는 기본적으로 래빗MQ를 지원하기도 합니다.</p>
+<blockquote>
+<p>Pivotal Software는 2020년 2월 VMware에 인수되었습니다.</p>
+</blockquote>
+<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><p>스프링 AMQP 프로젝트에서 Pivotal에서 개발한 RabbitMQ를 지원하는 것은 당연할 수 있습니다. 래빗MQ는 얼랭(Erlang)으로 개발되었으나 오픈소스에 기여할 것이 아니라면 이 언어에 대해서 알 필요는 없습니다. 래빗MQ 설치 문서를 참고하여 서버에 직접 설치하지만 저는 학습 목적으로 윈도우 환경에서 도커를 통해 래빗MQ 컨테이너를 구성하고 실행하도록 하겠습니다.</p>
+<h3 id="공식-도커-이미지"><a href="#공식-도커-이미지" class="headerlink" title="공식 도커 이미지"></a>공식 도커 이미지</h3><p><a target="_blank" rel="noopener" href="https://hub.docker.com/_/rabbitmq">RabbitMQ Docker Official Images</a></p>
+<p>도커에서 공식적으로 래빗MQ에 대한 이미지를 지원하므로 도커 컴포즈 문서를 생성하고 쉽게 실행할 수 있습니다.</p>
+<figure class="highlight yaml"><figcaption><span>https://github.com/mambo-dev/spring-amqp-rabbitmq/blob/main/docker-compose.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">rabbitmq:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">rabbitmq</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">rabbitmq:3-management</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">5672</span><span class="string">:5672</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">15672</span><span class="string">:15672</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">15692</span><span class="string">:15692</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">RABBITMQ_DEFAULT_USER:</span> <span class="string">rabbitmq</span></span><br><span class="line">      <span class="attr">RABBITMQ_DEFAULT_PASS:</span> <span class="string">rabbitmq</span></span><br><span class="line">      <span class="attr">RABBITMQ_DEFAULT_VHOST:</span> <span class="string">/</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins</span></span><br></pre></td></tr></table></figure>
+
+<p>도커 컴포즈 명령어로 래빗MQ가 구성된 컨테이너를 실행하고 래빗MQ <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/management.html">Management Plugin</a>이 활성화되어 웹 브라우저에서 <code>localhost:15672</code>로 웹 UI에 접근할 수 있습니다.</p>
+<p><img data-src="/images/posts/learning-rabbitmq-03.png" alt="RabbitMQ Web UI"></p>
+<h3 id="메시지-처리-다이어그램"><a href="#메시지-처리-다이어그램" class="headerlink" title="메시지 처리 다이어그램"></a>메시지 처리 다이어그램</h3><p><img data-src="https://www.cloudamqp.com/img/blog/exchanges-topic-fanout-direct.png" alt="https://www.cloudamqp.com"></p>
+<p>위 그림은 CloudAMQP 블로그의 <a target="_blank" rel="noopener" href="https://www.cloudamqp.com/blog/part1-rabbitmq-for-beginners-what-is-rabbitmq.html">Part 1: RabbitMQ for beginners - What is RabbitMQ?</a> 글에서 확인할 수 있는 다이어그램으로 래빗MQ에 의해 처리되는 메시지 프로세스를 확인할 수 있습니다. 래빗MQ에 메시지 큐를 구성해놓고 <code>프로듀서(Producer)</code>가 여러가지 방식으로 메시지를 발행(Publish)하고 메시지 큐에 저장된 데이터를 <code>컨슈머(Consumer)</code>가 수신(Subscribe)하는 프로세스입니다.</p>
+<h3 id="스프링-AMQP-프로젝트"><a href="#스프링-AMQP-프로젝트" class="headerlink" title="스프링 AMQP 프로젝트"></a>스프링 AMQP 프로젝트</h3><p><a target="_blank" rel="noopener" href="https://spring.io/projects/spring-amqp">스프링 AMQP 프로젝트</a>는 스프링 기반의 애플리케이션에서 래빗MQ와 같은 AMQP 구현체를 활용하여 쉽게 메시지 큐 기능을 지원합니다. 제가 이 글을 작성하기 위해서 진행한 관련 코드는 깃허브 <a target="_blank" rel="noopener" href="https://github.com/mambo-dev/spring-amqp-rabbitmq">spring-amqp-rabbitmq</a> 리파지토리를 통해 참고하실 수 있습니다.</p>
+<h4 id="메시지-큐-생성"><a href="#메시지-큐-생성" class="headerlink" title="메시지 큐 생성"></a>메시지 큐 생성</h4><p>스프링 AMQP를 통해 래빗MQ에 큐(Queue)를 쉽게 생성할 수 있습니다. 큐를 생성할 Configuration 클래스를 만들고 Queue 클래스를 빈으로 등록합니다.</p>
+<figure class="highlight java"><figcaption><span>AmqpConfig.RabbitMQConfig</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AmqpConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">AmqpConfig</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Profile(&#123;&quot;rabbitmq&quot;&#125;)</span></span><br><span class="line">    <span class="meta">@Configuration</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitMQConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SPRING_AMQP_QUEUE = <span class="string">&quot;spring-amqp&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Bean</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Queue <span class="title">springAmqpQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Queue(SPRING_AMQP_QUEUE);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>이제 애플리케이션이 구동될 때 <code>spring-amqp</code>라는 이름의 큐가 존재하지 않으면 래빗MQ에 생성합니다. 메시지 큐가 생성되었으므로 이제 래빗MQ에 메시지를 발행할 프로듀서와 메시지를 수신할 컨슈머를 구성해야합니다. 프로듀서와 컨슈머가 동일한 애플리케이션에 구성될 필요는 없으나 학습 목적이므로 동일한 애플리케이션에서 프로듀서와 컨슈머를 서비스 유형의 빈으로 등록하겠습니다.</p>
+<h4 id="프로듀서-생성"><a href="#프로듀서-생성" class="headerlink" title="프로듀서 생성"></a>프로듀서 생성</h4><p>프로듀서는 <code>RabbitTemplate</code> 유형의 빈을 가지는 클래스입니다. 저는 스프링 부트 애플리케이션으로 구성하였기에 <code>RabbitAutoConfiguration</code>라는 자동 구성 클래스에 의해 RabbitTemplate가 빈으로 자동으로 등록됩니다.</p>
+<figure class="highlight java"><figcaption><span>DefaultProducer</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultProducer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RabbitTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DefaultProducer</span><span class="params">(RabbitTemplate rabbitTemplate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.rabbitTemplate = rabbitTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Scheduled(fixedRate = 100, initialDelay = 500)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String message = <span class="string">&quot;uuid:&quot;</span> + UUID.randomUUID().toString();</span><br><span class="line">        rabbitTemplate.convertAndSend(SPRING_AMQP_QUEUE, message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>위 프로듀서는 0.1초마다 랜덤 문자열을 메시지 큐에 발행합니다. 프로듀서만 생성하고 애플리케이션을 실행하면 래빗MQ에 생성한 <code>spring-amqp</code> 큐에 메시지가 적재됩니다.</p>
+<p><img data-src="/images/posts/learning-rabbitmq-04.png" alt="spring-amqp 큐"></p>
+<h4 id="컨슈머-생성"><a href="#컨슈머-생성" class="headerlink" title="컨슈머 생성"></a>컨슈머 생성</h4><p>이제 래빗MQ에 적재된 메시지를 소비할 컨슈머를 등록해야합니다. 컨슈머는 <code>@RabbitListener</code> 또는 <code>@RabbitHandler</code>를 메소드에 선언하여 등록할 수 있습니다. </p>
+<figure class="highlight java"><figcaption><span>DefaultConsumer</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultConsumer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener(queues = &#123;SPRING_AMQP_QUEUE&#125;, concurrency = &quot;3-5&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consume</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;consume &#123;&#125;&quot;</span>, <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>spring-amqp</code> 큐에 적재된 메시지를 3개 ~ 5개의 컨슈머로 동시에 처리하도록 하였고 메시지에 대한 작업이 오래걸리지 않으므로 순식간에 메시지 큐가 비어지는 것을 확인할 수 있을 것입니다.</p>
+<h3 id="메시지-발행-유형"><a href="#메시지-발행-유형" class="headerlink" title="메시지 발행 유형"></a>메시지 발행 유형</h3><p>앞서 프로듀서가 메시지를 단순하게 큐 이름을 지정해서 발행하였는데요. 사실은 래빗MQ와 같은 AMQP 기반의 메시지 큐 시스템에서는 다양한 방식으로 메시지를 발행할 수 있는 기능을 지원하고 있습니다. 메시지 처리 다이어그램에서 확인할 수 있는 익스체인지(Exchange)와 바인딩(Binding)이 바로 그 개념입니다. </p>
+<h4 id="익스체인지"><a href="#익스체인지" class="headerlink" title="익스체인지"></a>익스체인지</h4><p><a target="_blank" rel="noopener" href="https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchanges">익스체인지 유형</a>에는 다이렉트(Direct), 팬아웃(Fanout), 토픽(Topic), 헤더(Header)가 있으며 앞서 프로듀서가 큐 이름을 지정해서 메시지를 발행할 수 있던 것이 <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-default">기본 익스체인저</a> 유형으로 만들어져 있는 다이렉트 익스체인지를 사용한 경우입니다.</p>
+<p>RabbitTemplate의 convertAndSend라는 이름의 함수를 찾아보면 익스체인지 유형과 라우팅 키를 지정할 수 있도록 오버로딩되어있는 것을 확인할 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitTemplate</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">convertAndSend</span><span class="params">(String routingKey, <span class="keyword">final</span> Object object)</span> <span class="keyword">throws</span> AmqpException </span>&#123;</span><br><span class="line">        convertAndSend(<span class="keyword">this</span>.exchange, routingKey, object, (CorrelationData) <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">convertAndSend</span><span class="params">(String exchange, String routingKey, <span class="keyword">final</span> Object object)</span> <span class="keyword">throws</span> AmqpException </span>&#123;</span><br><span class="line">        convertAndSend(exchange, routingKey, object, (CorrelationData) <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="바인딩"><a href="#바인딩" class="headerlink" title="바인딩"></a>바인딩</h4><p>래빗MQ에서 프로듀서가 발행한 메시지를 큐로 전달하기 위해서 추가적으로 적용되는 개념이 바인딩입니다. 익스체인지와 큐를 연결해주는 규칙이라고 이해하시면 됩니다. </p>
+<p>스프링 AMQP에서는 @RabbitListener에 @QueueBinding로 바인딩 규칙을 설정할 수 있게 지원하고 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RabbitListener(</span></span><br><span class="line"><span class="meta">    concurrency = &quot;3-5&quot;,</span></span><br><span class="line"><span class="meta">    bindings = &#123;</span></span><br><span class="line"><span class="meta">        @QueueBinding(value = @Queue(name = SPRING_AMQP_QUEUE), exchange = @Exchange(name = &quot;amq.direct&quot;))</span></span><br><span class="line"><span class="meta">    &#125;</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consume</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">    log.info(<span class="string">&quot;consume &#123;&#125;&quot;</span>, <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>위 예시는 앞선 큐 이름을 지정한 것과 비슷하게 래빗MQ에 기본적으로 생성되어있는 다이렉트 익스체인지와 바인딩되도록 설정한 경우입니다. 애플리케이션이 구동되는 경우 <code>spring-amqp</code> 큐는 <code>amq.direct</code> 익스체인지와 연결되는 것을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/learning-rabbitmq-05.png" alt="spring-amqp 큐에 지정된 바인딩"></p>
+<p>이렇게 해서 간단하게 래빗MQ에 대해서 알아보고 스프링 AMQP 프로젝트를 의존성에 추가하여 프로듀서가 메시지를 래빗MQ에 발행해보았으며 메시지 큐에 저장되는 메시지를 컨슈머가 받아서 처리할 수 있음을 확인했습니다. 실제로 프로젝트에 도입하기 위해서는 다양한 부분에 대해서 검토해야겠지만 그것은 미래의 맘보에게 떠넘기도록 하겠습니다.</p>
+<p>감사합니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cloudamqp.com/blog/part1-rabbitmq-for-beginners-what-is-rabbitmq.html">Part 1: RabbitMQ for beginners - What is RabbitMQ?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.confluent.io/blog/kafka-fastest-messaging-system/">Benchmarking Apache Kafka, Apache Pulsar, and RabbitMQ: Which is the Fastest?</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.rabbitmq.com/tutorials/amqp-concepts.html">AMQP 0-9-1 Model Explained</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cloudamqp.com/blog/part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html">Part 4: RabbitMQ Exchanges, routing keys and bindings</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+      <aside class="adsense-block">
+        <div class="adsense-block-wrapper">
+          <!-- AdSense Display -->
+          <ins class="adsbygoogle"
+              style="display:block"
+              data-ad-client="ca-pub-9304279418886145"
+              data-ad-slot="3137426518"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+          <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+      </aside>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+    <div class="pjax">
+
+
+    </div>
+</body>
+</html>

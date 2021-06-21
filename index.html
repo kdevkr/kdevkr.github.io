@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/favicon/favicon.ico" color="#222">
+  <meta name="google-site-verification" content="LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+KR:300,300italic,400,400italic,700,700italic%7CGmarket+Sans:300,300italic,400,400italic,700,700italic%7CBinggrae-Bold:300,300italic,400,400italic,700,700italic%7CGmarket+Sans+B:300,300italic,400,400italic,700,700italic%7CJetbrains+Mono:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kdevkr.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.1","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12,"width":240,"scrollpercent":true,"b2t":true},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mambo">
+<meta property="og:url" content="https://kdevkr.github.io/index.html">
+<meta property="og:site_name" content="Mambo">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Mambo">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kdevkr.github.io/">
+
+
+<script data-pjax class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'en'
+  };
+</script>
+<title>Mambo</title>
+  
+    <script>
+      function sendPageView() {
+        if (CONFIG.hostname !== location.hostname) return;
+        var uid = localStorage.getItem('uid') || (Math.random() + '.' + Math.random());
+        localStorage.setItem('uid', uid);
+        navigator.sendBeacon('https://www.google-analytics.com/collect', new URLSearchParams({
+          v  : 1,
+          tid: 'UA-93954323-1',
+          cid: uid,
+          t  : 'pageview',
+          dp : encodeURIComponent(location.pathname)
+        }));
+      }
+      document.addEventListener('pjax:complete', sendPageView);
+      sendPageView();
+    </script>
+
+
+
+
+  
+  <script data-ad-client="ca-pub-9304279418886145" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="Mambo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Mambo</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Today I Learned 🔥</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">15</span></a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Mambo"
+      src="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Mambo</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kdevkr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kdevkr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kdevkr@gmail.com" title="E-Mail → mailto:kdevkr@gmail.com" rel="noopener" target="_blank"><i class="fas fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/learning-postgresql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
+      <meta itemprop="name" content="Mambo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mambo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/learning-postgresql/" class="post-title-link" itemprop="url">러닝 PostgresSQL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-06-20 00:00:00" itemprop="dateCreated datePublished" datetime="2021-06-20T00:00:00Z">2021-06-20</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>안녕하세요 Mambo 입니다. 오늘은 현재 다니고 있는 회사에서 주로 사용하는 관계형 데이터베이스인 PostgreSQL에 대해서 다루어보려고 합니다. 회사에서 DB 관련 부분을 주로 담당하고 있지는 않지만 애플리케이션에 문제가 있을 때 DB 영역에서 문제가 있을 경우 원인을 좀 더 상세하게 파악하여 공유한다면 해당 담당자가 좀 더 쉽고 빠르게 해결할 수 있을 것 입니다.</p>
+<p>본 글에서는 PostgreSQL가 무엇인지에 대해 다루지 않습니다.<br>PostgreSQL에 대해서는 네이버 D2의 <a target="_blank" rel="noopener" href="https://d2.naver.com/helloworld/227936">한눈에 살펴보는 PostgreSQL</a>을 참고하시면 좋다고 생각합니다.</p>
+<h2 id="학습을-위한-준비"><a href="#학습을-위한-준비" class="headerlink" title="학습을 위한 준비"></a>학습을 위한 준비</h2><p>PostgreSQL은 윈도우 또는 맥과 같은 <a target="_blank" rel="noopener" href="https://www.postgresql.org/download/">OS별 설치파일</a>을 제공합니다만, 도커에서 PostgreSQL에 대한 이미지를 공식적으로 지원하기 때문에 학습을 위한 PostgreSQL을 쉽게 컨테이너로 실행하려고 합니다.</p>
+<blockquote>
+<p>사실 PostgreSQL을 설치하는 방법을 다루지 않는 이유는 회사에서 AWS의 <a target="_blank" rel="noopener" href="https://aws.amazon.com/ko/rds/aurora">Aurora</a>를 통해 PostgreSQL 기반의 데이터베이스 클러스터를 구성해서 사용하고 있어 직접 설치하는 방법을 숙지할 필요는 없는 상황이기 때문입니다.</p>
+</blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/_/postgres">PostgreSQL Docker Official Image</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11">PostgreSQL 11 Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jetbrains.com/ko-kr/datagrip/">DataGrip</a></li>
+</ul>
+<h3 id="도커-컴포즈"><a href="#도커-컴포즈" class="headerlink" title="도커 컴포즈"></a>도커 컴포즈</h3><p>저는 도커 컨테이너를 실행하기 위해서 <a target="_blank" rel="noopener" href="https://docs.docker.com/compose/">도커 컴포즈</a> 문서를 작성하는 편입니다. 도커 컴포즈를 활용하면 도커 컨테이너 환경을 쉽게 파악할 수 있으므로 직접 명령어로 실행하는 분들이라면 도커 컴포즈를 활용해보시면 좋겠습니다.</p>
+<figure class="highlight yaml"><figcaption><span>docker-compose.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">postgres:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:11</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">5432</span><span class="string">:5432</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">POSTGRES_USER:</span> <span class="string">postgres</span></span><br><span class="line">      <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">postgres_volume:/var/lib/postgresql/data</span></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">postgres_volume:</span></span><br></pre></td></tr></table></figure>
+
+<p>도커 컴포즈 문서가 준비되었으면 컴포즈 명령어를 통해 PostgreSQL 컨테이너를 실행합시다.</p>
+<figure class="highlight sh"><figcaption><span>Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line">docker compose up -d</span><br></pre></td></tr></table></figure>
+
+<h3 id="DataGrip로-PostgreSQL-연결"><a href="#DataGrip로-PostgreSQL-연결" class="headerlink" title="DataGrip로 PostgreSQL 연결"></a>DataGrip로 PostgreSQL 연결</h3><p>성공적으로 PostgreSQL가 도커 컨테이너로 실행되었다면 <a target="_blank" rel="noopener" href="https://www.jetbrains.com/ko-kr/datagrip/">DataGrip</a>을 통해 연결합니다.<br>만약, 라이센스가 없으신 분들이라면 <a target="_blank" rel="noopener" href="https://dbeaver.io/">DBeaver</a> 또는 <a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools">SQLTools for Visual Studio Code</a> 등을 이용하실 수도 있습니다.</p>
+<p><img data-src="/images/posts/learning-postgresql-01.png" alt="DataGrip"></p>
+<h2 id="PostgreSQL-학습"><a href="#PostgreSQL-학습" class="headerlink" title="PostgreSQL 학습"></a>PostgreSQL 학습</h2><p>PostgreSQL에 대해서 학습하기 위한 환경은 갖추어졌습니다. 오늘의 학습 목표는 <a target="_blank" rel="noopener" href="https://www.kpx.or.kr/www/contents.do?key=225">KPX(전력거래소)에서 제공하는 SMP(계통한계가격)</a>을 저장할 수 있는 데이터베이스를 구성하고 저장된 SMP 데이터를 전력거래소에서 제공하는 형태처럼 조회해보는 것입니다.</p>
+<h3 id="사용자-및-데이터베이스-생성"><a href="#사용자-및-데이터베이스-생성" class="headerlink" title="사용자 및 데이터베이스 생성"></a>사용자 및 데이터베이스 생성</h3><p>PostgreSQL에 슈퍼유저인 <code>postgres</code>가 존재하지만 슈퍼유저로 데이터베이스를 사용하지 않습니다. 일반 사용자를 생성하고 데이터베이스에 대한 권한을 가지도록 해야합니다. 일반 사용자를 생성하기 위해서는 로그인 권한을 가지는 <code>롤(Role)</code>을 만들어야 합니다. PostgreSQL은 <code>CREATE USER</code> 이라는 SQL 명령어(Command)를 제공하므로 이를 사용하여 일반 사용자를 생성할 수 있습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>사용자 생성을 위한 CREATE USER 예시</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> mambo <span class="keyword">WITH</span> <span class="keyword">ENCRYPTED</span> <span class="keyword">PASSWORD</span> <span class="string">&#x27;mambo&#x27;</span> <span class="keyword">CONNECTION</span> <span class="keyword">LIMIT</span> <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>PostgreSQL의 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/sql-createuser.html">CREATE USER</a> 구문은 CREATE ROLE 구문에 LOGIN 권한이 부여된 별칭 명령어입니다.</p>
+</blockquote>
+<figure class="highlight pgsql"><figcaption><span>[Tip] 사용자 목록을 확인할 수 있는 SQL</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> pg_user;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> pg_shadow;</span><br></pre></td></tr></table></figure>
+
+<p>mambo라는 사용자를 만들었고 이제 이 사용자가 접근할 수 있는 데이터베이스를 만드려고 합니다. 데이터베이스를 만드는 SQL 명령어는 <code>CREATE DATABASE</code> 입니다. 사실 상 데이터베이스 이름은 아무렇게 설정해도 상관없으므로 mambo_db 라고 만들겠습니다. </p>
+<figure class="highlight pgsql"><figcaption><span>데이터베이스 생성을 위한 CREATE DATABASE 예시</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> mambo_db <span class="keyword">OWNER</span> mambo;</span><br></pre></td></tr></table></figure>
+
+<p>이렇게 만들어진 데이터베이스에 대한 정보는 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/catalog-pg-database.html"><code>pg_database</code></a> 카탈로그에 저장되어 다음의 SQL을 통해 데이터베이스 목록을 확인할 수 있습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>데이터베이스 목록을 확인할 수 있는 SQL</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> datname <span class="keyword">AS</span> &quot;Name&quot;,</span><br><span class="line">       pg_get_userbyid(datdba) <span class="keyword">AS</span> &quot;Owner&quot;,</span><br><span class="line">       pg_encoding_to_char(<span class="keyword">encoding</span>) <span class="keyword">AS</span> &quot;Encoding&quot;,</span><br><span class="line">       datctype <span class="keyword">AS</span> &quot;Collate&quot;,</span><br><span class="line">       datacl <span class="keyword">AS</span> &quot;Access Privileges&quot;</span><br><span class="line"><span class="keyword">FROM</span> pg_database;</span><br></pre></td></tr></table></figure>
+
+<p>쿼리 콘솔에서 위 SQL을 실행하면 현재 연결중인 postgres 데이터베이스 이외에 추가한 <code>mambo_db</code>라는 데이터베이스가 있는 것을 확인할 수 있을겁니다.</p>
+<h3 id="SMP-테이블-구성하기"><a href="#SMP-테이블-구성하기" class="headerlink" title="SMP 테이블 구성하기"></a>SMP 테이블 구성하기</h3><p>mambo 사용자로 mambo_db 데이터베이스에 연결한 뒤 SMP 저장을 위한 테이블을 구성합니다.</p>
+<ul>
+<li>type: SMP 유형으로 육지(1), 제주(9)</li>
+<li>datetime: 시간대 날짜(UTC)</li>
+<li>value: SMP 값</li>
+</ul>
+<figure class="highlight pgsql"><figcaption><span>테이블 생성 SQL</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> smp (</span><br><span class="line">    <span class="keyword">type</span>        <span class="type">INTEGER</span>   <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    datetime    <span class="type">TIMESTAMP</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    <span class="keyword">value</span>       <span class="type">NUMERIC</span>   <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    created_at  <span class="type">TIMESTAMP</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> (now() <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;UTC&#x27;</span>),</span><br><span class="line">    modified_at <span class="type">TIMESTAMP</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> (now() <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;UTC&#x27;</span>),</span><br><span class="line">    <span class="keyword">CONSTRAINT</span> smp_pk <span class="keyword">PRIMARY KEY</span> (<span class="keyword">type</span>, datetime)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>SMP 유형별로 시간대에 대한 값이 유일해야하므로 type과 datetime이 키가 되어야 합니다.<br>value는 정밀한 실수 계산을 위해 FLOAT 또는 DOUBLE PRECISION이 아닌 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/datatype-numeric.html">NUMERIC</a> 유형으로 지정하였습니다.</p>
+</blockquote>
+<h4 id="날짜-검색을-위한-인덱스-추가하기"><a href="#날짜-검색을-위한-인덱스-추가하기" class="headerlink" title="날짜 검색을 위한 인덱스 추가하기"></a>날짜 검색을 위한 인덱스 추가하기</h4><p>SMP는 하루, 일주일, 한달 그리고 1년 기간에 대하여 조회할 수 있어야하므로 datetime에 대한 내림차순을 인덱스로 추가합니다.</p>
+<figure class="highlight pgsql"><figcaption><span>SQL</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> smp_idx_01 <span class="keyword">ON</span> smp (datetime <span class="keyword">DESC</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight pgsql"><figcaption><span>[Tip] 인덱스 정보를 조회할 수 있는 SQL</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> indexname, indexdef <span class="keyword">FROM</span> pg_indexes <span class="keyword">WHERE</span> tablename = <span class="string">&#x27;smp&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="../images/posts/learning-postgresql-02.png"></p>
+<h3 id="SMP-데이터를-추가할-수-있는-함수-만들기"><a href="#SMP-데이터를-추가할-수-있는-함수-만들기" class="headerlink" title="SMP 데이터를 추가할 수 있는 함수 만들기"></a>SMP 데이터를 추가할 수 있는 함수 만들기</h3><p>SMP 테이블에 데이터를 추가하기 위하여 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/plpgsql.html">PL/pgSQL</a> 방식의 함수를 만들도록 하겠습니다. PostgreSQL을 사용할 때 PL/pgSQL을 활용하면 일반적인 SQL이 수행할 수 없는 로직을 만들 수 있습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>기본 데이터 추가 함수</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR REPLACE</span> <span class="keyword">FUNCTION</span> &quot;smp$upsert&quot;(v_type <span class="type">INTEGER</span>, v_datetime <span class="type">TIMESTAMP</span>, v_value <span class="type">DOUBLE</span> <span class="type">PRECISION</span>)</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="type">INTEGER</span></span><br><span class="line">    <span class="keyword">LANGUAGE</span> plpgsql</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line">$$</span><br><span class="line"><span class="pgsql"><span class="keyword">DECLARE</span></span></span><br><span class="line"><span class="pgsql">    now    <span class="type">TIMESTAMP</span> := now() <span class="keyword">at time zone</span> <span class="string">&#x27;UTC&#x27;</span>;</span></span><br><span class="line"><span class="pgsql">    result <span class="type">INTEGER</span>   := <span class="number">0</span>;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">BEGIN</span></span></span><br><span class="line"><span class="pgsql">    <span class="keyword">INSERT</span> <span class="keyword">INTO</span> smp (<span class="keyword">type</span>, datetime, <span class="keyword">value</span>)</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">VALUES</span> (v_type, v_datetime, v_value)</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">ON</span> <span class="keyword">CONFLICT</span> (<span class="keyword">type</span>, datetime) <span class="keyword">DO</span> <span class="keyword">UPDATE</span></span></span><br><span class="line"><span class="pgsql">        <span class="keyword">SET</span> (<span class="keyword">value</span>, modified_at) = (v_value, now);</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">GET</span> <span class="keyword">DIAGNOSTICS</span> result = <span class="built_in">ROW_COUNT</span>;</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">RETURN</span> result;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">END</span>;</span></span><br><span class="line"><span class="ruby"><span class="variable">$$</span></span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>value는 NUMERIC 유형이지만 함수 단계에서 FLOAT 또는 DOUBLE PRECISION로 사용해도 무방합니다.</p>
+</blockquote>
+<p><code>smp$upsert</code> 함수는 1건의 데이터씩 추가되는 함수이기 때문에 1000건의 데이터를 저장하기 위해서는 함수를 1000번 반복해서 호출해야하는 번거로움과 효율성이 떨어지는 단점이 있습니다. 그래서 우리는 복수의 데이터를 JSON 문자열로 구성하여 JSONB 형식으로 읽어 한번에 추가할 수 있도록 함수를 추가하겠습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>복수 데이터 추가 함수</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR REPLACE</span> <span class="keyword">FUNCTION</span> &quot;smp$upsert&quot;(v_type <span class="type">INTEGER</span>, v_values <span class="type">JSONB</span>)</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="type">INTEGER</span></span><br><span class="line">    <span class="keyword">LANGUAGE</span> plpgsql</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line">$$</span><br><span class="line"><span class="pgsql"><span class="keyword">DECLARE</span></span></span><br><span class="line"><span class="pgsql">    now    <span class="type">TIMESTAMP</span> := now() <span class="keyword">at time zone</span> <span class="string">&#x27;UTC&#x27;</span>;</span></span><br><span class="line"><span class="pgsql">    result <span class="type">INTEGER</span>   := <span class="number">0</span>;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">BEGIN</span></span></span><br><span class="line"><span class="pgsql">    <span class="keyword">INSERT</span> <span class="keyword">INTO</span> smp (<span class="keyword">type</span>, datetime, <span class="keyword">value</span>)</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">SELECT</span> v_type                                     <span class="keyword">AS</span> <span class="keyword">type</span>,</span></span><br><span class="line"><span class="pgsql">           TO_TIMESTAMP(t.datetime / <span class="number">1000</span>)::<span class="type">TIMESTAMP</span> <span class="keyword">AS</span> datetime,</span></span><br><span class="line">           t.value</span><br><span class="line"><span class="pgsql">    <span class="keyword">FROM</span> JSONB_TO_RECORDSET(v_values) <span class="keyword">AS</span> t(datetime <span class="type">BIGINT</span>, <span class="keyword">value</span> <span class="type">DOUBLE</span> <span class="type">PRECISION</span>)</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">ON</span> <span class="keyword">CONFLICT</span> (<span class="keyword">type</span>, datetime)</span></span><br><span class="line"><span class="pgsql">        <span class="keyword">DO</span> <span class="keyword">UPDATE</span> <span class="keyword">SET</span> (<span class="keyword">value</span>, modified_at) = (excluded.<span class="keyword">value</span>, now);</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">GET</span> <span class="keyword">DIAGNOSTICS</span> result = <span class="built_in">ROW_COUNT</span>;</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">RETURN</span> result;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">END</span>;</span></span><br><span class="line"><span class="ruby"><span class="variable">$$</span></span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>위 함수에서는 JSONB 형식의 복수 데이터를 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/functions-json.html">PostgreSQL에서 제공하는 JSON 관련 함수</a>인 jsonb_to_recordset()을 활용하여 쉽게 테이블 형태로 만들어 SELECT INTO로 수행하도록 하였습니다.</p>
+</blockquote>
+<p>물론, 다음과 같이 jsonb_array_elements() 함수를 활용하여 반복해서 INSERT 문을 호출할 수도 있습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>FOR와 jsonb_array_elements()를 활용한 데이터 추가 함수</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR REPLACE</span> <span class="keyword">FUNCTION</span> &quot;smp$upsert_foreach&quot;(v_type <span class="type">INTEGER</span>, v_values <span class="type">JSONB</span>)</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="type">INTEGER</span></span><br><span class="line">    <span class="keyword">LANGUAGE</span> plpgsql</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line">$$</span><br><span class="line"><span class="pgsql"><span class="keyword">DECLARE</span></span></span><br><span class="line"><span class="pgsql">    _value <span class="type">JSONB</span>;</span></span><br><span class="line"><span class="pgsql">    now    <span class="type">TIMESTAMP</span> := now() <span class="keyword">at time zone</span> <span class="string">&#x27;UTC&#x27;</span>;</span></span><br><span class="line"><span class="pgsql">    result <span class="type">INTEGER</span>   := <span class="number">0</span>;</span></span><br><span class="line"><span class="pgsql">    total_result <span class="type">INTEGER</span> := <span class="number">0</span>;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">BEGIN</span></span></span><br><span class="line"><span class="pgsql">    <span class="keyword">FOR</span> _value <span class="keyword">IN</span> <span class="keyword">SELECT</span> jsonb_array_elements(v_values)</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">LOOP</span></span></span><br><span class="line"><span class="pgsql">        <span class="keyword">INSERT</span> <span class="keyword">INTO</span> smp (<span class="keyword">type</span>, datetime, <span class="keyword">value</span>)</span></span><br><span class="line"><span class="pgsql">        <span class="keyword">VALUES</span> (v_type, TO_TIMESTAMP((_value -&gt;&gt; <span class="string">&#x27;datetime&#x27;</span>)::<span class="type">BIGINT</span> / <span class="number">1000</span>), (_value -&gt;&gt; <span class="string">&#x27;value&#x27;</span>)::<span class="type">DOUBLE</span> <span class="type">PRECISION</span>)</span></span><br><span class="line"><span class="pgsql">        <span class="keyword">ON</span> <span class="keyword">CONFLICT</span> (<span class="keyword">type</span>, datetime)</span></span><br><span class="line"><span class="pgsql">        <span class="keyword">DO</span> <span class="keyword">UPDATE</span> <span class="keyword">SET</span> (<span class="keyword">value</span>, modified_at) = (excluded.<span class="keyword">value</span>, now);</span></span><br><span class="line"><span class="pgsql">        <span class="keyword">GET</span> <span class="keyword">DIAGNOSTICS</span> result = <span class="built_in">ROW_COUNT</span>;</span></span><br><span class="line">        total_result := total_result + result;</span><br><span class="line"><span class="pgsql">    <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span></span><br><span class="line"><span class="pgsql">    <span class="keyword">RETURN</span> total_result;</span></span><br><span class="line"><span class="pgsql"><span class="keyword">END</span>;</span></span><br><span class="line"><span class="ruby"><span class="variable">$$</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>복수 데이터가 동일한 형식으로 구성되어있다면 SELECT INTO 방식을 사용하는 <code>jsonb_to_recordset</code> 방식이 더 효율적이지만 동일한 형식으로 구성되지 않을 수 있다면 <code>jsonb_array_elements</code> 함수를 사용하여 데이터 구성 형태에 따라 값을 가져와서 수행해야 합니다.</p>
+<blockquote>
+<p>결국 여러가지 함수를 활용하여 상황에 따라 효율적인 방식을 채택해야겠네요 :)</p>
+</blockquote>
+<h3 id="JDBC를-통해-데이터-추가-함수-호출하기"><a href="#JDBC를-통해-데이터-추가-함수-호출하기" class="headerlink" title="JDBC를 통해 데이터 추가 함수 호출하기"></a>JDBC를 통해 데이터 추가 함수 호출하기</h3><p>다음과 같이 쿼리 콘솔을 통해 직접 함수를 호출하여 테스트해볼 수 있으나 우리의 애플리케이션과 연계해보는 것도 중요합니다.</p>
+<figure class="highlight pgsql"><figcaption><span>Query Sample</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> smp$upsert(<span class="number">9</span>::<span class="type">INTEGER</span>,</span><br><span class="line">                  (<span class="string">&#x27;[&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609426800000,&quot;value&quot;:75.25&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609430400000,&quot;value&quot;:75.25&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609434000000,&quot;value&quot;:73.91&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609437600000,&quot;value&quot;:73.91&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609441200000,&quot;value&quot;:75.25&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609444800000,&quot;value&quot;:75.25&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609448400000,&quot;value&quot;:75.25&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609452000000,&quot;value&quot;:74.42&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609455600000,&quot;value&quot;:75.12&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609459200000,&quot;value&quot;:75.12&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609462800000,&quot;value&quot;:75.12&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609466400000,&quot;value&quot;:70.78&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609470000000,&quot;value&quot;:63.31&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609473600000,&quot;value&quot;:64.52&#125;,&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;&#123;&quot;datetime&quot;:1609477200000,&quot;value&quot;:74.61&#125;&#x27;</span> ||</span><br><span class="line">                  <span class="string">&#x27;]&#x27;</span>)::<span class="type">JSONB</span>);</span><br></pre></td></tr></table></figure>
+
+<p>저는 스프링에서 제공하는 SimpleJdbcCall를 활용하여 PostgreSQL 함수를 호출해보도록 구현하겠습니다.</p>
+<figure class="highlight java"><figcaption><span>Smp</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Smp</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Type type;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> datetime;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> value;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Type</span> </span>&#123;</span><br><span class="line">        LAND(<span class="number">1</span>),</span><br><span class="line">        JEJU(<span class="number">9</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> value;</span><br><span class="line">        Type(<span class="keyword">int</span> value) &#123;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>함수 호출 형식은 <code>? = call $functionName($params)</code>으로 구성되며 우리가 만든 함수와 파라미터 유형이 일치하도록 코드를 작성해야합니다.</p>
+<figure class="highlight java"><figcaption><span>SmpDAO</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SmpDAO</span> <span class="keyword">extends</span> <span class="title">DataAccessObject</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">upsert</span><span class="params">(Smp.Type type, List&lt;Smp&gt; values)</span> <span class="keyword">throws</span> JsonProcessingException, SQLException </span>&#123;</span><br><span class="line">        PGobject valuesObj = <span class="keyword">new</span> PGobject();</span><br><span class="line">        valuesObj.setType(<span class="string">&quot;jsonb&quot;</span>);</span><br><span class="line">        valuesObj.setValue(objectMapper.writeValueAsString(values));</span><br><span class="line"></span><br><span class="line">        SimpleJdbcCall simpleJdbcCall = <span class="keyword">new</span> SimpleJdbcCall(jdbcTemplate)</span><br><span class="line">                .withSchemaName(<span class="string">&quot;public&quot;</span>)</span><br><span class="line">                .withFunctionName(<span class="string">&quot;smp$upsert&quot;</span>)</span><br><span class="line">                .declareParameters(</span><br><span class="line">                        <span class="keyword">new</span> SqlOutParameter(<span class="string">&quot;result&quot;</span>, Types.INTEGER),</span><br><span class="line">                        <span class="keyword">new</span> SqlParameter(<span class="string">&quot;v_type&quot;</span>, Types.INTEGER),</span><br><span class="line">                        <span class="keyword">new</span> SqlParameter(<span class="string">&quot;v_values&quot;</span>, Types.OTHER)</span><br><span class="line">                ).withoutProcedureColumnMetaDataAccess();</span><br><span class="line"></span><br><span class="line">        MapSqlParameterSource source = <span class="keyword">new</span> MapSqlParameterSource()</span><br><span class="line">                .addValue(<span class="string">&quot;v_type&quot;</span>, type.getValue(), Types.INTEGER)</span><br><span class="line">                .addValue(<span class="string">&quot;v_values&quot;</span>, values, Types.OTHER);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> simpleJdbcCall.executeFunction(Integer.class, source);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>파라미터 이름은 달라도 상관없으나 코드 로직을 쉽게 이해할 수 있도록 함수와 일치시키는 것이 좋습니다.</p>
+</blockquote>
+<p>이제 SmpDAO를 테스트하기 위한 테스트 케이스를 작성하도록 합니다. 그런데 아직은 SMP 엑셀 파일을 불러와서 데이터를 가져오는 기능은 구현하지 않았으므로 SMP 데이터를 직접 JSON 문자열로 구성하여 호출하도록 해야합니다.</p>
+<figure class="highlight java"><figcaption><span>SmpDAOTests</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@ActiveProfiles(&quot;test&quot;)</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SmpDAOTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(getClass());</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SmpDAO smpDAO;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DisplayName(&quot;SMP 추가 테스트&quot;)</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">testUpsert</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assertions.assertDoesNotThrow(() -&gt; &#123;</span><br><span class="line">            Smp.Type type = Smp.Type.JEJU;</span><br><span class="line">            ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">            List&lt;Smp&gt; values = objectMapper.readValue(getSample(), <span class="keyword">new</span> TypeReference&lt;List&lt;Smp&gt;&gt;() &#123;</span><br><span class="line">            &#125;);</span><br><span class="line">            Integer result = smpDAO.upsert(type, values);</span><br><span class="line">            log.info(<span class="string">&quot;result: &#123;&#125;&quot;</span>, result);</span><br><span class="line">            Assertions.assertTrue(result &gt; <span class="number">0</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">getSample</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;[&#123;\&quot;datetime\&quot;:1609426800000,\&quot;value\&quot;:75.25&#125;]&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SMP 데이터 조회 함수를 만들기 전에 SMP 테이블에 데이터를 저장해놓기 위하여 전력거래소에서 제공하는 SMP 엑셀 파일을 파싱하여 저장하는 테스트를 먼저 작성하겠습니다.</p>
+<h3 id="SMP-엑셀-파일을-불러와서-SMP-데이터로-변환하기"><a href="#SMP-엑셀-파일을-불러와서-SMP-데이터로-변환하기" class="headerlink" title="SMP 엑셀 파일을 불러와서 SMP 데이터로 변환하기"></a>SMP 엑셀 파일을 불러와서 SMP 데이터로 변환하기</h3><p>엑셀 파일을 불러오기 위해 Apache Poi 라이브러리를 활용하겠습니다.</p>
+<figure class="highlight groovy"><figcaption><span>build.gradle</span></figcaption><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;org.apache.poi:poi:5.0.0&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;org.apache.poi:poi-ooxml:5.0.0&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>먼저 전력거래소에서 다운로드 받은 SMP 엑셀 파일의 데이터 구조를 확인합니다.</p>
+<p><img data-src="../images/posts/learning-postgresql-03.png"></p>
+<p>5행 부터 데이터가 있고 0번째 열은 날짜 그리고 1번째 부터 24번째까지 각 시간대의 SMP 입니다.<br>이 구조를 토대로 Poi 라이브러리로 읽어들이면 다음과 같습니다.</p>
+<figure class="highlight java"><figcaption><span>SmpExcelParser</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SmpExcelParser</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SmpExcelParser</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Smp&gt; <span class="title">parse</span><span class="params">(InputStream inputStream)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyyMMdd&quot;</span>);</span><br><span class="line">        List&lt;Smp&gt; smpList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">try</span> (Workbook workbook = WorkbookFactory.create(inputStream)) &#123;</span><br><span class="line">            Sheet sheet = workbook.getSheetAt(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> rownum = <span class="number">4</span>;</span><br><span class="line">            <span class="keyword">int</span> maxRows = sheet.getPhysicalNumberOfRows();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (; rownum &lt;= maxRows; rownum++) &#123;</span><br><span class="line">                Row row = sheet.getRow(rownum);</span><br><span class="line">                Cell firstCell = row.getCell(<span class="number">0</span>);</span><br><span class="line">                String firstCellValue = firstCell.getStringCellValue();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Date date = dateFormat.parse(firstCellValue);</span><br><span class="line">                    ZonedDateTime datetime = Instant.ofEpochMilli(date.getTime())</span><br><span class="line">                            .atZone(ZoneId.of(<span class="string">&quot;Asia/Seoul&quot;</span>))</span><br><span class="line">                            .withNano(<span class="number">0</span>)</span><br><span class="line">                            .withSecond(<span class="number">0</span>)</span><br><span class="line">                            .withMinute(<span class="number">0</span>)</span><br><span class="line">                            .withHour(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">24</span>; i++) &#123;</span><br><span class="line">                        datetime = datetime.withHour(i - <span class="number">1</span>);</span><br><span class="line">                        Cell cell = row.getCell(i);</span><br><span class="line">                        CellType cellType = cell.getCellType();</span><br><span class="line">                        <span class="keyword">double</span> cellValue;</span><br><span class="line">                        <span class="keyword">if</span> (CellType.NUMERIC.equals(cellType)) &#123;</span><br><span class="line">                            cellValue = cell.getNumericCellValue();</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (CellType.STRING.equals(cellType)) &#123;</span><br><span class="line">                            cellValue = Double.parseDouble(cell.getStringCellValue());</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">continue</span>;</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        Smp smp = <span class="keyword">new</span> Smp();</span><br><span class="line">                        smp.setDatetime(datetime.toInstant().toEpochMilli());</span><br><span class="line">                        smp.setValue(cellValue);</span><br><span class="line">                        smpList.add(smp);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">                    <span class="comment">// ignored</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> smpList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>이제 엑셀 파일을 불러와서 SMP 데이터를 저장하는 테스트 케이스를 작성합시다.</p>
+<figure class="highlight java"><figcaption><span>SmpDAOTests</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@DisplayName(&quot;SMP 엑셀 업로드&quot;)</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">testUploadExcel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Assertions.assertDoesNotThrow(() -&gt; &#123;</span><br><span class="line">        ClassPathResource resource = <span class="keyword">new</span> ClassPathResource(<span class="string">&quot;smp_land_2021.xls&quot;</span>);</span><br><span class="line">        Assertions.assertNotNull(resource);</span><br><span class="line">        List&lt;Smp&gt; smpList = SmpExcelParser.parse(resource.getInputStream());</span><br><span class="line">        Integer result = smpDAO.upsert(Smp.Type.LAND, smpList);</span><br><span class="line">        log.info(<span class="string">&quot;result: &#123;&#125;&quot;</span>, result);</span><br><span class="line">        Assertions.assertTrue(result &gt; <span class="number">0</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>테스트 케이스를 수행하니 4104 건의 SMP가 저장되었습니다.</p>
+</blockquote>
+<p>2018년부터 2021년 데이터를 저장하니 약 3만 건의 데이터가 저장되어있습니다. 데이터가 충분히 준비되었으니 SMP 데이터를 원하는 형태로 가져올 수 있도록 조회 쿼리를 만들어보도록 하겠습니다.</p>
+<h3 id="일자별-SMP-조회-쿼리-만들기"><a href="#일자별-SMP-조회-쿼리-만들기" class="headerlink" title="일자별 SMP 조회 쿼리 만들기"></a>일자별 SMP 조회 쿼리 만들기</h3><p>먼저, 일자별로 SMP를 GROUP BY 하기 위한 VIEW를 만들겠습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>날짜 및 시간별 SMP VIEW</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR REPLACE</span> <span class="keyword">VIEW</span> vw_smp_hour <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">type</span>,</span><br><span class="line">       datetime,</span><br><span class="line">       to_char(datetime <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;utc&#x27;</span> <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;Asia/Seoul&#x27;</span>, <span class="string">&#x27;YYYYMMDD&#x27;</span>) <span class="keyword">AS</span> <span class="type">date</span>,</span><br><span class="line">       date_part(<span class="string">&#x27;hour&#x27;</span>, datetime <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;utc&#x27;</span> <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;Asia/Seoul&#x27;</span>) + <span class="number">1</span> <span class="keyword">AS</span> hour,</span><br><span class="line">       <span class="keyword">value</span></span><br><span class="line"><span class="keyword">FROM</span> smp</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="type">date</span>, hour;</span><br></pre></td></tr></table></figure>
+
+<p>VIEW를 만들었기 때문에 일자별 SMP 조회 쿼리를 만들기 쉬어졌습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>일자별 SMP 조회</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">-- Unix Timestamp</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">type</span>, <span class="type">date</span>, jsonb_object_agg(EXTRACT(<span class="type">EPOCH</span> <span class="keyword">FROM</span> datetime) * <span class="number">1000</span>, <span class="keyword">value</span>) <span class="keyword">AS</span> <span class="keyword">values</span></span><br><span class="line"><span class="keyword">FROM</span> vw_smp_hour</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">type</span>, <span class="type">date</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- Hour</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">type</span>, <span class="type">date</span>, jsonb_object_agg(hour || <span class="string">&#x27;h&#x27;</span>, <span class="keyword">value</span>) <span class="keyword">AS</span> <span class="keyword">values</span></span><br><span class="line"><span class="keyword">FROM</span> vw_smp_hour</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">type</span>, <span class="type">date</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- Object</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">type</span>, <span class="type">date</span>,</span><br><span class="line">       jsonb_agg(</span><br><span class="line">               jsonb_build_object(</span><br><span class="line">                   <span class="string">&#x27;datetime&#x27;</span>, EXTRACT(<span class="type">EPOCH</span> <span class="keyword">FROM</span> datetime) * <span class="number">1000</span>,</span><br><span class="line">                   <span class="string">&#x27;hour&#x27;</span>, hour,</span><br><span class="line">                   <span class="string">&#x27;value&#x27;</span>, <span class="keyword">value</span></span><br><span class="line">               )</span><br><span class="line">       ) <span class="keyword">AS</span> <span class="keyword">values</span></span><br><span class="line"><span class="keyword">FROM</span> vw_smp_hour</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> <span class="keyword">type</span>, <span class="type">date</span>;</span><br></pre></td></tr></table></figure>
+
+<p>그런데 SMP 엑셀 파일에서처럼 일자별로 시간에 대한 SMP 테이블을 구성할 수 는 없을까요?</p>
+<p><img data-src="../images/posts/learning-postgresql-04.png"></p>
+<p>위와 같이 행과 열을 바꾸는 것을 Pivot 이라고 하는데요. PostgreSQL에서는 <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/11/tablefunc.html">tablefunc</a> 모듈의 <code>crosstab</code> 함수를 이용하면 가능하다고 합니다.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">crosstab(text source_sql, text category_sql)</span><br></pre></td></tr></table></figure>
+
+<p>crosstab 함수의 category_sql를 만들기 위해 피봇 기준이 될 항목을 만들기 위한 VIEW를 작성하겠습니다.</p>
+<figure class="highlight pgsql"><figcaption><span>SMP 피봇 기준 항목 VIEW</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR REPLACE</span> <span class="keyword">VIEW</span> vw_smp_pivot_columns <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DISTINCT</span> <span class="keyword">type</span>, to_char(datetime <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;utc&#x27;</span> <span class="keyword">AT TIME ZONE</span> <span class="string">&#x27;Asia/Seoul&#x27;</span>, <span class="string">&#x27;YYYYMMDD&#x27;</span>) <span class="keyword">AS</span> <span class="type">date</span>, date_part(<span class="string">&#x27;hour&#x27;</span>, datetime) + <span class="number">1</span> <span class="keyword">as</span> hour <span class="keyword">FROM</span> smp;</span><br></pre></td></tr></table></figure>
+
+<p>source_sql는 일자, 시간, 값을 가지는 쿼리, category_sql는 피봇 항목이 될 시간에 대한 쿼리를 사용하겠습니다.</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EXTENSION</span> tablefunc;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> *</span><br><span class="line"><span class="keyword">FROM</span> crosstab(</span><br><span class="line">    <span class="string">&#x27;SELECT date, hour, value FROM vw_smp_hour&#x27;</span> || <span class="string">&#x27; WHERE type = &#x27;</span> || <span class="number">1</span> || <span class="string">&#x27; ORDER BY date, hour &#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;SELECT DISTINCT hour FROM vw_smp_pivot_columns ORDER BY hour&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">AS</span> ct(<span class="type">date</span> <span class="type">varchar</span>,</span><br><span class="line">    &quot;1h&quot; <span class="type">numeric</span>, &quot;2h&quot; <span class="type">numeric</span>, &quot;3h&quot; <span class="type">numeric</span>, &quot;4h&quot; <span class="type">numeric</span>, &quot;5h&quot; <span class="type">numeric</span>, &quot;6h&quot; <span class="type">numeric</span>,</span><br><span class="line">    &quot;7h&quot; <span class="type">numeric</span>, &quot;8h&quot; <span class="type">numeric</span>, &quot;9h&quot; <span class="type">numeric</span>, &quot;10h&quot; <span class="type">numeric</span>, &quot;11h&quot; <span class="type">numeric</span>, &quot;12h&quot; <span class="type">numeric</span>,</span><br><span class="line">    &quot;13h&quot; <span class="type">numeric</span>, &quot;14h&quot; <span class="type">numeric</span>, &quot;15h&quot; <span class="type">numeric</span>, &quot;16h&quot; <span class="type">numeric</span>, &quot;17h&quot; <span class="type">numeric</span>, &quot;18h&quot; <span class="type">numeric</span>,</span><br><span class="line">    &quot;19h&quot; <span class="type">numeric</span>, &quot;20h&quot; <span class="type">numeric</span>, &quot;21h&quot; <span class="type">numeric</span>, &quot;22h&quot; <span class="type">numeric</span>, &quot;23h&quot; <span class="type">numeric</span>, &quot;24h&quot; <span class="type">numeric</span>);</span><br></pre></td></tr></table></figure>
+
+<p>crosstab 함수는 SET OF RECORD를 리턴하므로 레코드에 대한 컬럼 및 유형을 지정하여 임시 테이블로 구성해야합니다.<br>위 작성된 쿼리를 실행하면 다음과 같이 일자 및 시간별 테이블로 변경된 것을 확인할 수 있습니다.</p>
+<p><img data-src="../images/posts/learning-postgresql-05.png"></p>
+<p>피봇 테이블을 만들어본 것은 처음이라 생소하긴 했지만 어찌되었건 성공했습니다 :)</p>
+<p>이상으로 PostgreSQL 학습을 마치도록 하겠습니다. 감사합니다.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+      <aside class="adsense-block">
+        <div class="adsense-block-wrapper">
+          <!-- AdSense Display -->
+          <ins class="adsbygoogle"
+              style="display:block"
+              data-ad-client="ca-pub-9304279418886145"
+              data-ad-slot="3137426518"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+          <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+      </aside>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mambo</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.4.0/pjax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '.page-configurations',
+    '.main-inner',
+    '.post-toc-wrap',
+    '.languages',
+    '.pjax'
+  ],
+  analytics: false,
+  cacheBust: false,
+  scrollRestoration: false,
+  scrollTo: !CONFIG.bookmark.enable
+});
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  const hasTOC = document.querySelector('.post-toc');
+  document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+  document.querySelector(hasTOC ? '.sidebar-nav-toc' : '.sidebar-nav-overview').click();
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+    <div class="pjax">
+
+
+    </div>
+</body>
+</html>

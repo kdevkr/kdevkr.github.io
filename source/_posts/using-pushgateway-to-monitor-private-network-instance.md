@@ -15,9 +15,8 @@ tags:
 ## Pushgateway
 프로메테우스에서 제공하는 [Pushgateway](https://github.com/prometheus/pushgateway)는 매트릭을 푸시할 수 있도록 지원하며 푸시된 매트릭을 프로메테우스에서 가져갈 수 있도록 중개자 역할을 수행합니다. 따라서, Pushgateway에 푸시된 매트릭을 프로메테우스에서 가져갈 수 있습니다.
 
-### Pushgateway 설치
-Pushgateway 서버는 [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) 이미지를 통해 컨테이너로 실행합니다. 
-> 운영체제별 바이너리 파일을 받아 설치할 수도 있습니다.
+### How to install Pushgateway
+Pushgateway는 운영체제별 바이너리 파일을 받아 설치할 수 있습니다. 저는 운영체제에 상관없이 실행하기 위하여 바이너리 파일이 아닌 도커를 사용하여 Pushgateway를 실행하도록 하겠습니다.
 
 ```yaml pushgateway/docker-compose.yml
 version: '3'
@@ -30,31 +29,53 @@ services:
             - 9091:9091
 ```
 
-위 도커 컴포즈 문서를 통해 Pushgateway를 실행하였다면 브라우저를 통해 127.0.0.1:9091으로 서버에 접근할 수 있습니다.
+#### (Optinal) Listening Port
+Pushgatway는 기본적으로 9091 포트를 할당합니다. 
+만약, 9091 포트가 이미 사용중이라면 `web.listen-address` 플래그를 설정해야합니다.
+
+#### (Optional) Enable Persistence Mode
+기본적으로 Pushgateway는 푸시된 매트릭을 저장하지 않습니다. 
+만약, Pushgateway가 예기치 못하게 중단되더라도 푸시된 매트릭을 유지하고 싶다면 `persistence.file` 플래그로 푸시된 매트릭을 저장할 파일을 지정해야합니다.
+
+#### (Optional) TLS and basic authentication
+Pushgateway는 TLS 및 기본 인증을 지원합니다. 이를 설정하기 위해서는 `web.config.file` 플래그에 [Web Configuration](https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md) 파일을 지정하세요.
+
+### Run Pushgateway
+
+```cmd Windows Terminal
+docker-compose up -d
+```
+
+도커 컴포즈 명령어로 Pushgateway를 실행하고 브라우저를 통해 127.0.0.1:9091로 접근할 수 있습니다.
 
 ![Pushgateway](../images/posts/pushgateway-01.png)
 
-아직 푸시한 매트릭이 없으므로 Pushgateway에는 빈 화면이 표시됩니다. 이제 매트릭을 Pushgateway에 푸시하는 방법을 알아볼까요?
 
-### Pushgateway API
-Pushgateway가 제공하는 API를 통해 `curl`와 같은 HTTP 도구로 쉽게 매트릭 정보를 보낼 수 있습니다. 다음의 명령어는 [가이드](https://github.com/prometheus/pushgateway/blob/master/README.md#command-line)에서 제공하는 가장 간단한 API 예시입니다.
+### How to push metrics
+Pushgateway로 매트릭을 푸시하는 것은 HTTP로 수행할 수 있습니다. 다음의 HTTP 요청 예시를 살펴보시죠.
 
-```sh
-echo "some_metric 3.14" | curl --data-binary @- http://pushgateway.example.org:9091/metrics/job/some_job
+```sh Terminal
+echo "some_metric 3.14" | curl --data-binary @- http://127.0.0.1:9091/metrics/job/some_job
 ```
 
-#### 윈도우
-윈도우 환경에서는 [curl](https://curl.se/windows/)을 다운로드하여 설치하거나 Powershell의 Invoke-WebRequest 명령어로 HTTP 요청을 수행할 수 있습니다.
+`curl`과 같은 HTTP 요청 도구로 매트릭을 쉽게 푸시할 수 있으며 윈도우 환경에서는 [curl](https://curl.se/windows/)을 다운로드하여 설치하거나 Powershell의 Invoke-WebRequest 명령어로 HTTP 요청을 수행할 수도 있습니다.
 
-```cmd
+```cmd 명령 프롬프트
 powershell -Command "Invoke-WebRequest -Uri http://127.0.0.1:9091/metrics/job/some_job -Method POST -Body \"some_metric 3.14`n\""
 ```
 
-### OS Exporters
-OS 매트릭을 제공하는 Promethues Exporter와 연계하여 Pushgateway에 매트릭을 푸시해보도록 하겠습니다.
+### Push Examples
+앞서 HTTP 요청을 통해 매트릭을 푸시할 수 있음을 확인했으므로 node_exporter 또는 windows_exporter와 같은 OS 매트릭을 제공하는 Promethues Exporter에서 매트릭을 받아서 Pushgateway에 매트릭을 보내보도록 하겠습니다.
+
+다음처럼 curl를 사용하여 매트릭을 쉽게 Pushgateway로 보낼 수 있습니다.
+
+```cmd Windows Terminal
+curl -s http://localhost:9100/metrics | curl --data-binary @- http://127.0.0.1:9091/metrics/job/node-exporter/instance/1
+curl -s http://127.0.0.1:9182/metrics | curl --data-binary @- http://127.0.0.1:9091/metrics/job/windows-exporter/instance/1
+```
 
 #### Node Exporter
-[prometheus/node_exporter](https://github.com/prometheus/node_exporter)는 리눅스 커널을 사용하는 OS에 대한 매트릭을 제공합니다.
+[prometheus/node_exporter](https://github.com/prometheus/node_exporter)는 리눅스 커널을 사용하는 OS에 대한 매트릭을 제공합니다. 바이너리 뿐만 아니라 도커 이미지를 제공하므로 컨테이너로 실행할 수 있습니다.
 
 ```yaml docker-compose.yml
 version: '3'
@@ -71,52 +92,60 @@ services:
       - '/:/host:ro,rslave'
 ```
 
-Node Exporter에서 제공하는 매트릭을 Pushgateway API를 통해 보내기 위해서는 다음과 같이 명령어를 실행합니다.
-
-```sh
-curl -s http://localhost:9100/metrics | curl --data-binary @- http://pushgateway.example.org:9091/metrics/job/node-exporter/instance/1
-```
-
 #### Windows Exporter
-[prometheus-community/windows_exporter](https://github.com/prometheus-community/windows_exporter)는 윈도우 머신에 대한 매트릭을 제공합니다.
-
-node_exporter는 도커로 실행할 수 있었지만 windows_exporter는 파일을 다운로드 받아서 실행해야합니다.
+[prometheus-community/windows_exporter](https://github.com/prometheus-community/windows_exporter)는 윈도우 머신에 대한 매트릭을 제공합니다. windows_exporter는 파일을 다운로드 받아서 설치하거나 실행해야합니다.
 
 ```cmd Windows Terminal
 .\windows_exporter-0.16.0-386.exe --collectors.enabled "cpu,net,cs"
 ```
 
-windows_exporter를 통해 받은 윈도우 OS 매트릭을 Pushgateway에 푸시하도록 명령어를 실행합니다.
-
-```cmd Windows Terminal
-curl -s http://127.0.0.1:9182/metrics | curl --data-binary @- http://127.0.0.1:9091/metrics/job/windows-exporter/instance/1
-```
-
-Pushgateway가 정상적으로 매트릭을 받으면 다음과 같이 푸시된 매트릭이 표시됩니다.
+명령어가 정상적으로 수행되었다면 Pushgateway에서 다음과 같이 Exporter로 부터 받은 매트릭이 보내졌음을 확인할 수 있습니다.
 ![](../images/posts/pushgateway-03.png)
 
 ### Pushgateway with TTL
-Pushgateway에 푸시된 매트릭은 시간이 지나도 매트릭 정보로 남아있습니다. 매트릭이 다시 푸시되지 않는다면 프로메테우스는 동일한 매트릭을 주기적으로 수집하게 됩니다. 일정 시간이 지난 매트릭이 사라지기를 원한다면 주기적으로 DELETE API를 호출하는 배치를 만들거나 [pushgateway-ttl](https://github.com/dinumathai/pushgateway)을 사용해야 합니다.
+Pushgateway는 푸시된 매트릭을 지우지 않습니다. 따라서, 매트릭이 다시 푸시되지 않는다면 Pushgateway는 이전에 푸시된 매트릭을 현재 매트릭 정보로 제공합니다. 
 
-## Promethues Scrap Configs
-이제 Pushgateway로 푸시된 매트릭을 프로메테우스에서 가져갈 수 있게 설정해야합니다. 
+몇몇 사용자들이 일정시간이 지나면 매트릭을 지우는 옵션을 적용해달라고 요청하였지만 Pushgateway 개발팀은 적용하지 않는게 맞다고 판단하였습니다.
+
+> A while ago, we decided to not implement a “timeout” or TTL for pushed metrics because almost all proposed use cases turned out to be anti-patterns we strongly discourage.
+
+만약, 푸시된 매트릭이 일정시간 이후에 지워져야한다면 푸시된 매트릭을 지우도록 DELETE API를 호출하는 배치 작업을 만들어야합니다. 배치를 만들고 싶지 않고 최신 버전을 사용하지 않아도 괜찮다면 Pushgateway를 포크하여 TimeToLive 옵션을 추가한 [pushgateway-ttl](https://github.com/dinumathai/pushgateway)을 사용하시는 것을 추천합니다.
+
+```yaml docker-compose.yml
+version: '3'
+services:
+    pushgateway-ttl:
+        container_name: pushgateway-ttl
+        image: dmathai/prom-pushgateway-ttl:latest
+        restart: always
+        ports:
+            - 9091:9091
+        command:
+            - '--metric.timetolive=60s'
+```
+
+### Promethues Scrap Configs
+우리는 사설망의 인스턴스에서 Pushgateway로 매트릭을 푸시할 수 있음을 확인하였습니다. 이제는 Pushgateway에 푸시된 매트릭을 프로메테우스에서 가져갈 수 있도록 설정해야합니다. [Configure the Pushgateway as a target to scrape](https://github.com/prometheus/pushgateway#configure-the-pushgateway-as-a-target-to-scrape)
 
 ```yaml promethues.yml
 scrape_configs:
   - job_name: 'pushgateway'
     honor_labels: true
     static_configs:
-      - targets: ['host.docker.internal:9091']
+      - targets: ['pushgateway:9091']
 ```
 
-일반적으로 Pushgateway는 공인 IP를 할당하겠지만 저는 테스트용으로 프로메테우스와 동일한 네트워크 환경에서 실행하였으므로 `host.docker.internal`로 접근하였습니다.
+> `honor_labels` 항목이 true로 설정되어야한다는 점에 주의하시기 바랍니다.
+
+프로메테우스가 Pushgateway로부터 매트릭을 수집하였다면 다음과 같이 매트릭을 확인할 수 있습니다.
 
 ![](../images/posts/pushgateway-04.png)
 
-위처럼 프로메테우스가 Pushgateway의 매트릭을 수집한 것을 확인하였으며 이렇게 수집된 매트릭을 windows_exporter 매트릭을 시각화한 [Windows Exporter Dashboardby girb90](https://grafana.com/grafana/dashboards/14694)를  그라파나에 추가해보았습니다.
+### Grafana Dashboard
+
+위 화면에서 확인한 windows_net_bytes_total 매트릭은 windows_expoter로 수집된 매트릭으로 이를 그라파나로 시각화하기 위해 [Windows Exporter Dashboardby girb90](https://grafana.com/grafana/dashboards/14694)를 추가하면 다음과 같이 확인할 수 있습니다.
 
 ![](../images/posts/pushgateway-05.png)
 
-이렇게 Pushgateway를 활용하면 사설망에서 구동되는 인스턴스도 모니터링할 수 있음을 확인하였습니다.
-
+이로써 Pushgateway를 활용해 사설망에 위치한 인스턴스에 대한 모니터링을 수행할 수 있음을 알게되었습니다. 감사합니다.
 

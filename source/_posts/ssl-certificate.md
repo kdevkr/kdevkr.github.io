@@ -26,9 +26,9 @@ HTTPS가 적용된 애플리케이션 서버와 통신하기 위해서는 클라
 
 크롬 브라우저의 개발자 도구 중 보안 탭에서 TLS 핸드쉐이크 과정에 의해 결정된 여러가지 사항들을 확인할 수 있습니다.
 
-![네이버 웹 사이트](../images/posts/ssl-certificate-01.png)
+![네이버 웹 사이트](/images/posts/ssl-certificate/ssl-certificate-01.png)
 
-![회사 웹 사이트](../images/posts/ssl-certificate-02.png)
+![회사 웹 사이트](/images/posts/ssl-certificate/ssl-certificate-02.png)
  
 네이버 웹 사이트는 **DigiCert**라는 인증기관에서 발행한 SSL 인증서를 제공하였고 **TLS 1.3** 버전과 함께 **[X25519](https://en.wikipedia.org/wiki/Curve25519)** 방식으로 키를 교환하고 **AES_256_GCM**으로 암호화하며 회사에서 운영중인 웹 서비스는 네이버와 다르게 **TLS 1.2**, **ECDHE_ECDSA**, **AES_128_GCM**을 사용합니다. 여러분들도 HTTPS를 적용한 웹 사이트를 운영중이거나 궁금한 사이트가 있다면 어떤 사항으로 결정되었는지 확인해보시기 바랍니다. TLS 핸드쉐이크 과정에 의해 결정되는 사항들은 애플리케이션 서버가 지원하는 사항들과 클라이언트에 따라 다를 수 있습니다. 이제 우리는 이러한 사항들에 대해서 하나씩 알아보도록 하죠.
 
@@ -37,7 +37,7 @@ TLS 버전은 TLS 핸드쉐이크 과정을 수행하는 방식을 말합니다.
 
 크롬 브라우저는 이미 [TLS 1.0과 TLS 1.1 버전을 사용하지 않기 때문에](https://www.chromestatus.com/feature/5759116003770368) 여러분의 애플리케이션 서버는 최소한 TLS 1.2 버전을 사용할 수 있도록 지원해야합니다. 
 
-![](../images/posts/ssl-certificate-12.png)
+![](/images/posts/ssl-certificate/ssl-certificate-12.png)
 
 위는 회사에서 운영중인 애플리케이션 서버의 로그를 살펴본 경우로 **SSLv3, TLSv1.0, TLS v1.1**등의 TLS 버전을 사용하려는 클라이언트 요청이 거부된 것이 오류 로그로 출력된 상황을 보여줍니다. 이 애플리케이션 서버는 AWS Beanstalk와 함께 NLB(Network Load Balancer)를 사용하며 NLB는 TCP 트래픽에 대하여 분산된 애플리케이션 서버로 프록시되도록 구성했기때문에 L4 로드밸런서에서 TLS 핸드쉐이크가 처리되지 않았음을 보여주는 것이기도 합니다.
 
@@ -46,13 +46,13 @@ TLS 버전은 TLS 핸드쉐이크 과정을 수행하는 방식을 말합니다.
 #### HTTP/3 그리고 QUIC
 통신 프로토콜에 대해서 관심이 있는 분들은 QUIC 이라고하는 전송 프로토콜에 대해서 들어보신 적 있으실 겁니다. TCP가 아닌 오버헤드가 적은 UDP를 사용하는 프로토콜로 구글 웹 사이트에 대해 TLS 핸드쉐이크 과정에 의해 결정된 사항을 확인해보면 다음과 같이 TLS가 아닌 QUIC을 사용한 것으로 확인할 수 있습니다.
 
-![](../images/posts/ssl-certificate-03.png)
+![](/images/posts/ssl-certificate/ssl-certificate-03.png)
 
 QUIC은 TLS를 기본으로 사용하도록 되어있으며 TLS는 보안 프로토콜이기 때문에 HTTP가 아닌 전송 프로토콜과도 사용할 수 있다는 것을 보여주는 예 입니다. 구글 웹 사이트 뿐만 아니라 여러분이 라이브러리등 정적 컨텐츠를 받아오기 위해 사용하는 CDN 서버를 살펴보면 **h3-29**라고 하는 QUIC의 표준 이름을 확인할 수 있습니다.
 
 아무튼 다시 TLS 버전에 대한 사항을 더 알아보도록 하겠습니다. 국내 개발자 커뮤니티 중 하나인 OKKY 사이트의 애플리케이션 서버에서 지원하는 TLS 버전을 확인해보기 위해 [Check TLS Version](https://gf.dev/tls-test)을 수행해본 결과입니다.
 
-![](../images/posts/ssl-certificate-04.png)
+![](/images/posts/ssl-certificate/ssl-certificate-04.png)
 
 TLS 1.3을 제외한 나머지 버전을 지원하는 것으로 리포트 되었습니다. 다시 말하지만 크롬 브라우저는 TLS 1.2 이상을 지원하기 때문에 애플리케이션 서버가 TLS 1.3을 지원하지 않더라도 아무런 문제가 없습니다. 사람들이 많이 사용하는 크롬 브라우저에서 TLS 1.2 지원하지않도록 발표하면 애플리케이션 서버에서 TLS 1.3을 지원하도록 변경하는 것은 불가피한 상황이긴 합니다. 물론, 회사에서 운영중인 애플리케이션 서버도 마찬가지인 상황입니다.
 
@@ -76,7 +76,7 @@ TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 
 이러한 암호화 스위트는 [AWS의 ELB(Elastic Load Balancing)의 보안 정책](https://docs.aws.amazon.com/ko_kr/elasticloadbalancing/latest/network/create-tls-listener.html)에서도 정책별 지원 여부를 확인할 수 있습니다. 
 
-![ELB Security Policy](../images/posts/ssl-certificate-13.png)
+![ELB Security Policy](/images/posts/ssl-certificate/ssl-certificate-13.png)
 
 ## SSL 인증서
 TLS 핸드쉐이크 과정에서 클라이언트가 애플리케이션 서버로부터 받는 SSL 인증서는 브라우저 해당 사이트를 신뢰할 수 있는지를 판단할 수 있는 중요한 사항입니다. 브라우저에서는 자체적으로 **신뢰할 수 있는 인증 기관(CA)** 에 대해 관리하거나 운영체제에 등록된 루트 인증 기관에 대한 정보를 활용해서 서버에서 제공하는 SSL 인증서가 신뢰할 수 있는 기관으로부터 발급된 것인지 확인하는 과정을 거치게 됩니다.
@@ -230,20 +230,20 @@ server.ssl.key-store-password=passwd
 server.ssl.key-store-type=pkcs12
 ```
 
-![](../images/posts/ssl-certificate-06.png)
+![](/images/posts/ssl-certificate/ssl-certificate-06.png)
 
 실행된 애플리케이션 서버는 자체 서명된 서버 인증서이기 때문에 발급자인 CA에 대한 정보를 브라우저가 확인할 수 없습니다. 따라서, 브라우저가 신뢰할 수 없는 사이트라고 알려주는 것은 당연한 부분으로 이 경고를 무시하고 접근할 수도 있지만 우리는 **자체 서명 CA 인증서를 보유하고 있으므로 브라우저가 신뢰할 수 있는 기관으로 등록**하겠습니다.
 
-![](../images/posts/ssl-certificate-07.png)
+![](/images/posts/ssl-certificate/ssl-certificate-07.png)
 
 **설정 > 개인정보 및 보안 > 보안 > 인증서 관리**로 들어가서 자체 서명된 CA 인증서를 루트 인증 기관으로 등록할 수 있습니다.
 
-![](../images/posts/ssl-certificate-08.png)
+![](/images/posts/ssl-certificate/ssl-certificate-08.png)
 
 루트 인증 기관 목록에 자체 서명 CA 인증서를 추가했으므로 다음과 같이 신뢰할 수 없던 애플리케이션 서버 인증서를 신뢰할 수 있게 됩니다. 
 
-![127.0.0.1](../images/posts/ssl-certificate-09.png)
-![mambo.kr](../images/posts/ssl-certificate-10.png)
+![127.0.0.1](/images/posts/ssl-certificate/ssl-certificate-09.png)
+![mambo.kr](/images/posts/ssl-certificate/ssl-certificate-10.png)
 
 로컬호스트 대신에 SAN으로 지정하였던 127.0.0.1과 mambo.kr에 대해서도 신뢰하였습니다. 만약, 따라해보고 계시는 분들 중에서 여전히 신뢰할 수 없다고 나오는 경우 브라우저를 종료하고 다시 실행해보시기 바랍니다.
 
@@ -360,7 +360,7 @@ docker-compose up -d
 
 정상적으로 실행되었다면 Nginx의 443 포트를 통해 애플리케이션 서버와의 통신을 수행할 수 있습니다. 그리고 다음 처럼 TLS 핸드쉐이크 과정이 Nginx에 의해 제대로 수행되었음을 확인할 수 있습니다.
 
-![](../images/posts/ssl-certificate-11.png)
+![](/images/posts/ssl-certificate/ssl-certificate-11.png)
 
 이상으로 SSL 인증서에 대한 정리를 마치도록 하겠습니다. 
 

@@ -16,7 +16,7 @@ Beanstalk 확장 구성 파일에서 CloudFormation의 [AWS::CloudFormation::Aut
 ### S3 Bucket Policy
 먼저, **AWS::CloudFormation::Authentication** 리소스로 S3 버킷에 대한 자격 증명을 가질 수 있도록 S3 버킷에 보안 정책을 설정해야 합니다. 일반적으로 Beanstalk으로 애플리케이션을 배포하는 경우 **aws-elasticbeanstalk-ec2-role**을 인스턴스 프로파일로 가지게 됩니다. 인증서 파일이 저장된 S3 버킷은 퍼블릭 액세스가 차단되어있으므로 EC2 인스턴스가 [버킷에 대한 권한을 가지도록 정책을 추가](https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/add-bucket-policy.html)합니다.
 
-![](../images/posts/elastic-beanstalk-s3-auth-01.png)
+![](/images/posts/elastic-beanstalk-s3-auth-01.png)
 
 ### Extend Nginx
 이제 이전에 작성하였던 SSL 인증서를 만들어내는 구성 파일을 S3에서 받아오도록 작성해야합니다. files 키의 **content** 항목을 제거하고 다음의 항목을 추가합니다.

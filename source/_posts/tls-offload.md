@@ -24,16 +24,16 @@ tags:
 
 [ELB의 로드밸런서 유형 비교](https://aws.amazon.com/ko/elasticloadbalancing/features/#Product_comparisons)에서 나와있듯이 NLB는 TLS 오프로드를 지원하기 때문에 **로드밸런서에 인증서를 등록하고 TLS 핸드쉐이크를 처리하도록 구성**할 수 있게 됩니다. 다음과 같이 NLB의 리스너 설정 시 **TLS 프로토콜**을 선택하고 **TLS 버전**과 암호화 스위트 목록에 대한 **보안 정책** 그리고 **SSL 인증서**를 등록할 수 있습니다.
 
-![](../images/posts/tls-offload-01.png)
+![](/images/posts/tls-offload/tls-offload-01.png)
 
 #### ECC 인증서 미지원
 TLS 오프로드를 지원한다고 나와있지만 **모든 SSL 인증서를 지원하는 것은 아닙**니다. 회사에서 사용중인 인증서와 같은 타원 곡선형 키를 사용하는 ECC 인증서를 등록하게 되면 아마존 웹 서비스로부터 알림을 받게되고 **애플리케이션 서버로 트래픽이 전달되지 않는 상태**가 될 수 있습니다.
 
-![](../images/posts/tls-offload-02.png)
+![](/images/posts/tls-offload/tls-offload-02.png)
 
 NLB에 대한 리스너 설정 문서를 살펴보면 **2048 이상의 비트를 사용하는 RSA 키 또는 EC 키로된 인증서를 지원하지 않는다**라고 경고하고 있으며 문서를 살펴보기까지 이러한 정보를 확인할 수 있는 곳은 없었습니다.
 
-![](../images/posts/tls-offload-03.png)
+![](/images/posts/tls-offload/tls-offload-03.png)
 
 의외로 많이 사용하고 있는 **ECC 인증서에 대해서는 NLB에서 TLS 오프로드를 수행할 수 없기** 때문에 애플리케이션 서버에서 SSL 인증서를 관리하고 TLS 핸드쉐이크를 수행해야합니다. 애플리케이션 서버 배포 시 Elastic Beanstalk을 사용하는 경우 [Java SE 플랫폼](https://docs.aws.amazon.com/ko_kr/elasticbeanstalk/latest/dg/java-se-platform.html)을 통해 EC2 인스턴스에 **Nginx를 활용하여 역방향 프록시를 구성**할 수 있기 때문에 반드시 애플리케이션 서버에서 TLS 핸드쉐이크를 수행해야하는 것은 아닙니다.
 
@@ -53,23 +53,23 @@ ELB에서는 TLS 1.3을 지원하지 않으며 NLB에서는 ECC 인증서를 사
 ### Elastic Beanstalk Java SE 플랫폼
 스프링 애플리케이션을 배포하기 위해서는 Java SE 플랫폼 환경을 구성해야합니다. 이때, 샘플 애플리케이션으로 Beanstalk 환경을 시작하는 것이 좋습니다.
 
-![웹 서버 환경 선택](../images/posts/tls-offload-04.png)
+![웹 서버 환경 선택](/images/posts/tls-offload/tls-offload-04.png)
 
-![샘플 애플리케이션으로 시작](../images/posts/tls-offload-05.png)
+![샘플 애플리케이션으로 시작](/images/posts/tls-offload/tls-offload-05.png)
 
 Beanstalk 환경 구성 시 로드밸런서를 설정하고 싶은 경우 **추가 옵션 구성**을 통해 사용자 정의 설정을 진행해야 합니다.
 
-![JVM 옵션 환경변수](../images/posts/tls-offload-06.png)
+![JVM 옵션 환경변수](/images/posts/tls-offload/tls-offload-06.png)
 
 > 배포하고 보니 오타가 있었네요 :)
 
-![로드밸런싱 인스턴스](../images/posts/tls-offload-07.png)
+![로드밸런싱 인스턴스](/images/posts/tls-offload/tls-offload-07.png)
 
-![NLB 선택 및 리스너 구성](../images/posts/tls-offload-08.png)
+![NLB 선택 및 리스너 구성](/images/posts/tls-offload/tls-offload-08.png)
 
 그리고 EC2 인스턴스 접근을 위한 키를 설정하는 등 부가 설정을 하고 환경을 생성하면 다음과 같이 샘플 애플리케이션이 배포되는 환경이 준비됩니다.
 
-![Java SE 플랫폼 환경 생성 완료](../images/posts/tls-offload-09.png)
+![Java SE 플랫폼 환경 생성 완료](/images/posts/tls-offload/tls-offload-09.png)
 
 > 처음 환경을 구성할 때 오류가 발생하는 경우 Beanstalk에서는 환경 삭제 버튼이 활성화되지 않아 당황할 수 있으나 CloudFormation 서비스로 이동하여 Beanstalk 환경을 구성중인 스택을 삭제할 수 있습니다.
 
@@ -230,7 +230,7 @@ http {
 
 이제 샘플 애플리케이션 대신 우리가 준비한 애플리케이션 소스 번들을 업로드하면 Benstalk 엔진이 소스 번들을 추출하고 애플리케이션을 실행하게 됩니다. Route 53으로 Beanstalk 환경 주소를 DNS로 연결하고 접속해보면 다음과 같이 TLS 핸드쉐이크가 수행되었음을 확인할 수 있습니다.
 
-![](../images/posts/tls-offload-10.png)
+![](/images/posts/tls-offload/tls-offload-10.png)
 
 NLB는 트래픽을 EC2 인스턴스의 443 포트로 전달했을 뿐 TLS 오프로드는 Nginx에서 수행하는 것으로 구성했기 때문에 브라우저에서는 TLS 1.3 버전으로 TLS 핸드쉐이크를 수행했습니다. 이렇게 **아마존 웹 서비스에서 TLS 1.3을 지원하기 위해서는 NLB의 TCP 리스너와 Nginx의 TLS 오프로드를 활용하면 가능함을 검증**했습니다.
 

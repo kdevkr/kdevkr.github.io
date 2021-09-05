@@ -71,7 +71,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
 위 인터셉터가 정말로 이미지 파일에 대해서만 처리할 수 있게 사전 처리를 수행하는지 확인해보겠습니다.
 
-![](../images/posts/handler-interceptor-01.gif)
+![](/images/posts/handler-interceptor-01.gif)
 
 위 결과를 보면 이미지 파일은 정적 리소스로 배포되도록 처리되었지만 동영상 파일은 처리되지 않게 된걸 확인할 수 있습니다. 
 

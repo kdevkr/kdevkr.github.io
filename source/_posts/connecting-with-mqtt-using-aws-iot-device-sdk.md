@@ -240,7 +240,7 @@ aws-iot.client.id=
 
 클라이언트 엔드포인트에 접근할 수 있는 인증된 사용자의 크레덴셜의 정보라면 메시지 페이로드가 구독된 것을 확인할 수 있습니다.
 
-![](../images/posts/aws-iot-mqtt-subscribe.png)
+![](/images/posts/aws-iot-mqtt-subscribe.png)
 
 이상으로 AWS IoT Device SDK Java로 MQTT 연결하기를 마칩니다. 감사합니다.
 

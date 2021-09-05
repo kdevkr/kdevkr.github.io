@@ -48,7 +48,7 @@ docker-compose up -d
 
 도커 컴포즈 명령어로 Pushgateway를 실행하고 브라우저를 통해 127.0.0.1:9091로 접근할 수 있습니다.
 
-![Pushgateway](../images/posts/pushgateway-01.png)
+![Pushgateway](/images/posts/using-pushgateway/pushgateway-01.png)
 
 
 ### How to push metrics
@@ -100,7 +100,7 @@ services:
 ```
 
 명령어가 정상적으로 수행되었다면 Pushgateway에서 다음과 같이 Exporter로 부터 받은 매트릭이 보내졌음을 확인할 수 있습니다.
-![](../images/posts/pushgateway-03.png)
+![](/images/posts/using-pushgateway/pushgateway-03.png)
 
 ### Pushgateway with TTL
 Pushgateway는 푸시된 매트릭을 지우지 않습니다. 따라서, 매트릭이 다시 푸시되지 않는다면 Pushgateway는 이전에 푸시된 매트릭을 현재 매트릭 정보로 제공합니다. 
@@ -139,13 +139,13 @@ scrape_configs:
 
 프로메테우스가 Pushgateway로부터 매트릭을 수집하였다면 다음과 같이 매트릭을 확인할 수 있습니다.
 
-![](../images/posts/pushgateway-04.png)
+![](/images/posts/using-pushgateway/pushgateway-04.png)
 
 ### Grafana Dashboard
 
 위 화면에서 확인한 windows_net_bytes_total 매트릭은 windows_expoter로 수집된 매트릭으로 이를 그라파나로 시각화하기 위해 [Windows Exporter Dashboardby girb90](https://grafana.com/grafana/dashboards/14694)를 추가하면 다음과 같이 확인할 수 있습니다.
 
-![](../images/posts/pushgateway-05.png)
+![](/images/posts/using-pushgateway/pushgateway-05.png)
 
 이로써 Pushgateway를 활용해 사설망에 위치한 인스턴스에 대한 모니터링을 수행할 수 있음을 알게되었습니다. 감사합니다.
 

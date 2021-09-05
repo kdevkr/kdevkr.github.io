@@ -72,7 +72,7 @@ sudo cat /sys/class/dmi/id/product_uuid
 
 그리고 쿠버네티스 클러스터를 구성하는 호스트의 역할에 맞게 사용해야될 포트를 점유하고 있는지 확인해야합니다.
 
-![](../images/posts/setup-kubernetes-cluster-01.png)
+![](/images/posts/setup-kubernetes-cluster/setup-kubernetes-cluster-01.png)
 
 #### 컨테이너 런타임 선택하기
 쿠버네티스 클러스터에서 파드 안에 컨테이너를 실행하기 위해 사용하게 될 컨테이너 런타임을 선택하고 설치해야합니다. 쿠버네티스 클러스터를 구성하는 많은 글에서 도커를 컨테이너 런타임으로 사용하는 것으로 소개하고있지만 앞으로 최신 쿠버네티스 클러스터 버전에서는 [컨테이너 런타임 인터페이스를 준수하지 않는 도커](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/)를 컨테이너 런타임으로 지원하지 않을 예정입니다. 따라서, 저는 [CRI-O](https://cri-o.io/)를 컨테이너 런타임으로 선택하고 설치하겠습니다.
@@ -150,11 +150,11 @@ sudo kubectl apply -f https://docs.projectcalico.org/manifests/canal.yaml
 
 먼저, 아마존 웹 서비스의 EC2 인스턴스를 **우분투 20.04 LTS** 로 시작하겠습니다.
 
-![](../images/posts/setup-kubernetes-cluster-02.png)
+![](/images/posts/setup-kubernetes-cluster/setup-kubernetes-cluster-02.png)
 
 그리고 kubeadm는 클러스터 시작을 위해 **CPU 2코어 이상, 메모리 2GB 이상** 을 요구하므로 t2.medium 인스턴스를 선택했습니다.
 
-![](../images/posts/setup-kubernetes-cluster-03.png)
+![](/images/posts/setup-kubernetes-cluster/setup-kubernetes-cluster-03.png)
 
 쿠버네티스 클러스터 구성을 위한 학습을 목적으로 하므로 **마스터 노드와 함께 1개 이상의 워커 노드를 구성**하기 위하여 **최소 2개의 우분투 인스턴스**를 준비합니다.
 
@@ -331,7 +331,7 @@ scp -i .\keypair\mambo.pem ubuntu@54.180.137.161:.kube/config .kube/config
 
 로컬 컴퓨터에서 큐브컨트롤이 참조하는 클러스터 접근 구성정보를 조회해보면 마스터 노드에서 사용하던 클러스터 접근 구성 파일이기 때문에 클러스터의 주소가 마스터 노드의 내부 아이피인 것을 확인할 수 있습니다.
 
-![클러스터 주소가 마스터 노드의 내부 아이피](../images/posts/control-kubernetes-cluster-03.png)
+![클러스터 주소가 마스터 노드의 내부 아이피](/images/posts/setup-kubernetes-cluster/control-kubernetes-cluster-03.png)
 
 클러스터 주소를 외부 아이피로 변경하기 위해서 다음의 명령어를 수행합니다.
 
@@ -341,7 +341,7 @@ kubectl config --kubeconfig=config set-cluster kubernetes --server=https://54.18
 
 다시 큐브컨트롤이 참조하는 클러스터 접근 구성 정보를 조회해보면 다음과 같이 클러스터 주소가 외부 아이피로 변경된 것을 확인할 수 있습니다.
 
-![외부 아이피로 변경된 클러스터 주소](../images/posts/control-kubernetes-cluster-04.png)
+![외부 아이피로 변경된 클러스터 주소](/images/posts/setup-kubernetes-cluster/control-kubernetes-cluster-04.png)
 
 이제 로컬 컴퓨터에서 큐브컨트롤이 클러스터에 접근할 수 있게 접근 구성 파일을 정의했습니다. (수정이지만...?) 큐브컨트롤로 클러스터의 모든 네임스페이스에 대한 파드를 조회해봅니다.
 
@@ -362,11 +362,11 @@ rm $HOME/.kube/config
 
 쿠버네티스 클러스터 시작 시 외부 아이피를 API 서버에 대한 인증서에 포함하도록 **\--apiserver-cert-extra-sans** 파라미터 옵션을 추가합니다.
 
-![](../images/posts/control-kubernetes-cluster-05.png)
+![](/images/posts/setup-kubernetes-cluster/control-kubernetes-cluster-05.png)
 
 위와 같이 쿠버네티스 클러스터 시작 시 출력되는 정보를 통해 우리가 파라미터로 입력한 **외부 아이피(54.180.137.161)가 인증서에 포함됨** 을 확인할 수 있었습니다. 쿠버네티스 클러스터를 시작하여 컨트롤 플레인 노드가 초기화되었으면 kubeconfig 파일을 로컬 컴퓨터로 복사하고 큐브컨트롤으로 파드 조회를 시도해봅니다.
 
-![](../images/posts/control-kubernetes-cluster-06.png)
+![](/images/posts/setup-kubernetes-cluster/control-kubernetes-cluster-06.png)
 
 쿠버네티스 클러스터에서 인증서에 포함된 외부 아이피를 확인하여 클러스터 접근을 허용하여 모든 네임스페이스에 대한 파드가 조회되었습니다.
 
@@ -584,7 +584,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 쿠버네티스 시작 시 수행하는 과정 중 일부를 수행하여 API 서버에 대한 인증서를 발행하면서 외부 아이피가 포함된 것을 확인할 수 있습니다.
 
-![](../images/posts/control-kubernetes-cluster-07.png)
+![](/images/posts/setup-kubernetes-cluster/control-kubernetes-cluster-07.png)
 
 위와 같이 외부 호스트인 로컬 컴퓨터에서도 클러스터에 접근할 수 있게 됩니다.
 
@@ -759,7 +759,7 @@ ssh -L 8001:localhost:8001 mambo@192.168.0.5
 
 이제 로컬 컴퓨터에서 http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/로 접속하면 쿠버네티스 대시보드 로그인 화면이 표시됩니다.
 
-![](../images/posts/access-kubernetes-dashboard-02.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-02.png)
 
 
 하지만, 이렇게 SSH 터널링으로 쿠버네티스 대시보드로 접근하는 방식은 불편한점이 있기 때문에 쿠버네티스 대시보드를 외부에서 직접 접근할 수 있으면 좋겠습니다. 외부에서 접근하기 위해서는 쿠버네티스 대시보드를 외부로 노출할 수 있도록 쿠버네티스 대시보드 서비스의 유형을 ClusterIP 에서 **NodePort**로 변경해야합니다.
@@ -805,13 +805,13 @@ kubernetes-dashboard   NodePort   10.100.36.145   <none>        443:31532/TCP   
 
 쿠버네티스 대시보드가 31532 포트로 노출되었으니 **https://192.168.0.5:31532**으로 접속합니다.
 
-![](../images/posts/access-kubernetes-dashboard-01.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-01.png)
 
 쿠버네티스 클러스터에서 사용하는 루트 CA 인증서가 현재 브라우저에 신뢰할 수 있는 CA 인증서로 등록되어있지 않기 때문에 **안전하지 않음으로 이동**을 눌러 쿠버네티스 대시보드로 들어갑니다.
 
 ### 쿠버네티스 대시보드 로그인하기
 
-![](../images/posts/access-kubernetes-dashboard-02.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-02.png)
 
 쿠버네티스 대시보드 서비스 어카운트의 토큰으로 쿠버네티스 대시보드에 로그인할 수 있습니다. 큐브컨트롤로 다음의 명령어를 실행하여 쿠버네티스 대시보드 사용자의 토큰을 조회합니다.
 
@@ -837,11 +837,11 @@ ca.crt:     1066 bytes
 
 쿠버네티스 대시보드 사용자의 토큰을 복사해서 쿠버네티스 대시보드에 로그인합니다.
 
-![](../images/posts/access-kubernetes-dashboard-03.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-03.png)
 
 토큰을 사용하여 로그인되었지만 이 서비스 어카운트는 쿠버네티스 클러스터에 대한 권한을 가지고 있지 않아서 어떠한 정보도 표시되지 않습니다.
 
-![](../images/posts/access-kubernetes-dashboard-04.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-04.png)
 
 우리는 쿠버네티스 클러스터에 대한 권한을 쿠버네티스 대시보드 사용자에게 부여해야합니다.
 
@@ -871,7 +871,7 @@ clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
 
 쿠버네티스 대시보드 사용자에게 모든 권한을 부여하는 **ClusterRole**과 **ClusterRoleBinding**을 다시 만들었으니 쿠버네티스 대시보드에 다시 로그인해보겠습니다.
 
-![](../images/posts/access-kubernetes-dashboard-05.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-05.png)
 
 쿠버네티스 대시보드의 서비스 어카운트가 클러스터 권한을 가지게 되었으므로 대시보드에 **모든 네임스페이스**에 대한 워크로드 상태를 조회할 수 있습니다.
 
@@ -882,7 +882,7 @@ https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/compo
 
 위 YAML 파일을 다운받아서 아래 화면과 같이 **kubelet-insecure-tls** 옵션을 추가하여 업로드 버튼을 선택합니다.
 
-![](../images/posts/access-kubernetes-dashboard-06.png)
+![](/images/posts/setup-kubernetes-cluster/access-kubernetes-dashboard-06.png)
 
 매트릭 서버가 설치되었으므로 큐브컨트롤으로 매트릭을 조회할 수 있는지 확인합니다.
 

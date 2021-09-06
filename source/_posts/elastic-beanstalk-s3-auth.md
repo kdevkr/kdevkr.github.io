@@ -1,5 +1,5 @@
 ---
-title: Elsatic Beanstalk S3 Authentication
+title: Elastic Beanstalk S3 Authentication
 date: 2021-09-02
 tags:
 - Beanstalk

@@ -9,25 +9,25 @@ tags:
 
 안녕하세요 Mambo 입니다.
 
-오늘은 아마존 웹 서비스의 **Elastic Beanstalk에서 지원하는 도커 컨테이너 환경을 통해 애플리케이션을 배포하는 방법**에 대하여 알아봅니다. 요즘 회사에서는 운영중인 웹 서비스를 다양한 클라우드 환경에서 쿠버네티스를 사용하여 운영하기 위한 테스트를 진행하고 있습니다. 쿠버네티스에서는 애플리케이션을 도커 이미지화하여 사용해야하므로 도커 이미지화한 애플리케이션을 현재 사용중인 Elastic Beanstalk에 배포하기 위한 작업을 진행하였고 그 내용을 공유하려고 합니다.
+오늘은 아마존 웹 서비스의 **Elastic Beanstalk에서 지원하는 도커 컨테이너 환경을 통해 애플리케이션을 배포하는 방법**에 대하여 알아봅니다. 이 글에서는 애플리케이션을 도커 이미지화하고 사설 도커 레지스트리 서버에 저장된 도커 이미지를 기반으로 Elastic Beanstalk 환경에서 도커 컴포즈를 활용해 애플리케이션을 실행하는 것을 설명합니다.
+
 
 ## 도커 플랫폼
-Elastic Beanstalk [도커 플랫폼](https://docs.aws.amazon.com/ko_kr/elasticbeanstalk/latest/dg/docker.html)은 애플리케이션을 도커 컨테이너에서 실행하기 위한 환경을 제공합니다. Dockerfile으로 부터 직접 이미지를 빌드하여 도커 컨테이너를 실행하거나 [사설 도커 레지스트리 서버](https://docs.docker.com/registry/deploying/)에 저장된 도커 이미지를 가져와서 **도커 컴포즈**로 컨테이너 환경을 구성할 수 있습니다. 
+Elastic Beanstalk의 [도커 플랫폼](https://docs.aws.amazon.com/ko_kr/elasticbeanstalk/latest/dg/docker.html)은 도커 컨테이너 환경에서 애플리케이션을 실행하는 기능을 지원합니다. 도커 플랫폼을 사용해 애플리케이션을 배포하기 위해서는 도커 컨테이너와 Elastic Beanstalk에 대한 이해가 필요합니다. 도커 플랫폼에서는 Dockerfile을 사용하여 직접 도커 이미지를 빌드하여 도커 컨테이너를 실행하거나 **Dockerrun.aws.json** 파일로 컨테이너 환경을 정의할 수 있도록 지원합니다. 또한, [도커 레지스트리 서버](https://docs.docker.com/registry/deploying/)에 저장된 이미지를 기반으로 컨테이너를 구성할 수 있는 **도커 컴포즈** 방식도 사용할 수 있습니다.
 
-도커 플랫폼에서 도커 이미지화된 애플리케이션을 배포하기 위해서 다음의 항목들을 작성해야합니다.
+
+도커 플랫폼에서 도커 이미지화된 애플리케이션을 도커 컴포즈로 배포하기 위해서는 다음의 항목들을 작성해야합니다.
 
 - 애플리케이션 도커 이미지
-- 도커 레지스트리 서버 크레덴셜
 - 플랫폼 확장 및 환경 구성 파일
 - 도커 컴포즈 문서
+- 도커 레지스트리 서버 인증 파일
 - 도커 구성 파일
 
-> 이 글에서는 도커 사설 레지스트리 서버를 구축하는 것은 설명하지 않으니 참고하시기 바랍니다.
+> 이 글에서는 도커 레지스트리 서버가 구축되어있다고 가정합니다.
 
 ### 애플리케이션 도커 이미지
-Python으로 작성된 간단한 Flask 웹 애플리케이션을 도커 이미지로 빌드하기 위해 Dockerfile을 정의합니다.
-
-다음은 간단하게 Hello World를 출력하는 Flask 웹 애플리케이션 예시입니다.
+Python으로 작성된 간단한 Flask 웹 애플리케이션을 작성하고 도커 이미지로 빌드하기 위한 **Dockerfile** 파일을 정의합니다. 
 
 ```python application.py
 from flask import Flask
@@ -102,7 +102,7 @@ source venv/bin/activate
 gunicorn ${MAIN}:${MAIN_APP} -b 0.0.0.0:${PORT} -w ${WORKERS}
 ```
 
-도커 빌드 명령어를 사용하여 애플리케이션을 도커 이미지화하고 도커 레지스트리 서버에 빌드된 이미지를 저장합니다.
+Dockerfile을 기반으로 애플리케이션을 도커 이미지로 생성하고 도커 레지스트리 서버에 빌드된 이미지를 저장합니다.
 
 ```zsh Terminal
 docker login https://registry.mambo.kr:5000
@@ -115,84 +115,10 @@ docker push registry.mambo.kr:5000/mambo-py:test
 docker logout registry.mambo.kr:5000/mambo-py:test
 ```
 
-### 도커 레지스트리 서버 크레덴셜
-Elastic Beanstalk의 도커에서 사설 레지스트리 서버에 인증하기 위해서는 사설 레지스트리 서버의 인증서 파일과 함께 크레덴셜 정보가 필요합니다.
-
-예를 들어, 도커 레지스트리 서버에 대한 인증서는 다음과 같이 참조하게 됩니다.
-
-```sh
-/etc/docker/certs.d/         <-- Certificate directory
-└── registry.mambo.kr:5000   <-- Hostname:port
-    ├── client.cert          <-- Client certificate
-    ├── client.key           <-- Client key
-    └── ca.crt               <-- Certificate authority that signed the registry certificate
-```
-
-> 윈도우와 MacOS 에서는 $USER/.docker/certs.d 입니다.
-
-도커 레지스트리 서버 인증서를 사용하여 도커 로그인 명령어를 사용하면 **.dockercfg** 파일에 크레덴셜 정보가 저장됩니다.
-
-```json .dockercfg 
-{
-    "https://registry.mambo.kr:5000": {
-        "auth": "[Base64]username:password"
-    }
-}
-```
-
-윈도우 또는 Mac OS에서는 **윈도우 자격 증명 관리자** 또는 **OSX Keychain**에 크레덴셜을 저장할 수 있는데요. 이 경우에는 **.dockercfg 또는 config.json** 파일을 살펴보더라도 크레덴셜을 확인할 수 없습니다. 도커 로그인 시 사용되는 크레덴셜은 사용자 이름과 패스워드(username:password)를 [Base64로 인코딩](https://codebeautify.org/base64-encode)한 값이기 때문에 **직접 Base64로 인코딩**하고 위와 같이 **도커 레지스트리 서버에 대한 .dockercfg를 정의**하시기 바랍니다.
-
-> 이 파일은 Beanstalk 도커에서 레지스트리 서버에 인증할 수 있게 사용될 예정입니다.
-
-### 환경 구성 파일
-도커 레지스트리 서버에 대한 인증서 파일들을 S3 버킷에서 가져오는 구성 파일을 정의합니다. 지난 [Elastic Beanstalk S3 Authentication](../elastic-beanstalk-s3-auth)를 참고하여 다음과 같이 작성하였습니다.
-
-```yaml .ebextensions/registry-cert.config
-Resources:
-    AWSEBAutoScalingGroup:
-        Metadata:
-            AWS::CloudFormation::Authentication:
-                S3Auth:
-                    type: S3
-                    buckets:
-                        - mambo-cert
-                    roleName:
-                        Fn::GetOptionSetting:
-                            Namespace: aws:autoscaling:launchconfiguration
-                            OptionName: IamInstanceProfile
-                            DefaultValue: aws-elasticbeanstalk-ec2-role
-files:
-    "/etc/docker/certs.d/registry.mambo.kr:5000/client.cert":
-        mode: "000400"
-        owner: root
-        group: root
-        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/client.cert
-        authentication: S3Auth
-    "/etc/docker/certs.d/registry.mambo.kr:5000/client.key":
-        mode: "000400"
-        owner: root
-        group: root
-        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/client.key
-        authentication: S3Auth
-    "/etc/docker/certs.d/registry.mambo.kr:5000/ca.crt":
-        mode: "000400"
-        owner: root
-        group: root
-        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/ca.crt
-        authentication: S3Auth
-
-commands:
-    99-remove-bak:
-        cwd: /etc/docker/certs.d/registry.mambo.kr:5000
-        command: rm -f *.bak
-```
-
 ### 플랫폼 확장 구성 파일
-Elastic Beanstalk에서 Nginx 프록시 구성을 확장하기 위해서는 .platform 폴더에 확장 구성 파일을 정의해야했습니다. 하지만, Elastic Beanstalk의 도커 플랫폼은 기본적으로 Nginx에 대한 프록시를 활성화하지 않습니다.
+Elastic Beanstalk에서도 Nginx 프록시 옵션을 설정할 수 있지만 도커 컴포즈를 사용하여 도커 컨테이너 환경을 구성하는 경우 Nginx 프록시 옵션을 활성화되어 있더라도 무시됩니다. Nginx 프록시 옵션을 무시한다는 의미는 애플리케이션 소스 번들에 도커 컴포즈 문서와 함께 **.platform 폴더를 포함시키더라도 Nginx 구성 파일로 복사하여 확장하지 않는다**는 이야기입니다.
 
-애플리케이션 **소스 번들에 .platform 폴더를 포함시키더라도 Nginx 구성 파일로 복사하여 확장하지 않습니다.** 그리고 **도커 컴포즈를 사용하면 Nginx 프록시 설정이 무시**되므로 굳이 별도로 활성화할 이유가 없습니다.
-
-하지만 저는 .platform 폴더를 애플리케이션 소스 번들에 포함시키고 도커 컴포즈에 정의된 Nginx에서 사용할 수 있도록 볼륨을 지정하도록 하겠습니다. 
+하지만 애플리케이션 소스 번들에 포함시킨 **.platform 폴더는 /var/app/current에 추출**되므로 도커 컴포즈 문서에 도커 컨테이너에 볼륨을 지정하여 전달할 수 있습니다.
 
 ```nginx docker-nginx.conf
 user                    nginx;
@@ -259,10 +185,10 @@ http {
 }
 ```
 
-> Nginx가 트래픽을 전달하게 될 애플리케이션 주소가 애플리케이션 컨테이너의 호스트 이름으로 변경되었음을 주의하세요.
+단일 컨테이너를 구성하고 ELB로 전달되는 트래픽을 애플리케이션 컨테이너에 직접 전달할 수 있지만 도커 컴포즈를 사용하여 컨테이너 구성하더라도 직접 Nginx 컨테이너를 함께 구성할 수 있음을 보여줍니다. 위 Nginx 구성 파일은 일반적인 Elastic Beanstalk의 다양한 언어로 지원하는 플랫폼에서 제공하는 Nginx 확장 구성 파일과 동일하지만 **애플리케이션과 Nginx가 별도의 독립적인 컨테이너로 실행되므로 호스트 이름으로 접근해야함**을 보여줍니다.
 
 ### 도커 컴포즈 문서
-도커 컴포즈 문서는 도커 이미지화 된 애플리케이션과 함께 Nginx가 같이 실행되도록 컨테이너 환경을 구성하도록 작성합니다. 앞서 애플리케이션 소스 번들에 플랫폼 파일을 포함시키므로 Nginx 컨테이너에서 사용될 구성 파일과 인증서를 볼륨으로 연결합니다.
+애플리케이션과 Nginx 컨테이너를 구성하는 도커 컴포즈 문서를 정의합니다. 
 
 ```yaml docker-compose.yml
 version: "3.8"
@@ -270,10 +196,13 @@ services:
   nginx:
     image: nginx:1.21.1
     restart: always
+    env_file:
+      - .env
     volumes:
-      - .platform/nginx/conf.d:/etc/nginx/conf.d
+      - .platform/nginx/conf.d/elasticbeanstalk:/etc/nginx/conf.d/elasticbeanstalk
       - .platform/nginx/docker-nginx.conf:/etc/nginx/nginx.conf
       - /etc/nginx/cert:/etc/nginx/cert
+      - "${EB_LOG_BASE_DIR}/nginx:/var/log/nginx"
     ports:
       - '80:80'
       - '443:443'
@@ -282,16 +211,93 @@ services:
   app:
     image: registry.mambo.kr:5000/mambo-py:test
     restart: always
+    env_file:
+      - .env
     networks: 
       - nginx_app
 networks:
   nginx_app:
 ```
 
-애플리케이션 로드 밸런서 또는 네트워크 로드 밸런서에서 트래픽을 80 또는 443 포트로 전달할 예정이므로 **애플리케이션의 8000 포트는 호스트로 노출되지 않도록** 했습니다.
+Elastic Beanstalk 환경 구성 파일에 의해 가져온 Nginx 인증서와 애플리케이션 소스 번들에 포함된 플랫폼 확장 파일을 Nginx 컨테이너 볼륨에 연결합니다. 그리고 애플리케이션 로드 밸런서 또는 네트워크 로드 밸런서에서 전달되는 트래픽은 Nginx 컨테이너로 경유하여 애플리케이션 컨테이너로 전달되므로 애플리케이션에 대한 포트는 호스트로 노출하지 않도록 하여 직접 접근이 불가능하도록 합니다.
+
+#### 컨테이너 환경 변수
+Beanstalk 콘솔에서 설정하는 환경 변수는 애플리케이션 소스 번들이 추출되는 /var/app/current 경로에 .env 파일에 환경 변수가 정의됩니다. 그리고 이 파일을 도커 컨테이너의 환경 변수 참조 파일로 추가할 수 있습니다.
+
+> 도커 컴포즈 문서에 정의한 환경 변수가 우선 순위를 갖습니다. 도커 컴포즈 문서에 설정된 환경 변수를 Beanstalk 환경 변수로 설정하더라도 무시되니 주의하셔야합니다.
+
+### 도커 레지스트리 서버 인증 파일
+도커 레지스트리 서버에서 도커 이미지를 받아오기 위해서는 레지스트리 서버에 대한 인증 파일이 필요합니다. 만약, 기본 도커 레지스트리 서버인 도커 허브를 사용하는 것이 아니라 직접 구축한 도커 레지스트리 서버과 통신해야한다면 **TLS 통신을 위한 인증서 파일이 필요**합니다.
+
+예를 들어, 도커 레지스트리 서버에 대한 인증서는 다음과 같이 참조하게 됩니다.
+
+```sh
+/etc/docker/certs.d/         <-- Certificate directory
+└── registry.mambo.kr:5000   <-- Hostname:port
+    ├── client.cert          <-- Client certificate
+    ├── client.key           <-- Client key
+    └── ca.crt               <-- Certificate authority that signed the registry certificate
+```
+
+> 윈도우와 MacOS 에서는 $USER/.docker/certs.d 입니다.
+
+도커 레지스트리 서버에 로그인하면 **.dockercfg** 파일에 크레덴셜 정보가 저장됩니다.
+
+```json .dockercfg 
+{
+    "https://registry.mambo.kr:5000": {
+        "auth": "[Base64]username:password"
+    }
+}
+```
+
+윈도우 또는 Mac OS에서는 **윈도우 자격 증명 관리자** 또는 **OSX Keychain**에 크레덴셜을 저장할 수 있는데요. 이 경우에는 **.dockercfg 또는 config.json** 파일을 살펴보더라도 크레덴셜을 확인할 수 없습니다. 도커 로그인 시 사용되는 크레덴셜은 사용자 이름과 패스워드(username:password)를 [Base64로 인코딩](https://codebeautify.org/base64-encode)한 값이기 때문에 **직접 Base64로 인코딩**하고 위와 같이 **도커 레지스트리 서버에 대한 .dockercfg를 정의**하시기 바랍니다.
+
+### 환경 구성 파일
+도커 레지스트리 서버에 대한 인증서 파일들을 S3 버킷에서 가져오는 구성 파일을 정의합니다. 지난 [Elastic Beanstalk S3 Authentication](../elastic-beanstalk-s3-auth)를 참고하여 다음과 같이 작성하였습니다.
+
+```yaml .ebextensions/registry-cert.config
+Resources:
+    AWSEBAutoScalingGroup:
+        Metadata:
+            AWS::CloudFormation::Authentication:
+                S3Auth:
+                    type: S3
+                    buckets:
+                        - mambo-cert
+                    roleName:
+                        Fn::GetOptionSetting:
+                            Namespace: aws:autoscaling:launchconfiguration
+                            OptionName: IamInstanceProfile
+                            DefaultValue: aws-elasticbeanstalk-ec2-role
+files:
+    "/etc/docker/certs.d/registry.mambo.kr:5000/client.cert":
+        mode: "000400"
+        owner: root
+        group: root
+        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/client.cert
+        authentication: S3Auth
+    "/etc/docker/certs.d/registry.mambo.kr:5000/client.key":
+        mode: "000400"
+        owner: root
+        group: root
+        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/client.key
+        authentication: S3Auth
+    "/etc/docker/certs.d/registry.mambo.kr:5000/ca.crt":
+        mode: "000400"
+        owner: root
+        group: root
+        source: https://mambo-cert.s3.ap-northeast-2.amazonaws.com/registry/ca.crt
+        authentication: S3Auth
+
+commands:
+    99-remove-bak:
+        cwd: /etc/docker/certs.d/registry.mambo.kr:5000
+        command: rm -f *.bak
+```
 
 ### 도커 구성 파일
-로컬 환경에서는 도커 로그인 명령어를 사용하여 도커 레지스트리 서버에 인증하고 이미지를 등록하였습니다. 그러나 Elastic Beanstalk 환경의 도커에서는 도커 로그인 명령어를 실행할 수 없습니다. 도커 플랫폼에서는 도커 구성 파일을 작성하여 도커 레지스트리 서버에 대한 크레덴셜을 정의할 수 있도록 지원합니다.
+로컬 환경에서는 도커의 로그인 명령어를 사용하여 도커 레지스트리 서버에 인증하고 이미지를 등록하거나 가져올 수 있습니다. 그러나 Elastic Beanstalk 환경에서는 직접 로그인 명령어를 사용하는 것이 아니므로 도커에서 도커 레지스트리 서버에 대한 인증 파일을 사용할 수 있도록 앞서 알아본 **.dockercfg** 파일을 가져와야 합니다.
 
 ```json Dockerrun.aws.json
 {
@@ -303,9 +309,9 @@ networks:
 }
 ```
 
-위와 같이 정의하면 도커 플랫폼에서는 **mambo-cert/registry/.dockercfg** 파일을 **/root/.docker/config.json**에 복사하게 됩니다. 이렇게 함으로써 도커 레지스트리 서버에 등록된 이미지를 **config.json에 정의된 크레덴셜을 사용**하여 가져올 수 있게 됩니다.
+도커 컴포즈 문서와 함께 애플리케이션 소스 번들에 포함되는 위 도커 구성 파일은 Dockerrun.aws.json v3을 사용하며 **mambo-cert/registry/.dockercfg** 파일을 **/root/.docker/config.json**에 크레덴셜 정보를 복사합니다.
 
-> EC2 인스턴스의 IAM Role이 S3 버킷에 대한 읽기 권한을 가져야한다는 것에 주의하세요.
+> EC2 인스턴스의 IAM Role이 S3 버킷에 대한 읽기 권한을 가져야합니다.
 
 ### 애플리케이션 소스 번들
 Elastic Beanstalk의 도커 플랫폼 환경에 배포할 애플리케이션 소스 번들에는 다음과 같은 파일들이 포함됩니다. 

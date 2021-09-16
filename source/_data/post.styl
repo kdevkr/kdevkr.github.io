@@ -1,7 +1,8 @@
 // $font-famaily-post-headings = $font-family-logo;
 // $font-famaily-post-content = 'RIDIBatang';
 // 2021-09-05
-$font-famaily-post-headings = 'Noto Sans KR';
+$font-famaily-post-title = 'RIDIBatang';
+$font-famaily-post-headings = 'RIDIBatang';
 $font-famaily-post-content = 'Noto Sans KR';
 
 /* archive */
@@ -51,7 +52,10 @@ $font-famaily-post-content = 'Noto Sans KR';
     }
     h1, h2, h3 {
       margin-top: 40px;
-    } 
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: $font-famaily-post-headings;
+    }
     .image-caption {
         margin: -10px auto 15px;
     }
@@ -76,7 +80,6 @@ $font-famaily-post-content = 'Noto Sans KR';
     }
 
     *:not(pre) > code {
-        // font-family: $font-famaily-post-content;
         font-family: inherit;
     }
 
@@ -112,7 +115,7 @@ $font-famaily-post-content = 'Noto Sans KR';
     border-bottom: none;
     padding-left: 0;
     margin-left: 0;
-    font-family: $font-famaily-post-headings;
+    font-family: $font-famaily-post-title;
 
     &:before {
       display: none;
@@ -149,6 +152,8 @@ $font-famaily-post-content = 'Noto Sans KR';
   }
   .post-title {
     margin-top: 20px;
+    font-family: $font-famaily-post-title;
+    font-weight: 600;
 
     +tablet-desktop() {
       font-size: $font-size-headings-base + 0.5em;

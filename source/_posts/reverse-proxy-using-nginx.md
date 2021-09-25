@@ -38,7 +38,7 @@ Nginx로 리버스 프록시를 구성함으로써 수행할 수 있는 사후�
 - Nginx 1.21.3  
 - Amazon Corretto 11  
 
-그리고 학습에 활용된 파일들은 [깃허브](https://github.com/kdevkr/mambo-box/tree/main/docker/nginx)에 공유되어있으니 참고하셔도 좋습니다.
+그리고 학습에 활용된 파일들은 [깃허브](https://github.com/kdevkr/nginx.conf)에 공유되어있으니 참고하셔도 좋습니다.
 
 ### 기본 컨테이너 환경
 도커 컴포즈를 활용하여 스프링 부트 애플리케이션과 Nginx가 구동되도록 컨테이너 환경을 구성했습니다.

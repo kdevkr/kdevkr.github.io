@@ -103,6 +103,29 @@ EC2 서비스에 대한 권한을 가지고 있지만 경계 설정으로 인하
 
 ![](/images/posts/limit-region-aws-iam-user/aws-iam-user-11.png)
 
+#### 글로벌 서비스 리전
+CloudFront, Route53, IAM과 같은 글로벌 서비스는 미국 동부 (us-east-1) 리전의 엔드포인트를 사용하기 때문에 이에 대한 권한을 별도로 설정하여야합니다.
+
+```json
+{
+    "Effect": "Allow",
+    "Action": [
+        "cloudfront:*",
+        "route53:*",
+        "iam:*",
+        "support:*"
+    ],
+    "Resource": "*",
+    "Condition": {
+        "StringEquals": {
+            "aws:RequestedRegion": [
+                "us-east-1"
+            ]
+        }
+    }
+}
+```
+
 ## 끝마치며
 IAM 사용자가 사용할 수 있는 리전을 제한함으로써 비록 계정 정보가 유출되더라도 서울 리전에서만 AWS 리소스를 마음대로 생성할 수 있도록 방지할 수 있게 되었습니다. 이 방법을 적용하더라도 IAM 사용자의 비밀번호와 액세스 키는 주기적으로 갱신하는 것은 반드시 필요합니다.
 

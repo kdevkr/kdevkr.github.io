@@ -82,12 +82,28 @@ EC2 인스턴스를 생성하기 위해서 서울 리전에서 사용가능한 A
 
 ![](/images/posts/limit-region-aws-iam-user/aws-iam-user-07.png)
 
+### 경계 설정으로 리전 제한
+앞서 pika 사용자는 AdministratorAccess라는 직무 정책과 동일하게 모든 권한을 가지는 AdministratorAccessOnlySeoul이라는 정책을 만들어서 연결하여 제한하였습니다. 그러나 사용자마다 부여된 권한이 다를 수 있기 때문에 매번 리전을 제한하는 정책을 만들어서 연결하기에는 불편함이 있습니다. 이 경우에는 정책을 권한 경계(Permissions boundary)로 설정하면 모든 사용자마다 부여된 정책에 대하여 리전을 제한할 수 있습니다.
+
+#### 특정 서비스에 대한 권한을 가진 사용자
+제가 사용하는 mambo라는 사용자는 VPC, EC2, S3에 대한 모든 권한을 가지도록 정책을 연결하였습니다.
+
+![](/images/posts/limit-region-aws-iam-user/aws-iam-user-08.png)
+
+#### 서울 리전을 경계로 제한
+이전과 동일하게 서울 리전만을 사용할 수 있도록 제한하기 위해 정책을 만들어서 권한 경계로 설정하겠습니다.
+
+![](/images/posts/limit-region-aws-iam-user/aws-iam-user-09.png)
+
+mambo 사용자는 RDS에 대한 권한이 없기 때문에 서울 리전에서도 RDS를 사용하여 데이터베이스를 생성할 수 없습니다.
+
+![](/images/posts/limit-region-aws-iam-user/aws-iam-user-10.png)
+
+EC2 서비스에 대한 권한을 가지고 있지만 경계 설정으로 인하여 서울 리전이 아니면 권한이 없게 됩니다.
+
+![](/images/posts/limit-region-aws-iam-user/aws-iam-user-11.png)
+
 ## 끝마치며
 IAM 사용자가 사용할 수 있는 리전을 제한함으로써 비록 계정 정보가 유출되더라도 서울 리전에서만 AWS 리소스를 마음대로 생성할 수 있도록 방지할 수 있게 되었습니다. 이 방법을 적용하더라도 IAM 사용자의 비밀번호와 액세스 키는 주기적으로 갱신하는 것은 반드시 필요합니다.
 
 감사합니다.
-
-
-
-
-

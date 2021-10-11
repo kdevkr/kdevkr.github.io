@@ -8,7 +8,7 @@
   "scripts": {
     "l": "hexo server",
     "p": "hexo clean && hexo deploy -g",
-    "build": "generate"
+    "build": "hexo generate"
   },
   "repository": {
     "type": "git",

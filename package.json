@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "hexo": {
-    "version": "5.2.0"
+    "version": "5.4.0"
   },
   "scripts": {
     "l": "hexo server",
@@ -21,9 +21,9 @@
   },
   "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
   "dependencies": {
-    "hexo": "^5.1.1",
+    "hexo": "^5.4.0",
     "hexo-browsersync": "^0.3.0",
-    "hexo-deployer-git": "^2.1.0",
+    "hexo-deployer-git": "^3.0.0",
     "hexo-filter-emoji": "^2.2.1",
     "hexo-front-matter": "^2.0.0",
     "hexo-fs": "^3.1.0",
@@ -37,10 +37,10 @@
     "hexo-generator-tag": "^1.0.0",
     "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
     "hexo-renderer-markdown-it": "^4.1.0",
-    "hexo-renderer-marked": "^3.2.0",
+    "hexo-renderer-marked": "^4.0.0",
     "hexo-renderer-stylus": "^2.0.1",
     "hexo-server": "^2.0.0",
-    "hexo-util": "^2.4.0",
+    "hexo-util": "^2.5.0",
     "highlight.js": "^10.5.0",
     "markdown-it-named-headings": "^1.1.0"
   }

@@ -1,7 +1,7 @@
 on: 
-  # push:
-  #   branches:
-  #     - local
+  push:
+    branches:
+      - local
   workflow_dispatch:
 
 name: Build and Deploy

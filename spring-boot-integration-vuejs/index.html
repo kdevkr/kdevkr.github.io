@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
@@ -33,7 +33,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://kdevkr.github.io/images/posts/spring-initializr.png">
 <meta property="article:published_time" content="2021-01-23T00:00:00.000Z">
-<meta property="article:modified_time" content="2021-10-11T09:08:58.702Z">
+<meta property="article:modified_time" content="2021-10-11T09:37:24.362Z">
 <meta property="article:author" content="Mambo">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://kdevkr.github.io/images/posts/spring-initializr.png">
@@ -296,7 +296,7 @@
 <h2 id="Spring-Initializr"><a href="#Spring-Initializr" class="headerlink" title="Spring Initializr"></a>Spring Initializr</h2><p>스프링 부트 프로젝트는 <a target="_blank" rel="noopener" href="https://start.spring.io/">Spring Initializr</a>에서 쉽게 여러분이 스프링 부트 애플리케이션을 시작할 수 있도록 지원합니다. 저는 메이븐(Maven)이 아닌 <code>그래들(Gradle)</code> 프로젝트를 선호하며 언어는 <code>Java</code>로 개발합니다.</p>
 <p><img data-src="/images/posts/spring-initializr.png"></p>
 <p>그리고 위와 같이 프로젝트에서 사용할 의존성(Dependencies)를 찾아 선택합니다. 이렇게 만들어지는 스프링 부트 프로젝트는 다음과 같은 디렉토리 구조를 가지게 됩니다.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">src</span><br><span class="line"> ├─ main</span><br><span class="line"> │ ├─ java</span><br><span class="line"> │ └─ resources</span><br><span class="line">gradle</span><br><span class="line">build.gradle</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">src</span><br><span class="line"> ├─ main</span><br><span class="line"> │ ├─ java</span><br><span class="line"> │ └─ resources</span><br><span class="line">gradle</span><br><span class="line">build.gradle</span><br></pre></td></tr></table></figure>
 
 <h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue CLI"></a>Vue CLI</h2><p>앞서 <code>Spring Initializr</code>를 통해 스프링 부트 프로젝트를 구성하였습니다. 이제는 스프링 부트 애플리케이션과 함께 개발할 Vue 프로젝트를 구성합니다. Vue 프로젝트는 Vue CLI를 활용하여 쉽게 시작할 수 있습니다.</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Vue CLI는 NPM으로 설치합니다.</span></span><br><span class="line">npm i -g @vue/cli</span><br><span class="line"><span class="comment"># 그리고 create 명령어로 프로젝트를 시작합니다.</span></span><br><span class="line">vue create --preset kdevkr/vue-preset [project-name]</span><br></pre></td></tr></table></figure>
@@ -317,7 +317,7 @@
 <p>Vue CLI에 의해 <a target="_blank" rel="noopener" href="https://github.com/kdevkr/spring-boot-integration-vuejs/tree/main/src/main/vue">src/main/vue</a>에 Vue 프로젝트가 만들어집니다.</p>
 <h3 id="Vue-Configuration"><a href="#Vue-Configuration" class="headerlink" title="Vue Configuration"></a>Vue Configuration</h3><p>Vue 프로젝트에 대한 설정은 <code>vue.config.js</code>를 통해 변경할 수 있습니다. Vue 프로젝트는 만들었지만 몇가지 설정을 진행해야합니다. 가장 먼저 Vue를 통해 개발할 때는 <a target="_blank" rel="noopener" href="https://cli.vuejs.org/config/#devserver">webpack-dev-server</a>를 실행해서 개발합니다.</p>
 <p>스프링 부트 애플리케이션은 별다른 설정이 없으면 <code>8080</code> 포트를 사용하게 됩니다. 따라서, Vue 개발용 서버는 <code>8081</code> 포트를 사용하도록 합니다.</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    port: <span class="number">8081</span>,</span><br><span class="line">    proxy: <span class="string">&#x27;http://localhost:8080&#x27;</span>,</span><br><span class="line">    disableHostCheck: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="attr">devServer</span>: &#123;</span><br><span class="line">    <span class="attr">port</span>: <span class="number">8081</span>,</span><br><span class="line">    <span class="attr">proxy</span>: <span class="string">&#x27;http://localhost:8080&#x27;</span>,</span><br><span class="line">    <span class="attr">disableHostCheck</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>이제 <code>http://localhost:8081</code>으로 접속하여 웹 페이지를 개발할 수 있게 되고 프록시 설정을 통해 Vue 개발용 서버가 처리하지 못하는 모든 요청은 8080 포트로 요청합니다. 따라서, Vue 컴포넌트 내에서 스프링 부트 애플리케이션이 제공하는 API를 호출할 수 있게 됩니다.</p>
 <blockquote>
@@ -332,11 +332,11 @@
 <figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="meta">spring.web.resources.static-locations</span>=<span class="string">classpath:/META-INF/resources/, classpath:/resources/, classpath:/static/, classpath:/public/, classpath:/static/dist</span></span><br></pre></td></tr></table></figure>
 
 <p>그리고 Vue 프로젝트 빌드 경로는 <code>outputDir</code>로 설정할 수 있습니다.<br><strong>vue.config.js</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  outputDir: path.resolve(__dirname, <span class="string">&#x27;../resources/static/dist&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&#x27;path&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="attr">outputDir</span>: path.resolve(__dirname, <span class="string">&#x27;../resources/static/dist&#x27;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="Freemarker-Template-Engine"><a href="#Freemarker-Template-Engine" class="headerlink" title="Freemarker Template Engine"></a>Freemarker Template Engine</h2><p>Vue 프로젝트로 빌드된 프론트엔드 클라이언트를 위한 파일들은 <code>html-webpack-plugin</code>에 의해 만들어지는 <code>index.html</code>에 자동으로 파일들이 포함됩니다. 그런데 스프링 부트 애플리케이션에서 템플릿 엔진을 사용하여 페이지에 대한 정보나 세션 정보를 웹 페이지에 포함시키고 싶을 수 있습니다. 예를 들어, Spring Initializr에서 프리마커를 템플릿 엔진으로 사용하기 위하여 의존성을 추가하였다면 <code>src/main/resources/templates</code> 하위에 위치한 <code>*.ftlh</code>을 View로 제공할 수 있습니다.</p>
 <p>따라서, 다음과 같이 <code>indexPath</code>를 설정하여 index.ftlh이 만들어지는 위치를 지정할 수 있습니다.<br><strong>vue.config.js</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  indexPath: <span class="string">&#x27;../../templates/index.ftlh&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="attr">indexPath</span>: <span class="string">&#x27;../../templates/index.ftlh&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="html-webpack-plugin"><a href="#html-webpack-plugin" class="headerlink" title="html-webpack-plugin"></a>html-webpack-plugin</h3><p>앞서 index 파일은 <code>html-webpack-plugin</code>에 의해 만들어진다고 하였습니다. 우리가 위에서 indexPath를 지정한 것은 단순히 확장자를 <code>.ftlh</code>로 바꾼 것과 다를 바 없습니다. 템플릿 엔진을 사용하는 목적은 해당 템플릿 엔진에서 지원하는 문법으로 정보를 표현하기 위함입니다. 이를 위해 플러그인에 대한 옵션을 변경하도록 합니다.</p>
 <p>예를 들어, &lt;html&gt; 태그에 lang 속성에 요청에 따른 언어값을 부여하고 싶을 수 있습니다. 그러면 다음과 같이 index.ftlh가 만들어져야 합니다.</p>
@@ -347,7 +347,7 @@
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;&lt;%= &#x27;\$&#123;.locale?split(\&quot;</span><span class="attr">_</span>\&quot;)[<span class="attr">0</span>]&#125;&#x27; %&gt;</span>&quot;&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>vue.config.js</strong></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  chainWebpack: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">    config.plugin(<span class="string">&#x27;html&#x27;</span>)</span><br><span class="line">        .tap(<span class="function"><span class="params">args</span> =&gt;</span> &#123;</span><br><span class="line">          args[<span class="number">0</span>].minify = <span class="literal">false</span></span><br><span class="line">          args[<span class="number">0</span>].interpolate = <span class="literal">true</span></span><br><span class="line">          <span class="keyword">return</span> args</span><br><span class="line">        &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="attr">chainWebpack</span>: <span class="function"><span class="params">config</span> =&gt;</span> &#123;</span><br><span class="line">    config.plugin(<span class="string">&#x27;html&#x27;</span>)</span><br><span class="line">        .tap(<span class="function"><span class="params">args</span> =&gt;</span> &#123;</span><br><span class="line">          args[<span class="number">0</span>].minify = <span class="literal">false</span></span><br><span class="line">          args[<span class="number">0</span>].interpolate = <span class="literal">true</span></span><br><span class="line">          <span class="keyword">return</span> args</span><br><span class="line">        &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><code>minify</code> 옵션을 끄는 것은 스프링 부트 애플리케이션이 프리마커 템플릿 엔진으로 <code>index.ftlh</code>을 읽을 때 발생하는 오류를 방지하기 위함입니다.</p>
 <p>이제 빌드된 <a target="_blank" rel="noopener" href="https://github.com/kdevkr/spring-boot-integration-vuejs/blob/main/src/main/resources/templates/index.ftlh">index.ftlh</a>는 다음과 같이 만들어집니다.</p>

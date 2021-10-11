@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
@@ -32,7 +32,7 @@
 <meta property="og:description" content="안녕하세요 Mambo 입니다. 서버에서 실행중인 애플리케이션은 언제든지 예기치 않은 상황으로 중단될 수 있습니다. 예를 들어, 일시적으로 전력이 차단되어 서버 장비가 다시 시작되거나 애플리케이션 프로세스가 서버 자원을 많이 사용해서 프로세스가 중단되는 상황이 발생할 수 있습니다.  그래서 오늘 알아볼 내용은 리눅스에서 예기치 않은 상황으로 인하여 프로세스가">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-10-10T00:00:00.000Z">
-<meta property="article:modified_time" content="2021-10-11T09:08:58.702Z">
+<meta property="article:modified_time" content="2021-10-11T09:37:24.362Z">
 <meta property="article:author" content="Mambo">
 <meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
@@ -304,7 +304,7 @@
 
 <h3 id="SystemD"><a href="#SystemD" class="headerlink" title="SystemD"></a>SystemD</h3><p>더 효율적인 방식은 Nginx와 같은 패키지를 APT 또는 YUM으로 설치할 때 SystemD 서비스에 자동으로 등록하는 것처럼  애플리케이션을 실행하는 명령어 또는 스크립트를 SystemD 서비스로 등록하는 것입니다. </p>
 <p><strong>/etc/systemd/system/demo.service</strong></p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Demo</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User=ec2-user</span><br><span class="line">WorkingDirectory=/home/ec2-user</span><br><span class="line">ExecStart=/usr/bin/java -jar -Xmx500m demo.war</span><br><span class="line">ExecStop=kill -9 `cat app.pid`</span><br><span class="line">SuccessExitStatus=143</span><br><span class="line">Restart=on-failure</span><br><span class="line">RestartSec=5</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Demo</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User=ec2-user</span><br><span class="line">WorkingDirectory=/home/ec2-user</span><br><span class="line">ExecStart=/usr/bin/java -jar -Xmx500m demo.war</span><br><span class="line">ExecStop=kill -9 `cat app.pid`</span><br><span class="line">SuccessExitStatus=143</span><br><span class="line">Restart=on-failure</span><br><span class="line">RestartSec=5</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
 
 <p>위와 같이 스크립트를 정의했다면 다음과 같이 서버가 실행될 때 서비스가 시작되도록 활성화하거나 직접 서비스를 실행하고 종료할 수 있습니다.</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl <span class="built_in">enable</span> demo.service</span><br><span class="line">sudo systemctl start demo.service</span><br></pre></td></tr></table></figure>

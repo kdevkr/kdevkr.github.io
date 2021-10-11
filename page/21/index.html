@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
@@ -299,7 +299,7 @@
 <figure class="highlight dockerfile"><figcaption><span>Dockerfile</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> amazoncorretto:<span class="number">11</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -i.old <span class="string">&#x27;s/^jdk\.security\.caDistrustPolicies=SYMANTEC_TLS$/#&amp;/g&#x27;</span> /usr/lib/jvm/java-11-amazon-corretto/conf/security/java.security</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>AWS Beanstalk 구성 확장</strong>  </p>
-<figure class="highlight plain"><figcaption><span>.ebextensions/00-java-ca-distrust-policies.config</span></figcaption><table><tr><td class="code"><pre><span class="line">files:</span><br><span class="line">  &quot;&#x2F;tmp&#x2F;set_symantec_tls.sh&quot;:</span><br><span class="line">    mode: &quot;000755&quot;</span><br><span class="line">    owner: root</span><br><span class="line">    group: root</span><br><span class="line">    content: |</span><br><span class="line">      #!&#x2F;bin&#x2F;bash</span><br><span class="line">      sed -i.old &#39;s&#x2F;^jdk\.security\.caDistrustPolicies&#x3D;SYMANTEC_TLS$&#x2F;#&amp;&#x2F;g&#39; &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;java-11-amazon-corretto.x86_64&#x2F;conf&#x2F;security&#x2F;java.security</span><br><span class="line"></span><br><span class="line">commands:</span><br><span class="line">  00-set_symantec_tls:</span><br><span class="line">    command: &#x2F;tmp&#x2F;set_symantec_tls.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><figcaption><span>.ebextensions/00-java-ca-distrust-policies.config</span></figcaption><table><tr><td class="code"><pre><span class="line">files:</span><br><span class="line">  &quot;/tmp/set_symantec_tls.sh&quot;:</span><br><span class="line">    mode: &quot;000755&quot;</span><br><span class="line">    owner: root</span><br><span class="line">    group: root</span><br><span class="line">    content: |</span><br><span class="line">      #!/bin/bash</span><br><span class="line">      sed -i.old &#x27;s/^jdk\.security\.caDistrustPolicies=SYMANTEC_TLS$/#&amp;/g&#x27; /usr/lib/jvm/java-11-amazon-corretto.x86_64/conf/security/java.security</span><br><span class="line"></span><br><span class="line">commands:</span><br><span class="line">  00-set_symantec_tls:</span><br><span class="line">    command: /tmp/set_symantec_tls.sh</span><br></pre></td></tr></table></figure>
 
 <p>위 작업 후 시만텍 인증서를 신뢰하지 않는 정책에 대한 옵션이 적용되지 않아 JDK에서 정상적으로 TLS 연결을 수행하는 것을 확인할 수 있었습니다. 이제 이것이 임시로 조치된 작업인 이유를 알아보도록 하겠습니다.</p>
 <h3 id="근본적인-해결책"><a href="#근본적인-해결책" class="headerlink" title="근본적인 해결책"></a>근본적인 해결책</h3><p>앞서 AWS IoT의 엔드포인트는 레거시와 ATS를 지원한다고 하였는데요. 이 부분에서 이상함을 느끼고 관련 문서들을 찾아보기 시작했습니다. </p>

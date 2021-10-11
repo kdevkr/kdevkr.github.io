@@ -2,14 +2,15 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     <url>
-        <loc>https://kdevkr.github.io</loc>
+        <loc>https://kdevkr.github.io/</loc>
         <changefreq>daily</changefreq>
         <priority>1</priority>
     </url>
 
+
     <url>
         <loc>https://kdevkr.github.io/ip-band-and-location-tracking/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -17,7 +18,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/limit-region-aws-iam-user/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -25,7 +26,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/limit-resources-docker-desktop-using-wslconfig/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -33,7 +34,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/maintaining-process-execution-in-linux/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -41,7 +42,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/managing-i18n-messages-with-xml/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -49,7 +50,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/python-docker-image-optimization/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -57,7 +58,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/sending-mail-with-freemarker-template/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -65,7 +66,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/spring-boot-integration-mqtt/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -73,7 +74,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/spring-boot-integration-vuejs/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -81,7 +82,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/spring-multipart-uploads/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -89,7 +90,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/static-analysis-performed-by-sonarqube-and-github-action/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -97,7 +98,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/token-authentication-requirements-for-git-operations-on-github/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -105,7 +106,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/using-pushgateway-to-monitor-private-network-instance/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -113,7 +114,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/when-do-i-use-the-handler-interceptor/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -121,7 +122,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/why-fail-deploy-application/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -129,7 +130,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/reverse-proxy-using-nginx/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -137,7 +138,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/ssl-certificate/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -145,7 +146,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/tls-offload/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -153,7 +154,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/understanding-asynchronos-javascript-and-xml-with-spring/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -161,7 +162,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/understanding-spring-security/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -169,7 +170,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/setup-kubernetes-cluster/</loc>
-        <lastmod>2021-10-11T09:37:24.362Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.513Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -177,7 +178,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/all-message-codes-in-spring-boot/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -185,7 +186,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/allow-ec2-instance-connect/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -193,7 +194,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/connect-private-ec2-instance-using-ssm-agent/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -201,7 +202,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/connecting-with-mqtt-using-aws-iot-device-sdk/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -209,7 +210,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/distrust-symantec-ca-in-jdk/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -217,7 +218,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/ec2-instance-access-s3-bucket/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -225,7 +226,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/ed25519/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -233,7 +234,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/elastic-beanstalk-docker-with-python/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -241,7 +242,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/elastic-beanstalk-s3-auth/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -249,7 +250,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/http-requests-from-client-to-response-from-spring/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -257,7 +258,7 @@
 
     <url>
         <loc>https://kdevkr.github.io/deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-enviroment/</loc>
-        <lastmod>2021-10-11T09:37:24.358Z</lastmod>
+        <lastmod>2021-10-11T09:52:51.509Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

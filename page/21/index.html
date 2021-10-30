@@ -142,7 +142,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">32</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">33</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -189,12 +189,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -244,7 +244,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/distrust-symantec-ca-in-jdk/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/using-pushgateway-to-monitor-private-network-instance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -257,7 +257,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/distrust-symantec-ca-in-jdk/" class="post-title-link" itemprop="url">시만텍 CA 인증서를 신뢰하지 않음</a>
+          <a href="/using-pushgateway-to-monitor-private-network-instance/" class="post-title-link" itemprop="url">Pushgateway를 활용하여 사설망 인스턴스 모니터링하기</a>
         </h2>
 
         <div class="post-meta-container">
@@ -268,7 +268,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-03-21 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-21T00:00:00Z">2021-03-21</time>
+      <time title="Created: 2021-07-17 00:00:00" itemprop="dateCreated datePublished" datetime="2021-07-17T00:00:00Z">2021-07-17</time>
     </span>
 
   
@@ -281,51 +281,56 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>안녕하세요. Mambo 입니다. </p>
-<p>이번에 공유할 내용은 OpenJDK에서 Symantec에서 발급된 TLS 인증서를 JDK에서 신뢰하지 않는 문제를 경험하고 이에 대한 문제를 임시조치하고 해결책을 찾아본 이야기입니다. </p>
-<h2 id="어떤-문제가-발생했나요"><a href="#어떤-문제가-발생했나요" class="headerlink" title="어떤 문제가 발생했나요?"></a>어떤 문제가 발생했나요?</h2><p>현재 일하고 있는 회사에서 개발중인 프로젝트에서는 업무 협약으로 <a target="_blank" rel="noopener" href="https://www.telenorconnexion.com/ko/">텔레노어 커넥션(Telenor Connecxion)</a>에서 제공하는 <a target="_blank" rel="noopener" href="https://docs.telenorconnexion.com/mic/thing-api/">Thing API</a>를 사용하여 MQTT 기능을 접목하였습니다. 텔레노어 커넥션에서 제공하는 Thing API는 <a target="_blank" rel="noopener" href="https://aws.amazon.com/iot/">AWS IoT</a>를 사용하여 MQTT version 3.1.1 기반의 브로커 서비스를 제공합니다. </p>
-<p>그런데 얼마전 텔레노어 커넥션의 Managed IoT Cloud에 MQTT 클라이언트를 연결하려고 시도하였으나 다음과 같은 오류가 발생하였습니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">javax.net.ssl.SSLHandshakeException: </span><br><span class="line">TLS Server certificate issued after 2019-04-16 and anchored by a distrusted legacy Symantec root CA</span><br></pre></td></tr></table></figure>
+          <p>안녕하세요 Mambo 입니다. 오늘은 Promethues의 Pushgateway를 왜 사용해야하는지에 대해서 알아보려고 합니다.</p>
+<p>프로메테우스(Promethues)는 기본적으로 매트릭 지표를 제공하는 서버에게 주기적으로 요청하여 매트릭을 수집하도록 되어있습니다. 그래서 매트릭을 수집하기 위해서는 프로메테우스가 수집해야할 설정 파일에 매트릭 수집을 위한 주소를 입력해야합니다. 하지만 모든 인스턴스가 외부 인터넷망을 통해 접근할 수 있는 공인 IP를 할당하지는 않습니다. 또한, 클라우드를 통해 애플리케이션을 운영하는 경우에도 외부로 나가는 트래픽은 허용하지만 외부에서 내부로 들어오는 트래픽은 특정 IP 대역에서만 접근할 수 있도록 보안 규칙을 설정하기도 합니다.</p>
+<p>사설망에 있는 인스턴스는 내부 아이피만 할당되어있고 외부 인터넷망과의 통신은 별도의 장비를 통해 수행합니다. 이 경우 인스턴스에는 공인 IP가 할당되어있지 않기 때문에 프로메테우스에 주소를 입력할 수 없는 상황이 됩니다. 그래서 Polling 방식이 아닌 프로메테우스에 매트릭을 Push 할 수 있도록 해야합니다. 매트릭을 푸시할 수 있도록 지원하는게 바로 <code>Pushgateway</code> 입니다.</p>
+<h2 id="Pushgateway"><a href="#Pushgateway" class="headerlink" title="Pushgateway"></a>Pushgateway</h2><p>프로메테우스에서 제공하는 <a target="_blank" rel="noopener" href="https://github.com/prometheus/pushgateway">Pushgateway</a>는 매트릭을 푸시할 수 있도록 지원하며 푸시된 매트릭을 프로메테우스에서 가져갈 수 있도록 중개자 역할을 수행합니다. 따라서, Pushgateway에 푸시된 매트릭을 프로메테우스에서 가져갈 수 있습니다.</p>
+<h3 id="How-to-install-Pushgateway"><a href="#How-to-install-Pushgateway" class="headerlink" title="How to install Pushgateway"></a>How to install Pushgateway</h3><p>Pushgateway는 운영체제별 바이너리 파일을 받아 설치할 수 있습니다. 저는 운영체제에 상관없이 실행하기 위하여 바이너리 파일이 아닌 도커를 사용하여 Pushgateway를 실행하도록 하겠습니다.</p>
+<figure class="highlight yaml"><figcaption><span>pushgateway/docker-compose.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">    <span class="attr">pushgateway:</span></span><br><span class="line">        <span class="attr">container_name:</span> <span class="string">pushgateway</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">prom/pushgateway:latest</span></span><br><span class="line">        <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="number">9091</span><span class="string">:9091</span></span><br></pre></td></tr></table></figure>
 
-<p>위 오류는 JDK에서 TLS 연결 시 시만텍 CA 인증서를 신뢰하지 않으므로 오류를 발생한 내용입니다. 왜 신뢰하지 않고 왜 갑자기 이런 오류가 뜨는걸까요?</p>
-<h3 id="OpenJDK-Distrust-Symantec-CA"><a href="#OpenJDK-Distrust-Symantec-CA" class="headerlink" title="OpenJDK Distrust Symantec CA"></a>OpenJDK Distrust Symantec CA</h3><p><a target="_blank" rel="noopener" href="https://zdnet.co.kr/view/?no=20170331133307">구글의 ‘시만텍 불신’ 빌미 된 한국 파트너</a>라는 기사에서 구글이 시만텍에서 발급된 인증서를 신뢰하지 않기로 했다는 내용을 확인하였고 더 찾아보니 <a target="_blank" rel="noopener" href="https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html">Chrome’s Plan to Distrust Symantec Certificates</a>와 에서 구글 뿐만 아니라 모질라, 애플, 마이크로소프트에서 조차 시만텍에서 서명한 인증서를 신뢰하지 않겠다고 발표함으로써 오라클에서도 JDK에서 <strong>2019년 4월 16일 이후에 서명된 시만텍 인증서</strong>를 신뢰하지 않기로 조치하였습니다.</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://blogs.oracle.com/java-platform-group/jdk-distrusting-symantec-tls-certificates">Oracle’s Plan for Distrusting Symantec TLS Certificates in the JDK</a></li>
-<li><a target="_blank" rel="noopener" href="https://bugs.openjdk.java.net/browse/JDK-8215012">Release Note: Distrust TLS Server Certificates Anchored by Symantec Root CAs</a></li>
-</ul>
-<h2 id="어떻게-조치하셨나요"><a href="#어떻게-조치하셨나요" class="headerlink" title="어떻게 조치하셨나요?"></a>어떻게 조치하셨나요?</h2><h3 id="임시조치"><a href="#임시조치" class="headerlink" title="임시조치"></a>임시조치</h3><p><a target="_blank" rel="noopener" href="https://blogs.oracle.com/java-platform-group/jdk-distrusting-symantec-tls-certificates">Oracle’s Plan for Distrusting Symantec TLS Certificates in the JDK</a>에서 시만텍 인증서를 신뢰하지 않도록 처리되는 내용과 함께 <code>jdk.security.caDistrustPolicies</code> 옵션을 수정하여 SYMANTEC_TLS에 대한 신뢰하지 않는 것을 무시하도록 설정할 수 있음을 알려주고 있습니다.</p>
-<p>또한, 스택오버플로우에서 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/58437531/how-to-fix-javax-net-ssl-sslhandshakeexception-tls-server-certificate-issued-a">동일한 문제</a>에 대한 답변으로 위 속성을 주석처리하라는 것을 확인하였으며 이에 따라 임사로 Dockerfile로 도커 이미지를 구성할 때와 Beanstalk 자바 플랫폼 환경을 확장하는 파일에 다음과 같이 변경하여 조치하였습니다.</p>
-<p><strong>에이전트 실행 환경 이미지</strong>  </p>
-<figure class="highlight dockerfile"><figcaption><span>Dockerfile</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> amazoncorretto:<span class="number">11</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> sed -i.old <span class="string">&#x27;s/^jdk\.security\.caDistrustPolicies=SYMANTEC_TLS$/#&amp;/g&#x27;</span> /usr/lib/jvm/java-11-amazon-corretto/conf/security/java.security</span></span><br></pre></td></tr></table></figure>
+<h4 id="Optinal-Listening-Port"><a href="#Optinal-Listening-Port" class="headerlink" title="(Optinal) Listening Port"></a>(Optinal) Listening Port</h4><p>Pushgatway는 기본적으로 9091 포트를 할당합니다.<br>만약, 9091 포트가 이미 사용중이라면 <code>web.listen-address</code> 플래그를 설정해야합니다.</p>
+<h4 id="Optional-Enable-Persistence-Mode"><a href="#Optional-Enable-Persistence-Mode" class="headerlink" title="(Optional) Enable Persistence Mode"></a>(Optional) Enable Persistence Mode</h4><p>기본적으로 Pushgateway는 푸시된 매트릭을 저장하지 않습니다.<br>만약, Pushgateway가 예기치 못하게 중단되더라도 푸시된 매트릭을 유지하고 싶다면 <code>persistence.file</code> 플래그로 푸시된 매트릭을 저장할 파일을 지정해야합니다.</p>
+<h4 id="Optional-TLS-and-basic-authentication"><a href="#Optional-TLS-and-basic-authentication" class="headerlink" title="(Optional) TLS and basic authentication"></a>(Optional) TLS and basic authentication</h4><p>Pushgateway는 TLS 및 기본 인증을 지원합니다. 이를 설정하기 위해서는 <code>web.config.file</code> 플래그에 <a target="_blank" rel="noopener" href="https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md">Web Configuration</a> 파일을 지정하세요.</p>
+<h3 id="Run-Pushgateway"><a href="#Run-Pushgateway" class="headerlink" title="Run Pushgateway"></a>Run Pushgateway</h3><figure class="highlight cmd"><figcaption><span>Windows Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
 
-<p><strong>AWS Beanstalk 구성 확장</strong>  </p>
-<figure class="highlight plaintext"><figcaption><span>.ebextensions/00-java-ca-distrust-policies.config</span></figcaption><table><tr><td class="code"><pre><span class="line">files:</span><br><span class="line">  &quot;/tmp/set_symantec_tls.sh&quot;:</span><br><span class="line">    mode: &quot;000755&quot;</span><br><span class="line">    owner: root</span><br><span class="line">    group: root</span><br><span class="line">    content: |</span><br><span class="line">      #!/bin/bash</span><br><span class="line">      sed -i.old &#x27;s/^jdk\.security\.caDistrustPolicies=SYMANTEC_TLS$/#&amp;/g&#x27; /usr/lib/jvm/java-11-amazon-corretto.x86_64/conf/security/java.security</span><br><span class="line"></span><br><span class="line">commands:</span><br><span class="line">  00-set_symantec_tls:</span><br><span class="line">    command: /tmp/set_symantec_tls.sh</span><br></pre></td></tr></table></figure>
+<p>도커 컴포즈 명령어로 Pushgateway를 실행하고 브라우저를 통해 127.0.0.1:9091로 접근할 수 있습니다.</p>
+<p><img data-src="/images/posts/using-pushgateway/pushgateway-01.png" alt="Pushgateway"></p>
+<h3 id="How-to-push-metrics"><a href="#How-to-push-metrics" class="headerlink" title="How to push metrics"></a>How to push metrics</h3><p>Pushgateway로 매트릭을 푸시하는 것은 HTTP로 수행할 수 있습니다. 다음의 HTTP 요청 예시를 살펴보시죠.</p>
+<figure class="highlight sh"><figcaption><span>Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;some_metric 3.14&quot;</span> | curl --data-binary @- http://127.0.0.1:9091/metrics/job/some_job</span><br></pre></td></tr></table></figure>
 
-<p>위 작업 후 시만텍 인증서를 신뢰하지 않는 정책에 대한 옵션이 적용되지 않아 JDK에서 정상적으로 TLS 연결을 수행하는 것을 확인할 수 있었습니다. 이제 이것이 임시로 조치된 작업인 이유를 알아보도록 하겠습니다.</p>
-<h3 id="근본적인-해결책"><a href="#근본적인-해결책" class="headerlink" title="근본적인 해결책"></a>근본적인 해결책</h3><p>앞서 AWS IoT의 엔드포인트는 레거시와 ATS를 지원한다고 하였는데요. 이 부분에서 이상함을 느끼고 관련 문서들을 찾아보기 시작했습니다. </p>
-<p>AWS IoT는 TLS와 X.509 인증서를 사용하여 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/ko_kr/iot/latest/developerguide/server-authentication.html">인증</a>을 수행해야합니다. 그리고 Aws IoT Core는 VeriSign에서 서명한 인증서를 제공하는 레거시 엔드포인트와 ATS(Amazon Trust Services) CA에서 서명한 인증서를 제공하는 ATS 엔드포인트를 지원합니다. AWS IoT에서는 시만텍 인증서를 더이상 사용하지 않는다며 레거시 엔드포인트가 아닌 ATS를 사용하는 것을 권장하고 있었습니다.</p>
-<p><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-01.png"></p>
-<p>음… 그러면 텔레노어의 Thing API가 레거시 엔드포인트만 지원하는 걸까?</p>
-<p><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-02.png" alt="Telenor Connexion Thing API"></p>
-<p>텔레노어의 Managed IoT Cloud도 AWS IoT 플랫폼을 사용하므로 동일하게 레거시 엔드포인트를 사용할 수는 있었고 텔레노어 측 문서에서조차 ATS 엔드포인트를 언급하고 있었습니다. 사실 텔레노어 API 연동 작업을 제가 적용했던 것은 아니고 이 부분을 진행하셨던 분이 퇴사하신 상황이었습니다. 그리고 얼마전 개발자 한분이 텔레노어 관련 코드를 수정하면서 시만텍 인증서를 신뢰하지 않는다는 오류가 발생한 상황입니다.</p>
-<p>그럼 수정한 내역 중에서 이 문제가 발생한 근본적인 원인이 있을테니 이를 검토해보았습니다. 프로젝트는 Git으로 소스코드에 대한 변경사항을 버저닝하므로 변경 내역을 트래킹할 수 있어 깃허브에 들어가 관련 커밋을 찾아보았습니다.</p>
-<p><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-03.png" alt="깃허브 이슈 번호 기반 트래킹"></p>
-<p>저희는 커밋 메시지에 관련된 이슈(작업) 번호를 명시하도록 하였기에 쉽게 해당 이슈와 관련된 커밋들을 추적할 수 있었습니다. </p>
-<p><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-04.png"></p>
-<p>회사 코드이므로 주요 정보는 마스킹 처리했으며 잘 살펴보니 뭔가 다르게 변경된 내용이 있었습니다.</p>
-<p><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-05.png" alt="앗. 엔드포인트??"></p>
-<p>엔드포인트?! 기존에 사용하던 엔드포인트 주소는 -ats가 붙어있지만 변경된 엔드포인트는 ats가 없었습니다. ATS 엔드포인트 유형의 형태는 어떻게 되는지 찾아보았는데요.</p>
-<p><strong><a target="_blank" rel="noopener" href="https://aws.amazon.com/ko/blogs/iot/aws-iot-core-ats-endpoints/">How AWS IoT Core is Helping Customers Navigate the Upcoming Distrust of Symantec Certificate Authorities</a></strong><br><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-06.png"></p>
-<p><strong><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/ko_kr/iot/latest/developerguide/connect-to-iot.html#iot-device-endpoint-intro">AWS IoT device endpoints</a></strong><br><img data-src="/images/posts/distrust-symantec-ca-in-jdk/distrust-symantec-ca-in-jdk-07.png"></p>
-<p>ATS 엔드포인트 형태는 <strong>prefix-ats.iot.region.amazonaws.com</strong>가 된다고 합니다. 그러니까 결국 ATS 엔드포인트로 제대로 사용하고 있던 기존 설정을 레거시 엔드포인트로 변경해버려서 발생한 오류였습니다. 텔레노어 계정을 변경하기 위하여 다시 발급하면서 엔드포인트를 변경해버렸고 시만텍 인증서를 제공하는 엔드포인트이므로 JDK에서 신뢰하지 못하는 것으로 처리된 것이었습니다.</p>
-<h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>알고보니 <code>개발자의 사소한 실수(?)</code>로 발생한 문제였으나 JDK에서 신뢰하지 못하도록 하는 정책 옵션이 있다는 것도 알게되었고 시만텍에서 서명한 인증서를 신뢰하지 못하게 된 사건도 알게되는 꽤 유익한 트러블이었던 것 같습니다. </p>
-<p>다음의 JDK 버전은 시만텍에서 서명한 인증서를 신뢰하지 못하도록 처리되었으니 참고하시기 바랍니다.</p>
-<ul>
-<li>JDK 7u221 이상 </li>
-<li>JDK 8u212 이상</li>
-<li>JKD 11.0.3 이상</li>
-</ul>
-<p>감사합니다.</p>
+<p><code>curl</code>과 같은 HTTP 요청 도구로 매트릭을 쉽게 푸시할 수 있으며 윈도우 환경에서는 <a target="_blank" rel="noopener" href="https://curl.se/windows/">curl</a>을 다운로드하여 설치하거나 Powershell의 Invoke-WebRequest 명령어로 HTTP 요청을 수행할 수도 있습니다.</p>
+<figure class="highlight cmd"><figcaption><span>명령 프롬프트</span></figcaption><table><tr><td class="code"><pre><span class="line">powershell -Command &quot;Invoke-WebRequest -Uri http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">9091</span>/metrics/job/some_job -Method POST -Body \&quot;some_metric <span class="number">3</span>.<span class="number">14</span>`n\&quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Push-Examples"><a href="#Push-Examples" class="headerlink" title="Push Examples"></a>Push Examples</h3><p>앞서 HTTP 요청을 통해 매트릭을 푸시할 수 있음을 확인했으므로 node_exporter 또는 windows_exporter와 같은 OS 매트릭을 제공하는 Promethues Exporter에서 매트릭을 받아서 Pushgateway에 매트릭을 보내보도록 하겠습니다.</p>
+<p>다음처럼 curl를 사용하여 매트릭을 쉽게 Pushgateway로 보낼 수 있습니다.</p>
+<figure class="highlight cmd"><figcaption><span>Windows Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line">curl -s http://localhost:<span class="number">9100</span>/metrics | curl --data-binary @- http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">9091</span>/metrics/job/node-exporter/instance/<span class="number">1</span></span><br><span class="line">curl -s http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">9182</span>/metrics | curl --data-binary @- http://<span class="number">127</span>.<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span>:<span class="number">9091</span>/metrics/job/windows-exporter/instance/<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Node-Exporter"><a href="#Node-Exporter" class="headerlink" title="Node Exporter"></a>Node Exporter</h4><p><a target="_blank" rel="noopener" href="https://github.com/prometheus/node_exporter">prometheus/node_exporter</a>는 리눅스 커널을 사용하는 OS에 대한 매트릭을 제공합니다. 바이너리 뿐만 아니라 도커 이미지를 제공하므로 컨테이너로 실행할 수 있습니다.</p>
+<figure class="highlight yaml"><figcaption><span>docker-compose.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">node-exporter:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">quay.io/prometheus/node-exporter:latest</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">node-exporter</span></span><br><span class="line">    <span class="attr">command:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;--path.rootfs=/host&#x27;</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">pid:</span> <span class="string">host</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&#x27;/:/host:ro,rslave&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows-Exporter"><a href="#Windows-Exporter" class="headerlink" title="Windows Exporter"></a>Windows Exporter</h4><p><a target="_blank" rel="noopener" href="https://github.com/prometheus-community/windows_exporter">prometheus-community/windows_exporter</a>는 윈도우 머신에 대한 매트릭을 제공합니다. windows_exporter는 파일을 다운로드 받아서 설치하거나 실행해야합니다.</p>
+<figure class="highlight cmd"><figcaption><span>Windows Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line">.\windows_exporter-<span class="number">0</span>.<span class="number">16</span>.<span class="number">0</span>-<span class="number">386</span>.exe --collectors.enabled &quot;cpu,<span class="built_in">net</span>,cs&quot;</span><br></pre></td></tr></table></figure>
+
+<p>명령어가 정상적으로 수행되었다면 Pushgateway에서 다음과 같이 Exporter로 부터 받은 매트릭이 보내졌음을 확인할 수 있습니다.<br><img data-src="/images/posts/using-pushgateway/pushgateway-03.png"></p>
+<h3 id="Pushgateway-with-TTL"><a href="#Pushgateway-with-TTL" class="headerlink" title="Pushgateway with TTL"></a>Pushgateway with TTL</h3><p>Pushgateway는 푸시된 매트릭을 지우지 않습니다. 따라서, 매트릭이 다시 푸시되지 않는다면 Pushgateway는 이전에 푸시된 매트릭을 현재 매트릭 정보로 제공합니다. </p>
+<p>몇몇 사용자들이 일정시간이 지나면 매트릭을 지우는 옵션을 적용해달라고 요청하였지만 Pushgateway 개발팀은 적용하지 않는게 맞다고 판단하였습니다.</p>
+<blockquote>
+<p>A while ago, we decided to not implement a “timeout” or TTL for pushed metrics because almost all proposed use cases turned out to be anti-patterns we strongly discourage.</p>
+</blockquote>
+<p>만약, 푸시된 매트릭이 일정시간 이후에 지워져야한다면 푸시된 매트릭을 지우도록 DELETE API를 호출하는 배치 작업을 만들어야합니다. 배치를 만들고 싶지 않고 최신 버전을 사용하지 않아도 괜찮다면 Pushgateway를 포크하여 TimeToLive 옵션을 추가한 <a target="_blank" rel="noopener" href="https://github.com/dinumathai/pushgateway">pushgateway-ttl</a>을 사용하시는 것을 추천합니다.</p>
+<figure class="highlight yaml"><figcaption><span>docker-compose.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">    <span class="attr">pushgateway-ttl:</span></span><br><span class="line">        <span class="attr">container_name:</span> <span class="string">pushgateway-ttl</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">dmathai/prom-pushgateway-ttl:latest</span></span><br><span class="line">        <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="number">9091</span><span class="string">:9091</span></span><br><span class="line">        <span class="attr">command:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">&#x27;--metric.timetolive=60s&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Promethues-Scrap-Configs"><a href="#Promethues-Scrap-Configs" class="headerlink" title="Promethues Scrap Configs"></a>Promethues Scrap Configs</h3><p>우리는 사설망의 인스턴스에서 Pushgateway로 매트릭을 푸시할 수 있음을 확인하였습니다. 이제는 Pushgateway에 푸시된 매트릭을 프로메테우스에서 가져갈 수 있도록 설정해야합니다. <a target="_blank" rel="noopener" href="https://github.com/prometheus/pushgateway#configure-the-pushgateway-as-a-target-to-scrape">Configure the Pushgateway as a target to scrape</a></p>
+<figure class="highlight yaml"><figcaption><span>promethues.yml</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">job_name:</span> <span class="string">&#x27;pushgateway&#x27;</span></span><br><span class="line">    <span class="attr">honor_labels:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">static_configs:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">targets:</span> [<span class="string">&#x27;pushgateway:9091&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>honor_labels</code> 항목이 true로 설정되어야한다는 점에 주의하시기 바랍니다.</p>
+</blockquote>
+<p>프로메테우스가 Pushgateway로부터 매트릭을 수집하였다면 다음과 같이 매트릭을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/using-pushgateway/pushgateway-04.png"></p>
+<h3 id="Grafana-Dashboard"><a href="#Grafana-Dashboard" class="headerlink" title="Grafana Dashboard"></a>Grafana Dashboard</h3><p>위 화면에서 확인한 windows_net_bytes_total 매트릭은 windows_expoter로 수집된 매트릭으로 이를 그라파나로 시각화하기 위해 <a target="_blank" rel="noopener" href="https://grafana.com/grafana/dashboards/14694">Windows Exporter Dashboardby girb90</a>를 추가하면 다음과 같이 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/using-pushgateway/pushgateway-05.png"></p>
+<p>이로써 Pushgateway를 활용해 사설망에 위치한 인스턴스에 대한 모니터링을 수행할 수 있음을 알게되었습니다. 감사합니다.</p>
 
       
     </div>
@@ -345,7 +350,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/32/">32</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/33/">33</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 

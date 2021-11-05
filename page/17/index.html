@@ -142,7 +142,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">33</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">34</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -189,12 +189,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -244,7 +244,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/limit-resources-docker-desktop-using-wslconfig/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/token-authentication-requirements-for-git-operations-on-github/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -257,7 +257,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/limit-resources-docker-desktop-using-wslconfig/" class="post-title-link" itemprop="url">도커 데스크탑이 사용하는 WSL 리소스 제한하기</a>
+          <a href="/token-authentication-requirements-for-git-operations-on-github/" class="post-title-link" itemprop="url">Github의 Git 작업에 대한 토큰 인증 요구 사항</a>
         </h2>
 
         <div class="post-meta-container">
@@ -268,7 +268,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-08-13 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-13T00:00:00Z">2021-08-13</time>
+      <time title="Created: 2021-08-15 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-15T00:00:00Z">2021-08-15</time>
     </span>
 
   
@@ -281,41 +281,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>안녕하세요 Mambo 입니다. </p>
-<p>오늘은 <strong>윈도우 환경의 도커 데스크탑에서 사용하는 WSL 리소스를 제한하는 방법</strong>에 대하여 공유하고자 합니다. 윈도우에서 도커 데스크탑을 사용할 때 컴퓨터가 느려진다는 느낌을 받고있다면 현재 도커 데스크탑과 WSL에 의해 점유되는 메모리를 확인하시고 이 글에서 소개하는 방법으로 WSL가 점유하는 리소스를 제한하시는게 좋습니다.</p>
-<h2 id="Docker-Desktop-WSL-2"><a href="#Docker-Desktop-WSL-2" class="headerlink" title="Docker Desktop WSL 2"></a>Docker Desktop WSL 2</h2><p>윈도우 10 환경에서 WSL 2를 설치하고 활성화했다면 도커 데스크탑에서 WSL 2를 사용해서 컨테이너를 구동될 수 있도록 지원하고 있습니다. </p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-01.png"></p>
-<blockquote>
-<p>Docker Desktop uses the dynamic memory allocation feature in WSL 2 to greatly improve the resource consumption. This means, Docker Desktop only uses the required amount of CPU and memory resources it needs, while enabling CPU and memory-intensive tasks such as building a container to run much faster.</p>
-</blockquote>
-<p>도커 데스크탑 공식 문서에서는 WSL 2을 사용하면 메모리를 동적으로 할당할 수 있고 리소스를 효율적으로 소비한다고 소개합니다. 그런데 실제로 도커를 사용하여 다수의 컨테이너를 실행하다보면 컴퓨터 성능이 점점 느려지는 것을 체감하실 수도 있는 분들도 계실텐데요. 이 문제는 WSL 깃허브에 이슈로 등록되어있는데 WSL가 점유하는 메모리를 제대로 반환하지 못하는 현상인 것 같습니다.</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/microsoft/WSL/issues/4166">WSL 2 consumes massive amounts of RAM and doesn’t return it</a></p>
-<p>이슈가 등록된 날짜는 2019년이지만 아직도 해결되지 않고 오픈된 상태로 남아있는 이슈입니다. 개발자 한분은 <a target="_blank" rel="noopener" href="https://github.com/microsoft/WSL/issues/4166#issuecomment-526725261">WSL2 VM이 점유하는 리소스를 제한하는 방법</a>을 사용하여 WSL에서 사용하는 메모리를 제한하라고 해결책을 제시합니다.</p>
-<h3 id="WSL-Configuration"><a href="#WSL-Configuration" class="headerlink" title="WSL Configuration"></a>WSL Configuration</h3><p>위에서 소개한 방법은 이미 도커 데스크탑에서도 설정 메뉴에서 소개하고 있는 부분으로 리소스 제한은 윈도우에 의해 관리되므로 CPU, 메모리 등을 제한하기 위해서는 WSL 2의 설정을 수행하라고 합니다.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-02.png"></p>
-<h4 id="wslconfig-정의"><a href="#wslconfig-정의" class="headerlink" title=".wslconfig 정의"></a>.wslconfig 정의</h4><p>사용자 폴더 위치에서 .wslconfig 파일을 직접 생성하거나 다음과 같이 윈도우 터미널에서 비쥬얼 스튜디오 코드를 사용하여 생성할 수 있습니다. </p>
-<blockquote>
-<p>파일을 만들기 위한 파워 쉘 명령어가 별도로 존재하지만 비쥬얼 스튜디오 코드로 여는게 더 편하다고 생각합니다.</p>
-</blockquote>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-03.png"></p>
-<p>비쥬얼 스튜디오 코드로 열어진 .wslconfig 파일의 내용을 다음과 같이 입력하고 저장합니다.</p>
-<figure class="highlight plaintext"><figcaption><span>.wslconfig</span></figcaption><table><tr><td class="code"><pre><span class="line">[wsl2]</span><br><span class="line">memory=4GB</span><br><span class="line">processors=2</span><br><span class="line">swap=0</span><br></pre></td></tr></table></figure>
+          <p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 변경된 사항을 깃허브 저장소에 반영시키기 위하여 깃 명령어를 수행할 때 사용되는 인증 방식을 비밀번호가 아닌 액세스 토큰으로 변경하는 것에 대해서 공유하려합니다. </p>
+<p><img data-src="/images/posts/token-authentication-requirements/windows-git-credentials-01.png"></p>
+<p>2020년 12월 15일에 깃허브에서는 <a target="_blank" rel="noopener" href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">Token authentication requirements for Git operations</a>을 통해 2021년 8월 13일에 더이상 비밀번호 인증 방식으로 Git 작업을 수행할 수 없다고 알려주었으며 비밀번호를 사용하는 개발자들에게 지속적으로 Deprecation Notice 메일을 발송해왔습니다.</p>
+<p>저는 이 문제에 대하여 당장은 변경하지않아도 무방하다고 생각하여 무시하였지만 이제는 비밀번호를 사용하여 인증할 수 없게되어 우리는 비밀번호가 아닌 깃허브에서 발급받은 토큰을 사용하도록 변경해야합니다.</p>
+<h2 id="Git-Credential-Helper"><a href="#Git-Credential-Helper" class="headerlink" title="Git Credential Helper"></a>Git Credential Helper</h2><p>깃에서 사용하는 크레덴셜을 어떻게 저장했는지 기억나지 않으므로 찾아보니 깃 크레덴셜 헬퍼를 사용한다고 합니다. 그리고 윈도우에서 사용하는 크레덴셜 헬퍼는 <a target="_blank" rel="noopener" href="https://github.com/Microsoft/Git-Credential-Manager-for-Windows">Git Credential Manager for Windows</a>에서 <a target="_blank" rel="noopener" href="https://github.com/microsoft/Git-Credential-Manager-Core">Git Credential Manager Core</a>되어 크로스 플랫폼으로 통합된 것 같습니다.</p>
+<p><img data-src="/images/posts/token-authentication-requirements/windows-git-credentials-02.png"></p>
+<p>위 스크린샷에서 확인할 수 있듯이 윈도우에서 크레덴셜 저장소는 <strong>자격 증명 관리자</strong>를 사용한다고 합니다. 제어판에서 자격 증명 관리자를 열어보면 일반 자격 증명 항목에 Github 관련 자격 증명이 있는 것을 확인할 수 있을겁니다.</p>
+<p><img data-src="/images/posts/token-authentication-requirements/windows-git-credentials-03.png"></p>
+<p>비밀번호가 저장되어있는 Github 자격 증명을 선택해서 삭제하시면 됩니다. </p>
+<h3 id="Manager-Core"><a href="#Manager-Core" class="headerlink" title="Manager Core"></a>Manager Core</h3><p>윈도우에 설치된 Git 버전이 2.29 이상이라면 깃 크레덴셜 헬퍼를 초기화하고 Manager Core로 지정하는게 좋다고 생각되므로 다음과 같이 명령어를 수행합니다.</p>
+<figure class="highlight ps"><figcaption><span>Windows Terminal</span></figcaption><table><tr><td class="code"><pre><span class="line">git -<span class="literal">-version</span></span><br><span class="line">git version <span class="number">2.32</span>.<span class="number">0</span>.windows.<span class="number">2</span></span><br><span class="line"></span><br><span class="line">git config -<span class="literal">-unset</span> credential.helper</span><br><span class="line">git config -<span class="literal">-global</span> credential.helper manager<span class="literal">-core</span></span><br><span class="line">git config -<span class="literal">-global</span> credential.helper</span><br><span class="line">manager<span class="literal">-core</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="wslconfig-반영"><a href="#wslconfig-반영" class="headerlink" title=".wslconfig 반영"></a>.wslconfig 반영</h4><p>파일에 정의한 내용을 WSL에 반영하기 위해서는 도커 데스크탑을 종료하고 <strong>PowerShell</strong>을 관리자 권한으로 실행한 다음 <strong>LxssManager</strong>를 다시 실행해야합니다.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-04.png"></p>
-<h3 id="비교해보기"><a href="#비교해보기" class="headerlink" title="비교해보기"></a>비교해보기</h3><p>다음은 간단하게 WSL 2의 기본 설정에 의해 동작하는 것과 .wslconfig을 정의해서 WSL 에서 사용할 리소스를 제한하였을 경우를 비교한 내용입니다. 대략적으로 어떤 차이를 보이는지만 확인해주시기 바랍니다.</p>
-<h4 id="기본-WSL-2"><a href="#기본-WSL-2" class="headerlink" title="기본 WSL 2"></a>기본 WSL 2</h4><p>먼저, 기본 WSL 2 설정에 의해 도커 데스크탑이 점유하게 되는 리소스를 확인해보죠.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-05.gif"></p>
-<p>기다리기 지겨워하실 분들을 위해서 설명하자면 컨테이너를 실행할때마다 메모리가 올라가면서 4GB를 점유한 것을 보여주고 있습니다. 사용하는 만큼 메모리를 점유하는 것은 당연한 부분일 수 있으나 문제는 그 다음부터 발생합니다.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-06.png"></p>
-<p>위 화면을 살펴보시면 도커 데스크탑으로 실행했던 컨테이너를 전부 종료하고 이미지 그리고 볼륨을 전부 삭제했음에도 불구하고 <strong>WSL2에서 점유중인 메모리의 일부는 반환되지 않고 있음</strong>을 보여줍니다. </p>
-<h4 id="사용자-정의-WSL-2"><a href="#사용자-정의-WSL-2" class="headerlink" title="사용자 정의 WSL 2"></a>사용자 정의 WSL 2</h4><p>이제 WSL 2에서 점유하여 사용할 프로세서를 2개, 메모리를 2GB 그리고 스왑을 하지않도록 설정하고 앞서 컨테이너를 실행했던 것을 다시 시도 해본 결과를 확인해보겠습니다.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-07.gif"></p>
-<p>기본 설정때와는 다르게 여러개의 컨테이너를 실행하더라도 WSL2에서 할당하는 메모리는 2GB를 넘지않게 됨을 확인할 수 있습니다. 물론, 점유하고 있는 리소스가 제한되어있기 때문에 컨테이너 성능은 줄어들게 당연한 부분입니다. 따라서, 시스템 자원이 여유롭다면 적당하게 제한하시는 것을 추천합니다.</p>
-<h2 id="느려짐을-체감하는-이유"><a href="#느려짐을-체감하는-이유" class="headerlink" title="느려짐을 체감하는 이유"></a>느려짐을 체감하는 이유</h2><p>.wslconfig 파일을 정의하지 않고 기본 설정으로 WSL 2를 사용하고 있을때 도커 데스크탑이 시스템 자원을 어느정도 까지 사용할 수 있을 지 확인해보겠습니다.</p>
-<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-08.png"></p>
-<p>기본적으로 <em><strong>프로세서는 전부 사용</strong></em>한다고 하며 메모리는 <strong>총 메모리의 절반 또는 8GB 중 작은쪽으로 설정</strong>됩니다. 저의 경우는 32GB의 메모리이므로 메모리의 절반보다 작은 8GB가 설정되게 됩니다. 일반적으로 개발자가 사용하는 컴퓨터의 메모리 용량 16GB이라면 동일하게 8GB이므로 <strong>무려 총 메모리의 절반이나 점유</strong>할 수 있게 되고 컨테이너를 종료하더라도 일부의 메모리는 점유하고 있을 수 있다는 이야기입니다.</p>
-<p>윈도우의 리소스 모니터를 사용해서 vmmem에 할당된 메모리가 높은지 확인해보시기 바라며 이상으로 도커 데스크탑이 사용하는 WSL 리소스 제한하기를 마치겠습니다.</p>
+<blockquote>
+<p>이미 깃 크레덴셜 헬퍼가 manager-core로 지정되어있다면 스킵하세요.</p>
+</blockquote>
+<h3 id="Token-Credential"><a href="#Token-Credential" class="headerlink" title="Token Credential"></a>Token Credential</h3><p>이제 리파지토리 폴더에서 깃허브를 대상으로 깃 명령어를 수행하면 깃허브 주소에 대한 자격 증명이 존재하지 않으므로 다음과 같이 크레덴셜을 요구하는 팝업창이 뜨게 됩니다.</p>
+<p><img data-src="/images/posts/token-authentication-requirements/windows-git-credentials-04.png"></p>
+<p>깃허브에서 발급받은 토큰을 입력하면 자격 증명 관리자에 깃허브 주소에 대한 자격 증명이 등록되고 성공적으로 깃 명령어를 수행되는 것을 확인할 수 있을겁니다.</p>
+<h3 id="SourceTree-Authentication"><a href="#SourceTree-Authentication" class="headerlink" title="SourceTree Authentication"></a>SourceTree Authentication</h3><p>만약, 소스트리를 사용하고 계시다면 설정 &gt; 옵션 &gt; 인증에서 정상적으로 자격 증명을 확인할 수 있는 지 확인해보셔야합니다.</p>
+<p><img data-src="/images/posts/token-authentication-requirements/windows-git-credentials-05.png"></p>
+<p>이상으로 Github의 Git 작업에 대한 토큰 인증 요구 사항을 마치겠습니다.</p>
 <p>감사합니다.</p>
 
       
@@ -336,7 +323,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/33/">33</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/34/">34</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 

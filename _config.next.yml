@@ -99,7 +99,8 @@ avatar:
 
 pace:
     enable:                  true
-    theme:                   center-atom
+    color:                   blue
+    theme:                   loading-bar
 
 excerpt:
   depth: 10

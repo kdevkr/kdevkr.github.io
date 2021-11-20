@@ -3,6 +3,7 @@
 'use strict';
 
 const { parse } = require('url');
+const { unescapeHTML } = require('hexo-util');
 
 hexo.extend.filter.register('after_post_render', data => {
   const { config } = hexo;
@@ -13,6 +14,8 @@ hexo.extend.filter.register('after_post_render', data => {
   }
   if (theme.exturl) {
     const siteHost = parse(config.url).hostname || config.url;
+    // External URL icon
+    const exturlIcon = theme.exturl_icon ? '<i class="fa fa-external-link-alt"></i>' : '';
     data.content = data.content.replace(/<a[^>]* href="([^"]+)"[^>]*>([^<]+)<\/a>/img, (match, href, html) => {
       // Exit if the href attribute doesn't exists.
       if (!href) return match;
@@ -21,7 +24,12 @@ hexo.extend.filter.register('after_post_render', data => {
       const link = parse(href);
       if (!link.protocol || link.hostname === siteHost) return match;
 
-      return `<span class="exturl" data-url="${Buffer.from(href).toString('base64')}">${html}<i class="fa fa-external-link-alt"></i></span>`;
+      // Return encrypted URL with title.
+      const title = match.match(/title="([^"]+)"/);
+      const encoded = Buffer.from(unescapeHTML(href)).toString('base64');
+      if (title) return `<span class="exturl" data-url="${encoded}" title="${title[1]}">${html}${exturlIcon}</span>`;
+
+      return `<span class="exturl" data-url="${encoded}">${html}${exturlIcon}</span>`;
     });
   }
 

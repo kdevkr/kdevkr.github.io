@@ -604,6 +604,35 @@
       </tags>
   </entry>
   <entry>
+    <title>그래들 멀티 모듈 프로젝트</title>
+    <url>/gradle-multi-module-project/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 그래들 멀티 모듈 프로젝트의 디펜던시 공유에 대하여 이야기 해보려고 합니다. </p>
+<h2 id="그래들-멀티-모듈"><a href="#그래들-멀티-모듈" class="headerlink" title="그래들 멀티 모듈"></a>그래들 멀티 모듈</h2><p>서비스의 규모가 어느정도 커지게되면 모놀리식 아키텍처로써 서비스에 대한 모든 기능이 하나의 애플리케이션에 구현하는 것을 마이크로서비스 아키텍처를 참고하여 일부 기능을 수행하는 별도의 애플리케이션로 독립시키기도 합니다. 현재 다니고 있는 회사에서는 모놀리식 아키텍처로 개발하고 있는 애플리케이션을 여러 고객들의 환경에 맞는 배포 또는 별도의 커스텀 기능을 지원하기 위하여 <strong>그래들 멀티 모듈 프로젝트</strong>로 전환하였습니다.</p>
+<h3 id="Java-라이브러리-플러그인"><a href="#Java-라이브러리-플러그인" class="headerlink" title="Java 라이브러리 플러그인"></a>Java 라이브러리 플러그인</h3><p>공용 모듈에서 사용하는 디펜던시를 상위 모듈에서도 사용하기 위해서는 자바 플러그인 대신 자바 라이브러리 플러그인을 적용하고 <code>api</code>를 사용하여 지정된 디펜던시를 외부 모듈의 컴파일 클래스패스에 노출시켜야합니다. Gradle 7 부터는 <code>compile</code>을 지원하지 않으며 <code>implementation</code>은 지정한 디펜던시를 외부 모듈에 노출시키지 않습니다.</p>
+<blockquote>
+<p>The compile and runtime configurations have been removed with Gradle 7.0. Please refer to the upgrade guide how to migrate to implementation and api configurations`.</p>
+</blockquote>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="comment">// module-common/build.gradle</span></span><br><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;java-library&#x27;</span></span><br><span class="line">    id <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    api <span class="string">&#x27;com.google.code.gson:gson&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>common 모듈의 gson 라이브러리는 api를 통해 상위 모듈의 클래스패스에 노출되어 상위 모듈에서도 사용이 가능해집니다. 기본적으로 implementation을 사용하는 경우 외부 모듈 클래스패스에 노출시키지 않는 이유는 빠른 컴파일과 클래스패스 사이즈를 줄이기 위함이며 api 보다는 implementation을 선호해야한다고 합니다.</p>
+<h3 id="Common-Module"><a href="#Common-Module" class="headerlink" title="Common Module"></a>Common Module</h3><p><a href="https://github.com/kdevkr/gradle-multi-module">gradle-multi-module</a> 처럼 그래들 멀티 모듈 프로젝트에 공용으로 적용되는 코드를 가지는 Common 모듈이 있을때 다음과 같이 공통으로 적용되어야하는 설정을 수행할 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JsonConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Jackson2ObjectMapperBuilderCustomizer <span class="title">objectMapperBuilderCustomizer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder -&gt; builder</span><br><span class="line">                .featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)</span><br><span class="line">                .featuresToDisable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)</span><br><span class="line">                .modules(List.of(<span class="keyword">new</span> Jdk8Module(), <span class="keyword">new</span> JavaTimeModule()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>위 코드에서는 Date 또는 Timestamp와 같은 클래스에 대하여 Long 값으로 변환하는 기능을 활성화하기 위하여 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS를 적용하였습니다. </p>
+<h4 id="Common-Dependencies"><a href="#Common-Dependencies" class="headerlink" title="Common Dependencies"></a>Common Dependencies</h4><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;java-library&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    api <span class="string">&#x27;org.springframework.boot:spring-boot-starter-security&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.google.code.gson:gson&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.fasterxml.jackson.core:jackson-databind&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.hibernate.validator:hibernate-validator&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.apache.commons:commons-lang3&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.apache.commons:commons-collections4:4.4&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.google.guava:guava:31.0.1-jre&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>위 설정처럼 implementation 대신에 api를 사용하면 동일한 버전의 디펜던시를 다른 외부 모듈에서도 사용할 수 있도록 클래스패스에 노출할 수 있습니다. 이를 통해 각 모듈에서 사용되는 디펜던시 버전이 달라서 발생할 수 있는 문제를 방지할 수 있게 됩니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a href="https://docs.gradle.org/current/userguide/dependency_management_for_java_projects.html">Managing Dependencies of JVM Projects</a>  </li>
+<li><a href="https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph">The Java Library Plugin</a>  </li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Gradle</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>IP 대역 그리고 위치추적</title>
     <url>/ip-band-and-location-tracking/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>

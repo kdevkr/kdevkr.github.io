@@ -1366,6 +1366,9 @@
 
 <p>이 내용은 Okky 커뮤니티에 <a href="https://okky.kr/article/1122985">Spring Cloud Hoxton의 Spring Cloud Gateway에서는 allowDuplicateContentLengths을 지원하지 않음</a>로 공유되었음을 알려드리며 마치도록 하겠습니다.</p>
 <p>감사합니다.</p>
+<blockquote>
+<p><a href="https://github.com/reactor/reactor-netty/issues/1942">https://github.com/reactor/reactor-netty/issues/1942</a><br>Reactor Netty 측에 0.9.x 사용자들을 위해 수정 요청하였으나 업데이트 중단된 버전인 사유로 거부되었습니다.</p>
+</blockquote>
 <h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
 <li><a href="https://datatracker.ietf.org/doc/html/rfc7230">RFC 7230</a>  </li>
 <li><a href="https://spring.io/projects/spring-cloud">Spring Cloud Release train Spring Boot compatibility</a></li>

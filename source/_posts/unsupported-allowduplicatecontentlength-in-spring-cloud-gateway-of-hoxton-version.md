@@ -115,6 +115,9 @@ public class NettyHttpClientCustomizer implements HttpClientCustomizer {
 
 감사합니다.
 
+> https://github.com/reactor/reactor-netty/issues/1942
+> Reactor Netty 측에 0.9.x 사용자들을 위해 수정 요청하였으나 업데이트 중단된 버전인 사유로 거부되었습니다.
+
 ## 참고
 
 - [RFC 7230](https://datatracker.ietf.org/doc/html/rfc7230)  

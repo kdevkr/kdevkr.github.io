@@ -1297,6 +1297,41 @@
       </tags>
   </entry>
   <entry>
+    <title>프로젝트의 노드 버전 제한하기</title>
+    <url>/strict-nodejs-version-for-project/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 함께 일하는 개발자들이 프로젝트마다 사용해야하는 노드 버전을 제한하는 방법에 대하여 공유하려고 해요.</p>
+<h2 id="프로젝트-노드-버전-제한"><a href="#프로젝트-노드-버전-제한" class="headerlink" title="프로젝트 노드 버전 제한"></a>프로젝트 노드 버전 제한</h2><p>프로젝트에서 사용하는 패키지마다 지원하는 최소 노드 버전이 다를 수 있습니다. 예를 들어, 다음과 같이 패키지 버전이 업데이트되면서 요구하는 노드 버전이 변경될 수 있습니다.</p>
+<ul>
+<li><a href="https://webpack.js.org/blog/2020-10-10-webpack-5-release/#minimum-nodejs-version">webpack@5.0.0</a> minimum supported Node.js version is 10.13.0</li>
+<li><a href="https://github.com/webpack-contrib/style-loader/releases/tag/v3.0.0">style-loader@3.0.0</a> minimum supported Node.js version is 12.13.0</li>
+<li><a href="https://github.com/webpack/webpack-dev-server/blob/master/CHANGELOG.md#400-beta3-2021-05-06">webpack-dev-server@4.0.0-beta.3</a> minimum supported Node.js version is 12.13.0</li>
+</ul>
+<h3 id="Package-json"><a href="#Package-json" class="headerlink" title="Package.json"></a>Package.json</h3><p>Package.json 파일의 <code>engines</code> 속성으로 프로젝트에서 사용하는 NPM 또는 노드 버전을 명시할 수 있습니다.</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;engines&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;npm&quot;</span>: <span class="string">&quot;&gt;=6.4.1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;node&quot;</span>: <span class="string">&quot;&gt;=12.13.0&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="엔진-제한-옵션-활성화"><a href="#엔진-제한-옵션-활성화" class="headerlink" title="엔진 제한 옵션 활성화"></a>엔진 제한 옵션 활성화</h3><p>Package.json 파일에 노드 버전을 명시하더라도 사용자의 엔진을 제한할 수는 없습니다. 이를 별도로 제한하기 위해서는 프로젝트 폴더에 .npmrc 파일을 만들고 <code>engine-strict</code> 옵션을 활성화해야합니다.</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="meta">engine-strict</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="노드-엔진-제한-여부-확인"><a href="#노드-엔진-제한-여부-확인" class="headerlink" title="노드 엔진 제한 여부 확인"></a>노드 엔진 제한 여부 확인</h3><p>노드 버전을 명시하고 엔진 제한 옵션을 활성화하였으므로 실제로 노드 엔진이 제한되는지 확인해보겠습니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i</span><br><span class="line">npm ERR! code ENOTSUP</span><br><span class="line">npm ERR! notsup Unsupported engine <span class="keyword">for</span> @1.0.0: wanted: &#123;<span class="string">&quot;npm&quot;</span>:<span class="string">&quot;&gt;=6.4.1&quot;</span>,<span class="string">&quot;node&quot;</span>:<span class="string">&quot;&gt;=12.13.0&quot;</span>&#125; (current: &#123;<span class="string">&quot;node&quot;</span>:<span class="string">&quot;10.23.0&quot;</span>,<span class="string">&quot;npm&quot;</span>:<span class="string">&quot;6.14.8&quot;</span>&#125;)</span><br><span class="line">npm ERR! notsup Not compatible with your version of node/npm: @1.0.0</span><br><span class="line">npm ERR! notsup Not compatible with your version of node/npm: @1.0.0</span><br><span class="line">npm ERR! notsup Required: &#123;<span class="string">&quot;npm&quot;</span>:<span class="string">&quot;&gt;=6.4.1&quot;</span>,<span class="string">&quot;node&quot;</span>:<span class="string">&quot;&gt;=12.13.0&quot;</span>&#125;</span><br><span class="line">npm ERR! notsup Actual:   &#123;<span class="string">&quot;npm&quot;</span>:<span class="string">&quot;6.14.8&quot;</span>,<span class="string">&quot;node&quot;</span>:<span class="string">&quot;10.23.0&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>현재 사용중인 노드 버전은 10.23.0 이지만 프로젝트에서 요구하는 버전은 12.13.0 이상이므로 오류가 발생하였습니다.</p>
+<p>이상으로 프로젝트에서 지원하는 최소 노드 엔진 버전을 명시하고 프로젝트에 참여하는 모든 개발자들이 알맞은 노드 버전을 사용하도록 안내할 수 있게 되었습니다.</p>
+<p>감사합니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a href="https://medium.com/@fabian.illner/force-correct-node-js-version-with-npm-a2a57fd12fa">Force correct Node.js version with npm</a>  </li>
+<li><a href="https://www.geeksforgeeks.org/how-to-define-the-required-node-js-version-in-package-json/">How to define the required Node.js version in package.json?</a>  </li>
+<li><a href="https://reactgo.com/specify-node-version/">Specifying a required Node.js version in Package.json file</a>  </li>
+</ul>
+]]></content>
+      <tags>
+        <tag>package.json</tag>
+        <tag>npmrc</tag>
+        <tag>engines</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Github의 Git 작업에 대한 토큰 인증 요구 사항</title>
     <url>/token-authentication-requirements-for-git-operations-on-github/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>

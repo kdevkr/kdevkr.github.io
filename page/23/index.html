@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">38</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">39</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/when-do-i-use-the-handler-interceptor/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/limit-resources-docker-desktop-using-wslconfig/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/when-do-i-use-the-handler-interceptor/" class="post-title-link" itemprop="url">HandlerInterceptor은 언제 사용하나요?</a>
+          <a href="/limit-resources-docker-desktop-using-wslconfig/" class="post-title-link" itemprop="url">도커 데스크탑이 사용하는 WSL 리소스 제한하기</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-08-09 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-09T00:00:00Z">2021-08-09</time>
+      <time title="Created: 2021-08-13 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-13T00:00:00Z">2021-08-13</time>
     </span>
 
   
@@ -226,38 +226,42 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p><img data-src="../images/logo/spring.png#compact"></p>
-<p>안녕하세요 Mambo입니다. 오늘은 스프링 MVC 모듈에 포함되어있는 HandlerInterceptor 인터페이스를 언제 사용하는가에 대해서 알아보겠습니다.</p>
-<h2 id="HandlerInterceptor"><a href="#HandlerInterceptor" class="headerlink" title="HandlerInterceptor"></a>HandlerInterceptor</h2><blockquote>
-<p>A HandlerInterceptor gets called before the appropriate HandlerAdapter triggers the execution of the handler itself. This mechanism can be used for a large field of preprocessing aspects, e.g. for authorization checks, or common handler behavior like locale or theme changes. Its main purpose is to allow for factoring out repetitive handler code.</p>
+          <p>안녕하세요 Mambo 입니다. </p>
+<p>오늘은 <strong>윈도우 환경의 도커 데스크탑에서 사용하는 WSL 리소스를 제한하는 방법</strong>에 대하여 공유하고자 합니다. 윈도우에서 도커 데스크탑을 사용할 때 컴퓨터가 느려진다는 느낌을 받고있다면 현재 도커 데스크탑과 WSL에 의해 점유되는 메모리를 확인하시고 이 글에서 소개하는 방법으로 WSL가 점유하는 리소스를 제한하시는게 좋습니다.</p>
+<h2 id="Docker-Desktop-WSL-2"><a href="#Docker-Desktop-WSL-2" class="headerlink" title="Docker Desktop WSL 2"></a>Docker Desktop WSL 2</h2><p>윈도우 10 환경에서 WSL 2를 설치하고 활성화했다면 도커 데스크탑에서 WSL 2를 사용해서 컨테이너를 구동될 수 있도록 지원하고 있습니다. </p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-01.png"></p>
+<blockquote>
+<p>Docker Desktop uses the dynamic memory allocation feature in WSL 2 to greatly improve the resource consumption. This means, Docker Desktop only uses the required amount of CPU and memory resources it needs, while enabling CPU and memory-intensive tasks such as building a container to run much faster.</p>
 </blockquote>
-<p><strong>HandlerInterceptor</strong>는 컨트롤러 핸들러 함수에 대한 전처리 동작을 수행할 수 있는 방법을 제공합니다. 필터도 전처리 동작을 수행할 수 있지만 web.xml에 정의되는 필터와 다르게 HandlerInterceptor는 애플리케이션 컨텍스트에서 관리하므로 요청 정보를 분석하여 사용자를 인증하거나 응답 뷰를 렌더링하기 전에 부가 데이터를 주입하는 동작을 수행할 수 있습니다.</p>
-<p>예를 들어, 기본으로 제공되는 HandlerInterceptor 구현체인 <strong>LocaleChangeInterceptor</strong>는 로케일 파라미터에 따라 현재 로케일을 변경하는 동작을 수행하죠.</p>
-<h3 id="정적-리소스-패턴-제외"><a href="#정적-리소스-패턴-제외" class="headerlink" title="정적 리소스 패턴 제외"></a>정적 리소스 패턴 제외</h3><p><strong>ResourceHandlerRegistry</strong>는 정적 리소스를 배포하기 위한 핸들러를 등록하는 것을 지원하는 클래스입니다. 이때, 리소스 핸들러가 처리할 경로를 매칭하기 위하여 AntPathMatcher 또는 PathPattern을 사용하게 되는데 Ant 스타일의 패턴 매칭을 사용하므로 특정 패턴을 제외하기 위한 Regex 같은 방식을 사용할 수 없습니다. </p>
-<p>리소스 핸들러가 처리하는 경로에 대해서 특정 패턴을 제외하기 위해서는 해당 패턴을 처리하지 않도록 패턴별로 등록하여야합니다. 하지만, 이렇게 올바른 패턴마다 리소스 핸들러를 등록하는 것은 불편합니다.</p>
-<figure class="highlight java"><figcaption><span>ResourceHandlerRegistry</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/images/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/static/images/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>도커 데스크탑 공식 문서에서는 WSL 2을 사용하면 메모리를 동적으로 할당할 수 있고 리소스를 효율적으로 소비한다고 소개합니다. 그런데 실제로 도커를 사용하여 다수의 컨테이너를 실행하다보면 컴퓨터 성능이 점점 느려지는 것을 체감하실 수도 있는 분들도 계실텐데요. 이 문제는 WSL 깃허브에 이슈로 등록되어있는데 WSL가 점유하는 메모리를 제대로 반환하지 못하는 현상인 것 같습니다.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/microsoft/WSL/issues/4166">WSL 2 consumes massive amounts of RAM and doesn’t return it</a></p>
+<p>이슈가 등록된 날짜는 2019년이지만 아직도 해결되지 않고 오픈된 상태로 남아있는 이슈입니다. 개발자 한분은 <a target="_blank" rel="noopener" href="https://github.com/microsoft/WSL/issues/4166#issuecomment-526725261">WSL2 VM이 점유하는 리소스를 제한하는 방법</a>을 사용하여 WSL에서 사용하는 메모리를 제한하라고 해결책을 제시합니다.</p>
+<h3 id="WSL-Configuration"><a href="#WSL-Configuration" class="headerlink" title="WSL Configuration"></a>WSL Configuration</h3><p>위에서 소개한 방법은 이미 도커 데스크탑에서도 설정 메뉴에서 소개하고 있는 부분으로 리소스 제한은 윈도우에 의해 관리되므로 CPU, 메모리 등을 제한하기 위해서는 WSL 2의 설정을 수행하라고 합니다.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-02.png"></p>
+<h4 id="wslconfig-정의"><a href="#wslconfig-정의" class="headerlink" title=".wslconfig 정의"></a>.wslconfig 정의</h4><p>사용자 폴더 위치에서 .wslconfig 파일을 직접 생성하거나 다음과 같이 윈도우 터미널에서 비쥬얼 스튜디오 코드를 사용하여 생성할 수 있습니다. </p>
+<blockquote>
+<p>파일을 만들기 위한 파워 쉘 명령어가 별도로 존재하지만 비쥬얼 스튜디오 코드로 여는게 더 편하다고 생각합니다.</p>
+</blockquote>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-03.png"></p>
+<p>비쥬얼 스튜디오 코드로 열어진 .wslconfig 파일의 내용을 다음과 같이 입력하고 저장합니다.</p>
+<figure class="highlight plaintext"><figcaption><span>.wslconfig</span></figcaption><table><tr><td class="code"><pre><span class="line">[wsl2]</span><br><span class="line">memory=4GB</span><br><span class="line">processors=2</span><br><span class="line">swap=0</span><br></pre></td></tr></table></figure>
 
-<p>위 예시는 <strong>/images/</strong>** 패턴의 경로에 대해서 클래스패스의 <strong>static/images</strong> 폴더에 있는 정적 리소스로 처리하기 위한 핸들러를 등록합니다. images 폴더에는 이미지 파일만 있다고 가정했으나 개발자의 실수로 images 폴더에 이미지가 아닌 동영상 파일이나 오디오 파일이 들어있다면 해당 리소스도 처리하게 됩니다.</p>
-<p>이렇게 특정 패턴을 방지해야하는 경우에 HandlerInterceptor를 등록하여 요청을 분석하여 리소스를 응답하지 않도록 전처리 동작을 구현할 수 있습니다.</p>
-<p>다음과 같이 <strong>이미지 파일 패턴이 아니라면 요청을 404 Not Found로 처리</strong>하는 동작을 수행할 수 있습니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addInterceptor(onlyServeImagesHandlerInterceptor()).addPathPatterns(<span class="string">&quot;/images/**&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/images/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/static/images/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">OnlyServeImagesHandlerInterceptor <span class="title">onlyServeImagesHandlerInterceptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> OnlyServeImagesHandlerInterceptor();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">OnlyServeImagesHandlerInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            String requestURI = request.getRequestURI();</span><br><span class="line">            <span class="keyword">if</span>(!requestURI.matches(<span class="string">&quot;.*\\/.*\\.(jpg|jpeg|png|gif)&quot;</span>)) &#123;</span><br><span class="line">                response.setStatus(HttpServletResponse.SC_NOT_FOUND);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>위 인터셉터가 정말로 이미지 파일에 대해서만 처리할 수 있게 사전 처리를 수행하는지 확인해보겠습니다.</p>
-<p><img data-src="/images/posts/handler-interceptor-01.gif"></p>
-<p>위 결과를 보면 이미지 파일은 정적 리소스로 배포되도록 처리되었지만 동영상 파일은 처리되지 않게 된걸 확인할 수 있습니다. </p>
-<h3 id="뷰-응답-시-부가-정보-주입"><a href="#뷰-응답-시-부가-정보-주입" class="headerlink" title="뷰 응답 시 부가 정보 주입"></a>뷰 응답 시 부가 정보 주입</h3><p>두번째로는 뷰를 응답하는 핸들러 함수에 대하여 <strong>부가 정보를 주입</strong>하는데에 사용할 수 있습니다. </p>
-<p>다음의 코드는 뷰를 응답하게되는 핸들러 함수에 사용 가능한 언어와 함께 현재 로케일에 대한 메시지 코드 목록을 주입하는 인터셉터 예시입니다.</p>
-<figure class="highlight java"><figcaption><span>InjectionLocalesInterceptor</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InjectionLocalesInterceptor</span> <span class="keyword">extends</span> <span class="title">HandlerInterceptorAdapter</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> MessagePool messagePool = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(modelAndView != <span class="keyword">null</span> &amp;&amp; messagePool != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Locale locale = messagePool.getLocale();</span><br><span class="line">            <span class="keyword">if</span>(locale == <span class="keyword">null</span>) &#123;</span><br><span class="line">                locale = Locale.getDefault();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            modelAndView.addObject(<span class="string">&quot;lang&quot;</span>, locale.getLanguage());</span><br><span class="line">            modelAndView.addObject(<span class="string">&quot;locale&quot;</span>, locale.toString());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(handler <span class="keyword">instanceof</span> HandlerMethod) &#123;</span><br><span class="line">                HandlerMethod handlerMethod = (HandlerMethod) handler;</span><br><span class="line">                Class&lt;?&gt; beanType = handlerMethod.getBeanType();</span><br><span class="line">                Controller controller = beanType.getAnnotation(Controller.class);</span><br><span class="line">                <span class="keyword">if</span>(controller != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    modelAndView.addObject(<span class="string">&quot;locales&quot;</span>, messagePool.getLocales());</span><br><span class="line">                    modelAndView.addObject(<span class="string">&quot;messages&quot;</span>, messagePool.getMessagesInJson().toString());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.postHandle(request, response, handler, modelAndView);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>이제 템플릿 엔진에서 주입된 부가 정보를 사용하여 렌더링을 할 수 있게 됩니다.</p>
-<h3 id="인증을-위한-인터셉터"><a href="#인증을-위한-인터셉터" class="headerlink" title="인증을 위한 인터셉터"></a>인증을 위한 인터셉터</h3><p>또 다른 인터셉터의 활용 방안은 인증 처리입니다. 사용자에게 이메일 또는 카카오톡 메시지등을 발송하여 어떤 행동을 할 수 있는 링크를 주게 된다고 가정해보면 해당 링크를 통해 들어오는 사용자은 인증을 수행하기 전일 수 있습니다. 이때 주어지는 링크에 임시적으로 인증에 사용할 수 있는 만료성 토큰 파라미터를 포함시킴으로써 사용자를 인증하는 로직을 추가할 수 있습니다.</p>
-<p><img data-src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/31015797034/original/89mawYXJeO_K082-5HF52bd73j_SN60nLQ.png" alt="코인원의 이메일 인증하기 버튼"></p>
-<p>위 예시 이미지의 이메일 인증하기 버튼에 대한 링크에는 코인원에서 분석할 수 있는 어떠한 파라미터에 인증을 위한 식별 정보가 있을거라 추측합니다.</p>
-<p>다음은 토큰 파라미터 유무를 확인하고 토큰 파라미터를 분석하여 인증을 수행하는 인터셉터 구현의 예시입니다.</p>
-<figure class="highlight java"><figcaption><span>TokenBasedAuthenticationInterceptor</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TokenBasedAuthenticationInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TOKEN_PARAMETER_NAME = <span class="string">&quot;token&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String parameter = request.getParameter(TOKEN_PARAMETER_NAME);</span><br><span class="line">        <span class="keyword">if</span>(parameter != <span class="keyword">null</span> &amp;&amp; !parameter.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">            <span class="comment">// <span class="doctag">NOTE:</span> 토큰 파라미터 분석 및 검증</span></span><br><span class="line">            String token = analyticsToken(parameter);</span><br><span class="line">            <span class="keyword">boolean</span> valid = validateToken(token);</span><br><span class="line">            <span class="keyword">if</span>(valid) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">NOTE:</span> 토큰 기반 인증 처리</span></span><br><span class="line">                authenticationByToken(token);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> valid;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>일정 시간이 만료</strong>되면 해당 토큰으로는 인증할 수 없고 이미 인증을 수행하여 <strong>사용이 완료된 토큰</strong>으로 확인하는 것은 토큰 파라미터 분석 및 검증 로직에 포함될겁니다.</p>
-<p>간단하게 HandlerInterceptor의 활용 방안 3가지를 확인해보았습니다. 애플리케이션 마다 요구사항이 다르고 무궁무진 하기 때문에 HandlerInterceptor는 더 다양한 방식으로 활용할 수 있을 겁니다. 이상으로 HandlerInterceptor은 언제 사용하나요?를 마치겠습니다. 감사합니다.</p>
+<h4 id="wslconfig-반영"><a href="#wslconfig-반영" class="headerlink" title=".wslconfig 반영"></a>.wslconfig 반영</h4><p>파일에 정의한 내용을 WSL에 반영하기 위해서는 도커 데스크탑을 종료하고 <strong>PowerShell</strong>을 관리자 권한으로 실행한 다음 <strong>LxssManager</strong>를 다시 실행해야합니다.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-04.png"></p>
+<h3 id="비교해보기"><a href="#비교해보기" class="headerlink" title="비교해보기"></a>비교해보기</h3><p>다음은 간단하게 WSL 2의 기본 설정에 의해 동작하는 것과 .wslconfig을 정의해서 WSL 에서 사용할 리소스를 제한하였을 경우를 비교한 내용입니다. 대략적으로 어떤 차이를 보이는지만 확인해주시기 바랍니다.</p>
+<h4 id="기본-WSL-2"><a href="#기본-WSL-2" class="headerlink" title="기본 WSL 2"></a>기본 WSL 2</h4><p>먼저, 기본 WSL 2 설정에 의해 도커 데스크탑이 점유하게 되는 리소스를 확인해보죠.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-05.gif"></p>
+<p>기다리기 지겨워하실 분들을 위해서 설명하자면 컨테이너를 실행할때마다 메모리가 올라가면서 4GB를 점유한 것을 보여주고 있습니다. 사용하는 만큼 메모리를 점유하는 것은 당연한 부분일 수 있으나 문제는 그 다음부터 발생합니다.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-06.png"></p>
+<p>위 화면을 살펴보시면 도커 데스크탑으로 실행했던 컨테이너를 전부 종료하고 이미지 그리고 볼륨을 전부 삭제했음에도 불구하고 <strong>WSL2에서 점유중인 메모리의 일부는 반환되지 않고 있음</strong>을 보여줍니다. </p>
+<h4 id="사용자-정의-WSL-2"><a href="#사용자-정의-WSL-2" class="headerlink" title="사용자 정의 WSL 2"></a>사용자 정의 WSL 2</h4><p>이제 WSL 2에서 점유하여 사용할 프로세서를 2개, 메모리를 2GB 그리고 스왑을 하지않도록 설정하고 앞서 컨테이너를 실행했던 것을 다시 시도 해본 결과를 확인해보겠습니다.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-07.gif"></p>
+<p>기본 설정때와는 다르게 여러개의 컨테이너를 실행하더라도 WSL2에서 할당하는 메모리는 2GB를 넘지않게 됨을 확인할 수 있습니다. 물론, 점유하고 있는 리소스가 제한되어있기 때문에 컨테이너 성능은 줄어들게 당연한 부분입니다. 따라서, 시스템 자원이 여유롭다면 적당하게 제한하시는 것을 추천합니다.</p>
+<h2 id="느려짐을-체감하는-이유"><a href="#느려짐을-체감하는-이유" class="headerlink" title="느려짐을 체감하는 이유"></a>느려짐을 체감하는 이유</h2><p>.wslconfig 파일을 정의하지 않고 기본 설정으로 WSL 2를 사용하고 있을때 도커 데스크탑이 시스템 자원을 어느정도 까지 사용할 수 있을 지 확인해보겠습니다.</p>
+<p><img data-src="/images/posts/docker-desktop-wsl-config/docker-desktop-wsl-config-08.png"></p>
+<p>기본적으로 <em><strong>프로세서는 전부 사용</strong></em>한다고 하며 메모리는 <strong>총 메모리의 절반 또는 8GB 중 작은쪽으로 설정</strong>됩니다. 저의 경우는 32GB의 메모리이므로 메모리의 절반보다 작은 8GB가 설정되게 됩니다. 일반적으로 개발자가 사용하는 컴퓨터의 메모리 용량 16GB이라면 동일하게 8GB이므로 <strong>무려 총 메모리의 절반이나 점유</strong>할 수 있게 되고 컨테이너를 종료하더라도 일부의 메모리는 점유하고 있을 수 있다는 이야기입니다.</p>
+<p>윈도우의 리소스 모니터를 사용해서 vmmem에 할당된 메모리가 높은지 확인해보시기 바라며 이상으로 도커 데스크탑이 사용하는 WSL 리소스 제한하기를 마치겠습니다.</p>
+<p>감사합니다.</p>
 
       
     </div>
@@ -277,7 +281,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

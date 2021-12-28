@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">38</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">39</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/gradle-build-lifecycle/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/kdbplus/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/gradle-build-lifecycle/" class="post-title-link" itemprop="url">그래들 빌드 라이프사이클</a>
+          <a href="/kdbplus/" class="post-title-link" itemprop="url">KDB+</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-10-30 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-30T00:00:00Z">2021-10-30</time>
+      <time title="Created: 2021-11-05 00:00:00" itemprop="dateCreated datePublished" datetime="2021-11-05T00:00:00Z">2021-11-05</time>
     </span>
 
   
@@ -226,62 +226,99 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>안녕하세요 Mambo 입니다.</p>
-<p>오늘 알아볼 내용은 그래들 빌드의 라이프사이클입니다. </p>
-<p>얼마전에 단일 애플리케이션 프로젝트에서 다양한 배포 환경에 대한 기능을 별도로 지원해야하는 요구사항으로 인하여 그래들 멀티 모듈 프로젝트로 전환하게 되면서 배포 과정에서 문제가 발생하였었는데요. 그 문제는 크리티컬한 이슈는 아니지만 태스크 수행 후 만들어진 압축 파일에 프로젝트 버전이 포함되지 않는 상황이었습니다. 이러한 문제가 발생한 이유는 그래들 태스크를 정의할 때 <strong>그래들 빌드 라이프사이클</strong>을 고려하지 않았기 때문입니다.</p>
-<h2 id="그래들-태스크"><a href="#그래들-태스크" class="headerlink" title="그래들 태스크"></a>그래들 태스크</h2><p>먼저 기존에 정의된 태스크는 <a target="_blank" rel="noopener" href="https://github.com/kdevkr/beanstalk-deploy-sample/blob/main/build.gradle">beanstalk-deploy-sample의 build.gradle에 정의된 zipBeanstalk 태스크</a>와 같이 Zip 유형의 태스크로 작성되어있습니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">task zipBeanstalk(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;procfile&#x27;</span>) &#123;</span><br><span class="line">    from (<span class="string">&#x27;.ebextensions&#x27;</span>) &#123; into <span class="string">&#x27;.ebextensions&#x27;</span> &#125;</span><br><span class="line">    from (<span class="string">&#x27;.platform&#x27;</span>) &#123; into <span class="string">&#x27;.platform&#x27;</span> &#125;</span><br><span class="line"></span><br><span class="line">    from (<span class="string">&#x27;build/libs&#x27;</span>) &#123;</span><br><span class="line">        println bootWar.archiveName</span><br><span class="line">        include(bootWar.archiveName)</span><br><span class="line">        include(<span class="string">&quot;Procfile&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    baseName = <span class="string">&#x27;beanstalk&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>위 샘플 태스크처럼 단일 애플리케이션 프로젝트에서 정의된 태스크는 문제가 발생할 가능성이 적습니다. 그 이유는 배포를 위해서 여러가지 태스크를 정의하지 않기 때문인데요. 그러면 위 태스크를 수행하면 어떤 결과를 제공하는지 한번 확인해볼까요?</p>
-<h3 id="태스크-결과"><a href="#태스크-결과" class="headerlink" title="태스크 결과"></a>태스크 결과</h3><p>프로젝트 폴더에 있는 Gradle Wrapper를 사용하여 zipBeanstalk 태스크를 수행하면서 프로젝트 버전을 명시해보겠습니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">./gradlew clean zipBeanstalk -x <span class="built_in">test</span> -Pversion=1.0.0-hotfix.11</span><br></pre></td></tr></table></figure>
-
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-01.png"></p>
-<p>패키징된 WAR 파일과 zipBeanstalk 태스크에 의해 만들어지는 아카이브 파일에 프로젝트 버전이 포함됨을 확인할 수 있습니다.</p>
-<h3 id="수동-배포-환경을-위한-태스크"><a href="#수동-배포-환경을-위한-태스크" class="headerlink" title="수동 배포 환경을 위한 태스크"></a>수동 배포 환경을 위한 태스크</h3><p>사실 zipBeanstalk 태스크는 아마존 웹 서비스의 빈스톡 환경으로 배포하기 위한 애플리케이션 번들 파일을 만드는 태스크입니다. 만약, 수동으로 배포하여야하는 환경이 추가된다면 빈스톡 환경에서 사용하는 Procfile과 환경 구성 파일들은 포함할 필요가 없으며 특정 환경을 위한 프로퍼티 파일만 별도로 추가하면 됩니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">task zipManually(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;bootWar&#x27;</span>) &#123;</span><br><span class="line">    println <span class="string">&#x27;Build Version: &#x27;</span> + project.version</span><br><span class="line"></span><br><span class="line">    from (<span class="string">&#x27;.conf&#x27;</span>) &#123; into <span class="string">&#x27;application-prod.yml&#x27;</span>&#125;</span><br><span class="line">    from (<span class="string">&#x27;build/libs&#x27;</span>) &#123;</span><br><span class="line">        include(bootWar.archiveName)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    baseName = <span class="string">&#x27;app-bundle&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>zipManually 태스크에는 application-prod.yml을 패키징된 애플리케이션 WAR 파일과 함께 포함시키도록 정의했습니다. 아시는 분들도 있겠지만 스프링 부트 애플리케이션은 <strong>WAR 파일과 동일한 위치에 있는 애플리케이션 프로퍼티 파일</strong>을 읽을 수 있습니다. 만약, 모르시는 분들이라면 프로퍼티 구성 우선 순위에 대한 문서를 확인하시기 바랍니다.</p>
-<p>동일하게 zipManually 태스크를 실행해보도록 하겠습니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">./gradlew clean zipManually -x <span class="built_in">test</span> -Pversion=1.0.0-hotfix.11</span><br><span class="line"></span><br><span class="line">&gt; Configure project :</span><br><span class="line">JDK info: 11</span><br><span class="line">Build Version: 1.0.0-hotfix.11</span><br><span class="line">Build Version: 1.0.0-hotfix.11</span><br><span class="line"></span><br><span class="line">&gt; Task :bootBuildInfo</span><br><span class="line">&gt; Task :compileJava UP-TO-DATE</span><br><span class="line">&gt; Task :processResources UP-TO-DATE</span><br><span class="line">&gt; Task :classes</span><br><span class="line">&gt; Task :bootWarMainClassName</span><br><span class="line">&gt; Task :bootWar</span><br><span class="line">&gt; Task :procfile</span><br><span class="line">&gt; Task :zipManually</span><br></pre></td></tr></table></figure>
-
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-02.png"></p>
-<p>zipManually 태스크 결과는 정상으로 보입니다만… 이상한 부분을 눈치채신분들이 있으시겠죠? <strong>바로 Build Version이 두번 출력되었다는 점</strong>인데요. 우리는 분명히 별도의 태스크로 정의하고 태스크 블록 내에서 현재 Build Version을 출력하도록 작성했습니다. 이렇게 Build Version 버전이 두번 출력되는 이유는 이 글의 주요 내용인 그래들 빌드 라이프사이클에 대한 개념과 관련이 있습니다.</p>
-<h2 id="그래들-빌드-라이프사이클"><a href="#그래들-빌드-라이프사이클" class="headerlink" title="그래들 빌드 라이프사이클"></a>그래들 빌드 라이프사이클</h2><p>사실 상 이러한 문제를 경험하는 이유는 그래들의 빌드 라이프사이클에 대한 개념을 모르기 때문인데요. 20년차이신 팀장님 조차도 잘 모르는 부분이었다고 할 수 있습니다. 빌드 라이프사이클 존재를 모르는 상황이었기에 이렇게 되는 이유를 검색하고 팀장님께서 <a target="_blank" rel="noopener" href="https://stackoverflow.com/a/23485085">Gradle executes all tasks?</a>이라는 스택오버플로우 질문을 공유해주셨습니다.</p>
-<p>이 질문에 대한 답변에서는 그래들에는 configuration 단계와 execution 단계가 있고 이것은 중요한 개념이라고 설명하고 있었습니다. 그러면 그래들 공식 문서에 있는 <a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/build_lifecycle.html">Build Lifecycle</a>를 살펴보도록 하겠습니다.</p>
-<blockquote>
-<p>Gradle builds the complete dependency graph before any task is executed.<br>… Your build scripts configure this dependency graph.</p>
+          <blockquote>
+<p>이 글은 KDB+라는 시계열 데이터베이스를 활용하면서 국내 레퍼런스를 찾아볼 수 없는 문제로 인하여 별도로 정리한 내용입니다. 따라서, 전문적으로 활용하는 수준은 아니므로 잘못된 정보가 포함되어있을 수 있음을 알려드립니다. KDB+에 대한 더 자세한 내용은 <a target="_blank" rel="noopener" href="https://github.com/kdevkr/kdb%EB%A5%BC">https://github.com/kdevkr/kdb를</a> 참고하시기 바랍니다.</p>
 </blockquote>
-<p>그래들은 태스크를 수행하기 전에 의존성 그래프를 빌드하고 빌드 스크립트는 의존성 그래프를 구성한다고 설명하며 빌드 단계에 대해서 설명합니다.</p>
-<h3 id="빌드-단계"><a href="#빌드-단계" class="headerlink" title="빌드 단계"></a>빌드 단계</h3><p>그래들의 빌드 단계는 3가지로 구분된다고 하며 초기화(Initialization), 구성(Configuration), 수행(Execution)입니다. </p>
+<h2 id="KDB"><a href="#KDB" class="headerlink" title="KDB+"></a>KDB+</h2><p><a target="_blank" rel="noopener" href="https://kx.com/">KDB+</a>는 KxSystems라는 회사에서 개발하고 제공하는 상용 시계열 데이터베이스입니다. 메모리 엔진을 사용하므로 데이터를 넣거나 연산을 수행하는 시간이 굉장히 짧습니다. 그러나 q 라는 자체적으로 고안한 언어에 대해서 이해해야해서 러닝커브에 대한 단점이 있습니다. 예를 들어, 다음은 KxSystems에서 권장하는 <a target="_blank" rel="noopener" href="https://github.com/KxSystems/kdb-tick/blob/master/tick.q">Tickerplant라는 아키텍처의 스크립트 일부분</a>입니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">ld:&#123;if[<span class="built_in">not</span> <span class="built_in">type</span> <span class="built_in">key</span> L::`$(<span class="number">-10</span>_string L),<span class="built_in">string</span> x;.[L;();:;()]];i::j::<span class="number">-11</span>!(<span class="number">-2</span>;L);if[<span class="number">0</span>&lt;=<span class="built_in">type</span> i;<span class="number">-2</span> (<span class="built_in">string</span> L),<span class="string">&quot; is a corrupt log. Truncate to length &quot;</span>,(<span class="built_in">string</span> last i),<span class="string">&quot; and restart&quot;</span>;exit <span class="number">1</span>];<span class="built_in">hopen</span> L&#125;;</span><br><span class="line">tick:&#123;init[];if[<span class="built_in">not</span> <span class="built_in">min</span>(<span class="type">`time</span>`sym~<span class="number">2</span>#<span class="built_in">key</span> <span class="built_in">flip</span> <span class="built_in">value</span>@)<span class="built_in">each</span> t;&#x27;`timesym];@[;`sym;`g#]<span class="built_in">each</span> t;d::.z.D;if[l::<span class="built_in">count</span> y;L::`$<span class="string">&quot;:&quot;</span>,y,<span class="string">&quot;/&quot;</span>,x,<span class="number">10</span>#<span class="string">&quot;.&quot;</span>;l::ld d]&#125;;</span><br><span class="line"></span><br><span class="line">endofday:&#123;end d;d+:<span class="number">1</span>;if[l;<span class="built_in">hclose</span> l;l::<span class="number">0</span>(`.u.ld;d)]&#125;;</span><br><span class="line">ts:&#123;if[d&lt;x;if[d&lt;x<span class="number">-1</span>;<span class="built_in">system</span><span class="string">&quot;t 0&quot;</span>;&#x27;<span class="string">&quot;more than one day?&quot;</span>];endofday[]]&#125;;</span><br><span class="line"></span><br><span class="line">if[<span class="built_in">system</span><span class="string">&quot;t&quot;</span>;</span><br><span class="line"> .z.ts:&#123;pub&#x27;[t;<span class="built_in">value</span> <span class="built_in">each</span> t];@[`.;t;@[;`sym;`g#]<span class="number">0</span>#];i::j;ts .z.D&#125;;</span><br><span class="line"> upd:&#123;[t;x]</span><br><span class="line"> if[<span class="built_in">not</span> <span class="number">-16</span>=<span class="built_in">type</span> <span class="built_in">first</span> <span class="built_in">first</span> x;if[d&lt;<span class="string">&quot;d&quot;</span>$a:.z.P;.z.ts[]];a:<span class="string">&quot;n&quot;</span>$a;x:$[<span class="number">0</span>&gt;<span class="built_in">type</span> <span class="built_in">first</span> x;a,x;(<span class="built_in">enlist</span>(<span class="built_in">count</span> <span class="built_in">first</span> x)#a),x]];</span><br><span class="line"> t insert x;if[l;l <span class="built_in">enlist</span> (`upd;t;x);j+:<span class="number">1</span>];&#125;];</span><br><span class="line"></span><br><span class="line">if[<span class="built_in">not</span> <span class="built_in">system</span><span class="string">&quot;t&quot;</span>;<span class="built_in">system</span><span class="string">&quot;t 1000&quot;</span>;</span><br><span class="line"> .z.ts:&#123;ts .z.D&#125;;</span><br><span class="line"> upd:&#123;[t;x]ts<span class="string">&quot;d&quot;</span>$a:.z.P;</span><br><span class="line"> if[<span class="built_in">not</span> <span class="number">-16</span>=<span class="built_in">type</span> <span class="built_in">first</span> <span class="built_in">first</span> x;a:<span class="string">&quot;n&quot;</span>$a;x:$[<span class="number">0</span>&gt;<span class="built_in">type</span> <span class="built_in">first</span> x;a,x;(<span class="built_in">enlist</span>(<span class="built_in">count</span> <span class="built_in">first</span> x)#a),x]];</span><br><span class="line"> f:<span class="built_in">key</span> <span class="built_in">flip</span> <span class="built_in">value</span> t;pub[t;$[<span class="number">0</span>&gt;<span class="built_in">type</span> <span class="built_in">first</span> x;<span class="built_in">enlist</span> f!x;<span class="built_in">flip</span> f!x]];if[l;l <span class="built_in">enlist</span> (`upd;t;x);i+:<span class="number">1</span>];&#125;];</span><br></pre></td></tr></table></figure>
+
+<p>KDB+에서는 q라는 언어로 작성된 스크립트를 사용합니다. 위처럼 KxSystems에서 제공하는 샘플 스크립트가 존재하기는 하지만 코드에 대한 설명이 없으므로 위 코드를 이해하는 건 전부 사용자인 개발자의 몫이며 이로 인하여 러닝커브가 높을 수 있습니다. 저는 Q 언어에 대한 튜토리얼을 제공할 의도가 아니므로 공식 레퍼런스에서 제공하는 정보를 참고하면서 알게되거나 느낀점을 공유해보려고 합니다.</p>
 <blockquote>
-<p><strong>Initialization</strong><br>Gradle supports single and multi-project builds. During the initialization phase, Gradle determines which projects are going to take part in the build, and creates a Project instance for each of these projects.</p>
-<p><strong>Configuration</strong><br>During this phase the project objects are configured. The build scripts of all projects which are part of the build are executed.</p>
-<p><strong>Execution</strong><br>Gradle determines the subset of the tasks, created and configured during the configuration phase, to be executed. The subset is determined by the task name arguments passed to the gradle command and the current directory. Gradle then executes each of the selected tasks.</p>
+<p>Q 언어에 대해서 궁금하시다면 <a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/by-topic/">Q language resources by topic</a>를 참고하세요.</p>
 </blockquote>
-<p>세가지의 단계 중 구성 단계에서는 모든 프로젝트의 빌드 스크립트가 실행된다는 설명이 있습니다. 이 부분이 제가 경험한 문제의 원인이라고 할 수 있는데 태스크 내에서 작성하는 코드는 구성 단계에 포함되며 doFirst와 doLast 블록이 수행 단계에 포함되기 때문입니다.</p>
-<p>저도 모르는 부분이었고 생각보다 많은 블로그에서는 그래들 태스크 정의를 설명할 때 구성 단계에 해당되는 곳에 println을 작성하는 예시를 보여주는데요. 생각보다 많은 분들이 이 개념에 대해서 모른다고 할 수 있습니다. 물론 단일 애플리케이션 프로젝트에서는 몰라도 상관없다고 할 수 있겠네요.</p>
-<h3 id="테스트를-위한-태스크"><a href="#테스트를-위한-태스크" class="headerlink" title="테스트를 위한 태스크"></a>테스트를 위한 태스크</h3><p>그러면 어떻게 하였기에 프로젝트 버전이 포함되지 않았을 지 다음의 태스크를 살펴보도록 하겠습니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">task zipBeanstalk(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;procfile&#x27;</span>) &#123;&#125;</span><br><span class="line">task zipManually(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;bootWar&#x27;</span>) &#123;&#125;</span><br><span class="line"></span><br><span class="line">task k8sbuild(<span class="attr">dependsOn:</span> bootWar) &#123;</span><br><span class="line">    project.version <span class="string">&#x27;&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="q-프로세스"><a href="#q-프로세스" class="headerlink" title="q 프로세스"></a>q 프로세스</h3><p>KDB+/q 프로세스는 Windows, Mac OSX, Linux 운영체제에서 사용할 수 있도록 지원합니다. 운영체제에 따라 사용할 수 있는 기능이 몇가지 부분에 대해서 다를 수는 있습니다. 예를 들어, 리눅스 운영체제에서는 <a target="_blank" rel="noopener" href="https://code.kx.com/q4m3/11_IO/#116-interprocess-communication">프로세스 통신</a>을 위해 TCP/IP를 사용할 때 유닉스 도메인 소켓 방식을 사용할 수 있습니다.</p>
+<h4 id="실행-환경-변수"><a href="#실행-환경-변수" class="headerlink" title="실행 환경 변수"></a>실행 환경 변수</h4><p>KDB+의 q 프로세스는 실행되는 시점에 QHOME, QLIC, QINIT 환경 변수를 참조합니다. </p>
+<ul>
+<li>QHOME: KDB 프로세스를 실행하기 위하여 부트스트랩할 q.k 파일을 찾는 경로입니다.</li>
+<li>QLIC: KDB 프로세스에서 사용할 라이센스 파일을 지정합니다. 기본적으로 QHOME 경로에서 kc.lic 파일을 요구합니다.</li>
+<li>QINIT: q.k 파일이 부트스트랩된 이후에 루트 컨텍스트 위치에서 실행될 스크립트 파일입니다. 이 환경변수가 정의되지 않으면 QHOME 위치에서 q.q 파일을 실행합니다.</li>
+</ul>
+<h4 id="프로세스-실행-인수"><a href="#프로세스-실행-인수" class="headerlink" title="프로세스 실행 인수"></a>프로세스 실행 인수</h4><p>공식 문서의 <a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/cmdline/">커맨드 라인 옵션</a>을 참고하면 프로세스 실행 시 적용할 수 있는 인수 옵션을 확인할 수 있습니다. 일반적으로 프로세스를 실행할 때 지정하는 옵션은 아래와 같습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="comment">// -p: 수신 포트</span></span><br><span class="line"><span class="comment">// -s: 병렬 처리 시 사용될 보조 스레드</span></span><br><span class="line">q script.q -p <span class="number">5000</span> -s <span class="number">8</span></span><br></pre></td></tr></table></figure>
 
-<p>추가한 k8sbuild 태스크는 쿠버네티스 배포 환경 테스트를 위해 패키징된 애플리케이션 WAR 파일에 포함되는 프로젝트 버전을 생략하기 위해서 project.version을 빈 값으로 설정하도록 작성한게 화근이었습니다. 이 상태로 zipManually 태스크를 다시 한번 수행하면 어떻게 되는지 확인해봅시다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">./gradlew clean zipManually -x <span class="built_in">test</span> -Pversion=1.0.0-hotfix.11</span><br></pre></td></tr></table></figure>
+<p>프로세스 실행 시 보조 스레드 옵션을 지정해야 스레드가 활성화되며 REPL에서만 동작합니다. 따라서, 백그라운드 데몬 프로세스를 실행하는 경우 보조 스레드 수를 동적으로 변경할 수 없습니다. 아래와 같이 클라이언트를 통해 q 프로세스에 보조 스레드 수를 변경하기 위한 시스템 명령을 전달하는 경우 오류가 발생합니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">q)\s <span class="number">4</span></span><br><span class="line">&#x27;enable secondary threads via cmd line -s only</span><br></pre></td></tr></table></figure>
 
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-03.png"></p>
-<p>k8sbuild 태스크에 작성된 project.version을 설정하는 행위는 구성 단계에 해당하기 때문에 모든 태스크를 수행하기 이전에 적용되어 zipManually 태스크를 수행했음에도 불구하고 프로젝트 버전이 포함되지 않았음을 보여줍니다.</p>
-<h3 id="해결방안"><a href="#해결방안" class="headerlink" title="해결방안"></a>해결방안</h3><p>그러면 어떻게 해결하는게 좋을지 방안을 찾아보도록 하겠습니다. </p>
-<h4 id="프로젝트-버전-재정의하는-경우"><a href="#프로젝트-버전-재정의하는-경우" class="headerlink" title="프로젝트 버전 재정의하는 경우"></a>프로젝트 버전 재정의하는 경우</h4><p>k8sbuild 태스크처럼 특정 태스크에서 프로젝트 버전을 재정의 하고싶은 경우에는 doFirst와 같은 클로저를 활용해야합니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">task k8sbuild(<span class="attr">dependsOn:</span> bootWar) &#123;</span><br><span class="line">    doFirst &#123;</span><br><span class="line">        project.version <span class="string">&#x27;&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="프로세스-종료"><a href="#프로세스-종료" class="headerlink" title="프로세스 종료"></a>프로세스 종료</h4><p>REPL 세션 또는 연결된 클라이언트에서 <a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/syscmds/#quit">\</a>를 입력하거나 <a target="_blank" rel="noopener" href="https://code.kx.com/q/ref/exit/">exit 0</a>을 입력해서 프로세스를 종료할 수 있습니다. </p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">\\\</span><br><span class="line">exit <span class="number">0</span></span><br><span class="line">sublime-q &gt;&gt; 현재 연결은 원격 호스트에 의해 연결이 강제로 끊겼습니다.</span><br></pre></td></tr></table></figure>
 
-<h4 id="프로젝트-버전을-확인하고-싶은-경우"><a href="#프로젝트-버전을-확인하고-싶은-경우" class="headerlink" title="프로젝트 버전을 확인하고 싶은 경우"></a>프로젝트 버전을 확인하고 싶은 경우</h4><p>zipBeanstalk와 zipManually 태스크처럼 애플리케이션을 WAR로 패키징하는 경우 현재 프로젝트 버전을 출력하고 싶은 경우 gradle.taskGraph.whenReady를 활용함으로써 해결할 수 있습니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">task zipBeanstalk(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;procfile&#x27;</span>) &#123;</span><br><span class="line">    from (<span class="string">&#x27;.ebextensions&#x27;</span>) &#123; into <span class="string">&#x27;.ebextensions&#x27;</span> &#125;</span><br><span class="line">    from (<span class="string">&#x27;.platform&#x27;</span>) &#123; into <span class="string">&#x27;.platform&#x27;</span> &#125;</span><br><span class="line"></span><br><span class="line">    from (<span class="string">&#x27;build/libs&#x27;</span>) &#123;</span><br><span class="line">        include(bootWar.archiveName)</span><br><span class="line">        include(<span class="string">&quot;Procfile&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    baseName = <span class="string">&#x27;beanstalk&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">task zipManually(<span class="attr">type:</span> Zip, <span class="attr">dependsOn:</span> <span class="string">&#x27;bootWar&#x27;</span>) &#123;</span><br><span class="line">    from (<span class="string">&#x27;.conf&#x27;</span>) &#123; into <span class="string">&#x27;application-prod.yml&#x27;</span>&#125;</span><br><span class="line">    from (<span class="string">&#x27;build/libs&#x27;</span>) &#123;</span><br><span class="line">        include(bootWar.archiveName)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    baseName = <span class="string">&#x27;app-bundle&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">gradle.taskGraph.whenReady &#123; graph -&gt;</span><br><span class="line">    <span class="keyword">if</span> (graph.hasTask(bootWar)) &#123;</span><br><span class="line">        println <span class="string">&#x27;Build Version: &#x27;</span> + project.version</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="스크립트-파일"><a href="#스크립트-파일" class="headerlink" title="스크립트 파일"></a>스크립트 파일</h3><p>REPL인 q 세션에서는 멀티 라인 표현식을 지원하지 않습니다. 따라서, <a target="_blank" rel="noopener" href="https://code.kx.com/q/learn/tour/scripts/">스크립트 파일</a>을 작성하는게 더 효율적이며 서브라임 텍스트의 <a target="_blank" rel="noopener" href="https://github.com/komsit37/sublime-q">sublime-q</a>와 같은 패키지를 활용하면 쉽게 q 프로세스와 통신하여 상호작용이 가능합니다. 또한, 스크립트 파일을 작성해두면 q 프로세스를 실행할 때 해당 스크립트 파일을 불러올 수 있도록 추가할 수 있습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">q script.q -p <span class="number">5000</span></span><br><span class="line">KDB+ <span class="number">4.0</span> <span class="number">2021.07</span><span class="number">.12</span> Copyright (C) <span class="number">1993</span><span class="number">-2021</span> Kx Systems</span><br><span class="line">w64/ <span class="number">12</span>(<span class="number">16</span>)core <span class="number">32700</span>MB Mambo desktop-ojj4tb3 <span class="number">192.168</span><span class="number">.0</span><span class="number">.2</span> EXPIRE <span class="number">2022.11</span><span class="number">.01</span> kdevkr@gmail.com KOD #<span class="number">5006323</span></span><br><span class="line"></span><br><span class="line"><span class="number">2021.11</span><span class="number">.04</span>T22:<span class="number">38</span>:<span class="number">41.153</span> [INFO] KDB+ Version: <span class="number">4</span></span><br><span class="line"><span class="number">2021.11</span><span class="number">.04</span>T22:<span class="number">38</span>:<span class="number">41.153</span> [INFO] KDB+ ProcessID: <span class="number">24388</span></span><br><span class="line"><span class="number">2021.11</span><span class="number">.04</span>T22:<span class="number">38</span>:<span class="number">41.153</span> [INFO] KDB+ License: <span class="number">16</span> <span class="number">2022.11</span><span class="number">.01</span> <span class="number">2022.11</span><span class="number">.01</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span> <span class="number">0</span> kdevkr@gmail.com KOD #<span class="number">5006323</span> <span class="number">0</span></span><br><span class="line">The script file loaded after q.q file.</span><br></pre></td></tr></table></figure>
 
-<h4 id="불필요한-파일을-제거해야하는-경우"><a href="#불필요한-파일을-제거해야하는-경우" class="headerlink" title="불필요한 파일을 제거해야하는 경우"></a>불필요한 파일을 제거해야하는 경우</h4><p>경우에 따라서는 프로젝트 빌드 시 패키징된 애플리케이션 WAR 파일에 포함되지 않도록 해야할 수 있습니다. 예를 들어, 로컬 환경에서 사용하는 애플리케이션 프로퍼티 파일이나 특정 도메인에 대한 인증서 또는 인증키를 포함하지않도록 제외해야할 수 있습니다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">gradle.taskGraph.whenReady &#123; graph -&gt;</span><br><span class="line">    <span class="keyword">if</span> (graph.hasTask(build_for_customer)) &#123;</span><br><span class="line">        processResources &#123;</span><br><span class="line">            exclude(<span class="string">&#x27;**/config/**.yml&#x27;</span>)</span><br><span class="line">            exclude(<span class="string">&#x27;**/certs/**&#x27;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>QINIT 또는 q.q 파일에 정의된 스크립트는 무조건 실행되므로 공통으로 적용되어야하는 사항은 QINIT 스크립트 파일에 작성하는 것이 좋습니다.</p>
+</blockquote>
+<h4 id="스크립트-내-프로세스-통신"><a href="#스크립트-내-프로세스-통신" class="headerlink" title="스크립트 내 프로세스 통신"></a>스크립트 내 프로세스 통신</h4><p>스크립트 내에서 프로세스 통신을 위해 <a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/handles/">Connection handles</a>를 사용하는 경우 일반적인 문자열 형태의 q 표현식을 전달하는 것보다는 <a target="_blank" rel="noopener" href="https://code.kx.com/q/learn/startingkdb/ipc/">람다 함수와 파라미터</a>를 보내는 메시지 형식을 사용하는 것이 더 효율적입니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">h: <span class="built_in">hopen</span> `::<span class="number">5011</span>;</span><br><span class="line">h(&#123;trades&#125;;::)</span><br></pre></td></tr></table></figure>
 
-<p>위 예시는 구성 단계에서 의존성 그래프 구성이 완료된 이후에 build_for_customer 태스크가 수행되는 경우에 고객 환경으로 배포하는 애플리케이션 WAR 파일에 자체적으로 사용하는 애플리케이션 프로퍼티 파일들과 인증서를 포함하지 않도록 processResources를 재정의함을 보여줍니다.</p>
-<p>그래들 빌드 라이프사이클 개념과 함께 경험하였던 문제에 대하여 어떻게 해결할 수 있는지 알아보았습니다. 어떤 기술을 사용함에 있어서 주요 개념을 이해하고 있는 것이 중요함을 다시한번 깨닫게 되는 좋은 경험이었습니다. 여러분의 그래들 빌드 스크립트에서도 수행 단계에서 수행되어야할 코드를 구성 단계에서 동작하도록 작성되지 않았는지 검토해보시기를 바랍니다.</p>
-<p>감사합니다.</p>
+<p>위와 같이 함수와 파라미터를 전달하는 경우 IDE에서 지원하는 구문 강조가 적용되어 원하는 바를 더 명확하게 확인할 수 있다는 장점도 제공됩니다.</p>
+<h4 id="커맨드-라인-파라미터"><a href="#커맨드-라인-파라미터" class="headerlink" title="커맨드 라인 파라미터"></a>커맨드 라인 파라미터</h4><p>프로세스에서 실행할 스크립트를 작성할 때 프로세스 실행 시 입력해야할 정보가 필요할 수 있습니다. KDB에서 제공하는 미리 정의된 네임스페이스를 통해 커맨드 라인에서 입력한 파라미터를 스크립트에서 가져올 수 있습니다.</p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">q -p <span class="number">5000</span> -pidfile q.pid</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="comment">// .z.x를 사용하여 커맨드 라인 옵션을 제외한 인수를 파라미터로 가져올 수 있다.</span></span><br><span class="line">.z.x</span><br><span class="line"><span class="string">&quot;-pidfile&quot;</span></span><br><span class="line"><span class="string">&quot;q.pid&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// .Q.opt를 사용하여 커맨드 라인 파라미터를 Dict로 변경할 수 있다.</span></span><br><span class="line">.Q.opt .z.x</span><br><span class="line">pidfile| <span class="string">&quot;q.pid&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// .Q.def를 사용하여 커맨드 라인 파라미터에 대한 기본값을 정의할 수 있다.</span></span><br><span class="line">.Q.def[`whoami`logdst`pidfile!(`mambo;`$(<span class="string">&quot;logs/q.log&quot;</span>);`)].Q.opt .z.x</span><br><span class="line">whoami | mambo</span><br><span class="line">logdst | logs/q.log</span><br><span class="line">pidfile| q.pid</span><br></pre></td></tr></table></figure>
+
+<h3 id="사용자-및-패스워드"><a href="#사용자-및-패스워드" class="headerlink" title="사용자 및 패스워드"></a>사용자 및 패스워드</h3><p><a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd">사용자에 대한 패스워드를 정의한 파일을 지정</a>하여 q 프로세스와의 연결을 제한할 수 있습니다. 비밀번호는 평문, MD5, SHA-1을 지원합니다. 단, 사용자와 비밀번호 암호 방식은 유일해야하므로 평문을 사용하는 사용자와 SHA-1 해시가 적용된 사용자를 같이 구성할 수 없습니다. q 프로세스를 실행할 때 -u 옵션에 패스워드 파일을 지정하면 프로세스 실행 후에도 패스워드 파일을 수정하고 \u 명령어로 프로세스를 중단하지 않고 사용자 및 패스워드를 적용할 수 있습니다. 이와 같은 정보를 토대로 다음과 같은 방식으로도 사용자 및 패스워드를 적용할 수 있습니다.</p>
+<p><strong>익명 사용자에 대한 패스워드 파일 생성</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">:</span><br></pre></td></tr></table></figure>
+
+<p><strong>q 프로세스 실행 시 패스워드 파일 적용</strong></p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">q -p <span class="number">5000</span> -u userpass.txt</span><br></pre></td></tr></table></figure>
+
+<p><strong>신규 사용자의 패스워드 해시 생성</strong></p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line"><span class="comment">// raze string md5 &quot;mambo&quot;</span></span><br><span class="line"><span class="comment">// &quot;dfa67b75dc3d5868c3e88c83774c0d01&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">raze</span> <span class="built_in">string</span> <span class="number">-33</span>!<span class="string">&quot;mambo&quot;</span></span><br><span class="line"><span class="string">&quot;78492a38605bdf6e691c4e2f77c69c4a0904c647&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>신규 사용자 및 패스워드 적용 후 저장</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mambo:78492a38605bdf6e691c4e2f77c69c4a0904c647</span><br></pre></td></tr></table></figure>
+
+<p><strong>사용자 및 패스워드 정보 갱신</strong></p>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">\u</span><br><span class="line"></span><br><span class="line"><span class="built_in">hopen</span> `:localhost:<span class="number">5000</span>:mambo:mambo</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>패스워드 파일에 사용자 이름을 생략함으로써 익명 사용자에 대한 비밀번호도 적용할 수 있습니다.</p>
+</blockquote>
+<h3 id="아키텍처"><a href="#아키텍처" class="headerlink" title="아키텍처"></a>아키텍처</h3><p>학습 단계에서는 KDB+를 단일 q 프로세스로 실행하여 사용하지만 실제로 운용되는 환경에서는 KxSystems에서 권장하는 <a target="_blank" rel="noopener" href="https://code.kx.com/q/architecture/">Tickerplant 아키텍처</a>를 구성합니다. q 프로세스에서 사용할 메모리가 부족해지면 <strong>`wsfull</strong> 오류가 발생하고 프로세스가 종료되는 문제점을 가지고 있습니다. Tickerplant는 FeedHandler에서 전송되는 데이터를 수신하는 TP 프로세스와 TP 프로세스로 들어온 데이터를 가져가는 RDB(Realtime DB) 프로세스, 날짜 또는 시간 단위로 저장하는 HDB(Historical DB) 프로세스로 분리하게 됩니다. 각 프로세스의 역할이 구분되어있으므로 현재 날짜 또는 시간에 대한 데이터를 메모리에 저장하는 RDB 프로세스가 예기치 못한 상황에 종료되더라도 TP 프로세스는 지속적으로 데이터를 수신할 수 있게 됩니다.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://code.kx.com/q/learn/startingkdb/tick/">Realtime database</a><br>As a minimum, it is recommended to have RAM of at least 4× expected data size, so for 5 GB data per day, the RDB machine should have at least 20 GB RAM. In practice, much larger RAM might be used.</p>
+</blockquote>
+<p>위 내용에 따르면 날짜별로 파티셔닝되는 구조를 가지는 경우에 RDB 프로세스에 5GB 규모의 데이터를 보유하고 있어야한다면 시스템적으로 최소한 20GB 만큼의 메모리가 준비되어야합니다. 또한, 시스템 자원을 준비할 수 있지 않아 날짜가 아닌 시간 단위로 파티셔닝하는 경우 무수히 많은 폴더가 만들어지므로 긴 범위의 기간에 대한 연산을 수행하여야하는 경우 I/O 성능이 좋은 디스크를 사용해야할 수 있습니다.</p>
+<h4 id="데이터-관리"><a href="#데이터-관리" class="headerlink" title="데이터 관리"></a>데이터 관리</h4><p>Tickerplant는 KDB+에서 권장되는 아키텍처이지만 데이터 관리에 대한 문제점을 가지고 있습니다. 일반적으로 사용되는 증권 시장의 경우 데이터가 순차적으로 발생한다는 것이 보장되며 지난 기간에 대한 데이터가 현재 시간에 들어오지 않는다는 것을 기준으로 하기 때문에 사업 분야와 고객의 요구사항으로 인하여 현재 시점에 지난 기간에 대한 데이터를 등록하는 경우 RDB 프로세스에서 메모리에 저장된 데이터를 파일로 저장하는 시점에 해당 파티션 폴더에는 지난 기간에 대한 파티션 데이터가 포함되어있게 됩니다.</p>
+<p>q 프로세스에서 파티션 테이블에 대해서는 각 파티션에 맞는 데이터만 존재해야함을 보장해야합니다. 그 이유는 데이터 연산 시 파티셔닝의 기준이 되는 특수한 컬럼을 통해 전체 파티션을 조회하지 않고도 빠르게 필요한 파티션의 데이터를 메모리에 로드할 수 있기 때문입니다. 결국에는 RDB 프로세스가 저장한 파티션 폴더의 데이터를 확인하고 올바른 파티션에 데이터를 병합해야하는 작업을 수행해야합니다.</p>
+<p>데이터베이스를 운용하면서 데이터 병합 과정을 거치고 난 후 파티셔닝된 폴더가 순차적으로 나열되지 않을 수 있을 수 있습니다. 이러한 문제가 발생하는 경우 q 프로세스는 정확한 파티션을 확인할 수 없으므로 일부 조회가 불가능한 상태가 될 가능성이 있습니다. 다행히도 KDB+에서 제공하는 몇가지 함수를 이용해서 잘못된 파티셔닝을 바로 잡도록 작업을 수행해볼 수 있습니다.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://code.kx.com/q/ref/dotq/#qchk-fill-hdb">.Q.chk (fill HDB)</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.kx.com/q/ref/dotq/#qbv-build-vp">.Q.bv (build vp)</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.kx.com/q/ref/dotq/#qvp-missing-partitions">.Q.vp (missing partitions)</a></li>
+</ul>
+<figure class="highlight q"><table><tr><td class="code"><pre><span class="line">.Q.bv[]</span><br><span class="line">.Q.vp</span><br><span class="line"></span><br><span class="line">.Q.chk[]</span><br></pre></td></tr></table></figure>
+
+<h3 id="제한-및-오류"><a href="#제한-및-오류" class="headerlink" title="제한 및 오류"></a>제한 및 오류</h3><p>KDB+의 q 프로세스에 존재하는 몇가지 제한 사항에 대해서 알아보겠습니다.</p>
+<h4 id="라이센스-코어-제한"><a href="#라이센스-코어-제한" class="headerlink" title="라이센스 코어 제한"></a>라이센스 코어 제한</h4><p>먼저, 상업용 라이센스를 구매하더라도 라이센스에 지정된 코어 수를 넘어가게되는 시스템을 사용하려는 경우 q 프로세스 실행 시 <strong>`cores</strong> 라는 오류가 발생합니다. 이는 q 프로세스가 해당 코어 수를 사용할 수 있도록 허용되지 않기 때문이므로 프로세스를 실행할 때 리눅스의  <strong>taskset</strong>을 활용하여 프로세스가 사용할 수 있는 CPU를 지정해야합니다.</p>
+<h4 id="함수-파라미터-개수-제한"><a href="#함수-파라미터-개수-제한" class="headerlink" title="함수 파라미터 개수 제한"></a>함수 파라미터 개수 제한</h4><p>공식 문서의 <a target="_blank" rel="noopener" href="https://code.kx.com/q/basics/errors/">Errors</a>를 참고하면 q 프로세스에서 발생하는 오류에 대해서 검토할 수 있습니다. 특히, 함수 파라미터 개수는 최대 8개로 제한되어있는 특징이 있습니다. 따라서, 스크립트에 정의하는 함수 또는 람다에서 사용되는 파라미터 개수가 8개보다 많아지는 경우 Dict를 활용해야할 수 있습니다. 이외에도 다음의 제한된 사항이 있습니다.</p>
+<ul>
+<li>conn: Too many connections (1022 max)</li>
+<li>elim: Too many enumerations (max: 57)</li>
+<li>globals: Too many global variables</li>
+<li>limit: Too many constants</li>
+<li>locals: Too many local variables</li>
+<li>params: Too many parameters (8 max)</li>
+</ul>
+<h3 id="느낀점"><a href="#느낀점" class="headerlink" title="느낀점"></a>느낀점</h3><p>현재 조직에서는 KDB+ 시계열 데이터베이스를 사용중이지만 이와 관련한 국내 레퍼런스는 찾아볼 수 없으므로 다른 회사로 이직하게되면 더이상 관심가지지않을 것 같습니다. 컬럼형 시계열 데이터베이스이면서 빠른 속도를 제공하는 것은 맞지만 그에 따른 라이센스 비용과 어떻게 사용하는 것이 좋거나 문제가 발생했을때의 해결방안을 찾고 원하는 결과를 가지기 위해서 Q 언어와 함께 qSQL이라고하는 SQL과 비슷하지만 다른 쿼리를 작성하는 것이 효율적이다라고 볼 수 없는 것 같습니다.</p>
+<p>기본적으로 메모리에 데이터를 저장하고 파일로 저장된 데이터는 연산 시 메모리에 불러오게되므로 데이터 규모에 따라 프로세스를 실행하는 시스템 자원이 보장되어야한다는 문제점도 있습니다. 시스템 메모리 자원을 확보할 수 없는 경우 파티션으로 저장되는 구조를 지원하지만 다수의 폴더로 분산하여 데이터를 저장하기 때문에 디스크 I/O 성능도 고려해야합니다. 결국 예상되는 규모에 따라 안정적으로 운용될 수 있도록 시스템 자원을 준비해야합니다.</p>
+<p>조직내에서는 어쩔 수 없이 사용하고 있지만 개인적으로 학습하는 것은 추천하지 않을 것 같습니다.</p>
+<h2 id="레퍼런스"><a href="#레퍼런스" class="headerlink" title="레퍼런스"></a>레퍼런스</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://code.kx.com/">code.kx</a></li>
+<li><a target="_blank" rel="noopener" href="https://community.kx.com/">community.kx</a></li>
+</ul>
 
       
     </div>
@@ -301,7 +338,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/38/">38</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

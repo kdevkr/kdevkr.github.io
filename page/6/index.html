@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">40</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-count">60</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/gradle-multi-module-project/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/unsupported-allowduplicatecontentlength-in-spring-cloud-gateway-of-hoxton-version/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/gradle-multi-module-project/" class="post-title-link" itemprop="url">그래들 멀티 모듈 프로젝트</a>
+          <a href="/unsupported-allowduplicatecontentlength-in-spring-cloud-gateway-of-hoxton-version/" class="post-title-link" itemprop="url">Unsupported allowDuplicateContentLengths in Spring Cloud Gateway of Hoxton Version</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-12-10 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-10T00:00:00Z">2021-12-10</time>
+      <time title="Created: 2021-12-19 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-19T00:00:00Z">2021-12-19</time>
     </span>
 
   
@@ -227,25 +227,48 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 그래들 멀티 모듈 프로젝트의 디펜던시 공유에 대하여 이야기 해보려고 합니다. </p>
-<h2 id="그래들-멀티-모듈"><a href="#그래들-멀티-모듈" class="headerlink" title="그래들 멀티 모듈"></a>그래들 멀티 모듈</h2><p>서비스의 규모가 어느정도 커지게되면 모놀리식 아키텍처로써 서비스에 대한 모든 기능이 하나의 애플리케이션에 구현하는 것을 마이크로서비스 아키텍처를 참고하여 일부 기능을 수행하는 별도의 애플리케이션로 독립시키기도 합니다. 현재 다니고 있는 회사에서는 모놀리식 아키텍처로 개발하고 있는 애플리케이션을 여러 고객들의 환경에 맞는 배포 또는 별도의 커스텀 기능을 지원하기 위하여 <strong>그래들 멀티 모듈 프로젝트</strong>로 전환하였습니다.</p>
-<h3 id="Java-라이브러리-플러그인"><a href="#Java-라이브러리-플러그인" class="headerlink" title="Java 라이브러리 플러그인"></a>Java 라이브러리 플러그인</h3><p>공용 모듈에서 사용하는 디펜던시를 상위 모듈에서도 사용하기 위해서는 자바 플러그인 대신 자바 라이브러리 플러그인을 적용하고 <code>api</code>를 사용하여 지정된 디펜던시를 외부 모듈의 컴파일 클래스패스에 노출시켜야합니다. Gradle 7 부터는 <code>compile</code>을 지원하지 않으며 <code>implementation</code>은 지정한 디펜던시를 외부 모듈에 노출시키지 않습니다.</p>
+<p>오늘은 스프링 클라우드 게이트웨이에서 발생하는 Content-Length 헤더의 값이 단일이 아닌 복수로 지정될 때 발생하는 오류에 대해 다루어보려고 합니다.</p>
+<h2 id="RFC-7230"><a href="#RFC-7230" class="headerlink" title="RFC 7230"></a>RFC 7230</h2><p><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.2">RFC 7230 - 3.3.2. Content-Length</a>를 참고해보면 다른 헤더들과는 다르게 Content-Length 헤더는 단일로 구성되어야 한다고 규정합니다. 다만, 다음과 내용을 통해 Content-Length 헤더 값이 복수로 구성되는 경우는 수신자가 오류로 처리하거나 단일 값으로 처리해야한다고 설명하고 있습니다.</p>
 <blockquote>
-<p>The compile and runtime configurations have been removed with Gradle 7.0. Please refer to the upgrade guide how to migrate to implementation and api configurations`.</p>
+<p>If a message is received that has multiple Content-Length header fields with field-values consisting of the same decimal value, or a single Content-Length header field with a field value containing a list of identical decimal values (e.g., “Content-Length: 42, 42”), indicating that duplicate Content-Length header fields have been generated or combined by an upstream message processor, then the recipient MUST either reject the message as invalid or replace the duplicated field-values with a single valid Content-Length field containing that decimal value prior to determining the message body length or forwarding the message.</p>
 </blockquote>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="comment">// module-common/build.gradle</span></span><br><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;java-library&#x27;</span></span><br><span class="line">    id <span class="string">&#x27;io.spring.dependency-management&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    api <span class="string">&#x27;com.google.code.gson:gson&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="오류-및-원인-분석"><a href="#오류-및-원인-분석" class="headerlink" title="오류 및 원인 분석"></a>오류 및 원인 분석</h2><p>스프링 클라우드 게이트웨이에서 발생한 오류에 대한 내용은 <a target="_blank" rel="noopener" href="https://github.com/spring-cloud/spring-cloud-gateway/issues/2465">Multiple Content-Length values found: [229455, 229455]</a>에서 확인할 수 있습니다.</p>
+<p>모든 스프링 클라우드 게이트웨이 버전에서 발생하는 상황은 아니었으며 스프링 부트 2.3.x와 호환성이 검증된 스프링 클라우드 Hoxton 릴리즈 트레인으로 관리되는 스프링 클라우드 게이트웨이 서버에서 발생하였습니다. Content-Length 헤더 값이 복수로 지정되는 것은 브라우저에서 실행간으한 wav, mp3, webm 파일을 요청할 때 발생한 것으로 일반적인 curl 또는 Postman을 통해서는 정상적으로 응답이 수행되었습니다.</p>
+<h3 id="HttpUtil-normalizeAndGetContentLength"><a href="#HttpUtil-normalizeAndGetContentLength" class="headerlink" title="HttpUtil#normalizeAndGetContentLength"></a>HttpUtil#normalizeAndGetContentLength</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">java.lang.IllegalArgumentException: Multiple Content-Length values found: [<span class="number">229455</span>, <span class="number">229455</span>]</span><br><span class="line">	at io.netty.handler.codec.http.HttpUtil.normalizeAndGetContentLength(HttpUtil.java:<span class="number">595</span>) ~[netty-codec-http-<span class="number">4.1</span><span class="number">.65</span>.Final.jar:<span class="number">4.1</span><span class="number">.65</span>.Final]</span><br><span class="line">	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: </span><br><span class="line"><span class="function">Error has been observed at the following <span class="title">site</span><span class="params">(s)</span>:</span></span><br></pre></td></tr></table></figure>
 
-<p>common 모듈의 gson 라이브러리는 api를 통해 상위 모듈의 클래스패스에 노출되어 상위 모듈에서도 사용이 가능해집니다. 기본적으로 implementation을 사용하는 경우 외부 모듈 클래스패스에 노출시키지 않는 이유는 빠른 컴파일과 클래스패스 사이즈를 줄이기 위함이며 api 보다는 implementation을 선호해야한다고 합니다.</p>
-<h3 id="Common-Module"><a href="#Common-Module" class="headerlink" title="Common Module"></a>Common Module</h3><p><a target="_blank" rel="noopener" href="https://github.com/kdevkr/gradle-multi-module">gradle-multi-module</a> 처럼 그래들 멀티 모듈 프로젝트에 공용으로 적용되는 코드를 가지는 Common 모듈이 있을때 다음과 같이 공통으로 적용되어야하는 설정을 수행할 수 있습니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JsonConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Jackson2ObjectMapperBuilderCustomizer <span class="title">objectMapperBuilderCustomizer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder -&gt; builder</span><br><span class="line">                .featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)</span><br><span class="line">                .featuresToDisable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)</span><br><span class="line">                .modules(List.of(<span class="keyword">new</span> Jdk8Module(), <span class="keyword">new</span> JavaTimeModule()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>위 스택트레이스 내용에 따르면 Netty 라이브러리의 netty-codec-http 모듈에서 HttpUtil.normalizeAndGetContentLength 함수로 처리될 때 오류가 던져졌음을 확인할 수 있습니다. 또한, netty-codec-http 모듈의 <a target="_blank" rel="noopener" href="https://github.com/netty/netty/blob/c08beb543a6b8db0c7f3cee225042361b4025e4c/codec-http/src/main/java/io/netty/handler/codec/http/HttpUtil.java#L555-L560">HttpUtil#normarlizeAndGetContentLength</a>에는 allowDuplicateContentLengths 파라미터를 통해 복수의 동일한 값이 지정되더라도 단일 값으로 처리되도록 구현되어있는 상태입니다.</p>
+<h3 id="Reactor-Netty-HttpDecoderSpec"><a href="#Reactor-Netty-HttpDecoderSpec" class="headerlink" title="Reactor Netty - HttpDecoderSpec"></a>Reactor Netty - HttpDecoderSpec</h3><p>이미 allowDuplicateContentLengths 옵션을 지원하는데도 불구하고 스프링 클라우드 Hoxton 버전에서 의존하는 reactor-netty:0.9.x.RELEASE 에서는 HttpDecoderSpec 클래스가 allowDuplicateContentLengths 옵션을 지원하지 않았습니다.</p>
+<p>더 자세한 정보를 찾아본 결과 HttpDecoderSpec에서 allowDuplicateContentLengths 옵션이 지원되는 것은 <a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/pull/1638/commits/978ba8a737f26376d1caab4806e25420e7aac7b7">Add HttpDecoderSpec#allowDuplicateContentLengths(boolean) #1638</a>으로 처리되었으며 <a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/releases/tag/v1.0.8">Reactor Netty 1.0.8</a>에서부터 추가되어 반영되었음을 확인할 수 있었습니다. 그러나 위 반영 내용은 Reactor Netty 0.9.x 사용자들을 위한 Dysprosium 릴리즈 트레인에서 <a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/releases/tag/v0.9.25.RELEASE">Reactor Netty 0.9.25.RELEASE</a>로 릴리즈 계획이 종료되기까지 반영되지 않은 사항입니다. </p>
+<blockquote>
+<p>Reactor Netty 0.9.x 사용자들을 위해 allowDuplicateContentLengths 옵션 지원을 반영할 수 있는지 <a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/issues/1942">allowDuplicateContentLengths for Reactor Netty 0.9.x users #1942</a> 이슈를 등록해두었습니다. 이 이슈가 처리되기전까지는 HttpDecoderSpec에서 allowDuplicateContentLengths 파라미터를 활성화할 수 없습니다.</p>
+</blockquote>
+<h2 id="해결방안"><a href="#해결방안" class="headerlink" title="해결방안"></a>해결방안</h2><p>Content-Length 헤더에 중복된 동일한 값이 설정되는 문제를 해결하기 위해서는 allowDuplicateContentLengths 옵션이 적용될 수 있도록 해야만합니다. 스프링 클라우드 게이트웨이 서버 스타터에서 자동 구성할 때 HttpClient에 대한 HttpClientCustomizer를 지원함에도 불구하고 의존하고 있는 HttpDecoderSpec에서 allowDuplicateContentLengths를 적용할 수 있어야만 합니다. 따라서, Reactor Netty 의존성 버전을 1.0.8 이상으로 변경할 수 밖에 없습니다.</p>
+<h3 id="첫번째-시도-Reactor-Bom-변경"><a href="#첫번째-시도-Reactor-Bom-변경" class="headerlink" title="첫번째 시도 - Reactor Bom 변경"></a>첫번째 시도 - Reactor Bom 변경</h3><p>혹시나 Reactor Netty 의존성 버전을 변경하여 가능할지도 모른다는 생각으로 버전 업그레이드를 시도해보았습니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">ext &#123;</span><br><span class="line">    set(<span class="string">&#x27;springCloudVersion&#x27;</span>, <span class="string">&#x27;Hoxton.SR12&#x27;</span>),</span><br><span class="line">    set(<span class="string">&#x27;reactorNettyVersion&#x27;</span>, <span class="string">&#x27;2020.0.8&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line">dependencyManagement &#123;</span><br><span class="line">    imports &#123;</span><br><span class="line">        mavenBom <span class="string">&quot;org.springframework.cloud:spring-cloud-dependencies:$&#123;springCloudVersion&#125;&quot;</span></span><br><span class="line">        mavenBom <span class="string">&quot;io.projectreactor:reactor-bom:$&#123;reactorNettyVersion&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>위 코드에서는 Date 또는 Timestamp와 같은 클래스에 대하여 Long 값으로 변환하는 기능을 활성화하기 위하여 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS를 적용하였습니다. </p>
-<h4 id="Common-Dependencies"><a href="#Common-Dependencies" class="headerlink" title="Common Dependencies"></a>Common Dependencies</h4><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;java-library&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    api <span class="string">&#x27;org.springframework.boot:spring-boot-starter-security&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.google.code.gson:gson&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.fasterxml.jackson.core:jackson-databind&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.hibernate.validator:hibernate-validator&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.apache.commons:commons-lang3&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;org.apache.commons:commons-collections4:4.4&#x27;</span></span><br><span class="line">    api <span class="string">&#x27;com.google.guava:guava:31.0.1-jre&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Reactor Netty 버전을 변경하기 위해 Reactor Bom을 적용해본 결과 다음과 같이 reactor.netty.tcp.ProxyProvider를 클래스로더에서 찾을 수 없는 상태가 되었습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Caused by: java.lang.NoClassDefFoundError: reactor/netty/tcp/ProxyProvider$Builder</span><br><span class="line">	at java.base/java.lang.Class.getDeclaredMethods0(Native Method) ~[na:na]</span><br><span class="line">	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:<span class="number">3166</span>) ~[na:na]</span><br><span class="line">	at java.base/java.lang.Class.getDeclaredMethods(Class.java:<span class="number">2309</span>) ~[na:na]</span><br><span class="line">	at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:<span class="number">463</span>) ~[spring-core-<span class="number">5.2</span><span class="number">.15</span>.RELEASE.jar:<span class="number">5.2</span><span class="number">.15</span>.RELEASE]</span><br><span class="line">	... <span class="number">19</span> common frames omitted</span><br><span class="line">Caused by: java.lang.ClassNotFoundException: reactor.netty.tcp.ProxyProvider$Builder</span><br><span class="line">	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:<span class="number">581</span>) ~[na:na]</span><br><span class="line">	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:<span class="number">178</span>) ~[na:na]</span><br><span class="line">	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:<span class="number">522</span>) ~[na:na]</span><br><span class="line">	... <span class="number">23</span> common frames omitted</span><br></pre></td></tr></table></figure>
 
-<p>위 설정처럼 implementation 대신에 api를 사용하면 동일한 버전의 디펜던시를 다른 외부 모듈에서도 사용할 수 있도록 클래스패스에 노출할 수 있습니다. 이를 통해 각 모듈에서 사용되는 디펜던시 버전이 달라서 발생할 수 있는 문제를 방지할 수 있게 됩니다.</p>
+<p>이러한 문제가 발생하는 이유는 <a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/releases/tag/v1.0.0">Reactor Netty 1.0.0</a>에서부터 reactor.netty.tcp.ProxyProvider가 reactor.netty.transport.ProxyProvider로 변경되었기 때문입니다. 스프링 클라우드 Hoxton에서는 Reactor Netty 0.9.x의 클래스들을 사용하기 때문에 단순하게 Reactor Netty 의존성 버전을 변경할 수는 없습니다.</p>
+<h3 id="두번째-시도-Spring-Cloud-버전-업그레이드"><a href="#두번째-시도-Spring-Cloud-버전-업그레이드" class="headerlink" title="두번째 시도 - Spring Cloud 버전 업그레이드"></a>두번째 시도 - Spring Cloud 버전 업그레이드</h3><p>Reactor Netty 1.0.8을 사용하기 위해서는 스프링 클라우드 2020.0.x aka Ilford 릴리즈 트레인의 스프링 클라우드와 함께 스프링 부트 2.4.x로 업그레이드해야합니다. 테스트 중인 프로젝트에서는 그래들 멀티 프로젝트로 구성되어 스프링 클라우드 게이트웨이 서버와 애플리케이션 서버가 동일한 스프링 부트 버전을 사용하고 있었습니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&#x27;rog.springframework.boot&#x27;</span> version <span class="string">&#x27;2.4.13&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line">ext &#123;</span><br><span class="line">    set(<span class="string">&#x27;springCloudVersion&#x27;</span>, <span class="string">&#x27;2020.0.0&#x27;</span>),</span><br><span class="line">    set(<span class="string">&#x27;reactorNettyVersion&#x27;</span>, <span class="string">&#x27;2020.0.8&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line">dependencyManagement &#123;</span><br><span class="line">    imports &#123;</span><br><span class="line">        mavenBom <span class="string">&quot;org.springframework.cloud:spring-cloud-dependencies:$&#123;springCloudVersion&#125;&quot;</span></span><br><span class="line">        mavenBom <span class="string">&quot;io.projectreactor:reactor-bom:$&#123;reactorNettyVersion&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>스프링 부트 2.4 부터 변경된 사항에 대해서 검토하여야합니다.</p>
+</blockquote>
+<p>아쉽게도 스프링 부트 버전과 스프링 클라우드 버전을 업그레이드 하고나서는 Content-Length에 복수로 설정되던 파일들이 정상적으로 단일 값으로 처리되어 allowDuplicateContentLengths 적용이 필요하지 않은 상태가 되었습니다. 만약, allowDuplicateContentLengths 적용이 필요하다면 다음과 같이 HttpClientCustomzier를 통해 구성할 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NettyHttpClientCustomizer</span> <span class="keyword">implements</span> <span class="title">HttpClientCustomizer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HttpClient <span class="title">customize</span><span class="params">(HttpClient httpClient)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> httpClient.httpResponseDecoder(decoderSpec -&gt; </span><br><span class="line">            decoderSpec</span><br><span class="line">                .allowDuplicateContentLengths(<span class="keyword">true</span>)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>이 내용은 Okky 커뮤니티에 <a target="_blank" rel="noopener" href="https://okky.kr/article/1122985">Spring Cloud Hoxton의 Spring Cloud Gateway에서는 allowDuplicateContentLengths을 지원하지 않음</a>로 공유되었음을 알려드리며 마치도록 하겠습니다.</p>
+<p>감사합니다.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/issues/1942">https://github.com/reactor/reactor-netty/issues/1942</a><br>Reactor Netty 측에 0.9.x 사용자들을 위해 수정 요청하였으나 업데이트 중단된 버전인 사유로 거부되었습니다.</p>
+</blockquote>
 <h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/dependency_management_for_java_projects.html">Managing Dependencies of JVM Projects</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph">The Java Library Plugin</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc7230">RFC 7230</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://spring.io/projects/spring-cloud">Spring Cloud Release train Spring Boot compatibility</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/spring-cloud/spring-cloud-gateway">spring-cloud/spring-cloud-gateway</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/reactor/reactor-netty/releases/tag/v1.0.8">Reactor Netty 1.0.8 Release</a></li>
 </ul>
 
       
@@ -266,7 +289,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/40/">40</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>
@@ -278,7 +301,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

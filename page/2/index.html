@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">40</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-count">60</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/webpack5-for-vue/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/lombok-annotation-processor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/webpack5-for-vue/" class="post-title-link" itemprop="url">Webpack 5 기반의 Vue 개발 환경</a>
+          <a href="/lombok-annotation-processor/" class="post-title-link" itemprop="url">롬복 어노테이션 프로세서</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-12-28 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-28T00:00:00Z">2021-12-28</time>
+      <time title="Created: 2021-12-29 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-29T00:00:00Z">2021-12-29</time>
     </span>
 
   
@@ -227,39 +227,39 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 <strong>Webpack 5 기반의 Vue 개발 환경</strong>에 대해서 알아보는 시간을 가져보도록 하겠습니다.<br>본 글에서 설명한 내용에 대한 코드는 <a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5">kdevkr/webpack5</a>에서 제공합니다.</p>
-<h2 id="Webpack"><a href="#Webpack" class="headerlink" title="Webpack"></a>Webpack</h2><p>반드시 그런 것은 아니지만 많은 분들이 <a target="_blank" rel="noopener" href="https://create-react-app.dev/">Create React App</a> 또는 <a target="_blank" rel="noopener" href="https://cli.vuejs.org/">Vue CLI</a>라는 도구를 통해서 프론트엔드 개발 환경에 대한 기본 프리셋을 기반으로 학습을 시작하거나 개발 환경을 구축합니다. 이 도구들은 여러가지 사항에 대한 웹팩 구성을 기본적으로 제공함으로써 웹팩에 대한 내용을 알지 못하더라도 쉽게 리액트 또는 뷰에 대한 학습을 진행할 수 있게 도와주는 유용한 도구입니다. </p>
-<p>그럼에도 불구하고, 실무 환경에서는 이 도구들을 사용하지 않고 직접 웹팩 설정에 대해 구성하여 사용합니다. 또한, Vue CLI는 안타깝게도 웹팩 4에 대한 구성을 제공하므로 이 도구로 만들어지는 환경은 무조건 웹팩 4로 제한되는 문제점을 가지고 있습니다. <a target="_blank" rel="noopener" href="https://webpack.js.org/blog/2020-10-10-webpack-5-release/">2020년 10월에 릴리즈된 웹팩 5</a> 기반의 개발 환경을 만들기 위해서는 직접 웹팩 구성을 수행할 수 있어야만 합니다.</p>
-<h3 id="요구사항"><a href="#요구사항" class="headerlink" title="요구사항"></a>요구사항</h3><p>시작하기에 앞서, 웹팩 5는 노드 10.13.0 이상의 버전을 요구하며 함께 개발 프록시 서버로 활용할 수 있는 webpack-dev-server@4 에서는 노드 12.13.0 이상을 요구합니다. </p>
-<ul>
-<li>Webpack5 required v10.13.0+</li>
-<li>webpack-dev-server@4 v12.13.0+</li>
-</ul>
-<h4 id="프로젝트-노드-버전-제한"><a href="#프로젝트-노드-버전-제한" class="headerlink" title="프로젝트 노드 버전 제한"></a>프로젝트 노드 버전 제한</h4><p>위 요구사항에 따라 프로젝트에서 사용할 수 있는 노드 버전을 제한하는 것이 좋습니다. 제가 이전에 공유한 <a href="https://kdevkr.github.io/strict-nodejs-version-for-project/">프로젝트의 노드 버전 제한하기</a>를 참고하여 노드 엔진 버전을 12.13.0 이상으로 설정해두는 것을 추천하는 바입니다.</p>
-<h3 id="커밋별로-확인하는-구성"><a href="#커밋별로-확인하는-구성" class="headerlink" title="커밋별로 확인하는 구성"></a>커밋별로 확인하는 구성</h3><p>각 커밋 단위의 Browser Files를 통해 어떻게 구성이 변화하는지를 참고하시면 좋습니다.</p>
-<h4 id="Add-webpack-config-js-for-default-configuration"><a href="#Add-webpack-config-js-for-default-configuration" class="headerlink" title="Add webpack.config.js for default configuration"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/3f858c2702720088b8647bdb55a9f830d54a8d91">Add webpack.config.js for default configuration</a></h4><p>기본 구성을 위한 webpack.config.js 파일을 만들고 node-env 값에 따라 번들 파일명을 다르게 지정할 수 있음을 보여줍니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npx webpack --node-env production <span class="comment"># 모드를 지정하지 않았지만 node-env 값에 의해 처리됩니다.</span></span><br></pre></td></tr></table></figure>
+<p>오늘은 인텔리제이에서 롬복 라이브러리를 적용하는 방법을 알아가기 위한 내용을 공유하고자 합니다.</p>
+<h2 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h2><p><a target="_blank" rel="noopener" href="https://projectlombok.org/">롬복 라이브러리</a>는 자바 프로젝트에서 필수적으로 사용될만큼 편리하고 유용한 기능을 제공합니다. 롬복 라이브러리는 <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/7/docs/technotes/guides/apt/GettingStarted.html">APT(Annotation Processing Tool)</a>를 통해 어노테이션 프로세서(Annotation Processor)로 컴파일 단계에서 수행하게 됩니다. 따라서, 롬복 라이브러리를 사용하기 위해서는 프로젝트에서 어노테이션 프로세서를 동작시키기 위한 설정을 해야합니다.</p>
+<h3 id="인텔리제이-어노테이션-프로세서"><a href="#인텔리제이-어노테이션-프로세서" class="headerlink" title="인텔리제이 어노테이션 프로세서"></a>인텔리제이 어노테이션 프로세서</h3><p>인텔리제이에서는 클래스패스에 있는 어노테이션 프로세서를 구성하기 위한 <a target="_blank" rel="noopener" href="https://www.jetbrains.com/help/idea/annotation-processors-support.html">어노테이션 프로세싱 기능</a>을 지원합니다. 이 어노테이션 프로세싱 기능이 활성화되면 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록하게 됩니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-annotation-processing.png"></p>
+<h4 id="그래들-프로젝트"><a href="#그래들-프로젝트" class="headerlink" title="그래들 프로젝트"></a>그래들 프로젝트</h4><p>인텔리제이는 그래들 프로젝트에 있는 기본 그래들 래퍼를 사용하여 프로젝트를 빌드하고 실행하도록 설정되어있습니다. <strong>Build Tools &gt; Gradle</strong> 메뉴에서 기본 그래들 래퍼가 아닌 인텔리제이 자체로 빌드하고 실행되도록 변경할 수 있습니다. 인텔리제이 자체적으로는 롬복 플러그인을 번들에 포함하고 있으므로 롬복 어노테이션 프로세서가 클래스패스에 위치하기 때문에 어노테이션 프로세싱 기능이 활성화되어있다면 롬복에 대한 어노테이션 프로세서가 자동으로 등록되게 됩니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compileOnly <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="Add-vue-loader"><a href="#Add-vue-loader" class="headerlink" title="Add vue-loader"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/3ca2fc1de5573ae339b0271ea482a73bf3dac397">Add vue-loader</a></h4><p>Vue SFC 파일을 처리하기 위한 vue-loader를 추가하고 Vue 개발 환경을 준비하고 간단한 샘플 HTML 파일을 만들어서 Vue 코드가 정상적으로 변환되었음을 확인합니다.</p>
-<h4 id="Add-sass-postcss"><a href="#Add-sass-postcss" class="headerlink" title="Add sass, postcss"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/68ffce2b18c64e67b944a383b216c2e6fe784396">Add sass, postcss</a></h4><p>Vue SFC의 스타일 블록의 언어를 SCSS로 사용하기 위해서 sass 및 postcss에 대한 설정을 추가합니다. </p>
-<h4 id="Add-stylelint"><a href="#Add-stylelint" class="headerlink" title="Add stylelint"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/7e1e00735738e9106033c6df675977846b159552">Add stylelint</a></h4><p>반드시 필요한 설정은 아니지만 CSS에 대한 린트를 적용하기 위해 stylelint를 postcss 플러그인으로 추가합니다.</p>
-<h4 id="Add-eslint"><a href="#Add-eslint" class="headerlink" title="Add eslint"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/f7f566314fd675e18d3f7b3dd35283317c5891ae">Add eslint</a></h4><p>자바스크립트에 대한 린트를 적용하기 위해 eslint를 추가합니다.</p>
-<h4 id="Add-babel"><a href="#Add-babel" class="headerlink" title="Add babel"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/c5211b28ab8176e8c5c9fb39c755083679cb24df">Add babel</a></h4><p>ES6+ 문법을 지원하지 않는 브라우저를 위해 ES5 문법으로 변환하기 위한 babel을 추가합니다. babel 7 부터는 폴리필 적용 방식이 변경되었음을 주의해야합니다. 바벨 폴리필에 대해서는 다음의 두 링크를 참고하시면 좋습니다.</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://poiemaweb.com/babel-polyfill">폐지된 @babel/polyfill 대신 @babel/plugin-transform-runtime을 사용해 폴리필 추가하기</a></li>
-<li><a target="_blank" rel="noopener" href="https://tech.kakao.com/2020/12/01/frontend-growth-02/">Babel7과 corejs3 설정으로 전역 오염 없는 폴리필 사용하기</a></li>
-</ul>
-<h4 id="Add-browserslist"><a href="#Add-browserslist" class="headerlink" title="Add browserslist"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/c911ef73aa85ebde4d9c738c07999300c05bfaf8">Add browserslist</a></h4><p>postcss의 autoprefixer 또는 babel에서 참고할 타겟 정보를 위해 browserslist를 추가합니다.</p>
-<h4 id="Add-prettierrc"><a href="#Add-prettierrc" class="headerlink" title="Add prettierrc"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/b5c8e20ebdb2224f1268b431aafb82a6b49e7b3a">Add prettierrc</a></h4><p>불필요한 포맷팅을 방지하기 위한 prettier 옵션을 조정합니다.</p>
-<h4 id="Add-asset"><a href="#Add-asset" class="headerlink" title="Add asset"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/1ba05ff066806fb2c7b59eace748e04e73756243">Add asset</a></h4><p>이미지 또는 폰트 등을 위한 에셋 모듈을 추가합니다.</p>
-<h4 id="Apply-strict-npm-engines"><a href="#Apply-strict-npm-engines" class="headerlink" title="Apply strict npm engines"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/1b768c5881db9d8348d54f926a11e537a50050ac">Apply strict npm engines</a></h4><p>지금까지 설치된 패키지에서 최소로 요구하는 노드 버전을 명시하고 제한되도록 설정합니다.</p>
-<h4 id="Apply-settings-for-vscode"><a href="#Apply-settings-for-vscode" class="headerlink" title="Apply settings for vscode"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/9008824470873ce172e52294ddac7eee8304c256">Apply settings for vscode</a></h4><p>VSCode를 사용하는 경우 저장될 때 ESLint가 동작하도록 설정합니다.</p>
-<h4 id="Add-project-version-in-output-filename"><a href="#Add-project-version-in-output-filename" class="headerlink" title="Add project version in output filename"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/769171d627bb1f4bfbb4bacce62dc067ff9b617a">Add project version in output filename</a></h4><p>(Optional) package.json에 정의된 프로젝트 버전을 번들 파일명에 포함시킬 수 있음을 보여줍니다.</p>
-<h4 id="Apply-optimization"><a href="#Apply-optimization" class="headerlink" title="Apply optimization"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/bab1505c643b4ae3ea5e7a86bdc90317f4afe470">Apply optimization</a></h4><p>프로덕션 환경을 위한 최적화 구성을 조정합니다.</p>
-<h4 id="Add-manifest"><a href="#Add-manifest" class="headerlink" title="Add manifest"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/7d0cd27b85a8f1df757e16c3ddb6ad32b8f7b39e">Add manifest</a></h4><p>매니페스트 파일이 생성할 수 있도록 플러그인을 추가합니다. </p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npx webpack --node-env production --env manifest</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><em>인텔리제이는 친절하게도 롬복 라이브러리가 클래스패스에 있지만 어노테이션 프로세싱 기능이 비활성화되어있으면 이벤트 로그에 기능 활성화를 묻는 알림을 제공합니다.</em><br><em>또한, 인텔리제이를 사용하도록 선택한 환경에서는 별다른 설정없이도 클래스패스에 롬복 라이브러리가 있으면 어노테이션 프로세서가 동작함을 확인할 수 있습니다.</em></p>
+</blockquote>
+<h4 id="그래들-어노테이션-프로세서-구성"><a href="#그래들-어노테이션-프로세서-구성" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>프로젝트의 기본 설정은 프로젝트의 그래들 래퍼로 실행하는 환경이라고 하였습니다. 이 경우에는 롬복 라이브러리에 대한 어노테이션 프로세서를 그래들 구성 파일에 정의해야합니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-gradle-build-and-run.png"></p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compileOnly <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">    annotationProcessor <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="Add-bootstrap-vue"><a href="#Add-bootstrap-vue" class="headerlink" title="Add bootstrap-vue"></a><a target="_blank" rel="noopener" href="https://github.com/kdevkr/webpack5/commit/c3da5f586c6ec368778e2c90478196e4af037a82">Add bootstrap-vue</a></h4><p>BootstrapVue를 추가해보고 <a href="https://kdevkr.github.io/no-emit-deprecation-warnings-of-dart-sass/">최신 버전의 Sass에서 출력되는 Deprecation 경고가 출력되지 않도록</a> 설정합니다.</p>
+<p>그래들의 annotationProcessor를 통해 롬복 라이브러리의 어노테이션 프로세서가 어노테이션 프로세서가 위치하는 클래스패스에 등록됨에 따라 인텔리제이는 어노테이션 프로세싱 기능 활성화 여부를 확인하고 활성화에 대한 알림을 제공합니다. </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">configurations &#123;</span><br><span class="line">   compileOnly &#123;</span><br><span class="line">       extendsFrom annotationProcessor</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>그래들 기반의 스프링 부트 프로젝트를 시작할 때 롬복을 추가하면 위 구문이 포함되는 것을 확인하실 수 있습니다. 이 구문의 역할이 무엇인지 궁금하지 않으신가요? 인텔리제이는 그래들 설정 팡리에 위 구문이 포함되는 경우 <code>Gradle Imported</code>라는 이름의 프로파일로써 롬복 라이브러리를 어노테이션 프로세서로 등록하기 위한 어노테이션 프로세싱 기능을 활성화하는 것을 자동으로 구성하게 됩니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-lombok-annotation-processing-extends-from.png"></p>
+<blockquote>
+<p><em>인텔리제이는 기본 프로파일에 대해 어노테이션 프로세싱 기능이 활성화되어있지 않으면 이벤트 로그를 통해 롬복을 위한 어노테이션 프로세싱 기능 활성화를 안내하는 것 같습니다.</em></p>
+</blockquote>
+<h3 id="롬복-어노테이션-프로세서"><a href="#롬복-어노테이션-프로세서" class="headerlink" title="롬복 어노테이션 프로세서"></a>롬복 어노테이션 프로세서</h3><p>다시 내용을 정리해보자면, 롬복 라이브러리를 적용하기 위해서는 롬복 라이브러리의 어노테이션 프로세서를 등록하기 위한 설정을 수행해야합니다.</p>
+<ul>
+<li>인텔리제이 어노테이션 프로세싱 활성화(Enable annotation processing)</li>
+<li>그래들 어노테이션 프로세서 구성</li>
+</ul>
+<h4 id="그래들-어노테이션-프로세서-구성-1"><a href="#그래들-어노테이션-프로세서-구성-1" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>인텔리제이를 사용하는 개발 환경에서는 인텔리제이 어노테이션 프로세싱 활성화 기능을 통해 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록할 수 있습니다만, 젠킨스와 같은 빌드 환경에서 그래들로 어노테이션 프로세서를 등록하기 위해서는 이를 위한 구성을 해야합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">configurations &#123;</span><br><span class="line">    compileOnly &#123;</span><br><span class="line">        extendsFrom annotationProcessor</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">dependencies &#123;</span><br><span class="line">    compileOnly <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">    annotationProcessor <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">    testCompileOnly <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">    testAnnotationProcessor <span class="string">&#x27;org.projectlombok:lombok&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>그리고 위 구성은 간단하게 <strong>그래들 롬복 플러그인</strong> 으로 대체할 수 있는데 빌드 도구의 플러그인을 사용하는 것은 공식 홈페이지에서도 추천하는 방식입니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">   id <span class="string">&quot;io.freefair.lombok&quot;</span> version <span class="string">&quot;6.3.0&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>감사합니다.</p>
 
       
@@ -280,7 +280,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/40/">40</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>
@@ -292,7 +292,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

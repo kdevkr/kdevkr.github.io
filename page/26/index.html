@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">40</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-count">60</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/connecting-with-mqtt-using-aws-iot-device-sdk/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/when-do-i-use-the-handler-interceptor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/connecting-with-mqtt-using-aws-iot-device-sdk/" class="post-title-link" itemprop="url">AWS IoT Device SDK Java로 MQTT 연결하기</a>
+          <a href="/when-do-i-use-the-handler-interceptor/" class="post-title-link" itemprop="url">HandlerInterceptor은 언제 사용하나요?</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-08-07 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-07T00:00:00Z">2021-08-07</time>
+      <time title="Created: 2021-08-09 00:00:00" itemprop="dateCreated datePublished" datetime="2021-08-09T00:00:00Z">2021-08-09</time>
     </span>
 
   
@@ -226,113 +226,38 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>안녕하세요 Mambo 입니다. 오늘은 AWS IoT Core의 MQTT 클라이언트로 MQTT 브로커에 연결하여 메시지를 게시하고 수신해보는 방법에 대해서 알아봅니다.</p>
-<h2 id="AWS-IoT-Core"><a href="#AWS-IoT-Core" class="headerlink" title="AWS IoT Core"></a>AWS IoT Core</h2><p><img data-src="https://docs.aws.amazon.com/iot/latest/developerguide/images/what-is-aws-iot.png"></p>
-<p>AWS IoT Core는 클라우드 환경에 디바이스를 연결하고 연결된 디바이스간 통신을 제공하는 관리형 클라우드 플랫폼입니다. 그리고 AWS IoT Core를 사용하는 디바이스들이 다음의 표준 통신 프로토콜을 사용하여 서로 상호작용을 할 수 있도록 지원합니다.</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html">MQTT (Message Queuing and Telemetry Transport)</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html">MQTT over WSS (Websockets Secure)</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/iot/latest/developerguide/http.html">HTTPS (Hypertext Transfer Protocol - Secure)</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/iot/latest/developerguide/connect-iot-lorawan.html">LoRaWAN (Long Range Wide Area Network)</a></li>
-</ul>
-<p>이 글에서는 두번째 방식인 <strong>MQTT over WebSocket</strong> 방식으로 AWS IoT Core 서비스에 연결하는 것을 알아봅니다.</p>
-<h3 id="MQTT-3-1-1"><a href="#MQTT-3-1-1" class="headerlink" title="MQTT 3.1.1"></a>MQTT 3.1.1</h3><p>AWS IoT Core의 MQTT 메시지 브로커는 <a target="_blank" rel="noopener" href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html">MQTT v3.1.1 specification</a>을 기반으로 구현되어있습니다. 그러나 몇가지 부분에 대해서 약간 다르다고 하는데 주요 사항은 다음과 같습니다.</p>
-<ul>
-<li>QoS(Quality of Service)는 0 또는 1 지원</li>
-<li>클라이언트 ID 유일성</li>
-<li>보관된 메시지 미지원</li>
-</ul>
-<blockquote>
-<p>더 자세한 내용은 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html#mqtt-differences">AWS IoT differences from MQTT version 3.1.1 specification</a>을 참고하세요.</p>
+          <p><img data-src="../images/logo/spring.png#compact"></p>
+<p>안녕하세요 Mambo입니다. 오늘은 스프링 MVC 모듈에 포함되어있는 HandlerInterceptor 인터페이스를 언제 사용하는가에 대해서 알아보겠습니다.</p>
+<h2 id="HandlerInterceptor"><a href="#HandlerInterceptor" class="headerlink" title="HandlerInterceptor"></a>HandlerInterceptor</h2><blockquote>
+<p>A HandlerInterceptor gets called before the appropriate HandlerAdapter triggers the execution of the handler itself. This mechanism can be used for a large field of preprocessing aspects, e.g. for authorization checks, or common handler behavior like locale or theme changes. Its main purpose is to allow for factoring out repetitive handler code.</p>
 </blockquote>
-<h3 id="AWS-IoT-Device-SDK-for-Java"><a href="#AWS-IoT-Device-SDK-for-Java" class="headerlink" title="AWS IoT Device SDK for Java"></a>AWS IoT Device SDK for Java</h3><p>AWS IoT 서비스에 연결하기위해서는 AWS CLI, AWS IoT API, AWS IoT Device SDK를 사용해야합니다. 여러 언어로 구현된 AWS IoT Device SDK 중에서 안타깝게 Go로 작성된 SDK는 없으므로 <strong>AWS IoT Device SDK for Java</strong> 를 사용합니다.</p>
-<p>AWS IoT Device SDK는 버전 1과 버전 2가 있습니다. 회사에서는 버전 1을 사용하고 있지만 이 글에서는 <strong>AWS IoT Device SDK for Java v2</strong> 를 사용하여 AWS IoT 서비스에 연결해보도록 하겠습니다.</p>
-<table>
-<thead>
-<tr>
-<th>Version 1</th>
-<th>Version 2</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a target="_blank" rel="noopener" href="https://github.com/aws/aws-sdk-java">AWS SDK for Java</a></td>
-<td><a target="_blank" rel="noopener" href="https://github.com/aws/aws-sdk-java-v2">AWS SDK for Java 2.0</a></td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://github.com/aws/aws-iot-device-sdk-java">AWS IoT Device SDK for Java</a></td>
-<td><a target="_blank" rel="noopener" href="https://github.com/aws/aws-iot-device-sdk-java-v2">AWS IoT Device SDK for Java v2</a></td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>기존 SDK를 기준으로 사용하기 쉽도록 새로 작성한 SDK이기 때문에 더 편리합니다.</p>
-</blockquote>
-<figure class="highlight groovy"><figcaption><span>build.gradle</span></figcaption><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation platform(<span class="string">&#x27;software.amazon.awssdk:bom:2.17.13&#x27;</span>)</span><br><span class="line">    implementation <span class="string">&#x27;software.amazon.awssdk:cognitoidentity&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;software.amazon.awssdk:lambda&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:1.4.3&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>HandlerInterceptor</strong>는 컨트롤러 핸들러 함수에 대한 전처리 동작을 수행할 수 있는 방법을 제공합니다. 필터도 전처리 동작을 수행할 수 있지만 web.xml에 정의되는 필터와 다르게 HandlerInterceptor는 애플리케이션 컨텍스트에서 관리하므로 요청 정보를 분석하여 사용자를 인증하거나 응답 뷰를 렌더링하기 전에 부가 데이터를 주입하는 동작을 수행할 수 있습니다.</p>
+<p>예를 들어, 기본으로 제공되는 HandlerInterceptor 구현체인 <strong>LocaleChangeInterceptor</strong>는 로케일 파라미터에 따라 현재 로케일을 변경하는 동작을 수행하죠.</p>
+<h3 id="정적-리소스-패턴-제외"><a href="#정적-리소스-패턴-제외" class="headerlink" title="정적 리소스 패턴 제외"></a>정적 리소스 패턴 제외</h3><p><strong>ResourceHandlerRegistry</strong>는 정적 리소스를 배포하기 위한 핸들러를 등록하는 것을 지원하는 클래스입니다. 이때, 리소스 핸들러가 처리할 경로를 매칭하기 위하여 AntPathMatcher 또는 PathPattern을 사용하게 되는데 Ant 스타일의 패턴 매칭을 사용하므로 특정 패턴을 제외하기 위한 Regex 같은 방식을 사용할 수 없습니다. </p>
+<p>리소스 핸들러가 처리하는 경로에 대해서 특정 패턴을 제외하기 위해서는 해당 패턴을 처리하지 않도록 패턴별로 등록하여야합니다. 하지만, 이렇게 올바른 패턴마다 리소스 핸들러를 등록하는 것은 불편합니다.</p>
+<figure class="highlight java"><figcaption><span>ResourceHandlerRegistry</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/images/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/static/images/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>회사에서는 모든 모듈을 포함하는 SDK를 사용하는데 필요한 SDK 모듈만 추가해서 사용하는게 좋아보입니다.<br><a target="_blank" rel="noopener" href="https://search.maven.org/search?q=g:software.amazon.awssdk">SDK 모듈 목록</a>을 보면 이 글을 쓰는 기준으로 무려 <strong>352개</strong>가 포함됩니다.</p>
-</blockquote>
-<h2 id="MQTT-with-AWS-IoT-Core"><a href="#MQTT-with-AWS-IoT-Core" class="headerlink" title="MQTT with AWS IoT Core"></a>MQTT with AWS IoT Core</h2><p>AWS Iot Core의 MQTT 클라이언트는 연결 방식에 따라 다음의 두가지 방식으로 나누어집니다.</p>
-<table>
-<thead>
-<tr>
-<th>방식</th>
-<th>설명</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>MQTT</td>
-<td>X.509 인증서 기반 인증</td>
-</tr>
-<tr>
-<td>MQTT over WebSocket</td>
-<td><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/ko_kr/general/latest/gr/signature-version-4.html">서명 버전 4 (SIGv4)</a> 자격 증명을 사용하여 인증</td>
-</tr>
-</tbody></table>
-<p>회사에서는 서버 애플리케이션의 경우 텔레노어 커넥션(Telenor Connexion) 서비스에서 제공하는 자격 증명을 통해 <strong>MQTT over WebSocket</strong> 으로 연결하고 있으며 데이터를 수집하는 디바이스에서는 자격 증명을 외부로 공개할 수 없으므로 <strong>X.509 인증서</strong> 를 기반으로 연결합니다. </p>
-<h3 id="Amazon-Cognito-IdP"><a href="#Amazon-Cognito-IdP" class="headerlink" title="Amazon Cognito IdP"></a>Amazon Cognito IdP</h3><p>본 학습에서는 AWS IoT 서비스(MQTT 메시지 브로커)에 연결하기 위하여 <strong>Amazon Cognito의 자격 증명 공급자(IdP)</strong> 를 통해 AWS 서비스에 대해 인증합니다. 저는 텔레노어 커넥션에서 지원하는 플랫폼 서비스를 통해 <strong>사용자 풀 아이디(User Pool ID)</strong> 와 <strong>자격 증명 풀 아이디(Identity Pool ID)</strong> 를 제공받기 때문에 이 부분에 대해서는 다루지 않습니다.</p>
-<blockquote>
-<p>추후에 Amazon Cognito를 직접 다루게된다면 사용자 풀과 자격 증명 풀 아이디를 발급하는 부분에 대해서 추가하겠습니다.</p>
-</blockquote>
-<p>Amazon Cognito를 활용하여 <strong>AWS 서비스에 인증하는 순서</strong>는 다음과 같습니다.</p>
-<ol>
-<li>발급받은 자격 증명 풀 아이디로 Cogntio 자격 증명 풀에 인증하여 임시 자격 증명 발급</li>
-<li>등록된 사용자 풀 아이디로 Cognito 사용자 풀에 인증하여 JWT 토큰 발급</li>
-<li>Cogntio 자격 증명 공급자에 인증된 사용자의 JWT 토큰을 로그인 맵에 설정</li>
-<li>인증된 사용자의 자격 증명 발급</li>
-<li>Cognito 임시 자격 증명을 사용하여 AWS IoT 서비스에 연결</li>
-</ol>
-<h4 id="Identity-Pool-Credentials"><a href="#Identity-Pool-Credentials" class="headerlink" title="Identity Pool Credentials"></a>Identity Pool Credentials</h4><p>먼저, CognitoIdentityClient로 자격 증명 풀 아이디와 리전에 대한 자격 증명 풀 크레덴셜을 발급합니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> AwsSessionCredentials <span class="title">baseCredentials</span><span class="params">(String identityPoolId, Region region)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (CognitoIdentityClient cognitoIdentityClient = CognitoIdentityClient.builder()</span><br><span class="line">            .credentialsProvider(AnonymousCredentialsProvider.create())</span><br><span class="line">            .region(region)</span><br><span class="line">            .build()) &#123;</span><br><span class="line"></span><br><span class="line">        GetIdRequest getIdRequest = GetIdRequest.builder()</span><br><span class="line">                .identityPoolId(identityPoolId)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        String identityId = cognitoIdentityClient.getId(getIdRequest).identityId();</span><br><span class="line">        GetCredentialsForIdentityRequest getCredentialsForIdentityRequest = GetCredentialsForIdentityRequest.builder()</span><br><span class="line">                .identityId(identityId)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        Credentials credentials = cognitoIdentityClient.getCredentialsForIdentity(getCredentialsForIdentityRequest).credentials();</span><br><span class="line">        <span class="keyword">return</span> AwsSessionCredentials.create(credentials.accessKeyId(), credentials.secretKey(), credentials.sessionToken());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>위 예시는 <strong>/images/</strong>** 패턴의 경로에 대해서 클래스패스의 <strong>static/images</strong> 폴더에 있는 정적 리소스로 처리하기 위한 핸들러를 등록합니다. images 폴더에는 이미지 파일만 있다고 가정했으나 개발자의 실수로 images 폴더에 이미지가 아닌 동영상 파일이나 오디오 파일이 들어있다면 해당 리소스도 처리하게 됩니다.</p>
+<p>이렇게 특정 패턴을 방지해야하는 경우에 HandlerInterceptor를 등록하여 요청을 분석하여 리소스를 응답하지 않도록 전처리 동작을 구현할 수 있습니다.</p>
+<p>다음과 같이 <strong>이미지 파일 패턴이 아니라면 요청을 404 Not Found로 처리</strong>하는 동작을 수행할 수 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MvcConfig</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addInterceptor(onlyServeImagesHandlerInterceptor()).addPathPatterns(<span class="string">&quot;/images/**&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/images/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/static/images/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">OnlyServeImagesHandlerInterceptor <span class="title">onlyServeImagesHandlerInterceptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> OnlyServeImagesHandlerInterceptor();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">OnlyServeImagesHandlerInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            String requestURI = request.getRequestURI();</span><br><span class="line">            <span class="keyword">if</span>(!requestURI.matches(<span class="string">&quot;.*\\/.*\\.(jpg|jpeg|png|gif)&quot;</span>)) &#123;</span><br><span class="line">                response.setStatus(HttpServletResponse.SC_NOT_FOUND);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="User-Pool-JWT-Token"><a href="#User-Pool-JWT-Token" class="headerlink" title="User Pool JWT Token"></a>User Pool JWT Token</h4><p>발급된 크레덴셜으로 사용자 풀에 등록되어있는 사용자의 JWT 토큰을 조회하기 위하여 Lambda 함수를 호출합니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&#123;&quot;unchecked&quot;&#125;)</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">jwt</span><span class="params">(AwsSessionCredentials awsSessionCredentials, Region region)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// https://docs.aws.amazon.com/code-samples/latest/catalog/javav2-lambda-src-main-java-com-example-lambda-LambdaInvoke.java.html</span></span><br><span class="line">    <span class="keyword">try</span> (LambdaClient lambdaClient = LambdaClient.builder()</span><br><span class="line">            .credentialsProvider(StaticCredentialsProvider.create(awsSessionCredentials))</span><br><span class="line">            .region(region)</span><br><span class="line">            .build()) &#123;</span><br><span class="line"></span><br><span class="line">        InvokeRequest invokeRequest = InvokeRequest.builder()</span><br><span class="line">                .functionName(authLambda)</span><br><span class="line">                .payload(SdkBytes.fromString(gson.toJson(authLambdaPayload), StandardCharsets.UTF_8))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);</span><br><span class="line">        Map&lt;String, Object&gt; responsePayload = gson.fromJson(<span class="keyword">new</span> String(invokeResponse.payload().asByteArray(), StandardCharsets.UTF_8),</span><br><span class="line">                <span class="keyword">new</span> TypeToken&lt;HashMap&lt;String, Object&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (String) ((Map&lt;String, Object&gt;) responsePayload.get(<span class="string">&quot;credentials&quot;</span>)).get(<span class="string">&quot;token&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>위 인터셉터가 정말로 이미지 파일에 대해서만 처리할 수 있게 사전 처리를 수행하는지 확인해보겠습니다.</p>
+<p><img data-src="/images/posts/handler-interceptor-01.gif"></p>
+<p>위 결과를 보면 이미지 파일은 정적 리소스로 배포되도록 처리되었지만 동영상 파일은 처리되지 않게 된걸 확인할 수 있습니다. </p>
+<h3 id="뷰-응답-시-부가-정보-주입"><a href="#뷰-응답-시-부가-정보-주입" class="headerlink" title="뷰 응답 시 부가 정보 주입"></a>뷰 응답 시 부가 정보 주입</h3><p>두번째로는 뷰를 응답하는 핸들러 함수에 대하여 <strong>부가 정보를 주입</strong>하는데에 사용할 수 있습니다. </p>
+<p>다음의 코드는 뷰를 응답하게되는 핸들러 함수에 사용 가능한 언어와 함께 현재 로케일에 대한 메시지 코드 목록을 주입하는 인터셉터 예시입니다.</p>
+<figure class="highlight java"><figcaption><span>InjectionLocalesInterceptor</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InjectionLocalesInterceptor</span> <span class="keyword">extends</span> <span class="title">HandlerInterceptorAdapter</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> MessagePool messagePool = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(modelAndView != <span class="keyword">null</span> &amp;&amp; messagePool != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Locale locale = messagePool.getLocale();</span><br><span class="line">            <span class="keyword">if</span>(locale == <span class="keyword">null</span>) &#123;</span><br><span class="line">                locale = Locale.getDefault();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            modelAndView.addObject(<span class="string">&quot;lang&quot;</span>, locale.getLanguage());</span><br><span class="line">            modelAndView.addObject(<span class="string">&quot;locale&quot;</span>, locale.toString());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(handler <span class="keyword">instanceof</span> HandlerMethod) &#123;</span><br><span class="line">                HandlerMethod handlerMethod = (HandlerMethod) handler;</span><br><span class="line">                Class&lt;?&gt; beanType = handlerMethod.getBeanType();</span><br><span class="line">                Controller controller = beanType.getAnnotation(Controller.class);</span><br><span class="line">                <span class="keyword">if</span>(controller != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    modelAndView.addObject(<span class="string">&quot;locales&quot;</span>, messagePool.getLocales());</span><br><span class="line">                    modelAndView.addObject(<span class="string">&quot;messages&quot;</span>, messagePool.getMessagesInJson().toString());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.postHandle(request, response, handler, modelAndView);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="Identity-Provider-with-Logins"><a href="#Identity-Provider-with-Logins" class="headerlink" title="Identity Provider with Logins"></a>Identity Provider with Logins</h4><p>인증된 사용자의 JWT 토큰을 Cognito 자격 증명 공급자의 <strong>Logins</strong> 맵에 부여하여 크레덴셜을 발급합니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String COGNITO_IDENTITY_PROVIDER_URL = <span class="string">&quot;cognito-idp.%s.amazonaws.com/%s&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> Credentials <span class="title">loginsCredentials</span><span class="params">(String identityPoolId, Region region, String userPoolId, String accessToken)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, String&gt; logins = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    logins.put(String.format(COGNITO_IDENTITY_PROVIDER_URL, region.id(), userPoolId), accessToken);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> (CognitoIdentityClient cognitoIdentityClient = CognitoIdentityClient.builder()</span><br><span class="line">            .credentialsProvider(AnonymousCredentialsProvider.create())</span><br><span class="line">            .region(region)</span><br><span class="line">            .build()) &#123;</span><br><span class="line"></span><br><span class="line">        GetIdRequest getIdRequest = GetIdRequest.builder()</span><br><span class="line">                .identityPoolId(identityPoolId)</span><br><span class="line">                .logins(logins)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        String identityId = cognitoIdentityClient.getId(getIdRequest).identityId();</span><br><span class="line">        GetCredentialsForIdentityRequest getCredentialsForIdentityRequest = GetCredentialsForIdentityRequest.builder()</span><br><span class="line">                .identityId(identityId)</span><br><span class="line">                .logins(logins)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> cognitoIdentityClient.getCredentialsForIdentity(getCredentialsForIdentityRequest).credentials();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이제 템플릿 엔진에서 주입된 부가 정보를 사용하여 렌더링을 할 수 있게 됩니다.</p>
+<h3 id="인증을-위한-인터셉터"><a href="#인증을-위한-인터셉터" class="headerlink" title="인증을 위한 인터셉터"></a>인증을 위한 인터셉터</h3><p>또 다른 인터셉터의 활용 방안은 인증 처리입니다. 사용자에게 이메일 또는 카카오톡 메시지등을 발송하여 어떤 행동을 할 수 있는 링크를 주게 된다고 가정해보면 해당 링크를 통해 들어오는 사용자은 인증을 수행하기 전일 수 있습니다. 이때 주어지는 링크에 임시적으로 인증에 사용할 수 있는 만료성 토큰 파라미터를 포함시킴으로써 사용자를 인증하는 로직을 추가할 수 있습니다.</p>
+<p><img data-src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/31015797034/original/89mawYXJeO_K082-5HF52bd73j_SN60nLQ.png" alt="코인원의 이메일 인증하기 버튼"></p>
+<p>위 예시 이미지의 이메일 인증하기 버튼에 대한 링크에는 코인원에서 분석할 수 있는 어떠한 파라미터에 인증을 위한 식별 정보가 있을거라 추측합니다.</p>
+<p>다음은 토큰 파라미터 유무를 확인하고 토큰 파라미터를 분석하여 인증을 수행하는 인터셉터 구현의 예시입니다.</p>
+<figure class="highlight java"><figcaption><span>TokenBasedAuthenticationInterceptor</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TokenBasedAuthenticationInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TOKEN_PARAMETER_NAME = <span class="string">&quot;token&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String parameter = request.getParameter(TOKEN_PARAMETER_NAME);</span><br><span class="line">        <span class="keyword">if</span>(parameter != <span class="keyword">null</span> &amp;&amp; !parameter.equals(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">            <span class="comment">// <span class="doctag">NOTE:</span> 토큰 파라미터 분석 및 검증</span></span><br><span class="line">            String token = analyticsToken(parameter);</span><br><span class="line">            <span class="keyword">boolean</span> valid = validateToken(token);</span><br><span class="line">            <span class="keyword">if</span>(valid) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">NOTE:</span> 토큰 기반 인증 처리</span></span><br><span class="line">                authenticationByToken(token);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> valid;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-integrating-user-pools-with-identity-pools.html#amazon-cognito-integrating-user-pools-with-identity-pools-using">Integrating a User Pool with an Identity Pool</a></p>
-</blockquote>
-<h3 id="Connenction-using-MqttClient"><a href="#Connenction-using-MqttClient" class="headerlink" title="Connenction using MqttClient"></a>Connenction using MqttClient</h3><p>Amazon Cognito를 사용하여 AWS 서비스에 인증할 수 있는 크레덴셜을 발급했습니다. 이제 이 크레덴셜을 사용하여 MQTT 클라이언트로 AWS IoT의 MQTT 메시지 브로커에 연결할 수 있습니다. AWS IoT Device SDK에서는 AWSIotMqttClient로 연결할 수 있지만 <strong>AWS IoT Device SDK v2</strong>에서는 MqttClientConnection로 연결할 수 있습니다.</p>
-<blockquote>
-<p>SDK V2들은 C로 작성된 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/sdkref/latest/guide/common-runtime.html">AWS Common Runtime</a> 기반하에 동작하게 됩니다.</p>
-</blockquote>
-<p>MqttClientConnection는 자바 8의 CompletableFuture을 통해 비동기로 수행되어 다음과 같이 사용할 수 있습니다.</p>
-<p>먼저, AwsIotMqttConnectionBuilder를 사용하여 크레덴셜을 기반으로 MqttClientConnection를 생성합니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> MqttClientConnection <span class="title">build</span><span class="params">(String clientEndpoint, String clientId,</span></span></span><br><span class="line"><span class="params"><span class="function">                                        String accessKeyId, String secretKey, String sessionToken, String region)</span> <span class="keyword">throws</span> UnsupportedEncodingException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (EventLoopGroup eventLoopGroup = <span class="keyword">new</span> EventLoopGroup(<span class="number">1</span>);</span><br><span class="line">            HostResolver resolver = <span class="keyword">new</span> HostResolver(eventLoopGroup);</span><br><span class="line">            ClientBootstrap clientBootstrap = <span class="keyword">new</span> ClientBootstrap(eventLoopGroup, resolver);</span><br><span class="line">            AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newDefaultBuilder()) &#123;</span><br><span class="line"></span><br><span class="line">        StaticCredentialsProvider credentialsProvider =</span><br><span class="line">                <span class="keyword">new</span> StaticCredentialsProvider.StaticCredentialsProviderBuilder()</span><br><span class="line">                        .withAccessKeyId(accessKeyId.getBytes(StandardCharsets.UTF_8))</span><br><span class="line">                        .withSecretAccessKey(secretKey.getBytes(StandardCharsets.UTF_8))</span><br><span class="line">                        .withSessionToken(sessionToken.getBytes(StandardCharsets.UTF_8))</span><br><span class="line">                        .build();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> builder</span><br><span class="line">                .withEndpoint(clientEndpoint)</span><br><span class="line">                .withClientId(clientId)</span><br><span class="line">                .withBootstrap(clientBootstrap)</span><br><span class="line">                .withSocketOptions(<span class="keyword">new</span> SocketOptions())</span><br><span class="line">                .withWebsockets(<span class="keyword">true</span>)</span><br><span class="line">                .withWebsocketCredentialsProvider(credentialsProvider)</span><br><span class="line">                .withWebsocketSigningRegion(region)</span><br><span class="line">                .withConnectionEventCallbacks(clientConnectionEvents())</span><br><span class="line">                .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>만들어진 MqttClientConnection는 자바 8의 CompletableFuture로 동작하므로 다음과 같이 비동기로 수행할 수 있습니다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&#123;&quot;squid:S3740&quot;, &quot;rawtypes&quot;, &quot;unchecked&quot;&#125;)</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Credentials credentials)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        MqttClientConnection connection = build(clientEndpoint, clientId,</span><br><span class="line">                credentials.accessKeyId(), credentials.secretKey(), credentials.sessionToken(), region.id());</span><br><span class="line">        CompletableFuture&lt;Boolean&gt; connectFuture = connection.connect();</span><br><span class="line">        connectFuture.get();</span><br><span class="line"></span><br><span class="line">        ListenableFutureTask futureTask = <span class="keyword">new</span> ListenableFutureTask(() -&gt;</span><br><span class="line">                connection.subscribe(<span class="string">&quot;thing-update/#&quot;</span>, QualityOfService.AT_MOST_ONCE, handler -&gt; &#123;</span><br><span class="line">                    String payload = <span class="keyword">new</span> String(handler.getPayload(), StandardCharsets.UTF_8);</span><br><span class="line">                    log.info(<span class="string">&quot;topic:&#123;&#125;, qos: &#123;&#125;&quot;</span>, handler.getTopic(), handler.getQos());</span><br><span class="line">                    log.trace(<span class="string">&quot;===&gt; &#123;&#125;&quot;</span>, payload);</span><br><span class="line">                &#125;));</span><br><span class="line"></span><br><span class="line">        futureTask.run();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (UnsupportedEncodingException | ExecutionException e) &#123;</span><br><span class="line">        log.error(e.getMessage());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        log.error(e.getMessage());</span><br><span class="line">        Thread.currentThread().interrupt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>ListenableFutureTask는 스프링에서 지원하는 클래스입니다.</p>
-</blockquote>
-<h4 id="AWS-IoT-Client-Endpoint"><a href="#AWS-IoT-Client-Endpoint" class="headerlink" title="AWS IoT Client Endpoint"></a>AWS IoT Client Endpoint</h4><p>AWS IoT 엔드포인트는 <a href="distrust-symantec-ca-in-jdk">시만텍 CA 인증서를 신뢰하지 않음</a> 문제가 발생하지 않도록 <strong>ATS CA 인증서</strong> 에서 서명한 인증서를 제공하는 ATS 엔드포인트로 설정합니다.</p>
-<figure class="highlight properties"><figcaption><span>application.properties</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">aws-iot.client.endpoint</span>=<span class="string">&#123;ACCOUNT_SPECIFIC_PREFIX&#125;-ats.iot.&#123;REGION_ID&#125;.amazonaws.com</span></span><br><span class="line"><span class="meta">aws-iot.client.id</span>=<span class="string"></span></span><br></pre></td></tr></table></figure>
-
-<p>클라이언트 엔드포인트에 접근할 수 있는 인증된 사용자의 크레덴셜의 정보라면 메시지 페이로드가 구독된 것을 확인할 수 있습니다.</p>
-<p><img data-src="/images/posts/aws-iot-mqtt-subscribe.png"></p>
-<p>이상으로 AWS IoT Device SDK Java로 MQTT 연결하기를 마칩니다. 감사합니다.</p>
+<p><strong>일정 시간이 만료</strong>되면 해당 토큰으로는 인증할 수 없고 이미 인증을 수행하여 <strong>사용이 완료된 토큰</strong>으로 확인하는 것은 토큰 파라미터 분석 및 검증 로직에 포함될겁니다.</p>
+<p>간단하게 HandlerInterceptor의 활용 방안 3가지를 확인해보았습니다. 애플리케이션 마다 요구사항이 다르고 무궁무진 하기 때문에 HandlerInterceptor는 더 다양한 방식으로 활용할 수 있을 겁니다. 이상으로 HandlerInterceptor은 언제 사용하나요?를 마치겠습니다. 감사합니다.</p>
 
       
     </div>
@@ -352,7 +277,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/25/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><span class="page-number current">26</span><a class="page-number" href="/page/27/">27</a><span class="space">&hellip;</span><a class="page-number" href="/page/40/">40</a><a class="extend next" rel="next" href="/page/27/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/25/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><span class="page-number current">26</span><a class="page-number" href="/page/27/">27</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/27/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>
@@ -364,7 +289,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

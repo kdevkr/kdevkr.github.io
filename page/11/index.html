@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">42</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">61</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/maintaining-process-execution-in-linux/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/static-analysis-performed-by-sonarqube-and-github-action/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/maintaining-process-execution-in-linux/" class="post-title-link" itemprop="url">리눅스에서 프로세스 실행 유지하기</a>
+          <a href="/static-analysis-performed-by-sonarqube-and-github-action/" class="post-title-link" itemprop="url">SonarQube와 Github Action으로 수행하는 정적 분석</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-10-10 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-10T00:00:00Z">2021-10-10</time>
+      <time title="Created: 2021-10-11 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-11T00:00:00Z">2021-10-11</time>
     </span>
 
   
@@ -227,25 +227,73 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>안녕하세요 Mambo 입니다.</p>
-<p>서버에서 실행중인 애플리케이션은 언제든지 <strong>예기치 않은 상황</strong>으로 중단될 수 있습니다. 예를 들어, 일시적으로 전력이 차단되어 서버 장비가 다시 시작되거나 애플리케이션 프로세스가 서버 자원을 많이 사용해서 프로세스가 중단되는 상황이 발생할 수 있습니다. </p>
-<p>그래서 오늘 알아볼 내용은 리눅스에서 예기치 않은 상황으로 인하여 프로세스가 중단되었을 경우 자동으로 프로세스를 다시 실행시킴으로써 프로세스 실행 상태를 유지하기 위한 방법입니다.</p>
-<h2 id="프로세스-실행-유지"><a href="#프로세스-실행-유지" class="headerlink" title="프로세스 실행 유지"></a>프로세스 실행 유지</h2><p>먼저, 스프링 부트 애플리케이션을 다음과 같이 실행할 수 있다고 가정 하겠습니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">nohup java -jar -Xmx500m demo.war 1&gt; app.log 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="comment"># [1] 227</span></span><br><span class="line"></span><br><span class="line">ls -l</span><br><span class="line"><span class="comment"># total 21M</span></span><br><span class="line"><span class="comment"># -rw-r--r-- 1 ec2-user ec2-user 2.0K Oct  8 15:19 app.log</span></span><br><span class="line"><span class="comment"># -rw-r--r-- 1 ec2-user ec2-user    3 Oct  8 15:19 app.pid</span></span><br><span class="line"><span class="comment"># -rwxr-xr-x 1 ec2-user ec2-user  20M Oct  8 12:28 demo.war*</span></span><br><span class="line"></span><br><span class="line">cat app.pid</span><br><span class="line"><span class="comment"># 227</span></span><br></pre></td></tr></table></figure>
+<p>오늘은 SonarQube와 Github Action을 통해 정적 분석을 수행하기 위한 과정을 알아보려고 합니다.</p>
+<h2 id="SonarQube"><a href="#SonarQube" class="headerlink" title="SonarQube"></a>SonarQube</h2><p><a target="_blank" rel="noopener" href="https://www.sonarqube.org/">소나큐브</a>는 다양한 언어에 대한 코드 품질을 분석하고 취약점을 파악할 수 있는 정적 분석 도구입니다. 회사에서 정적 분석을 수행하고 싶다는 요구사항이 있어 제가 SonarQube를 도입하고 월요일과 금요일마다 프로젝트 코드에 대한 정적 분석을 수행하고 있습니다. 제가 정적 분석을 위해서 소나큐브를 도입한 이유는 다음과 같습니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-00.png" alt="소나큐브 라이센스"></p>
+<ol>
+<li>GPLv3 라이센스 기반의 오픈소스 버전 지원</li>
+<li>IntelliJ 또는 VSCode와 같은 IDE를 위한 SonarLint 지원</li>
+<li>소나큐브에 대한 공식 도커 이미지 지원</li>
+<li>다양한 언어와 커뮤니티 기반의 규칙 지원</li>
+</ol>
+<p>회사 개발자들이 주로 사용하는 인텔리제이 IDEA 또는 VSCode에서 사용할 수 있는 SonarLint를 제공하여 별도의 서버 없이도 간단하게 자체적으로 정적 분석을 수행하고 결과를 확인할 수 있으며 공식 도커 이미지를 통해 별다른 설정 없이도 간단하게 소나큐브 시스템을 구성할 수 있습니다.</p>
+<h3 id="소나큐브-시스템-구성"><a href="#소나큐브-시스템-구성" class="headerlink" title="소나큐브 시스템 구성"></a>소나큐브 시스템 구성</h3><p>소나큐브는 <a target="_blank" rel="noopener" href="https://docs.sonarqube.org/latest/setup/install-server/">직접 설치</a>할 수도 있으며 도커 이미지와 함께 제공하는 도커 컴포즈 문서를 활용할 수 있습니다.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/SonarSource/docker-sonarqube/blob/master/example-compose-files/sq-with-postgres/docker-compose.yml">sq-with-postgres/docker-compose.yml</a></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.8&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">web:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">sonarqube:9.1.0-community</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9000:9000&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarnet</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">SONAR_JDBC_URL:</span> <span class="string">jdbc:postgresql://db:5432/sonar</span></span><br><span class="line">      <span class="attr">SONAR_JDBC_USERNAME:</span> <span class="string">sonar</span></span><br><span class="line">      <span class="attr">SONAR_JDBC_PASSWORD:</span> <span class="string">sonar</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarqube_data:/opt/sonarqube/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarqube_extensions:/opt/sonarqube/extensions</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarqube_logs:/opt/sonarqube/logs</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarqube_temp:/opt/sonarqube/temp</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins</span></span><br><span class="line">    <span class="attr">ulimits:</span></span><br><span class="line">      <span class="attr">nproc:</span> <span class="number">65535</span></span><br><span class="line">      <span class="attr">nofile:</span></span><br><span class="line">        <span class="attr">soft:</span> <span class="number">262144</span></span><br><span class="line">        <span class="attr">hard:</span> <span class="number">262144</span></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonarnet</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">POSTGRES_USER:</span> <span class="string">sonar</span></span><br><span class="line">      <span class="attr">POSTGRES_PASSWORD:</span> <span class="string">sonar</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">postgresql:/var/lib/postgresql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">postgresql_data:/var/lib/postgresql/data</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">sonarnet:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">bridge</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">sonarqube_data:</span></span><br><span class="line">  <span class="attr">sonarqube_extensions:</span></span><br><span class="line">  <span class="attr">sonarqube_logs:</span></span><br><span class="line">  <span class="attr">sonarqube_temp:</span></span><br><span class="line">  <span class="attr">sonarqube_bundled-plugins:</span></span><br><span class="line">  <span class="attr">postgresql:</span></span><br><span class="line">  <span class="attr">postgresql_data:</span></span><br></pre></td></tr></table></figure>
 
-<p>위 예시에서 nohup 명령어를 사용하고 출력된 프로세스 아이디와 스프링 부트 애플리케이션에서 ApplicationPidWriter에 의해 생성된 프로세스 아이디 파일이 동일한 것을 확인할 수 있습니다.</p>
-<h3 id="프로세스-아이디-확인하기"><a href="#프로세스-아이디-확인하기" class="headerlink" title="프로세스 아이디 확인하기"></a>프로세스 아이디 확인하기</h3><p>앞서 스프링 부트 애플리케이션처럼 애플리케이션 자체적으로 현재 실행중인 프로세스 아이디를 저장할 수 있는 기능을 포함하고 있다면 좋겠지만 그렇지 않을 수 있습니다. 그래서 이미 실행중인 프로세스 아이디를 확인하고 가져올 수 있는 방법을 알아야 합니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># echo $!</span></span><br><span class="line">nohup java -jar -Xmx500m demo.war 1&gt; app.log 2&gt;&amp;1 &amp; <span class="built_in">echo</span> $! &gt; app.pid</span><br><span class="line"></span><br><span class="line"><span class="comment"># JPS(JVM Process Status)</span></span><br><span class="line">jps -v | grep war | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ps -ef</span></span><br><span class="line">ps -ef | grep java | grep -v grep | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># netstat -tnlp</span></span><br><span class="line">netstat -tnlp | grep java | awk <span class="string">&#x27;&#123;print $7&#125;&#x27;</span> | awk -F <span class="string">&#x27;/&#x27;</span> <span class="string">&#x27;&#123;print $1&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># pgrep</span></span><br><span class="line">pgrep java</span><br></pre></td></tr></table></figure>
+<h4 id="WSL-vm-max-map-count"><a href="#WSL-vm-max-map-count" class="headerlink" title="WSL vm.max_map_count"></a>WSL vm.max_map_count</h4><p>윈도우 환경에서 WSL로 도커 컨테이너를 실행하는 경우 vm.max_map_count로 인하여 소나큐브에서 실행하는 Elasticsearch가 실행되지 않을 수 있습니다. 이 경우 윈도우 터미널에서 WSL로 도커 컨테이너로 접속 후 다음의 명령어를 실행하여 Elasticsearch에서 요구하는 수치로 변경하시면 됩니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</span></span><br><span class="line">wsl -d docker-desktop</span><br><span class="line">sysctl -w vm.max_map_count=262144</span><br></pre></td></tr></table></figure>
 
-<p>첫번째 방식에 사용된 <strong>echo $!</strong> 는 마지막으로 백그라운드에서 실행된 명령어에 대한 PID값을 출력할 수 있는 명령어입니다.</p>
-<h3 id="Crontab으로-프로세스-유지하기"><a href="#Crontab으로-프로세스-유지하기" class="headerlink" title="Crontab으로 프로세스 유지하기"></a>Crontab으로 프로세스 유지하기</h3><p>일반적으로 사용되는 고전적인 방식은 앞서 다양한 방식으로 추출된 프로세스 아이디에 대한 프로세스 실행 상태를 체크하는 스크립트를 Crontab을 통해 주기적으로 실행하는 것입니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line">PID_FILE=<span class="string">&quot;app.pid&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">autorun</span></span> () &#123;</span><br><span class="line">  <span class="comment"># ... &amp; echo $! &gt; app.pid</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$PID_FILE</span>&quot;</span> ] &amp;&amp; [ ! -z `cat <span class="string">&quot;<span class="variable">$PID_FILE</span>&quot;</span>` ]; <span class="keyword">then</span></span><br><span class="line">  PID=$(cat <span class="variable">$PID_FILE</span>)</span><br><span class="line">  <span class="keyword">if</span> ps -p <span class="variable">$PID</span> &gt; /dev/null; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$PID_FILE</span>(<span class="variable">$PID</span>) is running&quot;</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    autorun</span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  autorun</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>소나큐브의 관리자 계정과 초기 비밀번호는 admin/admin 입니다.</p>
+</blockquote>
+<h3 id="소나큐브-프로젝트-생성"><a href="#소나큐브-프로젝트-생성" class="headerlink" title="소나큐브 프로젝트 생성"></a>소나큐브 프로젝트 생성</h3><p>소나큐브에 접속하였다면 정적 분석을 수행할 프로젝트를 생성해야합니다. 저는 깃허브 리파지토리 이름을 그대로 사용하는 편입니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-01.png" alt="spring5-web-example 프로젝트"></p>
+<p>그리고 소나큐브에 로그인할 수 있는 토큰을 발행합니다. </p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-02.png"></p>
+<p>토큰 용도를 구분하기 위한 이름을 지정하는데 저는 Github Action에서 사용할 예정이므로 GITHUB_ACTION을 지정하였습니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-03.png"></p>
+<p>저는 로컬 컴퓨터에 소나큐브를 실행하였고 필요할때만 포트포워딩을 수행할 예정이므로 토큰을 공개하겠습니다. (어차피 학습 후에 지움…)</p>
+<h3 id="소나큐브-관련-코드-추가"><a href="#소나큐브-관련-코드-추가" class="headerlink" title="소나큐브 관련 코드 추가"></a>소나큐브 관련 코드 추가</h3><p>소나큐브 시스템에 프로젝트를 생성하고 토큰을 발급하였기 때문에 소나큐브와 연계할 수 있도록 프로젝트 폴더에 소나큐브와 관련된 코드를 추가하겠습니다.</p>
+<h4 id="build-gradle"><a href="#build-gradle" class="headerlink" title="build.gradle"></a>build.gradle</h4><p>만약, 그래들을 통해 소나큐브와 연동하고 싶다면 build.gradle에 SonarQube 플러그인을 추가해야합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id <span class="string">&quot;org.sonarqube&quot;</span> version <span class="string">&#x27;3.3&#x27;</span></span><br><span class="line">    id <span class="string">&#x27;jacoco&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sonarqube &#123;</span><br><span class="line">  properties &#123;</span><br><span class="line">    property <span class="string">&quot;sonar.projectKey&quot;</span>, <span class="string">&quot;spring5-web-example&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="SystemD"><a href="#SystemD" class="headerlink" title="SystemD"></a>SystemD</h3><p>더 효율적인 방식은 Nginx와 같은 패키지를 APT 또는 YUM으로 설치할 때 SystemD 서비스에 자동으로 등록하는 것처럼  애플리케이션을 실행하는 명령어 또는 스크립트를 SystemD 서비스로 등록하는 것입니다. </p>
-<p><strong>/etc/systemd/system/demo.service</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Demo</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User=ec2-user</span><br><span class="line">WorkingDirectory=/home/ec2-user</span><br><span class="line">ExecStart=/usr/bin/java -jar -Xmx500m demo.war</span><br><span class="line">ExecStop=kill -9 `cat app.pid`</span><br><span class="line">SuccessExitStatus=143</span><br><span class="line">Restart=on-failure</span><br><span class="line">RestartSec=5</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+<h4 id="sonar-project-properties"><a href="#sonar-project-properties" class="headerlink" title="sonar-project.properties"></a>sonar-project.properties</h4><p>sonar-project.properties 파일은 소나큐브에서 참조하게 되는 설정 파일입니다.</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">sonar.projectKey=spring5-web-example</span></span><br><span class="line"><span class="string">sonar.projectName=spring5-web-example</span></span><br><span class="line"><span class="string">sonar.java.source=1.11</span></span><br><span class="line"><span class="string">sonar.sources=src/main/java</span></span><br><span class="line"><span class="comment">#sonar.tests=src/main/test</span></span><br><span class="line"><span class="string">sonar.java.binaries=build/classes/java/main/com/example</span></span><br><span class="line"><span class="string">sonar.sourceEncoding=UTF-8</span></span><br><span class="line"><span class="string">sonar.exclusions=</span></span><br></pre></td></tr></table></figure>
 
-<p>위와 같이 스크립트를 정의했다면 다음과 같이 서버가 실행될 때 서비스가 시작되도록 활성화하거나 직접 서비스를 실행하고 종료할 수 있습니다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl <span class="built_in">enable</span> demo.service</span><br><span class="line">sudo systemctl start demo.service</span><br></pre></td></tr></table></figure>
+<h2 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h2><p><a target="_blank" rel="noopener" href="https://github.com/kitabisa/sonarqube-action">SonarQube GitHub Action</a>은 Github Action을 통해 소나큐브로 정적 분석을 수행할 수 있도록 지원합니다.</p>
+<h3 id="소나큐브-워크플로우-코드-추가"><a href="#소나큐브-워크플로우-코드-추가" class="headerlink" title="소나큐브 워크플로우 코드 추가"></a>소나큐브 워크플로우 코드 추가</h3><p><strong>.github/workflows/sonarqube.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="comment"># schedule:</span></span><br><span class="line">    <span class="comment"># - cron: &#x27;0 * * * 1&#x27;</span></span><br><span class="line">  <span class="attr">workflow_dispatch:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">name:</span> <span class="string">SonarQube</span> <span class="string">Workflow</span></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">Build</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">up</span> <span class="string">JDK</span> <span class="number">1.11</span></span><br><span class="line">      <span class="attr">uses:</span> <span class="string">AdoptOpenJDK/install-jdk@v1</span></span><br><span class="line">      <span class="attr">with:</span></span><br><span class="line">        <span class="attr">version:</span> <span class="string">&#x27;11&#x27;</span></span><br><span class="line">        <span class="attr">architecture:</span> <span class="string">x64</span></span><br><span class="line">        <span class="attr">targets:</span> <span class="string">&#x27;JAVA_HOME&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Grant</span> <span class="string">execute</span> <span class="string">permission</span> <span class="string">for</span> <span class="string">gradlew</span></span><br><span class="line">      <span class="attr">run:</span> <span class="string">chmod</span> <span class="string">+x</span> <span class="string">gradlew</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Build</span> <span class="string">with</span> <span class="string">Gradle</span></span><br><span class="line">      <span class="attr">run:</span> <span class="string">./gradlew</span> <span class="string">build</span> <span class="string">-x</span> <span class="string">test</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Upload</span> <span class="string">build</span> <span class="string">artifact</span></span><br><span class="line">      <span class="attr">uses:</span> <span class="string">actions/upload-artifact@v2</span></span><br><span class="line">      <span class="attr">with:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">build</span></span><br><span class="line">        <span class="attr">path:</span> <span class="string">build/classes</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">sonarQube:</span></span><br><span class="line">    <span class="attr">needs:</span> <span class="string">build</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">SonarQube</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Donwload</span> <span class="string">build</span> <span class="string">artifact</span></span><br><span class="line">      <span class="attr">uses:</span> <span class="string">actions/download-artifact@v2</span></span><br><span class="line">      <span class="attr">with:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">build</span></span><br><span class="line">        <span class="attr">path:</span> <span class="string">build/classes</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">SonarQube</span> <span class="string">Scan</span></span><br><span class="line">      <span class="attr">uses:</span> <span class="string">kitabisa/sonarqube-action@master</span></span><br><span class="line">      <span class="attr">with:</span></span><br><span class="line">        <span class="attr">host:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SONAR_HOST</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">login:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SONAR_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">projectBaseDir:</span> <span class="string">&#x27;/github/workspace&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>소나큐브 워크플로우 파일을 깃허브 리파지토리의 메인 또는 마스터 브랜치에 반영하면 깃허브에서 워크플로우를 등록합니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-04.png"></p>
+<h3 id="소나큐브-관련-시크릿-생성"><a href="#소나큐브-관련-시크릿-생성" class="headerlink" title="소나큐브 관련 시크릿 생성"></a>소나큐브 관련 시크릿 생성</h3><p>소나큐브 워크플로우에서 사용하는 두가지 시크릿을 깃허브 리파지토리에 설정해야합니다.</p>
+<ul>
+<li>SONAR_HOST : 소나큐브 호스트 주소</li>
+<li>SONAR_TOKEN : 소나큐브에서 발급한 토큰 정보</li>
+</ul>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-05.png"></p>
+<h3 id="소나큐브-워크플로우-실행"><a href="#소나큐브-워크플로우-실행" class="headerlink" title="소나큐브 워크플로우 실행"></a>소나큐브 워크플로우 실행</h3><p>소나큐브 워크플로우 설정이 완료되었으므로 메인 브랜치를 기준으로 워크플로우를 실행합니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-06.png"></p>
+<p>프로젝트 코드에 대한 빌드가 정상적으로 수행되고 소나큐브 서버를 통해 정적 분석을 수행되었다면 다음과 같이 워크플로우가 정상적으로 완료됩니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-07.png"></p>
+<h2 id="정적-분석-결과"><a href="#정적-분석-결과" class="headerlink" title="정적 분석 결과"></a>정적 분석 결과</h2><p>소나큐브 시스템에 접속하여 소나큐브 워크플로우를 실행한 프로젝트의 정적 분석 결과를 확인합니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-08.png"></p>
+<p>빌드 테스트는 수행하지 않았기 때문에 코드 커버리지는 분석할 수 없었으나 10개의 코드 악취가 발견되었습니다.</p>
+<h3 id="코드-악취-검토-및-개선"><a href="#코드-악취-검토-및-개선" class="headerlink" title="코드 악취 검토 및 개선"></a>코드 악취 검토 및 개선</h3><p>정적 분석 결과로 검출된 코드 악취에 대한 내용을 검토하고 이를 개선해보겠습니다.</p>
+<h4 id="코드-악취"><a href="#코드-악취" class="headerlink" title="코드 악취"></a>코드 악취</h4><p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-09.png"></p>
+<p>첫번째 검출 항목은 연속된 라인을 주석으로 처리한 부분을 제거해야한다는 것입니다. </p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-10.png"></p>
+<p>만약, 이렇게 주석되어있는 것이 남아있어야 한다고 가정하면 다음과 같이 프로젝트에 대한 검출 규칙을 변경할 수 있습니다.</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Ignore Rules</span></span><br><span class="line"><span class="meta">sonar.issue.ignore.multicriteria</span>=<span class="string">e1,e2</span></span><br><span class="line"><span class="meta">sonar.issue.ignore.multicriteria.e1.ruleKey</span>=<span class="string">java:S125</span></span><br><span class="line"><span class="meta">sonar.issue.ignore.multicriteria.e1.resourceKey</span>=<span class="string">**/*.java</span></span><br><span class="line"><span class="meta">sonar.issue.ignore.multicriteria.e2.ruleKey</span>=<span class="string">java:S1192</span></span><br><span class="line"><span class="meta">sonar.issue.ignore.multicriteria.e2.resourceKey</span>=<span class="string">**/*.java</span></span><br></pre></td></tr></table></figure>
+
+<p>java:S125는 블록으로 된 주석을 남기고 있다는 악취이며 java:S1192는 동일한 문자열을 상수로 취급하지 않는다는 악취입니다. 저는 이것을 악취로 보지 않기 위해서 위와 같이 설정하고 소나큐브 워크플로우를 다시 수행해보겠습니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-11.png"></p>
+<p>기존에 검출되었던 코드 악취 중 java:S125와 java:S1192에 해당하는 부분이 제외되어 3개의 코드 악취가 줄어들었음을 확인할 수 있습니다. 이렇게 회사 또는 개발팀에서 프로젝트 코드에 대한 규칙을 검토하는 과정을 거쳐야합니다만 저희 회사는 정작 그러지 않고 있어 아쉬움이 많습니다. 체계가 없다보니 무언가 도입을 원하지만 실제로는 제대로 활용하지 않는게 많은 것 같아요.</p>
+<p>아무튼 나머지 코드 악취에 대해서도 리팩토링을 수행하여 없애보도록 하면서 마치겠습니다.</p>
+<p><img data-src="/images/posts/sonarqube-and-github-action/sonarqube-12.png"></p>
+<h4 id="SuppressWarnings"><a href="#SuppressWarnings" class="headerlink" title="@SuppressWarnings"></a>@SuppressWarnings</h4><p>sonar-project.properties에서 제외되도록 정의한 규칙이 패턴에 의한 것이라면 특정 클래스 또는 함수 단위로 규칙을 제외하고 싶은 경우 @SuppressWarnings을 사용할 수 있습니다. </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&#123;&quot;squid:S125&quot;,&quot;squid:S1192&quot;&#125;)</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityConfig</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>감사합니다.</p>
 
@@ -267,7 +315,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

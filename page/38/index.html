@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">42</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">61</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/sending-mail-with-freemarker-template/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/spring-boot-integration-mqtt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/sending-mail-with-freemarker-template/" class="post-title-link" itemprop="url">프리마커 템플릿으로 이메일 발송하기</a>
+          <a href="/spring-boot-integration-mqtt/" class="post-title-link" itemprop="url">스프링 부트 MQTT 클라이언트 메시지 채널 구성하기</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2019-03-19 00:00:00" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00Z">2019-03-19</time>
+      <time title="Created: 2020-09-04 00:00:00" itemprop="dateCreated datePublished" datetime="2020-09-04T00:00:00Z">2020-09-04</time>
     </span>
 
   
@@ -226,63 +226,31 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p><img data-src="https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#compact"></p>
-<h3 id="스프링-프레임워크의-이메일-지원"><a href="#스프링-프레임워크의-이메일-지원" class="headerlink" title="스프링 프레임워크의 이메일 지원"></a>스프링 프레임워크의 이메일 지원</h3><p>스프링 프레임워크에서는 이메일을 발송할 수 있도록 <code>org.springframework.mail</code> 패키지를 제공한다.</p>
-<p><code>MailSender</code> 인터페이스는 메일 발송 기능을 가지는 최상위 인터페이스이며 스프링 프레임워크는 이 보다 더 좋은 기능을 제공하도록 확장한 <code>JavaMailSender</code> 인터페이스를 포함한다.</p>
-<h4 id="Dependencies"><a href="#Dependencies" class="headerlink" title="Dependencies"></a>Dependencies</h4><p>스프링 프레임워크에서 메일을 발송할 때 사용되는 의존성은 다음과 같다.</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">compile(<span class="string">&#x27;org.springframework:spring-context-support:4.3.7.RELEASE&#x27;</span>)</span><br><span class="line">compile(<span class="string">&#x27;javax.mail:mail:1.4.7&#x27;</span>)</span><br></pre></td></tr></table></figure>
+          <p>제주 전기차 실증 시스템을 개발하면서 전기차 OBD 데이터를 수집하기 위하여 MQTT(Message Queuing Telemetry Transfer) 클라이언트를 구성하고 토픽에 대한 메시지 페이로드를 수신하는 것을 처음 구성하였습니다.</p>
+<p>본 글에서는 스프링 MQTT를 통해 MQTT 클라이언트와 메시지 구독 또는 발행하는 채널을 구성하는 것을 설명합니다.</p>
+<h2 id="의존성"><a href="#의존성" class="headerlink" title="의존성"></a>의존성</h2><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-integration&#x27;</span></span><br><span class="line">implementation <span class="string">&#x27;org.springframework.integration:spring-integration-mqtt&#x27;</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="JavaMailSenderImpl"><a href="#JavaMailSenderImpl" class="headerlink" title="JavaMailSenderImpl"></a>JavaMailSenderImpl</h5><p>스프링 프레임워크는 <code>JavaMailSender</code> 인터페이스의 구현체인 <code>JavaMailSenderImpl</code> 클래스를 제공하며</p>
-<p>우리는 굳이 JavaMailSender 구현체를 만들지 않아도 이 JavaMailSenderImpl를 사용하여 메일을 발송하는 기능을 만들 수 있다.</p>
-<h5 id="MimeMessageHelper"><a href="#MimeMessageHelper" class="headerlink" title="MimeMessageHelper"></a>MimeMessageHelper</h5><p>스프링 프레임워크는 <code>javax.mail.internet.MimeMessage</code> 클래스에 각종 설정들(제목이나 첨부파일 등)을 쉽게 지정할 수 있도록 헬퍼 클래스를 제공한다.</p>
-<h3 id="이메일-발송을-위한-SMTP-서버"><a href="#이메일-발송을-위한-SMTP-서버" class="headerlink" title="이메일 발송을 위한 SMTP 서버"></a>이메일 발송을 위한 SMTP 서버</h3><p>이메일을 송수신하는 서버를 SMTP(Simple Mail Transfer Protocol) 서버라고 한다.</p>
-<p>그러나, 스프링 프레임워크가 자체적으로 SMTP 서버를 제공해주지는 않기 때문에 실제로 이메일을 발송하기 위해서는 SMTP 서버를 구축해야만 한다.</p>
-<p>SMTP 메일 서버를 구축하는 것 대신에 우리가 많이 사용하는 구글이나 네이버 이메일 계정으로 SMTP 메일 서버를 이용할 수 있다.</p>
-<p>본 포스트 에서는 구글 이메일 계정으로 SMTP 메일 서버를 이용해보겠다.</p>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://github.com/ChangemakerStudios/Papercut%EC%99%80">https://github.com/ChangemakerStudios/Papercut와</a> 같은 개발용 SMTP 서버도 있다.</p>
-</blockquote>
-<h4 id="구글-SMTP-활성화"><a href="#구글-SMTP-활성화" class="headerlink" title="구글 SMTP 활성화"></a>구글 SMTP 활성화</h4><p>구글 SMTP 서버를 이용하기 위해서는 구글 이메일 계정의 <a target="_blank" rel="noopener" href="https://myaccount.google.com/lesssecureapps"><code>보안 수준이 낮은 앱의 액세스</code></a>를 허용해야 한다.</p>
-<p><img data-src="/spring/images/google-less-secure-apps.png"></p>
-<p>이후 <a target="_blank" rel="noopener" href="https://support.google.com/mail/answer/7126229?visit_id=636885550269950209-1570087438&rd=1">SMTP 서버 이용시 필요한 정보</a>는 다음과 같다.</p>
-<ul>
-<li>SMTP Host : smtp.gmail.com</li>
-<li>SMTP Username : $email</li>
-<li>SMTP Password : $password</li>
-<li>SMTP Post : 465</li>
-<li>SSL Enable : true</li>
-</ul>
-<h3 id="이메일-발송-기능-구현"><a href="#이메일-발송-기능-구현" class="headerlink" title="이메일 발송 기능 구현"></a>이메일 발송 기능 구현</h3><p>구글 SMTP 서버를 이용할 수 있도록 설정을 완료하였으니 이메일 발송 기능을 구현하도록 하자.</p>
-<h4 id="JavaMailSender-빈-등록"><a href="#JavaMailSender-빈-등록" class="headerlink" title="JavaMailSender 빈 등록"></a>JavaMailSender 빈 등록</h4><p>우리가 가장 먼저 해야할 일은 JavaMailSender 인터페이스 구현체를 빈으로 등록하는 것이다.</p>
-<p>간단하게 앞서 소개한 JavaMailSenderImpl을 구현체로 사용하고 프로퍼티에 존재하는 정보를 불러와 값을 설정한다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> JavaMailSender <span class="title">javaMailSender</span><span class="params">(ApplicationContext applicationContext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> JavaMailSenderImpl mailSender = <span class="keyword">new</span> JavaMailSenderImpl();</span><br><span class="line">    mailSender.setHost(env.getProperty(<span class="string">&quot;spring.mail.host&quot;</span>));</span><br><span class="line">    mailSender.setPort(Integer.valueOf(env.getProperty(<span class="string">&quot;spring.mail.port&quot;</span>)));</span><br><span class="line">    mailSender.setProtocol(env.getProperty(<span class="string">&quot;spring.mail.protocol&quot;</span>));</span><br><span class="line">    mailSender.setUsername(env.getProperty(<span class="string">&quot;spring.mail.username&quot;</span>));</span><br><span class="line">    mailSender.setPassword(env.getProperty(<span class="string">&quot;spring.mail.password&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Properties javaMailProperties = <span class="keyword">new</span> Properties();</span><br><span class="line">    javaMailProperties.load(applicationContext.getResource(<span class="string">&quot;classpath:mail.properties&quot;</span>).getInputStream());</span><br><span class="line">    mailSender.setJavaMailProperties(javaMailProperties);</span><br><span class="line">    <span class="keyword">return</span> mailSender;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>스프링 MQTT는 <a target="_blank" rel="noopener" href="https://www.eclipse.org/paho/">Eclipse Paho MQTT Client</a> 라이브러리를 사용합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">org.springframework.<span class="attr">integration:</span>spring-integration-<span class="attr">mqtt:</span><span class="number">5.3</span><span class="number">.2</span>.RELEASE</span><br><span class="line">  org.eclipse.<span class="attr">paho:</span>org.eclipse.paho.client.<span class="attr">mqttv3:</span><span class="number">1.2</span><span class="number">.4</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>JavaMailProperties를 프로퍼티에서 불러와 직접 값을 넣어주거나 ApplicationContext 대신에 ClassPathResource를 사용해도 무방하다.</p>
-</blockquote>
-<h5 id="메일-발송-프로퍼티"><a href="#메일-발송-프로퍼티" class="headerlink" title="메일 발송 프로퍼티"></a>메일 발송 프로퍼티</h5><p>위 JavaMailSender에서 사용된 프로퍼티 값을 설정한다.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">spring.mail.host=smtp.gmail.com</span><br><span class="line">spring.mail.port=465</span><br><span class="line">spring.mail.username=</span><br><span class="line">spring.mail.password=</span><br><span class="line"></span><br><span class="line"><span class="comment"># mail.properties</span></span><br><span class="line">mail.smtp.ssl.enable=<span class="literal">true</span></span><br><span class="line">mail.smtp.auth=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h2 id="Inbound-Channel-Configuration"><a href="#Inbound-Channel-Configuration" class="headerlink" title="Inbound Channel Configuration"></a>Inbound Channel Configuration</h2><p>토픽 메시지 구독을 위한 인바운드 채널 구성은 <code>MqttPahoMessageDrivenChannelAdapter</code> 구현체를 통해 가능합니다.</p>
+<h3 id="DefaultMqttPahoClientFactory"><a href="#DefaultMqttPahoClientFactory" class="headerlink" title="DefaultMqttPahoClientFactory"></a>DefaultMqttPahoClientFactory</h3><p>기본적으로 <code>DefaultMqttPahoClientFactory</code>를 통해 MQTT 클라이언트를 등록합니다. 그러므로 우리는 MQTT 연결 정보(MqttConnectOptions)을 설정한 DefaultMqttPahoClientFactory를 빈으로 등록합니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MqttConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MQTT_USERNAME = <span class="string">&quot;username&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MQTT_PASSWORD = <span class="string">&quot;password&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> MqttConnectOptions <span class="title">connectOptions</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        MqttConnectOptions options = <span class="keyword">new</span> MqttConnectOptions();</span><br><span class="line">        options.setCleanSession(<span class="keyword">true</span>);</span><br><span class="line">        options.setUserName(MQTT_USERNAME);</span><br><span class="line">        options.setPassword(MQTT_PASSWORD.toCharArray());</span><br><span class="line">        <span class="keyword">return</span> options;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DefaultMqttPahoClientFactory <span class="title">defaultMqttPahoClientFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        DefaultMqttPahoClientFactory clientFactory = <span class="keyword">new</span> DefaultMqttPahoClientFactory();</span><br><span class="line">        clientFactory.setConnectionOptions(connectOptions());</span><br><span class="line">        <span class="keyword">return</span> clientFactory;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="프리마커-이메일-템플릿"><a href="#프리마커-이메일-템플릿" class="headerlink" title="프리마커 이메일 템플릿"></a>프리마커 이메일 템플릿</h3><p>본 포스트의 목표는 단순 이메일 발송이 아닌 프리마커 템플릿을 활용해서 이메일 내용을 구성해서 발송하는 것이다.</p>
-<p>많은 템플릿 중에서 프리마커를 사용하려는 이유는 가장 설정이 쉽고 이메일 내용을 구성할 때 편리하다는 개인적인 판단 때문이다.</p>
-<blockquote>
-<p>대부분은 Thymeleaf를 사용하는 것으로 예제를 소개하고 있다.</p>
-</blockquote>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">compile(<span class="string">&#x27;org.freemarker:freemarker:2.3.28&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="MqttPahoMessageDrivenChannelAdapter"><a href="#MqttPahoMessageDrivenChannelAdapter" class="headerlink" title="MqttPahoMessageDrivenChannelAdapter"></a>MqttPahoMessageDrivenChannelAdapter</h3><p>앞서 등록하였던 MQTT 클라이언트를 통해 메시지를 구독하기 위하여 <code>MqttPahoMessageDrivenChannelAdapter</code>를 통해 메시지 수신을 위한 채널을 구성합니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MqttConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String BROKER_URL = <span class="string">&quot;tcp://localhost:1883&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MQTT_CLIENT_ID = MqttAsyncClient.generateClientId();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TOPIC_FILTER = <span class="string">&quot;[PROTECT]&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageChannel <span class="title">mqttInputChannel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DirectChannel();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageProducer <span class="title">inboundChannel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        MqttPahoMessageDrivenChannelAdapter adapter =</span><br><span class="line">                <span class="keyword">new</span> MqttPahoMessageDrivenChannelAdapter(BROKER_URL, MQTT_CLIENT_ID, TOPIC_FILTER);</span><br><span class="line">        adapter.setCompletionTimeout(<span class="number">5000</span>);</span><br><span class="line">        adapter.setConverter(<span class="keyword">new</span> DefaultPahoMessageConverter());</span><br><span class="line">        adapter.setQos(<span class="number">1</span>);</span><br><span class="line">        adapter.setOutputChannel(mqttInputChannel());</span><br><span class="line">        <span class="keyword">return</span> adapter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ServiceActivator(inputChannel = &quot;mqttInputChannel&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageHandler <span class="title">inboundMessageHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> message -&gt; &#123;</span><br><span class="line">            String topic = (String) message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);</span><br><span class="line">            System.out.println(<span class="string">&quot;Topic:&quot;</span> + topic);</span><br><span class="line">            System.out.println(<span class="string">&quot;Payload&quot;</span> + message.getPayload());</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이제 MQTT 클라이언트에 의해 수신된 페이로드는 MQTT 클라이언트 ➤ Inbound Channel ➤ MessageChannel ➤ MessageHandler 순으로 이동되어 MessageHandler를 통해 수신된 페이로드를 확인할 수 있습니다.</p>
+<h2 id="Outbound-Channel-Configuration"><a href="#Outbound-Channel-Configuration" class="headerlink" title="Outbound Channel Configuration"></a>Outbound Channel Configuration</h2><p>제주 전기차 실증 시스템에서는 MQTT 클라이언트를 통해 메시지를 발행하는 것은 구현하지 않았습니다. 다만, 메시지를 수신하는 채널을 등록하는 것처럼 메시지를 발행하기 위한 채널을 구성하면 됩니다.</p>
+<h3 id="MqttPahoMessageHandler"><a href="#MqttPahoMessageHandler" class="headerlink" title="MqttPahoMessageHandler"></a>MqttPahoMessageHandler</h3><p>MQTT 클라이언트는 이미 구성되었으므로 <code>MqttPahoMessageHandler</code>으로 메시지 발행을 위한 채널을 구성합니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MqttConfig</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MQTT_CLIENT_ID = MqttAsyncClient.generateClientId();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageChannel <span class="title">mqttOutboundChannel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DirectChannel();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ServiceActivator(inputChannel = &quot;mqttOutboundChannel&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MessageHandler <span class="title">mqttOutbound</span><span class="params">(DefaultMqttPahoClientFactory clientFactory)</span> </span>&#123;</span><br><span class="line">        MqttPahoMessageHandler messageHandler =</span><br><span class="line">                <span class="keyword">new</span> MqttPahoMessageHandler(MQTT_CLIENT_ID, clientFactory);</span><br><span class="line">        messageHandler.setAsync(<span class="keyword">true</span>);</span><br><span class="line">        messageHandler.setDefaultQos(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> messageHandler;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>의존성을 추가하였다면 <code>freemarker.template.Configuration</code> 클래스를 빈으로 등록한다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> freemarker.template.<span class="function">Configuration <span class="title">freeMarkerConfiguration</span><span class="params">()</span> <span class="keyword">throws</span> IOException, TemplateException </span>&#123;</span><br><span class="line">    FreeMarkerConfigurationFactory freeMarkerConfigurationFactory = <span class="keyword">new</span> FreeMarkerConfigurationFactory();</span><br><span class="line">    freeMarkerConfigurationFactory.setTemplateLoaderPath(<span class="string">&quot;classpath:/templates/mails&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> freeMarkerConfigurationFactory.createConfiguration();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이제 @MessagingGateway 어노테이션을 선언한 메시지 게이트웨이 API를 통해 메시지를 발송합니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MqttConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MessagingGateway(defaultRequestChannel = &quot;mqttOutboundChannel&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OutboundGateway</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">sendToMqtt</span><span class="params">(String payload, <span class="meta">@Header(MqttHeaders.TOPIC)</span> String topic)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>설정은 끝났다(응?)</p>
-<p>메일 본문을 넣는 코드에서 다음과 같이 템플릿으로 가져오면 된다.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> freemarker.template.Configuration engine;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">Template template = engine.getTemplate(mailBuilder.getTemplate().getContentPath(), locale);</span><br><span class="line">helper.setText(FreeMarkerTemplateUtils.processTemplateIntoString(template, context), <span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>프리마커 템플릿으로 내용을 구성하는 방법은 본 포스트의 목적이 아니므로 생략한다.</p>
-</blockquote>
+<h2 id="MQTT-Events"><a href="#MQTT-Events" class="headerlink" title="MQTT Events"></a>MQTT Events</h2><p>만약, MQTT 클라이언트가 브로커 서버에 연결을 실패하거나 토픽 구독을 감지한 이벤트를 처리하고 싶다면 다음의 링크를 참고하시기 바랍니다.</p>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-integration/reference/html/mqtt.html#mqtt-events">https://docs.spring.io/spring-integration/reference/html/mqtt.html#mqtt-events</a></p>
 <h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://support.google.com/mail/answer/7126229?visit_id=636885550269950209-1570087438&rd=1">다른 이메일 클라이언트에서 Gmail을 확인할 수 있도록 IMAP 사용</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/freemarker-in-spring-mvc-tutorial">Introduction to Using FreeMarker in Spring MVC</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-integration/reference/html/mqtt.html">Spring Integration - MQTT Support</a></li>
 </ul>
 
       
@@ -303,7 +271,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/37/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/37/">37</a><span class="page-number current">38</span><a class="page-number" href="/page/39/">39</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/39/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/37/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/37/">37</a><span class="page-number current">38</span><a class="page-number" href="/page/39/">39</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/39/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

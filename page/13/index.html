@@ -88,7 +88,7 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>Home</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">41</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>Archives<span class="badge">42</span></a></li>
         <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fas fa-user fa-fw"></i>About</a></li>
   </ul>
 </nav>
@@ -134,12 +134,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">61</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -189,7 +189,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/ec2-instance-access-s3-bucket/">
+    <link itemprop="mainEntityOfPage" href="https://kdevkr.github.io/limit-region-aws-iam-user/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/17937604?s=460&v=4">
@@ -202,7 +202,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/ec2-instance-access-s3-bucket/" class="post-title-link" itemprop="url">EC2 인스턴스에서 S3 버킷 액세스하기</a>
+          <a href="/limit-region-aws-iam-user/" class="post-title-link" itemprop="url">AWS IAM 사용자 리전 제한하기</a>
         </h2>
 
         <div class="post-meta-container">
@@ -213,7 +213,7 @@
       </span>
       <span class="post-meta-item-text">Posted on</span>
 
-      <time title="Created: 2021-10-02 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-02T00:00:00Z">2021-10-02</time>
+      <time title="Created: 2021-10-03 00:00:00" itemprop="dateCreated datePublished" datetime="2021-10-03T00:00:00Z">2021-10-03</time>
     </span>
 
   
@@ -227,49 +227,49 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 EC2 인스턴스에서 S3 버킷에 액세스할 수 있도록 구성하는 방법에 대해 알아봅니다.</p>
-<p>최근 회사에서 진행하고 있는 프로젝트 중에는 보안 정책에 의해 고객이 구성한 EC2 인스턴스에 대한 접근 정보만을 제공받아 애플리케이션 실행해야하는 요구사항이 생겼습니다. 현재 애플리케이션에서 사용중인 데이터베이스 중에는 EC2 인스턴스에 직접 설치하여 사용하고 있는 상용 시계열 데이터베이스가 있습니다. 이 데이터베이스의 데이터를 주기적으로 백업하기 위하여 매일 1시에 파일로 저장된 데이터를 압축하여 S3로 저장하는 스크립트를 수행하고 있습니다. 고객이 보유한 EC2 인스턴스에서 이 데이터베이스의 백업 파일을 저장하기 위한 S3 버킷에 대한 권한을 지정해주도록 유도할 예정입니다.</p>
-<h2 id="S3-버킷-정책"><a href="#S3-버킷-정책" class="headerlink" title="S3 버킷 정책"></a>S3 버킷 정책</h2><p>S3에서 버킷을 만들면 기본적으로 <strong>모든 퍼블릭 액세스 차단</strong>됩니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-01.png"></p>
-<p>그리고 <strong>버킷 정책</strong>을 통해 버킷 또는 버킷에 저장된 오브젝트에 대한 액세스 권한을 부여할 수 있습니다. </p>
-<h3 id="버킷-정책-생성"><a href="#버킷-정책-생성" class="headerlink" title="버킷 정책 생성"></a>버킷 정책 생성</h3><p>버킷 정책을 생성할 때는 아마존 웹 서비스에서 제공하는 <a target="_blank" rel="noopener" href="http://awspolicygen.s3.amazonaws.com/policygen.html">AWS Policy Generator</a>를 사용하는 것이 좋습니다.</p>
-<p>다음은 특정 IP에 대해서 버킷에 대한 조회, 읽기, 쓰기 권한을 부여하는 정책을 생성한 예시입니다.</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Version&quot;</span>: <span class="string">&quot;2012-10-17&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Statement&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Principal&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Action&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;s3:ListBucket&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:GetObject&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:PutObject&quot;</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;Resource&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr&quot;</span>,</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr/*&quot;</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;Condition&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;IpAddress&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;aws:SourceIp&quot;</span>: <span class="string">&quot;218.156.190.x/32&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p>회사에 있던 책들 중 <strong>탄력적 개발로 이끄는 AWS 실천 기술</strong>이라는 책을 읽어보고 관련된 정보를 찾으면서 AWS 활용 방안에 대해 공부하고 있습니다.</p>
+<p>AWS 프리 티어 또는 AWS 서비스를 학습하는 사람이라면 모든 권한을 가지고 있는 루트 사용자 계정을 사용하는 경우가 많을겁니다. 실무 환경에서는 회사의 루트 사용자 계정이 아닌 IAM을 통해 직무 또는 특정 권한을 가지는 사용자를 만들어서 사용하도록 구성하겠죠. 보안 등급이 높거나 체계적인 회사라면 AWS 리소스에 대한 정책을 검토하고 부여하겠지만 제가 다니고 있는 회사의 팀에서도 모든 권한을 부여한 사용자를 만들어서 사용하고 있는 것을 보았고 직원마다 권한을 부여할 수 있도록 사용자를 발급해달라고 요청하여 사용하고는 있습니다.</p>
 <blockquote>
-<p>버킷 정책을 정의하는 JSON의 크기는 20kB로 제한됩니다.</p>
+<p>루트 사용자 계정을 사용하지 않는다고 해도 권한 정책을 검토하고 부여하는 것이 귀찮은 건 맞습니다. 결국 사용자에게 모든 권한을 가지는 정책을 연결하여 사용할 수도 있습니다.</p>
 </blockquote>
-<p>버킷 정책에 대한 더 자세한 내용은 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/example-bucket-policies.html">버킷 정책 예제</a> 문서를 참고하세요.</p>
-<h2 id="EC2-인스턴스"><a href="#EC2-인스턴스" class="headerlink" title="EC2 인스턴스"></a>EC2 인스턴스</h2><p>아마존 리눅스 AMI로 EC2 인스턴스를 실행하면 AWS CLI가 기본으로 설치되어있습니다. 따라서, AWS CLI를 사용해서 S3 서비스에 작업을 수행할 수 있습니다.</p>
-<h3 id="IAM-역할-생성"><a href="#IAM-역할-생성" class="headerlink" title="IAM 역할 생성"></a>IAM 역할 생성</h3><p>S3 버킷 권한 설정에서 버킷 정책을 설정할 수 있으나 IAM 역할을 만들고 인라인 정책으로 적용할 수도 있습니다. 우리는 EC2 인스턴스에서 접근해야하므로 EC2 서비스에 대한 IAM 역할을 만들어서 인스턴스 프로파일로 등록하겠습니다.</p>
-<p>먼저, EC2 인스턴스에서 AWS CLI로 버킷을 조회해보겠습니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-02.png"></p>
-<p>현재 EC2 인스턴스에는 IAM 인스턴스 프로파일이 지정되어있지 않기 때문에 오류가 발생합니다.</p>
-<p>IAM 메뉴에서 신규로 역할을 생성합니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-03.png"></p>
-<p>S3 버킷에 대한 권한을 인라인 정책으로 정의할 것이므로 관리형 정책은 설정하지않습니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-04.png"></p>
-<p>생성한 IAM 역할을 EC2 인스턴스 프로파일로 지정합니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-05.png"></p>
-<p>IAM 역할에 어떠한 정책을 적용하지 않고 버킷을 조회해보겠습니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-06.png"></p>
-<p>IAM 역할을 지정하였기에 AWS CLI를 사용할 수 있게 되었지만 mambo.kr 이라는 버킷에 대한 ListObjectsV2 작업은 Access Denied 오류가 발생했습니다.</p>
-<h3 id="인라인-정책"><a href="#인라인-정책" class="headerlink" title="인라인 정책"></a>인라인 정책</h3><p>우리가 생성한 IAM 역할에는 어떠한 정책도 연결하지 않았기 때문에 접근 권한을 가지지 않는게 당연합니다. 다시 IAM 메뉴로 돌아가서 <strong>인라인 정책 추가</strong>를 선택합니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-07.png"></p>
-<p>버킷 정책 예제를 참고해서 다음과 같이 JSON 형식으로 버킷 정책을 정의합니다.</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Version&quot;</span>: <span class="string">&quot;2012-10-17&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Statement&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;Sid&quot;</span>: <span class="string">&quot;Mannual&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Action&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;s3:ListBucket&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:GetObject&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:PutObject&quot;</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;Resource&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr&quot;</span>,</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr/*&quot;</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>AWS와 같은 클라우드 서비스는 다양한 지역에 존재하는 데이터 센터에 자원을 생성하고 사용할 수 있도록 지원하기 때문에 사용자 계정 정보가 유출된다면 주로 사용하는 리전이 아닌 곳에 AWS 리소스가 생성되고 요금이 발생하는 문제가 생길 수 있습니다. 일부 요금 폭탄 문제가 생기는 분들도 주로 사용하는 서울 리전에 대한 리소스만 체크한 상태로 있다가 전혀 사용하지 않고 있는 리전에 실행된 AWS 리소스로 인하여 발생하는 요금으로 당황하는 경우도 많은 것 같습니다. </p>
+<p>이 글에서는 IAM 사용자의 계정 정보가 유출되더라도 주로 사용하는 리전만 접근할 수 있도록 제한하여 불필요한 리전에 AWS 리소스가 나도 모르게 생성되지 않도록 방지하는 대책을 설정할 수 있는 방법을 알려드립니다.</p>
+<h2 id="AWS-IAM"><a href="#AWS-IAM" class="headerlink" title="AWS IAM"></a>AWS IAM</h2><p>IAM(Identity and Access Management)은 사용자의 신원을 확인하거나 리소스에 대한 액세스 권한을 통합적으로 관리하는 기능을 말합니다. AWS IAM도 마찬가지로 조직을 구성하거나 장기 또는 임시적으로 AWS 리소스 권한을 부여하는 기능을 제공합니다.</p>
+<h3 id="IAM-사용자"><a href="#IAM-사용자" class="headerlink" title="IAM 사용자"></a>IAM 사용자</h3><p>AWS IAM의 사용자는 AWS 리소스에 대한 장기적인 권한을 가지도록 구성하는 장기 자격 증명입니다. </p>
+<p>먼저, 테스트를 위한 IAM 사용자인 pika를 만들겠습니다. pika는 <strong>모든 권한을 가지는 직무 정책인 AdminisratorAccess</strong>를 가진다고 가정하겠습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-01.png"></p>
+<p>pika는 AWS에서 기본적으로 제공하는 관리형 정책인 AdministratorAccess와 IAMUserChangePassword을 가지게 되었습니다.</p>
+<p>그러면 pika 사용자의 비밀번호가 유출되어 누군가가 AWS 콘솔에 접속할 수 있게 된다면 수 많은 리전에 VPC를 생성하거나 EC2 인스턴스를 실행할 수 있는 상태가 됩니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-02.png"></p>
+<h3 id="IAM-사용자-리전-제한"><a href="#IAM-사용자-리전-제한" class="headerlink" title="IAM 사용자 리전 제한"></a>IAM 사용자 리전 제한</h3><p>만약 pika라는 사용자가 애플리케이션을 운영하기 위한 구성을 서울(ap-northeast-2) 리전에서만 사용한다고 가정해본다면 다른 리전에 대한 권한을 불필요하게 주고 있는 상태가 됩니다. </p>
+<h4 id="aws-RequestedRegion"><a href="#aws-RequestedRegion" class="headerlink" title="aws:RequestedRegion"></a>aws:RequestedRegion</h4><p>IAM 정책을 정의할 때 aws:RequestedRegion는 글로벌 조건 키를 사용하면 특정 리전에 대해서만 권한을 가지도록 제한할 수 있습니다.</p>
+<p>만약, 서울 리전만 권한을 부여하고 싶다면 다음과 같이 조건절을 정의하면 됩니다.</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Version&quot;</span>: <span class="string">&quot;2012-10-17&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Statement&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Action&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Resource&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Condition&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;StringEquals&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;aws:RequestedRegion&quot;</span>: [</span><br><span class="line">                        <span class="string">&quot;ap-northeast-2&quot;</span></span><br><span class="line">                    ]</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-08.png"></p>
-<h3 id="버킷-조회"><a href="#버킷-조회" class="headerlink" title="버킷 조회"></a>버킷 조회</h3><p>S3 버킷에 대한 정책이 IAM 인라인 정책으로 연결되었으니 버킷에 대한 접근 권한이 가지게 되었는지 확인합니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-09.png"></p>
-<p>EC2 인스턴스에서 사용자 계정의 보유한 S3 버킷에 대한 목록은 권한이 없어서 조회할 수 없으나 인라인 정책으로 정의된 mambo.kr 버킷에 대해서는 조회되었습니다.</p>
-<p>만약, S3 버킷 목록을 조회하고 싶다면 다음과 같이 Statement를 추가하시면 됩니다.</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Version&quot;</span>: <span class="string">&quot;2012-10-17&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Statement&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;Sid&quot;</span>: <span class="string">&quot;Mannual&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Action&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;s3:ListBucket&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:GetObject&quot;</span>,</span><br><span class="line">                <span class="string">&quot;s3:PutObject&quot;</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;Resource&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr&quot;</span>,</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::mambo.kr/*&quot;</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">&quot;Sid&quot;</span>: <span class="string">&quot;Mannual-2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;Action&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;s3:ListBucket&quot;</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="attr">&quot;Resource&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;arn:aws:s3:::*/*&quot;</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>기존에 연결하였던 AdministratorAccess라는 직무 정책을 해제하고 AdministratorAccessOnlySeoul이라는 정책을 만들어서 연결하겠습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-03.png"></p>
+<h3 id="리전-제한-확인"><a href="#리전-제한-확인" class="headerlink" title="리전 제한 확인"></a>리전 제한 확인</h3><p>pika 사용자는 서울 리전에 대한 권한만 가지도록 제한되었기 때문에 정말로 그러한 상태가 되는지 확인해보겠습니다.</p>
+<p>연결되지 않은 탄력적 IP는 요금을 지불해야하므로 탄력적 IP를 생성하려고 시도했지만 불가능합니다. </p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-04.png"></p>
+<p>EC2 인스턴스를 생성하기 위해서 서울 리전에서 사용가능한 AMI 유형을 조회할 수 없기 때문에 진행할 수 없습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-05.png"></p>
+<p>도쿄 리전에 대한 페이지는 접속할 수 있지만 AWS 리소스를 생성하는 것은 동일하게 AWS API를 사용하기 때문에 서울 리전외에는 권한 오류가 발생하게 됩니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-06.png"></p>
+<p>심지어는 글로벌 리전 서비스인 S3에서도 권한 오류가 발생합니다. 이는 S3 서비스로 이동할 때 현재 리전 파라미터를 전달하기 때문인데 서울 리전으로 변경하거나 제거하시면 됩니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-07.png"></p>
+<h3 id="경계-설정으로-리전-제한"><a href="#경계-설정으로-리전-제한" class="headerlink" title="경계 설정으로 리전 제한"></a>경계 설정으로 리전 제한</h3><p>앞서 pika 사용자는 AdministratorAccess라는 직무 정책과 동일하게 모든 권한을 가지는 AdministratorAccessOnlySeoul이라는 정책을 만들어서 연결하여 제한하였습니다. 그러나 사용자마다 부여된 권한이 다를 수 있기 때문에 매번 리전을 제한하는 정책을 만들어서 연결하기에는 불편함이 있습니다. 이 경우에는 정책을 권한 경계(Permissions boundary)로 설정하면 모든 사용자마다 부여된 정책에 대하여 리전을 제한할 수 있습니다.</p>
+<h4 id="특정-서비스에-대한-권한을-가진-사용자"><a href="#특정-서비스에-대한-권한을-가진-사용자" class="headerlink" title="특정 서비스에 대한 권한을 가진 사용자"></a>특정 서비스에 대한 권한을 가진 사용자</h4><p>제가 사용하는 mambo라는 사용자는 VPC, EC2, S3에 대한 모든 권한을 가지도록 정책을 연결하였습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-08.png"></p>
+<h4 id="서울-리전을-경계로-제한"><a href="#서울-리전을-경계로-제한" class="headerlink" title="서울 리전을 경계로 제한"></a>서울 리전을 경계로 제한</h4><p>이전과 동일하게 서울 리전만을 사용할 수 있도록 제한하기 위해 정책을 만들어서 권한 경계로 설정하겠습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-09.png"></p>
+<p>mambo 사용자는 RDS에 대한 권한이 없기 때문에 서울 리전에서도 RDS를 사용하여 데이터베이스를 생성할 수 없습니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-10.png"></p>
+<p>EC2 서비스에 대한 권한을 가지고 있지만 경계 설정으로 인하여 서울 리전이 아니면 권한이 없게 됩니다.</p>
+<p><img data-src="/images/posts/limit-region-aws-iam-user/aws-iam-user-11.png"></p>
+<h4 id="글로벌-서비스-리전"><a href="#글로벌-서비스-리전" class="headerlink" title="글로벌 서비스 리전"></a>글로벌 서비스 리전</h4><p>CloudFront, Route53, IAM과 같은 글로벌 서비스는 미국 동부 (us-east-1) 리전의 엔드포인트를 사용하기 때문에 이에 대한 권한을 별도로 설정하여야합니다.</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;Effect&quot;</span>: <span class="string">&quot;Allow&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Action&quot;</span>: [</span><br><span class="line">        <span class="string">&quot;cloudfront:*&quot;</span>,</span><br><span class="line">        <span class="string">&quot;route53:*&quot;</span>,</span><br><span class="line">        <span class="string">&quot;iam:*&quot;</span>,</span><br><span class="line">        <span class="string">&quot;support:*&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">&quot;Resource&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;Condition&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;StringEquals&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;aws:RequestedRegion&quot;</span>: [</span><br><span class="line">                <span class="string">&quot;us-east-1&quot;</span></span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>빈 텍스트 파일을 만들어서 버킷에 업로드하고 가져올 수 있는지 확인해보겠습니다.</p>
-<p><img data-src="/images/posts/ec2-instance-access-s3-bucket/s3-bucket-10.png"></p>
-<p>S3에 저장할 수 있는 크기에 대한 제한은 없으나 PUT 요청으로 업로드 가능한 크기는 최대 5GB입니다. AWS CLI의 S3 명령어를 사용하는 경우 일정 크기 이상이라면 멀티파트 업로드를 수행하므로 알고 계시고 신경쓰지 않아도 됩니다.</p>
-<h2 id="마치며"><a href="#마치며" class="headerlink" title="마치며"></a>마치며</h2><p>퍼블릭 IP가 할당되지 않는 EC2 인스턴스라면 AWS PrivateLink로 구성되는 VPC 인터페이스 엔드포인트를 사용하여 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/privatelink-interface-endpoints.html">S3 서비스와 통신할 수 있도록 설정</a>해야합니다. 그리고 다른 사용자 계정의 ARN을 제공받아서 접근할 수 있게 구성할 수도 있으니 공식 문서에서 제공하는 다양한 정책 예제를 참고해봅시다.</p>
+<h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>IAM 사용자가 사용할 수 있는 리전을 제한함으로써 비록 계정 정보가 유출되더라도 서울 리전에서만 AWS 리소스를 마음대로 생성할 수 있도록 방지할 수 있게 되었습니다. 이 방법을 적용하더라도 IAM 사용자의 비밀번호와 액세스 키는 주기적으로 갱신하는 것은 반드시 필요합니다.</p>
 <p>감사합니다.</p>
 
       
@@ -290,7 +290,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/41/">41</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 </div>

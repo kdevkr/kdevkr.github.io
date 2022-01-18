@@ -35,6 +35,7 @@
     "hexo-generator-searchdb": "^1.4.0",
     "hexo-generator-seo-friendly-sitemap": "^0.2.1",
     "hexo-generator-tag": "^1.0.0",
+    "hexo-next-darkmode": "^0.1.7",
     "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
     "hexo-renderer-markdown-it": "^5.0.0",
     "hexo-renderer-marked": "^4.1.0",

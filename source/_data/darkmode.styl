@@ -1,106 +1,52 @@
-if (hexo-config('darkmode')) {
-    body {
-        color: $text-color;
+.darkmode--activated {
+
+    h2, h3 {
+        border-bottom: none;
     }
-
     .header {
-        border-right-color: $border-color;
-
+        border-right: none;
         .header-inner {
-            background-color: $body-bg-color;
-            border-top-color: $border-color;
-            border-left: 1px solid $border-color;
-
+            background: var(--content-bg-color);
             .site-brand-container {
-                border-bottom-color: $border-color;
-            }
-        }
-
-        .site-nav {
-            .menu-item {
-                .menu-item-active {
-                    color: $link-hover-color;
-                }    
+                background: var(--content-bg-color);
+                border-bottom: 1px solid var(--body-bg-color);
             }
 
-            +mobile() {
-                border-bottom: 1px solid $border-color;
+            .site-meta .site-subtitle {
+                color: var(--brand-color);
             }
         }
     }
 
     .sidebar {
-        
+        background-color: var(--content-bg-color);
         .sidebar-inner {
-            background-color: $body-bg-color;
-            border-bottom-color: $border-color;
+            background-color: var(--content-bg-color);
+            border-bottom: 1px solid var(--body-bg-color);
 
-            .sidebar-nav {
-                border-top-color: $border-color;
-                border-left: 1px solid $border-color;
-            }
-
-            .sidebar-panel {
-                border-top-color: $border-color;
-                border-left: 1px solid $border-color;
+            .sidebar-nav,.sidebar-panel {
+                border-top: 1px solid var(--body-bg-color);
             }
         }
     }
-
-    .main-inner > {
-        width: calc(100% - 242px);
-        
-        .sub-menu, .post-block, .tabs-comment, .comments, .pagination {
-            background: $body-bg-color;
-
-            &:not(:first-child):not(.sub-menu) {
-                border-radius: $border-radius;
-            }
+    
+    .post-body {
+        blockquote {
+            background-color: #444;
         }
-        &.archive {
-            .post-content {
-                &:before {
-                    background: $black-light;
-                }
-            }
-        }
-
-        .comments {
-            background-color: $body-bg-color;
-            border-top-color: $border-color;
+        code {
+            color: $snorlax-beam;
         }
     }
-
-    .archive {
-        .post-block {
-            .post-content {
-                &:before {
-                    background-color: $black-light;
-                }
-            }
-        }
+    .post-footer {
+        .post-nav {
+            border-top: none;
+        }    
     }
-
-    .post-block {
-        .post-header {
-            +mobile() {
-                margin-bottom: 1rem;
-            }
-        }
-
-        .post-body {
-            h1 {
-                border-top-color: $border-color;
-            }
-            h1, h2 {
-                border-bottom-color: $border-color;
-                padding-bottom: 5px;
-            }
-        }
-        .post-footer {
-            .post-nav {
-                border-top-color: $border-color;
-            }
-        }
+    .pagination .page-number.current {
+        color: var(--text-color);
+    }
+    .comments {
+        border-top: none;    
     }
 }

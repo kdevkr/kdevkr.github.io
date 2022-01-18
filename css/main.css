@@ -1,6 +1,6 @@
 :root {
-  --body-bg-color: #eee;
-  --content-bg-color: #fff;
+  --body-bg-color: #f8f8f8;
+  --content-bg-color: #f8f8f8;
   --card-bg-color: #f5f5f5;
   --text-color: #555;
   --blockquote-color: #666;
@@ -2774,10 +2774,10 @@ ul.breadcrumb li:last-child {
 }
 .post-body h1,
 .post-body h2 {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f8f8f8;
 }
 .post-body h3 {
-  border-bottom: 1px dotted #eee;
+  border-bottom: 1px dotted #f8f8f8;
 }
 @media (min-width: 768px) and (max-width: 991px) {
   .main-inner {
@@ -2842,15 +2842,15 @@ i.fab {
 }
 /* header */
 .header {
-  border-right: 1px solid #efefed;
+  border-right: 0.1rem solid #efefed;
 }
 .header .header-inner {
   box-shadow: none;
-  background-color: #fff;
+  background-color: #f8f8f8;
 }
 .header .header-inner .site-brand-container {
   padding: 25px 10px;
-  background-color: #fff;
+  background-color: #f8f8f8;
   border-bottom: 1px solid #efefed;
   box-shadow: none;
 }
@@ -2905,7 +2905,7 @@ i.fab {
 }
 /* header > sidebar */
 .sidebar {
-  background-color: #fff;
+  background-color: #f8f8f8;
   margin-top: 0;
   top: 0;
 }
@@ -2913,7 +2913,7 @@ i.fab {
   box-shadow: none;
   padding: 0;
   border-bottom: 1px solid #efefed;
-  background-color: #fff;
+  background-color: #f8f8f8;
 }
 .sidebar .sidebar-inner .sidebar-nav {
   border-top: 1px solid #efefed;
@@ -3057,9 +3057,8 @@ i.fab {
 }
 .post-body code {
   color: #d63200;
-  background-color: #fff;
-  border: 1px solid #efefed;
-  padding: 5px;
+  background-color: transparent;
+  padding: 0.2rem 0.3rem;
 }
 .post-body a {
   color: #42b983;
@@ -3072,7 +3071,15 @@ i.fab {
   color: #42b983;
 }
 .post-body strong {
-  color: #2f504c;
+  color: #555;
+}
+.post-body blockquote {
+  background-color: #f3f3f3;
+  border-left: none;
+  padding: 20px 40px 10px;
+}
+.post-footer .post-nav {
+  padding-top: 20px;
 }
 .posts-collapse .post-content:before {
   display: none;
@@ -3129,7 +3136,6 @@ i.fab {
   color: #bbb529;
 }
 .pagination {
-  border-top: 1px solid #efefed;
   background: none !important;
 }
 .pagination .prev,
@@ -3146,9 +3152,6 @@ i.fab {
 }
 .pagination .page-number.current {
   background-color: #d63200;
-}
-.main {
-  width: calc(100% - 10px);
 }
 .main * {
   box-shadow: none !important;

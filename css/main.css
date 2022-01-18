@@ -3077,6 +3077,7 @@ i.fab {
   background-color: #f3f3f3;
   border-left: none;
   padding: 20px 40px 10px;
+  word-break: keep-all;
 }
 .post-footer .post-nav {
   padding-top: 20px;

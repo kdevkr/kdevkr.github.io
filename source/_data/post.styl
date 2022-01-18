@@ -85,9 +85,8 @@ $font-famaily-post-content = 'Noto Sans KR';
 
     code {
       color: $red;
-      background-color: $white;
-      border: 1px solid $grey;
-      padding: 5px;
+      background-color: transparent;
+      padding: 0.2rem 0.3rem;
     }
     
     a {
@@ -102,8 +101,20 @@ $font-famaily-post-content = 'Noto Sans KR';
         }
     }
     strong {
-      color: $snorlax-outer-skin-v2;
+      color: #555;
     }
+
+    blockquote {
+      background-color: #f3f3f3;
+      border-left: none;
+      padding: 20px 40px 10px;
+    }
+}
+
+.post-footer {
+  .post-nav {
+    padding-top: 20px;  
+  }  
 }
 
 .posts-collapse .post-content {

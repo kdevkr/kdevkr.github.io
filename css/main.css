@@ -3076,8 +3076,12 @@ i.fab {
 .post-body blockquote {
   background-color: #f3f3f3;
   border-left: none;
-  padding: 20px 40px 10px;
+  padding: 20px 40px;
   word-break: keep-all;
+  margin-bottom: 20px;
+}
+.post-body blockquote p {
+  margin: 0;
 }
 .post-footer .post-nav {
   padding-top: 20px;

@@ -3074,7 +3074,7 @@ i.fab {
   color: #555;
 }
 .post-body blockquote {
-  background-color: #f3f3f3;
+  background-color: #ededed;
   border-left: none;
   padding: 20px 40px;
   word-break: keep-all;
@@ -3173,6 +3173,49 @@ i.fab {
   .main .main-inner {
     padding: 10px 0;
   }
+}
+.darkmode--activated h2,
+.darkmode--activated h3 {
+  border-bottom: none;
+}
+.darkmode--activated .header {
+  border-right: none;
+}
+.darkmode--activated .header .header-inner {
+  background: var(--content-bg-color);
+}
+.darkmode--activated .header .header-inner .site-brand-container {
+  background: var(--content-bg-color);
+  border-bottom: 1px solid var(--body-bg-color);
+}
+.darkmode--activated .header .header-inner .site-meta .site-subtitle {
+  color: var(--brand-color);
+}
+.darkmode--activated .sidebar {
+  background-color: var(--content-bg-color);
+}
+.darkmode--activated .sidebar .sidebar-inner {
+  background-color: var(--content-bg-color);
+  border-bottom: 1px solid var(--body-bg-color);
+}
+.darkmode--activated .sidebar .sidebar-inner .sidebar-nav,
+.darkmode--activated .sidebar .sidebar-inner .sidebar-panel {
+  border-top: 1px solid var(--body-bg-color);
+}
+.darkmode--activated .post-body blockquote {
+  background-color: #444;
+}
+.darkmode--activated .post-body code {
+  color: #e9c24e;
+}
+.darkmode--activated .post-footer .post-nav {
+  border-top: none;
+}
+.darkmode--activated .pagination .page-number.current {
+  color: var(--text-color);
+}
+.darkmode--activated .comments {
+  border-top: none;
 }
 .reading-progress-bar {
   background-color: #42b983;

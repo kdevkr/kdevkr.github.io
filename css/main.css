@@ -3217,6 +3217,9 @@ i.fab {
 .darkmode--activated .comments {
   border-top: none;
 }
+.darkmode-toggle {
+  top: 15px;
+}
 .reading-progress-bar {
   background-color: #42b983;
   border-radius: 5px;

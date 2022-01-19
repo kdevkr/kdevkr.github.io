@@ -113,9 +113,9 @@ theme_config:
 # For more information: https://github.com/rqh656418510/hexo-next-darkmode, https://github.com/sandoche/Darkmode.js
 darkmode_js:
   enable: true
-  bottom: "64px" # default: '32px'
-  right: "unset" # default: '32px'
-  left: "32px" # default: 'unset'
+  bottom: "unset" # default: '32px'
+  right: "15px" # default: '32px'
+  left: "unset" # default: 'unset'
   time: "0.5s" # default: '0.3s'
   mixColor: "transparent" # default: '#fff'
   backgroundColor: "transparent" # default: '#fff'
@@ -123,6 +123,6 @@ darkmode_js:
   buttonColorLight: "#fff" # default: '#fff'
   isActivated: false # default false
   saveInCookies: true # default: true
-  label: "🌓" # default: ''
+  label: "🌗" # default: ''
   autoMatchOsTheme: true # default: true
   libUrl: # Set custom library cdn url for Darkmode.js

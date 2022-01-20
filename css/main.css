@@ -3059,6 +3059,8 @@ i.fab {
   color: #d63200;
   background-color: transparent;
   padding: 0.2rem 0.3rem;
+  font-weight: bold;
+  font-size: large;
 }
 .post-body a {
   color: #42b983;
@@ -3071,7 +3073,8 @@ i.fab {
   color: #42b983;
 }
 .post-body strong {
-  color: #555;
+  color: #42b983;
+  font-size: 1.15rem;
 }
 .post-body blockquote {
   background-color: #ededed;

@@ -126,3 +126,5 @@ darkmode_js:
   label: "🌗" # default: ''
   autoMatchOsTheme: true # default: true
   libUrl: # Set custom library cdn url for Darkmode.js
+
+all_minifier: true

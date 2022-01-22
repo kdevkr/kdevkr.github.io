@@ -104,7 +104,9 @@ $font-famaily-post-content = 'Noto Sans KR';
     }
     strong {
       color: #42b983;
-      font-size: 1.15rem;
+      +desktop() {
+        font-size: 1.15rem;
+      }
     }
 
     blockquote {

@@ -43,6 +43,6 @@ atob("a2RldmtyQGdtYWlsLmNvbTp5Rm5iTUtrblZrRW85ckdxTVlmTGtWNE03UUtMTldXWg==")
 최근 사용자 인증을 위해 많이 도입하는 JWT(JSON Web Token)는 페이로드와 시그니처 부분을 **Base64Url(URL Safe Base64)** 로 인코딩합니다. JWT를 Base64로 인코딩하는 이유는 토큰이 URL 파라미터로 전송될 수 있기 때문입니다. 
 
 ## 끝마치며
-Base64를 사용하는 이유에 대해서 간단하게 알아보았습니다. Base64가 단순히 인코딩 중 하나라고만 알고 계셨던 분들에게도 도움이 되었으면 합니다.
+Base64를 사용하는 이유에 대해서 간단하게 알아보았습니다. 초보 개발자분들 뿐만 아니라 저처럼 Base64에 대해서 인지하고 있었던 분들에게도 도움이 되었으면 합니다. 감사합니다.
 
 > Base64에 대해서 자세한 내용을 알고 싶다면 [RFC4648](https://datatracker.ietf.org/doc/html/rfc4648)을 참고하세요.

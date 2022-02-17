@@ -1069,7 +1069,7 @@
     <title>XML로 다국어 메시지 관리하기</title>
     <url>/managing-i18n-messages-with-xml/</url>
     <content><![CDATA[<blockquote>
-<p>본 글은 <a href="/spring-validation">스프링 벨리데이션 이야기</a>를 작성하면서 보완되었습니다.</p>
+<p>본 글은 <a href="/spring-validation">벨리데이션 오류 메시지가 사용자 언어로 처리되지 않은 이유</a>를 작성하면서 보완되었습니다.</p>
 </blockquote>
 <h2 id="다국어-메시지"><a href="#다국어-메시지" class="headerlink" title="다국어 메시지"></a>다국어 메시지</h2><p>스프링이나 스프링 부트에서 다국어 메시지를 적용하기 위해서는 Properties를 기본으로 사용해야합니다. 그러나, messages-en.properties 또는 messages-ko.properties와 같이 언어별로 프로퍼티 파일을 구분하여 메시지를 관리해야만 합니다. 이처럼 프로퍼티 파일로 메시지를 관리하다보면 해당 언어에서 특정 메시지를 키를 사용했는지 파악하는게 상당히 어렵습니다. 현재 조직처럼 회사 내 프로젝트를 진행할 때 메시지 키에 대해 정의된 문서가 없는 경우에는 개발자가 메시지 코드를 관리해야하므로 매번 검색해서 사용하고 있는지 파악해야만 합니다.</p>
 <h3 id="대안-방식"><a href="#대안-방식" class="headerlink" title="대안 방식"></a>대안 방식</h3><p>프로퍼티 파일로 다국어 메시지를 관리하는 것을 보완하기 위한 방법은 다양합니다.</p>
@@ -1458,6 +1458,68 @@
         <tag>Spring</tag>
         <tag>MultipartFile</tag>
         <tag>MultipartResolver</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>벨리데이션 오류 메시지가 사용자 언어로 처리되지 않은 이유</title>
+    <url>/spring-validation/</url>
+    <content><![CDATA[<blockquote>
+<p>스프링 부트 애플리케이션에서 벨리데이션 오류에 대한 메시지가 사용자 언어에 따라 처리되지 않는 사유를 경험하였고 이와 같은 문제가 발생한 원인을 분석하고 벨리데이션에 대해 정리한 글입니다.</p>
+</blockquote>
+<h2 id="자카르타-벨리데이션"><a href="#자카르타-벨리데이션" class="headerlink" title="자카르타 벨리데이션"></a>자카르타 벨리데이션</h2><p><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a>에서 소개하듯이 스프링 부트의 벨리데이션 스타터를 추가하면 <a href="https://beanvalidation.org/2.0/">Jakarta Bean Validation API</a>와 함께 <a href="https://hibernate.org/validator/">Hibernate Validator</a> 라이브러리가 의존성으로 포함됩니다. 그리고 ValidationAutoConfiguration 이라는 자동 구성 클래스를 통해 LocalValidatorFactoryBean가 기본적인 Validator 빈으로 등록됩니다.</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;org.springframework.boot:spring-boot-starter-validation&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>하이버네이트 벨리데이터에는 기본적인 메시지 소스 번들을 포함하고 있기 때문에 자카르타 벨리데이션에서 제공하는 어노테이션이나 하이버네이트 벨리데이터에서 제공하는 어노테이션에 대한 메시지를 별도로 정의하지 않아도 한국 또는 일본 등과 같은 주요 국가에서 사용하는 언어에 대해서는 메시지를 처리할 수 있습니다.</p>
+<blockquote>
+<p>하이버네이트 벨리데이터에서 관리하는 메시지 소스 번들 파일은 ValidationMessages 입니다.</p>
+</blockquote>
+<h3 id="오류-메시지-처리"><a href="#오류-메시지-처리" class="headerlink" title="오류 메시지 처리"></a>오류 메시지 처리</h3><p>자카르타 벨리데이션은 자체적으로 팩토리 함수를 통해 간단하게 벨리데이터를 생성할 수 있습니다. 그래서 별다른 설정이 없어도 하이버네이트 벨리데이터 구현체에 의한 벨리데이터로 자바 빈 클래스의 필드 검증을 수행할 수 있습니다. 예를 들어, 다음과 같이 벨리데이션을 수행하죠.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">validate</span><span class="params">(Account.Login login)</span> </span>&#123;</span><br><span class="line">        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();</span><br><span class="line">        Set&lt;ConstraintViolation&lt;Account.Login&gt;&gt; constraintViolations = validator.validate(login);</span><br><span class="line">        <span class="keyword">return</span> constraintViolations.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="로케일-이슈"><a href="#로케일-이슈" class="headerlink" title="로케일 이슈"></a>로케일 이슈</h3><p>스프링 컨트롤러의 핸들러 함수에서 <code>@Valid</code> 또는 <code>@Validated</code>에 의해 처리되는 벨리데이션은 애플리케이션 컨텍스트에 등록된 SmartValidator인 LocalValidatorFactoryBean에 의해서 수행되었기 때문에 이번 글의 주요 핵심인 사용자 언어로 메시지가 처리되지 않는 현상이 발생하지 않습니다. 그러나 이번에는 고객의 요구사항에 의해 CSV 또는 엑셀 파일을 업로드하여 어떠한 정보를 벌크 형식으로 추가할 수 있게 지원해야했고 그 과정에서 입력된 정보를 검증하기 위해서 <strong>기본 자카르타 벨리데이터</strong>를 생성하여 처리했습니다. 기본 자카르타 벨리데이터를 사용하여 벨리데이션을 수행하고 오류 사항에 대해 처리된 메시지를 확인해보면 시스템의 로케일 정보를 기반으로 번역되는 것을 확인할 수 있었습니다.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">LoginController : [ConstraintViolationImpl&#123;interpolatedMessage=<span class="string">&#x27;공백일 수 없습니다&#x27;</span>, propertyPath=loginId, rootBeanClass=class com.example.springboot.bean.Account<span class="variable">$Login</span>, messageTemplate=<span class="string">&#x27;&#123;javax.validation.constraints.NotBlank.message&#125;&#x27;</span>&#125;]</span><br><span class="line">LoginController : locale: en_US</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>로그인 요청 시 사용자의 언어는 en_US 이지만 벨리데이션 오류 메시지는 시스템 로케일 정보인 ko_KR을 기준으로 번역되었습니다. 이와 같이 많은 글을 참고해보면 기본 벨리데이터로 여러 언어에 대해서 시도해보는 경우 시스템 로케일 값을 변경하는 것을 확인할 수 있습니다.</p>
+</blockquote>
+<h2 id="사용자-언어-기반의-메시지-처리"><a href="#사용자-언어-기반의-메시지-처리" class="headerlink" title="사용자 언어 기반의 메시지 처리"></a>사용자 언어 기반의 메시지 처리</h2><p>파일 업로드를 통해 벌크 형식으로 입력된 정보를 검증하고 사용자의 언어 정보에 따라 메시지를 처리하려면 어떻게 해야될까요? 사용자의 언어 정보를 기반으로 메시지를 제공하기 위해서는 기본으로 사용되는 MessageInterpolator를 설정해야만 합니다. 다행히도 스프링 프레임워크에는 LocaleContextHolder.getLocale 함수를 기반으로 메시지를 처리할 수 있게 구현된 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/beanvalidation/LocaleContextMessageInterpolator.html"><strong>LocaleContextMessageInterpolator</strong></a>를 제공합니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Configuration&lt;?&gt; configuration = Validation.byDefaultProvider().configure();</span><br><span class="line">MessageInterpolator defaultMessageInterpolator = configuration.getDefaultMessageInterpolator();</span><br><span class="line">LocaleContextMessageInterpolator localeContextMessageInterpolator = <span class="keyword">new</span> LocaleContextMessageInterpolator(defaultMessageInterpolator);</span><br><span class="line"></span><br><span class="line">Validator defaultValidator = configuration</span><br><span class="line">        .messageInterpolator(localeContextMessageInterpolator)</span><br><span class="line">        .buildValidatorFactory()</span><br><span class="line">        .getValidator();</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>기본 자카르타 벨리데이터 수행 시 시스템 로케일 기반으로 번역된 메시지는 아래와 같이 로그인을 요청한 사용자의 언어 정보를 기반으로 메시지가 정상적으로 처리되었습니다.</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[ConstraintViolationImpl&#123;interpolatedMessage=<span class="string">&#x27;must not be blank&#x27;</span>, propertyPath=loginId, rootBeanClass=class com.example.springboot.bean.Account<span class="variable">$Login</span>, messageTemplate=<span class="string">&#x27;&#123;javax.validation.constraints.NotBlank.message&#125;&#x27;</span>&#125;]</span><br><span class="line">locale: en_US</span><br></pre></td></tr></table></figure>
+
+<h3 id="LocalValidatorFactoryBean"><a href="#LocalValidatorFactoryBean" class="headerlink" title="LocalValidatorFactoryBean"></a>LocalValidatorFactoryBean</h3><p>현재 조직에서는 오래전에 공유한 <a href="managing-i18n-messages-with-xml">XML로 다국어 메시지 관리하기</a>에서처럼 XML 파일을 기반으로 다국어 메시지 정보를 관리하고 있습니다. 그리고 이 메시지 소스를 사용하도록 LocalValidatorFactoryBean를 직접 빈으로 등록하고 있었죠. </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.context.MessageSource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LocalValidatorFactoryBean <span class="title">validator</span><span class="params">(CustomMessageSource customMessageSource)</span> </span>&#123;</span><br><span class="line">        LocalValidatorFactoryBean factoryBean = <span class="keyword">new</span> LocalValidatorFactoryBean();</span><br><span class="line">        factoryBean.setValidationMessageSource(customMessageSource);</span><br><span class="line">        <span class="keyword">return</span> factoryBean;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>현재 조직에서 Validator 빈으로 등록하여 사용하고 있던 LocalValidatorFactoryBean는 조직에서 정의한 메시지에 대해서는 처리할 수 있을테지만 하이버네이트 벨리데이터에 포함된 ValidationMessages를 통해서는 메시지가 처리되지 않는 문제를 내재하고 있었습니다.</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">LoginController : [ConstraintViolationImpl&#123;interpolatedMessage=<span class="string">&#x27;javax.validation.constraints.NotBlank.message&#x27;</span>, propertyPath=loginId, rootBeanClass=class com.example.springboot.bean.Account<span class="variable">$Login</span>, messageTemplate=<span class="string">&#x27;&#123;javax.validation.constraints.NotBlank.message&#125;&#x27;</span>&#125;]</span><br><span class="line">LoginController : locale: en_US</span><br></pre></td></tr></table></figure>
+
+<p>기본 자카르타 벨리데이터 대신에 애플리케이션 컨텍스트에 빈으로 등록된 Validator인 LocalValidatorFactoryBean를 사용했지만 벨리데이터에서 사용하는 벨리데이션 메시지 소스를 사용자 정의된 메시지 소스 번들로 지정하였기에 하이버네이트 벨리데이터에 포함된 벨리데이션 메시지 소스를 적용되지 않았습니다.</p>
+<blockquote>
+<p>벨리데이션 메시지 소스를 계층으로 구성하였지만 벨리데이션에 대한 오류 메시지를 확인해보면 번역된 메시지로 처리되지 않습니다. 그 이유는 앞서 알게된 MessageInterpolator가 등록되지 않았기 때문입니다.</p>
+</blockquote>
+<h4 id="LocaleContextMessageInterpolator"><a href="#LocaleContextMessageInterpolator" class="headerlink" title="LocaleContextMessageInterpolator"></a>LocaleContextMessageInterpolator</h4><p>자카르타 기본 벨리데이터에서 알게된 바와 같이 LocaleContextMessageInterpolator를 등록하면 사용자 언어 정보를 기반으로 메시지가 번역되어 처리됩니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> LocalValidatorFactoryBean <span class="title">validator</span><span class="params">(CustomMessageSource messageSource)</span> </span>&#123;</span><br><span class="line">    LocalValidatorFactoryBean factoryBean = <span class="keyword">new</span> LocalValidatorFactoryBean();</span><br><span class="line">    factoryBean.setValidationMessageSource(messageSource);</span><br><span class="line"></span><br><span class="line">    MessageInterpolator defaultMessageInterpolator = Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();</span><br><span class="line">    LocaleContextMessageInterpolator localeContextMessageInterpolator = <span class="keyword">new</span> LocaleContextMessageInterpolator(defaultMessageInterpolator);</span><br><span class="line">    factoryBean.setMessageInterpolator(localeContextMessageInterpolator);</span><br><span class="line">    <span class="keyword">return</span> factoryBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="MessageInterpolatorFactory"><a href="#MessageInterpolatorFactory" class="headerlink" title="MessageInterpolatorFactory"></a>MessageInterpolatorFactory</h4><p>스프링 부트에서 제공하는 MessageInterpolatorFactory를 통해 MessageInterpolator를 등록할 수도 있습니다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> LocalValidatorFactoryBean <span class="title">validator</span><span class="params">(CustomMessageSource messageSource)</span> </span>&#123;</span><br><span class="line">    LocalValidatorFactoryBean factoryBean = <span class="keyword">new</span> LocalValidatorFactoryBean();</span><br><span class="line">    factoryBean.setValidationMessageSource(messageSource);</span><br><span class="line"></span><br><span class="line">    MessageInterpolatorFactory messageInterpolatorFactory = <span class="keyword">new</span> MessageInterpolatorFactory();</span><br><span class="line">    factoryBean.setMessageInterpolator(messageInterpolatorFactory.getObject());</span><br><span class="line">    <span class="keyword">return</span> factoryBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>MessageInterpolatorFactory는 클래스패스에 있는 MessageInterpolator를 가져오도록 되어있습니다.<br>따라서, 하이버네이트 벨리데이터에 포함된 ResourceBundleMessageInterpolator를 MessageInterpolator로 등록하게 됩니다.</p>
+</blockquote>
+<p>이렇게 해서 자카르타 기본 벨리데이터를 통해 사용자 언어 정보에 따라 메시지를 처리하기 위해서는 LocaleContextMessageInterpolator를 등록해야하며 스프링 프레임워크에서 제공하는 LocalValidatorFactoryBean를 사용하더라도 MessageInterpolatorFactory를 사용하도록 구성해야한다는 것을 알게되었습니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a href="/managing-i18n-messages-with-xml">XML로 다국어 메시지 관리하기</a></li>
+<li><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Jakarta Bean Validation</tag>
+        <tag>Hibernate Validator</tag>
       </tags>
   </entry>
   <entry>

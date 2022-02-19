@@ -7,6 +7,7 @@ tags:
 ---
 
 > 스프링 부트 애플리케이션에서 벨리데이션 오류 메시지가 사용자가 언어로 처리되지 않는 사유를 경험하여 이와 같은 문제가 발생한 이유에 대해서 알아보고 스프링에서 제공하는 벨리데이션에 대해서 정리한 글입니다.
+> 관련 코드는 [spring-demo-validation](https://github.com/kdevkr/spring-demo-validation)에서 확인할 수 있습니다.
 
 ## 자카르타 벨리데이션
 스프링 부트 애플리케이션에서는 벨리데이션 스타터를 통해 [자카르타 벨리데이션](https://beanvalidation.org/2.0/) 기반의 [하이버네이트 벨리데이터](https://hibernate.org/validator/)를 사용하여 벨리데이션을 수행할 수 있는 기능을 제공합니다. 이 스타터가 포함되면 **ValidationAutoConfiguration**이라는 자동 구성 클래스를 통해 기본적인 벨리데이터(Validator)를 사용할 수 있도록 빈으로 등록해줍니다.

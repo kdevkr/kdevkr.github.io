@@ -1185,6 +1185,24 @@
       </tags>
   </entry>
   <entry>
+    <title>EC2 인스턴스 유형을 교체하는 이유</title>
+    <url>/reason-for-replacing-ec2-instance-type/</url>
+    <content><![CDATA[<p>서비스의 규모 그리고 서비스를 운영하는 조직의 규모가 크건 작건 서비스를 유지하기 위해 들어가는 클라우드 인프라 환경에 대한 비용은 생각보다 중요한 부분입니다. 작은 조직에서 비용에 대해 예민할지는 몰라도 오히려 인프라 팀이 별도로 존재하는 조직이라면 더 효율적으로 인프라 환경을 구성할 수 밖에 없어보입니다. </p>
+<p>서비스 인프라 비용을 줄이기 위해 <a href="https://gameanalytics.com/product-updates/reduce-costs-https-api-aws/">몇가지 트래픽을 줄일 수 있는 노력</a>을 한다거나 <a href="https://aws.amazon.com/ko/blogs/korea/cost-optimization-cases-ridibooks-reserved-instance/">일정 기간동안 사용할 수 있는 자원을 구매해서 사용</a>하고 <a href="https://www.grumatic.com/ko/aws-ebs-gp3-cost-saving/">인프라 자원의 성능을 비교해서 동일한 성능 대비 가격이 작은 것을 선택</a>하기도 합니다.</p>
+<h2 id="EC2-인스턴스-유형"><a href="#EC2-인스턴스-유형" class="headerlink" title="EC2 인스턴스 유형"></a>EC2 인스턴스 유형</h2><p>아마존 웹 서비스에서는 다양한 목적에 맞는 <a href="https://aws.amazon.com/ko/ec2/instance-types/">인스턴스 유형</a>을 제공하고 있습니다. 여러가지 인스턴스 유형 중 <a href="https://aws.amazon.com/ko/ec2/graviton/">ARM 기반의 AWS Graviton</a> 프로세서를 사용하는 인스턴스가 동일한 성능 대비 더 절약된 요금으로 서버를 구성할 수 있습니다. Graviton 프로세서에 대해 자세하게 알고 싶다면 <a href="https://engineering.ab180.co/stories/migrating-python-application-to-arm">Python x ARM: Graviton2 실전 도입기</a>를 참고하시면 될 것 같습니다.</p>
+<p>아래는 <a href="https://ec2.shop/?region=ap-northeast-2&filter=t2,t3,t3a,t4g">EC 인스턴스 유형별 요금 비교</a> 중 일반적으로 사용될만한 CPU와 메모리 구성을 가진 인스턴스만을 필터한 결과입니다.</p>
+<p><img data-src="/images/posts/reason-for-replacing-ec2-instance-type/ec2-instance-type-compare-pricing.png" alt="ec2.shop/?region=ap-northeast-2&amp;filter=t2,t3,t3a,t4g">  </p>
+<p>각 인스턴스별로 일부 스펙에 의한 성능 차이는 있겠지만 T2 인스턴스보다는 <a href="https://aws.amazon.com/ko/ec2/nitro/">Nitro System</a>으로 확장된 <strong>T3 인스턴스</strong>가 더 작은 요금이 할당됩니다. 그리고 인텔 프로세서 기반의 T3 인스턴스 보다는 AMD 프로세서 기반의 <strong>T3a 인스턴스</strong>가 더 작은 요금이 듭니다. 그리고 AWS Graviton 프로세서를 사용하는 ARM 아키텍처 기반의 <strong>T4g 인스턴스</strong>가 더 요금이 적게 듭니다.</p>
+<h3 id="아키텍처-변경-제한"><a href="#아키텍처-변경-제한" class="headerlink" title="아키텍처 변경 제한"></a>아키텍처 변경 제한</h3><p>특정 아키텍처 기반의 AMI로 시작된 인스턴스 유형은 다른 아키텍처를 사용하는 인스턴스 유형으로 교체할 수 없습니다. 이는 아키텍처간 호환성이 없기 때문이므로 x86 아키텍처 기반의 기존 인스턴스 유형을 ARM 아키텍처 기반으로 변경하기 위해서는 ARM 기반의 AMI로 인스턴스를 시작하고 기존 인스턴스로부터 마이그레이션을 수행해야만합니다.</p>
+<p>현재 조직에서도 예약 인스턴스를 구매하여 사용중인 것은 만료된 이후 Graviton 인스턴스로 변경하려고 예정하고 있고 아키텍처 전환 문제로 인하여 Graviton으로 변경할 수 없는 일부 인스턴스들은 AMD 프로세서 기반의 인스턴스로 일부 변경하였습니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>EC2</tag>
+        <tag>AWS Graviton2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>프리마커 템플릿으로 이메일 발송하기</title>
     <url>/sending-mail-with-freemarker-template/</url>
     <content><![CDATA[<p><img data-src="https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#compact"></p>

@@ -1,131 +1,124 @@
 ---
 title: 프리마커 템플릿으로 이메일 발송하기
 date: 2019-03-19
+updated: 2022-03-04
+comments: true
 ---
 
-![](https://javatutorial.net/wp-content/uploads/2017/12/spring-featured-image.png#compact)
+> 현재 조직에서는 스프링 부트의 기본 템플릿 엔진인 타임리프를 사용하지 않고 이메일 발송에는 프리마커 템플릿 엔진을 사용해서 변환한 HTML 형식의 이메일을 전달합니다. 
 
-### 스프링 프레임워크의 이메일 지원
-스프링 프레임워크에서는 이메일을 발송할 수 있도록 `org.springframework.mail` 패키지를 제공한다.
+## 프리마커 템플릿 엔진
+일반적으로 많이 사용되는 템플릿 엔진은 [타임리프](https://www.thymeleaf.org/)이기는 하지만 사용하기 어려운 문법과 다른 템플릿 엔진과의 렌더링 성능 문제로 인하여 이메일 발송처럼 대량으로 렌더링할 가능성이 있다면  [FreeMarker](https://freemarker.apache.org/) 또는 [Mustache](https://mustache.github.io/) 템플릿 엔진을 사용하는 것이 좋습니다. 
 
-`MailSender` 인터페이스는 메일 발송 기능을 가지는 최상위 인터페이스이며 스프링 프레임워크는 이 보다 더 좋은 기능을 제공하도록 확장한 `JavaMailSender` 인터페이스를 포함한다.
+### 프리마커 스타터
+스프링 부트 프리마커 스타터 의존성을 통해 프리마커 템플릿으로 이메일을 발송하기 위한 라이브러리들을 참조합니다.
 
-#### Dependencies
-스프링 프레임워크에서 메일을 발송할 때 사용되는 의존성은 다음과 같다.
 ```groovy
-compile('org.springframework:spring-context-support:4.3.7.RELEASE')
-compile('javax.mail:mail:1.4.7')
-```
-
-##### JavaMailSenderImpl
-스프링 프레임워크는 `JavaMailSender` 인터페이스의 구현체인 `JavaMailSenderImpl` 클래스를 제공하며
-
-우리는 굳이 JavaMailSender 구현체를 만들지 않아도 이 JavaMailSenderImpl를 사용하여 메일을 발송하는 기능을 만들 수 있다.
-
-##### MimeMessageHelper
-스프링 프레임워크는 `javax.mail.internet.MimeMessage` 클래스에 각종 설정들(제목이나 첨부파일 등)을 쉽게 지정할 수 있도록 헬퍼 클래스를 제공한다.
-
-### 이메일 발송을 위한 SMTP 서버
-이메일을 송수신하는 서버를 SMTP(Simple Mail Transfer Protocol) 서버라고 한다.
-
-그러나, 스프링 프레임워크가 자체적으로 SMTP 서버를 제공해주지는 않기 때문에 실제로 이메일을 발송하기 위해서는 SMTP 서버를 구축해야만 한다.
-
-SMTP 메일 서버를 구축하는 것 대신에 우리가 많이 사용하는 구글이나 네이버 이메일 계정으로 SMTP 메일 서버를 이용할 수 있다.
-
-본 포스트 에서는 구글 이메일 계정으로 SMTP 메일 서버를 이용해보겠다.
-
-> https://github.com/ChangemakerStudios/Papercut와 같은 개발용 SMTP 서버도 있다.
-
-#### 구글 SMTP 활성화
-구글 SMTP 서버를 이용하기 위해서는 구글 이메일 계정의 [`보안 수준이 낮은 앱의 액세스`](https://myaccount.google.com/lesssecureapps)를 허용해야 한다.
-
-![](/spring/images/google-less-secure-apps.png)
-
-이후 [SMTP 서버 이용시 필요한 정보](https://support.google.com/mail/answer/7126229?visit_id=636885550269950209-1570087438&rd=1)는 다음과 같다.
-
-- SMTP Host : smtp.gmail.com
-- SMTP Username : $email
-- SMTP Password : $password
-- SMTP Post : 465
-- SSL Enable : true
-
-### 이메일 발송 기능 구현
-구글 SMTP 서버를 이용할 수 있도록 설정을 완료하였으니 이메일 발송 기능을 구현하도록 하자.
-
-#### JavaMailSender 빈 등록
-우리가 가장 먼저 해야할 일은 JavaMailSender 인터페이스 구현체를 빈으로 등록하는 것이다.
-
-간단하게 앞서 소개한 JavaMailSenderImpl을 구현체로 사용하고 프로퍼티에 존재하는 정보를 불러와 값을 설정한다.
-
-```java
-@Bean
-public JavaMailSender javaMailSender(ApplicationContext applicationContext) throws IOException {
-    final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost(env.getProperty("spring.mail.host"));
-    mailSender.setPort(Integer.valueOf(env.getProperty("spring.mail.port")));
-    mailSender.setProtocol(env.getProperty("spring.mail.protocol"));
-    mailSender.setUsername(env.getProperty("spring.mail.username"));
-    mailSender.setPassword(env.getProperty("spring.mail.password"));
-
-    final Properties javaMailProperties = new Properties();
-    javaMailProperties.load(applicationContext.getResource("classpath:mail.properties").getInputStream());
-    mailSender.setJavaMailProperties(javaMailProperties);
-    return mailSender;
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 ```
 
-> JavaMailProperties를 프로퍼티에서 불러와 직접 값을 넣어주거나 ApplicationContext 대신에 ClassPathResource를 사용해도 무방하다.
+### SMTP 메일 서버
+이메일을 발송하기 위해서는 SMTP 프로토콜을 사용하는 메일 서버가 필요합니다. 많은 무료 메일 서버 솔루션이 있으나 일반적으로 많이 사용하는 구글이나 네이버 이메일 계정의 몇가지 설정을 통해서 SMTP 메일 서버를 이용할 수 있습니다. 
 
-##### 메일 발송 프로퍼티
-위 JavaMailSender에서 사용된 프로퍼티 값을 설정한다.
+#### Gmail SMTP
+지메일 계정으로 발신 메일 서버를 이용하기 위해서는 다음과 같이 인증 옵션과 함께 SSL(465) 또는 TLS(587)용 포트를 사용해야합니다.
+
+```.properties
+spring.mail.protocol=smtp
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=username@gmail.com
+spring.mail.password=password
+spring.mail.properties.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+spring.mail.test-connection=true
+```
+
+##### 지메일 계정 인증 오류
+메일 서버 연결 시 다음과 같이 인증 오류가 발생하는 경우 [보안 수준이 낮은 앱의 액세스](https://myaccount.google.com/u/0/lesssecureapps)를 허용해야합니다. 
 
 ```sh
-spring.mail.host=smtp.gmail.com
-spring.mail.port=465
-spring.mail.username=
-spring.mail.password=
-
-# mail.properties
-mail.smtp.ssl.enable=true
-mail.smtp.auth=true
+Caused by: java.lang.IllegalStateException: Mail server is not available
+...
+Caused by: javax.mail.AuthenticationFailedException: 535-5.7.8 Username and Password not accepted. Learn more at
 ```
 
-### 프리마커 이메일 템플릿
-본 포스트의 목표는 단순 이메일 발송이 아닌 프리마커 템플릿을 활용해서 이메일 내용을 구성해서 발송하는 것이다.
+> 보안 정책 변경에 따라 [2022년 5월 30일](https://support.google.com/accounts/answer/6010255)부터는 지메일 계정으로 SMTP 서버를 이용할 수 없을 수 있습니다. 
 
-많은 템플릿 중에서 프리마커를 사용하려는 이유는 가장 설정이 쉽고 이메일 내용을 구성할 때 편리하다는 개인적인 판단 때문이다.
-
-> 대부분은 Thymeleaf를 사용하는 것으로 예제를 소개하고 있다.
-
-```groovy
-compile('org.freemarker:freemarker:2.3.28')
-```
-
-의존성을 추가하였다면 `freemarker.template.Configuration` 클래스를 빈으로 등록한다.
+### 자바 이메일 발송
+지메일 계정으로 SMTP 서버에 인증까지 완료했다면 실제로 이메일을 발송할 수 있는지 테스트 해보아야 합니다.
 
 ```java
-@Bean
-public freemarker.template.Configuration freeMarkerConfiguration() throws IOException, TemplateException {
-    FreeMarkerConfigurationFactory freeMarkerConfigurationFactory = new FreeMarkerConfigurationFactory();
-    freeMarkerConfigurationFactory.setTemplateLoaderPath("classpath:/templates/mails");
-    return freeMarkerConfigurationFactory.createConfiguration();
+@SpringBootTest
+class GmailSmtpTests {
+
+    @Autowired
+    private JavaMailSenderImpl javaMailSender;
+
+    @Test
+    void sendMail() {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+
+        mimeMessageHelper.setFrom("Mambo <kdevkr.gmail.com>");
+        mimeMessageHelper.setTo("kdevkr@gmail.com");
+        mimeMessageHelper.setSubject("Java Mail Test");
+        mimeMessageHelper.setText("<h5>Hello World</h5>", true);
+
+        javaMailSender.send(mimeMessage);
+    }
 }
 ```
 
-설정은 끝났다(응?)
-
-메일 본문을 넣는 코드에서 다음과 같이 템플릿으로 가져오면 된다.
+#### 프리마커 템플릿 적용하기
+프리마커 템플릿 파일을 작성하고 템플릿 엔진을 사용해서 HTML 형식의 문자열을 이메일 내용으로 전달하여 발송하도록 구현하면 됩니다. 저는 [HTML Email Template 만들기](https://heropy.blog/2018/12/30/html-email-template/)라는 글을 참고하여 템플릿을 작성하였습니다.
 
 ```java
-private final freemarker.template.Configuration engine;
-// ...
-Template template = engine.getTemplate(mailBuilder.getTemplate().getContentPath(), locale);
-helper.setText(FreeMarkerTemplateUtils.processTemplateIntoString(template, context), true);
+@SpringBootTest
+class GmailSmtpTests {
+
+    @Autowired
+    private JavaMailSenderImpl javaMailSender;
+
+    @Autowired
+    private FreeMarkerConfigurationFactoryBean configurationFactoryBean;
+
+    @Test
+    void sendMail() {
+        Configuration configuration = configurationFactoryBean.createConfiguration();
+        Template template = configuration.getTemplate("email.ftlh");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("title", "Java Mail Test");
+        model.put("content", "Hello World");
+        String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
+
+        mimeMessageHelper.setFrom("Mambo <kdevkr.gmail.com>");
+        mimeMessageHelper.setTo("kdevkr@gmail.com");
+        mimeMessageHelper.setSubject("Java Mail Test with FreeMarker");
+        mimeMessageHelper.setText(content, true);
+
+        javaMailSender.send(mimeMessage);
+    }
+}
 ```
 
-> 프리마커 템플릿으로 내용을 구성하는 방법은 본 포스트의 목적이 아니므로 생략한다.
+> 기본 프리마커 템플릿 폴더는 클래스패스의 **templates** 입니다.
+> spring.freemarker.template-loader-path=classpath:/templates/
+
+![](/images/posts/sending-mail-with-freemarker-template/example.png)
+
+감사합니다.
 
 ## 참고
 
-- [다른 이메일 클라이언트에서 Gmail을 확인할 수 있도록 IMAP 사용](https://support.google.com/mail/answer/7126229?visit_id=636885550269950209-1570087438&rd=1)
+- [Spring Boot Docs - Template Engines](https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.template-engines)
+- [SpringHow - Send HTML emails with FreeMarker Templates](https://springhow.com/spring-boot-email-freemarker/)
 - [Introduction to Using FreeMarker in Spring MVC](https://www.baeldung.com/freemarker-in-spring-mvc-tutorial)

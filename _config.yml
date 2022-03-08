@@ -69,10 +69,16 @@ sitemap:
 markdown: "default"
 
 highlight:
-  enable: true
+  enable: false
   line_number: false
   wrap: true
   hljs: false
+
+prismjs:
+  enable: true
+  preprocess: true
+  line_number: false
+  tab_replace: ""
 
 index_generator:
   path: ""

@@ -1,6 +1,6 @@
 ---
 title: KDB+
-date: 2021-11-05
+date: 2099-11-05
 tags:
  - Kx
  - KDB+

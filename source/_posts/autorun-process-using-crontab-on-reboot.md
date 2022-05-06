@@ -72,16 +72,7 @@ SHELL: /bin/bash
 크론탭에 의해서 쉘 스크립트가 정상적으로 실행되지 않는다면 알맞은 쉘과 환경변수가 올바르게 로드되는 방식을 취하였는지 검토하시기 바랍니다.
 
 ## 참고
-
-- [Shell Scripting – Interactive and Non-Interactive Shell](https://www.geeksforgeeks.org/shell-scripting-interactive-and-non-interactive-shell/)
-- [crontab(5) — Linux manual page](https://man7.org/linux/man-pages/man5/crontab.5.html)
-
-
-
-
-
-
-
-
-
+- [Difference between Login Shell and Non-Login Shell?](https://unix.stackexchange.com/a/46856)  
+- [Shell Scripting – Interactive and Non-Interactive Shell](https://www.geeksforgeeks.org/shell-scripting-interactive-and-non-interactive-shell/)  
+- [crontab(5) — Linux manual page](https://man7.org/linux/man-pages/man5/crontab.5.html)  
 

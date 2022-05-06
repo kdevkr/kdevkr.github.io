@@ -162,7 +162,8 @@ SHELL: &#x2F;bin&#x2F;bash</code></pre>
 </ol>
 <p>크론탭에 의해서 쉘 스크립트가 정상적으로 실행되지 않는다면 알맞은 쉘과 환경변수가 올바르게 로드되는 방식을 취하였는지 검토하시기 바랍니다.</p>
 <h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a href="https://www.geeksforgeeks.org/shell-scripting-interactive-and-non-interactive-shell/">Shell Scripting – Interactive and Non-Interactive Shell</a></li>
+<li><a href="https://unix.stackexchange.com/a/46856">Difference between Login Shell and Non-Login Shell?</a>  </li>
+<li><a href="https://www.geeksforgeeks.org/shell-scripting-interactive-and-non-interactive-shell/">Shell Scripting – Interactive and Non-Interactive Shell</a>  </li>
 <li><a href="https://man7.org/linux/man-pages/man5/crontab.5.html">crontab(5) — Linux manual page</a></li>
 </ul>
 ]]></content>

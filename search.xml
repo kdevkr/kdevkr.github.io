@@ -3214,6 +3214,53 @@ Caused by: javax.mail.AuthenticationFailedException: 535-5.7.8 Username and Pass
       </tags>
   </entry>
   <entry>
+    <title>SHA-256</title>
+    <url>/sha-256/</url>
+    <content><![CDATA[<h2 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h2><p><a href="https://ko.wikipedia.org/wiki/SHA">SHA(Secure Hash Algorithm)</a>은 NIST에 의해서 관리되는 안전한 해시 표준 함수들의 모음이며 현재는 NIST FIPS 180-3 규격의 <a href="https://ko.wikipedia.org/wiki/SHA-2">SHA-2</a>를 권장해서 사용하고 있습니다. 해시 함수는 어떠한 문자열을 일정한 길이를 가진 임의의 문자열로 변환하는 것을 말합니다. 수 많은 연구에 의해 만들어진 여러가지 해시 함수 중에서 일반적으로 SHA-256을 사용하는 이유는 해시 함수를 사용하게 되는 목적에 있다고 볼 수 있습니다. 특정한 문자열에 대해서는 동일한 해시값(다이제스트)으로 변환되며 해시값을 기준으로는 동일한 패턴을 찾을 수 없어서 본래의 문자열을 유추할 수 없도록 하고자 하는 것에 있습니다.</p>
+<p>SHA-256 해시 함수의 동작 과정은 <a href="https://sha256algorithm.com/">Sha256 Algorithm Explained</a>를 이용하면 눈으로 확인할 수 있으니 참고해보면 좋을 것 같습니다.</p>
+<h3 id="메시지-다이제스트"><a href="#메시지-다이제스트" class="headerlink" title="메시지 다이제스트"></a>메시지 다이제스트</h3><p>해시 함수는 어떠한 입력에 대해서 일정한 길이의 비트로 이루어진 결과를 가져오기 위한 목적으로 사용됩니다. 메시지 다이제스트란 어떤 문자열 데이터를 일정한 길이의 다이제스트로 변환한 것을 말하며 단순하게 해시 함수로 처리된 해시값일 뿐입니다.</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"crypto/sha256"</span>
+	<span class="token string">"encoding/hex"</span>
+	<span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	plain <span class="token operator">:=</span> <span class="token string">"HelloWorld"</span>
+	hash <span class="token operator">:=</span> sha256<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	hash<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>plain<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	hashed <span class="token operator">:=</span> hash<span class="token punctuation">.</span><span class="token function">Sum</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"plain:"</span><span class="token punctuation">,</span> plain<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hashed:"</span><span class="token punctuation">,</span> hex<span class="token punctuation">.</span><span class="token function">EncodeToString</span><span class="token punctuation">(</span>hashed<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash">plain: HelloWorld
+hashed: 872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4</code></pre>
+
+<h3 id="파일-체크섬"><a href="#파일-체크섬" class="headerlink" title="파일 체크섬"></a>파일 체크섬</h3><p>위 메시지 다이제스트를 바이너리 파일에 활용한 부분이 파일 체크섬입니다. <a href="https://ubuntu.com/tutorials/how-to-verify-ubuntu#5-verify-the-sha256-checksum">how-to-verify-ubuntu</a>에서 처럼 다운로드 받은 파일의 위변조 여부를 검증하기 위해서 MD5 또는 SHA-256로 해시된 다이제스트를 제공하며 이를 통해 올바른 바이너리 파일임을 검증하고 안전하다고 판단할 수 있습니다. 아래의 예시는 윈도우 터미널에서 <a href="https://docs.microsoft.com/ko-kr/windows-server/administration/windows-commands/certutil">CertUtil</a>을 사용하여 파일 체크섬을 확인한 것이며 <a href="https://gtkhash.org/">GtkHash</a>와 같은 도구로도 확인할 수 있습니다.</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\> certutil <span class="token operator">-</span>hashfile orig<span class="token punctuation">.</span>txt sha256
+SHA256의 orig<span class="token punctuation">.</span>txt 해시:
+872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4
+CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으로 완료되었습니다<span class="token punctuation">.</span></code></pre>
+
+<h3 id="비밀번호-암호화"><a href="#비밀번호-암호화" class="headerlink" title="비밀번호 암호화"></a>비밀번호 암호화</h3><p>일반적으로 비밀번호를 암호화하여 저장할 때는 <a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a>에서 언급된 PBKDF2 또는 bcrypt를 사용하는 편인 것으로 알고 있습니다. bcrypt는 NIST 에서 권장하는 알고리즘에 속하지는 않았으나 OpenBSD나 스프링 프레임워크의 기본 패스워드 인코더로 지정된 비교적 안전한 알고리즘 중 하나입니다. 아무튼 시계열 데이터베이스 중 하나인 <a href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd-local">KDB+는 MD5 또는 SHA-1 알고리즘 방식으로 비밀번호를 지원</a>하기에 사용하는 시스템마다 지원하는 방식에 제한이 있을 수 있습니다.</p>
+<h4 id="비밀번호-암호화-관련-읽으면-좋은-글"><a href="#비밀번호-암호화-관련-읽으면-좋은-글" class="headerlink" title="비밀번호 암호화 관련 읽으면 좋은 글"></a>비밀번호 암호화 관련 읽으면 좋은 글</h4><ul>
+<li><a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a></li>
+<li><a href="https://lovejaco.github.io/posts/cryptographic-hash-function/">해시 함수, 암호화 해시 함수, 그리고 SHA</a></li>
+<li><a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/">Hashing in Action: Understanding bcrypt</a></li>
+</ul>
+<h3 id="키-서명-지문"><a href="#키-서명-지문" class="headerlink" title="키 서명 지문"></a>키 서명 지문</h3><p><a href="/ssh">SSH 키 페어 발급 및 원격 호스트 연결하기</a>에서처럼 SSH 키에 대해 지문(Fingerprint)을 생성해놓고 호스트에 대한 공개키가 변경되었는지를 판단하는데 사용되기도 합니다. 이러한 키 서명 지문은 아래의 이미지와 같이 SSL 인증서 정보에도 서명 해시 알고리즘으로도 사용하는 것을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/sha-256/01.png"></p>
+]]></content>
+      <tags>
+        <tag>Hashing</tag>
+        <tag>Message Disgest</tag>
+        <tag>Checksum</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>스스로 괴롭히는 사이드 이펙트</title>
     <url>/side-effect-myself/</url>
     <content><![CDATA[<blockquote>

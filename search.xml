@@ -2819,6 +2819,65 @@ sudo systemctl start demo.service</code></pre>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
+<h4 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h4><p>Go 언어는 실무에서 사용하지는 않지만 개인적으로 학습중이므로 <a href="https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go">A step by step guide to mTLS in Go</a>를 참고하여 다음과 같이 클라이언트 인증서를 전달할 수 있음을 확인하였습니다.</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"crypto/tls"</span>
+	<span class="token string">"crypto/x509"</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"io/ioutil"</span>
+	<span class="token string">"log"</span>
+	<span class="token string">"net/http"</span>
+	<span class="token string">"os"</span>
+	<span class="token string">"strings"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	cert<span class="token punctuation">,</span> err <span class="token operator">:=</span> tls<span class="token punctuation">.</span><span class="token function">LoadX509KeyPair</span><span class="token punctuation">(</span><span class="token string">"cert.pem"</span><span class="token punctuation">,</span> <span class="token string">"privkey.pem"</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	caCert<span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadFile</span><span class="token punctuation">(</span><span class="token string">"ca.pem"</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	caCertPool <span class="token operator">:=</span> x509<span class="token punctuation">.</span><span class="token function">NewCertPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	caCertPool<span class="token punctuation">.</span><span class="token function">AppendCertsFromPEM</span><span class="token punctuation">(</span>caCert<span class="token punctuation">)</span>
+
+	client <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Client<span class="token punctuation">&#123;</span>
+		Transport<span class="token punctuation">:</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Transport<span class="token punctuation">&#123;</span>
+			TLSClientConfig<span class="token punctuation">:</span> <span class="token operator">&amp;</span>tls<span class="token punctuation">.</span>Config<span class="token punctuation">&#123;</span>
+				ClientAuth<span class="token punctuation">:</span>   tls<span class="token punctuation">.</span>RequireAndVerifyClientCert<span class="token punctuation">,</span>
+				ClientCAs<span class="token punctuation">:</span>    caCertPool<span class="token punctuation">,</span>
+				Certificates<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>tls<span class="token punctuation">.</span>Certificate<span class="token punctuation">&#123;</span>cert<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+				MinVersion<span class="token punctuation">:</span>   tls<span class="token punctuation">.</span>VersionTLS12<span class="token punctuation">,</span>
+			<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+
+	payloadXml<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"payload.xml"</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">defer</span> payloadXml<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	payload<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>payloadXml<span class="token punctuation">)</span>
+	r<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">Post</span><span class="token punctuation">(</span><span class="token string">"https://uri"</span><span class="token punctuation">,</span> <span class="token string">"application/xml"</span><span class="token punctuation">,</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">defer</span> r<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	body<span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span> body<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
 <h3 id="X-SSL-CERT"><a href="#X-SSL-CERT" class="headerlink" title="X-SSL-CERT"></a>X-SSL-CERT</h3><p>일반적으로 Nginx와 같은 웹 서버를 통해서 리버스 프록시를 구성하는 경우 TLS 핸드쉐이크를 웹 서버에서 수행하도록 TLS Termination Proxy가 되도록 합니다. TLS 핸드쉐이크를 수행하는 과정에서 클라이언트가 전달한 인증서를 애플리케이션 서버까지 전달해야하므로 X-SSL-CERT와 같은 헤더에 클라이언트 인증서를 제공해야합니다.</p>
 <pre class="language-conf" data-language="conf"><code class="language-conf">server &#123;
     ssl_verify_client optional_no_ca;

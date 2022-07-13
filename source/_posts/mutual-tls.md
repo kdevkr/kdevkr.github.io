@@ -104,6 +104,69 @@ class MutualTlsTest {
 }
 ```
 
+#### Go
+Go 언어는 실무에서 사용하지는 않지만 개인적으로 학습중이므로 [A step by step guide to mTLS in Go](https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go)를 참고하여 다음과 같이 클라이언트 인증서를 전달할 수 있음을 확인하였습니다.
+
+```go
+package main
+
+import (
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"strings"
+)
+
+func main() {
+	cert, err := tls.LoadX509KeyPair("cert.pem", "privkey.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	caCert, err := ioutil.ReadFile("ca.pem")
+	if err != nil {
+		log.Fatal(err)
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				ClientAuth:   tls.RequireAndVerifyClientCert,
+				ClientCAs:    caCertPool,
+				Certificates: []tls.Certificate{cert},
+				MinVersion:   tls.VersionTLS12,
+			},
+		},
+	}
+
+	payloadXml, err := os.Open("payload.xml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer payloadXml.Close()
+
+	payload, _ := ioutil.ReadAll(payloadXml)
+	r, err := client.Post("https://uri", "application/xml", strings.NewReader(string(payload)))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%s\n", body)
+}
+``` 
+
 ### X-SSL-CERT
 일반적으로 Nginx와 같은 웹 서버를 통해서 리버스 프록시를 구성하는 경우 TLS 핸드쉐이크를 웹 서버에서 수행하도록 TLS Termination Proxy가 되도록 합니다. TLS 핸드쉐이크를 수행하는 과정에서 클라이언트가 전달한 인증서를 애플리케이션 서버까지 전달해야하므로 X-SSL-CERT와 같은 헤더에 클라이언트 인증서를 제공해야합니다.
 

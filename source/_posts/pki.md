@@ -306,3 +306,6 @@ Migrated "local.dev+1.jks" to PKCS12. The JKS keystore is backed up as "local.de
 - [Public Key Infrastructure PKI Concepts](https://www.youtube.com/watch?v=t0F7fe5Alwg)
 - [Using openssl to get the certificate from a server](https://stackoverflow.com/a/7886248)
 - [Converting PKCS#12 certificate into PEM using OpenSSL](https://stackoverflow.com/a/15144560)
+- [JCA로 이해하는 암호화와 보안](https://d2.naver.com/helloworld/197937)
+- [JCA로 이해하는 암호화와 보안 2](https://d2.naver.com/helloworld/227016)
+- [호다닥 공부해보는 x509와 친구들](https://gruuuuu.github.io/security/what-is-x509/)

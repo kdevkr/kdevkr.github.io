@@ -2736,36 +2736,19 @@ sudo systemctl start demo.service</code></pre>
   <entry>
     <title>Mutual TLS</title>
     <url>/mutual-tls/</url>
-    <content><![CDATA[<h2 id="Mutual-Authentication"><a href="#Mutual-Authentication" class="headerlink" title="Mutual Authentication"></a>Mutual Authentication</h2><p><strong>mTLS(Mutual TLS)</strong> 는 TLS 프로토콜을 사용하면서 서버와 클라이언트 간 상호 인증을 수행하는 방법을 말한다. 일반적으로 대부분의 웹 애플리케이션에서는 HTTPS 프로토콜을 사용하여 연결을 할 때 브라우저인 클라이언트에서 서버 또는 웹 서버가 제공하는 SSL 인증서를 검증하여 올바른 곳으로 요청하는 지 검증하도록 요구합니다. 그러나, <a href="https://www.openadr.org/">OpenADR</a>와 같은 일부 프로토콜에서는 서버에서도 클라이언트의 신원을 확인하여 더 확실한 보안성을 요구하기도 합니다.</p>
-<h3 id="X-509-Client-Certificate"><a href="#X-509-Client-Certificate" class="headerlink" title="X.509 Client Certificate"></a>X.509 Client Certificate</h3><p>PEM 형식으로 되어있는 X.509 인증서와 개인키를 사용하여 HTTP 요청 시 클라이언트 인증서로 전달하는 방법에 대해서 알아보겠습니다.</p>
-<h4 id="cURL"><a href="#cURL" class="headerlink" title="cURL"></a>cURL</h4><p>가장 일반적으로 사용되는 HTTP 클라이언트 통신 도구인 <a href="https://curl.se/">cURL</a>에서 클라이언트 인증서를 포함하기 위해서는 <a href="https://downey.io/notes/dev/curl-using-mutual-tls/">how to curl an endpoint protected by mutual tls (mtls)</a>를 참고하여 다음과 같이 수행할 수 있음을 확인하였습니다.</p>
-<pre class="language-sh" data-language="sh"><code class="language-sh">curl -v --tlsv1.2 --tls-max 1.3 --cert .&#x2F;cert.pem --key .&#x2F;privkey.pem https:&#x2F;&#x2F;uri</code></pre>
+    <content><![CDATA[<blockquote>
+<p>본 글은 에너지 분야에서 수요 반응(DR) 이벤트를 송수신하기 위해서 사용하는 <a href="https://www.openadr.org/">OpenADR 프로토콜</a>에서 VTN과 VEN이 서로 상호 인증(Mutual Authentication)을 수행하는 구조를 이해하기 위해 정리한 것입니다. 서버와 클라이언트 간 상호 인증을 수행하는 방법 중에서 OpenADR 프로토콜에서 HTTP를 이용한다면 TLS 상호 인증을 수행합니다.</p>
+</blockquote>
+<h2 id="Mutual-Authentication"><a href="#Mutual-Authentication" class="headerlink" title="Mutual Authentication"></a>Mutual Authentication</h2><p><em>Mutual authentication or two-way authentication (not to be confused with two-factor authentication) refers to two parties authenticating each other at the same time in an authentication protocol. It is a default mode of authentication in some protocols (IKE, SSH) and optional in others (TLS).</em></p>
+<p>위키피디아에서 설명하는 것처럼 <a href="https://docs.aws.amazon.com/ko_kr/iot/latest/developerguide/client-authentication.html">AWS IoT</a>와 같은 디바이스의 신원을 검증할 수 있도록 IoT 시스템에서는 디바이스를 위한 X.509 클라이언트 인증서를 제공하는 것을 확인할 수 있습니다. 일반적으로 HTTPS 프로토콜에서 TLS 핸드쉐이크 과정에서는 서버의 공개키가 포함된 X.509 인증서를 클라이언트에게 전달하여 서버의 신원을 검증하고 서로 데이터를 안전하게 전송하기 위해서 사용할 대칭키를 교환하기 위한 일련의 작업을 수행합니다. 따라서, HTTPS 프로토콜에서 상호 인증을 구성하기 위해서는 서버가 자신의 인증서를 전달하는 것과 별개로 클라이언트에서도 서버가 신뢰할 수 있는 것으로부터 서명된 클라이언트 인증서를 전달해야만 합니다.</p>
+<h3 id="X-509-Client-Certificate"><a href="#X-509-Client-Certificate" class="headerlink" title="X.509 Client Certificate"></a>X.509 Client Certificate</h3><p>일반적으로 X.509 클라이언트 인증서는 서버 시스템에서 신뢰할 수 있는 기관으로부터 클라이언트에게 발급해준 공개키 인증서를 말합니다. 그러나, 시스템이 자체적으로 서명하여 만들어지는 자체 서명 인증서와 개인키를 발급하여 클라이언트에게 제공할 수도 있습니다. 신뢰할 수 있는 기관들로부터 발급된 것이 아니므로 서버 시스템에서는 인프라 구성에 따라서 자체 서명된 CA 인증서를 별도로 제공해야할 수 있습니다.</p>
+<h4 id="cURL"><a href="#cURL" class="headerlink" title="cURL"></a>cURL</h4><p>리눅스 시스템에서 주로 사용되는 HTTP 클라이언트 통신 도구인 <a href="https://curl.se/">cURL</a>에서 클라이언트 인증서를 포함하여 요청하는 방법은 <a href="https://downey.io/notes/dev/curl-using-mutual-tls/">how to curl an endpoint protected by mutual tls (mtls)</a>에서 확인할 수 있습니다.</p>
+<pre class="language-sh" data-language="sh"><code class="language-sh">curl -v --tlsv1.2 --tls-max 1.3 --cert .&#x2F;cert.pem --key .&#x2F;privkey.pem https:&#x2F;&#x2F;uri&#x2F;OpenADR-Endpoint</code></pre>
 
-<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><p>자바 애플리케이션에서 클라이언트 인증서를 포함하여 요청하기 위해서는 KeyStore가 필요로 합니다. JKS 또는 PKCS12 형식의 파일이라면 쉽게 KeyStore로 불러올 수 있지만, 일반적으로 X.509 인증서 형식으로 사용되는 PEM 파일이라면 KeyStore로 변경하는 과정이 필요로 합니다. Base64로 인코딩된 PEM 형식을 변환할 수도 있지만 <a href="https://www.bouncycastle.org/java.html">BouncyCastle API</a>와 같은 라이브러리를 사용하는게 더 간단합니다. 다음은 PEM 형식의 인증서와 개인키를 변환하는 두가지 방법에 대한 예시입니다.</p>
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><p>자바 애플리케이션에서는 KeyStore라는 별도의 키 저장소를 사용하므로 HTTP 통신 요청 시 클라이언트 인증서를 포함하기 위한 코드가 장황해보일 수 있습니다. 일반적으로 X.509 클라이언트 인증서는 PEM 형식으로 교환되므로 KeyStore로 변환하는 과정이 필요로 합니다. 다음은 <a href="https://www.bouncycastle.org/java.html">BouncyCastle API</a> 라이브러리를 사용하여 X.509 인증서와 개인키를 불러와서 HTTP 요청 시 포함하는 코드의 예시를 보여줍니다.</p>
 <pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">MutualTlsTest</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">Logger</span> log <span class="token operator">=</span> <span class="token class-name">LoggerFactory</span><span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token class-name">MutualTlsTest</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">ClassLoader</span> classLoader <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Convert PEM to KeyStore"</span><span class="token punctuation">)</span>
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">void</span> <span class="token function">testConvertPemToKeyStore</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">String</span> certPemText <span class="token operator">=</span> <span class="token class-name">IOUtils</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>classLoader<span class="token punctuation">.</span><span class="token function">getResourceAsStream</span><span class="token punctuation">(</span><span class="token string">"cert.pem"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token class-name">String</span> privateKeyText <span class="token operator">=</span> <span class="token class-name">IOUtils</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>classLoader<span class="token punctuation">.</span><span class="token function">getResourceAsStream</span><span class="token punctuation">(</span><span class="token string">"privkey.pem"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-            <span class="token class-name">String</span> escapeCertPemText <span class="token operator">=</span> certPemText<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-----BEGIN CERTIFICATE-----"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replaceAll</span><span class="token punctuation">(</span><span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">lineSeparator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-----END CERTIFICATE-----"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token class-name">String</span> escapePrivateKeyText <span class="token operator">=</span> privateKeyText<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-----BEGIN PRIVATE KEY-----"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replaceAll</span><span class="token punctuation">(</span><span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">lineSeparator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"-----END PRIVATE KEY-----"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-            <span class="token keyword">final</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> certPem <span class="token operator">=</span> <span class="token class-name">Base64</span><span class="token punctuation">.</span><span class="token function">decodeBase64</span><span class="token punctuation">(</span>escapeCertPemText<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">final</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> privateKey <span class="token operator">=</span> <span class="token class-name">Base64</span><span class="token punctuation">.</span><span class="token function">decodeBase64</span><span class="token punctuation">(</span>escapePrivateKeyText<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-            <span class="token keyword">final</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> certPemUsingBC <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PemReader</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StringReader</span><span class="token punctuation">(</span>certPemText<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">readPemObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">final</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> privateKeyUsingBC <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PemReader</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StringReader</span><span class="token punctuation">(</span>privateKeyText<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">readPemObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-            <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertArrayEquals</span><span class="token punctuation">(</span>certPem<span class="token punctuation">,</span> certPemUsingBC<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertArrayEquals</span><span class="token punctuation">(</span>privateKey<span class="token punctuation">,</span> privateKeyUsingBC<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
 
     <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Test mutual authentication"</span><span class="token punctuation">)</span>
     <span class="token annotation punctuation">@Test</span>
@@ -2805,7 +2788,7 @@ sudo systemctl start demo.service</code></pre>
 
             <span class="token class-name">CloseableHttpClient</span> client <span class="token operator">=</span> <span class="token class-name">HttpClientBuilder</span><span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setSSLSocketFactory</span><span class="token punctuation">(</span>sslSocketFactory<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            <span class="token class-name">HttpPost</span> httpPost <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpPost</span><span class="token punctuation">(</span><span class="token string">"https://uri"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">HttpPost</span> httpPost <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HttpPost</span><span class="token punctuation">(</span><span class="token string">"https://uri/OpenADR-Endpoint"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
             httpPost<span class="token punctuation">.</span><span class="token function">addHeader</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"application/xml; charset=UTF-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
             <span class="token class-name">String</span> payload <span class="token operator">=</span> <span class="token class-name">IOUtils</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>classLoader<span class="token punctuation">.</span><span class="token function">getResourceAsStream</span><span class="token punctuation">(</span><span class="token string">"payload.xml"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span>UTF_8<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -2819,7 +2802,7 @@ sudo systemctl start demo.service</code></pre>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h4 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h4><p>Go 언어는 실무에서 사용하지는 않지만 개인적으로 학습중이므로 <a href="https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go">A step by step guide to mTLS in Go</a>를 참고하여 다음과 같이 클라이언트 인증서를 전달할 수 있음을 확인하였습니다.</p>
+<h4 id="Go"><a href="#Go" class="headerlink" title="Go"></a>Go</h4><p>실무에서 사용하고 있지는 않지만 개인적으로 학습중인 Go 언어에서 클라이언트 인증서를 포함하는 방법은 <a href="https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go">A step by step guide to mTLS in Go</a>에 잘 설명되어있어 다음과 같이 간단하게 작성할 수 있었습니다.</p>
 <pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
 <span class="token keyword">import</span> <span class="token punctuation">(</span>
@@ -2864,7 +2847,7 @@ sudo systemctl start demo.service</code></pre>
 	<span class="token keyword">defer</span> payloadXml<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 	payload<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>payloadXml<span class="token punctuation">)</span>
-	r<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">Post</span><span class="token punctuation">(</span><span class="token string">"https://uri"</span><span class="token punctuation">,</span> <span class="token string">"application/xml"</span><span class="token punctuation">,</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	r<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">Post</span><span class="token punctuation">(</span><span class="token string">"https://uri/OpenADR-Endpoint"</span><span class="token punctuation">,</span> <span class="token string">"application/xml"</span><span class="token punctuation">,</span> strings<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
 		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
 	<span class="token punctuation">&#125;</span>
@@ -2878,7 +2861,9 @@ sudo systemctl start demo.service</code></pre>
 	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span> body<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h3 id="X-SSL-CERT"><a href="#X-SSL-CERT" class="headerlink" title="X-SSL-CERT"></a>X-SSL-CERT</h3><p>일반적으로 Nginx와 같은 웹 서버를 통해서 리버스 프록시를 구성하는 경우 TLS 핸드쉐이크를 웹 서버에서 수행하도록 TLS Termination Proxy가 되도록 합니다. TLS 핸드쉐이크를 수행하는 과정에서 클라이언트가 전달한 인증서를 애플리케이션 서버까지 전달해야하므로 X-SSL-CERT와 같은 헤더에 클라이언트 인증서를 제공해야합니다.</p>
+
+<h3 id="X-509-Client-Certificate-Proxy"><a href="#X-509-Client-Certificate-Proxy" class="headerlink" title="X.509 Client Certificate Proxy"></a>X.509 Client Certificate Proxy</h3><p>요즘의 인프라 시스템은 애플리케이션 서버를 감추고 요청 트래픽에 대해서 전처리하고 넘겨주는 리버스 프록시 구성하는 경우가 많습니다. 일반적으로 리버스 프록시 구성을 위해서 Nginx와 같은 웹서버를 사용할 것입니다. 이러한 인프라 구성에서는 클라이언트 요청에 대한 SSL 오프로드를 수행하는 곳에서 클라이언트가 전달한 클라이언트 인증서를 별도의 프록시 헤더에 넘겨주어야합니다.</p>
+<h4 id="X-SSL-CERT"><a href="#X-SSL-CERT" class="headerlink" title="X-SSL-CERT"></a>X-SSL-CERT</h4><p>일반적으로 클라이언트 인증서에 대한 프록시 헤더의 표준은 없으므로 X-SSL-CERT와 같이 애플리케이션 서버에서 읽을 수 있는 헤더를 정하여 클라이언트 인증서를 포함시켜 전달하도록 구성하면 됩니다. 다음은 Nginx에서의 리버스 프록시 구성 시 X-SSL-CERT 헤더에 클라이언트 인증서를 포함시키는 예시입니다.</p>
 <pre class="language-conf" data-language="conf"><code class="language-conf">server &#123;
     ssl_verify_client optional_no_ca;
 
@@ -2888,13 +2873,49 @@ sudo systemctl start demo.service</code></pre>
 &#125;</code></pre>
 
 <blockquote>
-<p>일반적으로 mTLS를 수행할 때 전달되는 클라이언트 인증서도 신뢰할 수 있는 인증 기관에서 발급된 것인지를 판단합니다. 그러나, 현재 조직의 시스템처럼 사설 루트 인증 기관을 만들고서 클라이언트 인증서를 전달하고 요청받을 수 있습니다. 이와 같은 상호 인증 구성이라면 ssl_verify_client 옵션을 고려하셔야 합니다.</p>
+<p>일반적으로 mTLS를 수행할 때 전달되는 클라이언트 인증서도 신뢰할 수 있는 인증 기관에서 발급된 것인지를 판단합니다. 시스템 자체적으로 서명한 클라이언트 인증서는 신뢰할 수 없으므로 클라이언트 인증서의 검증은 애플리케이션 서버로 위임할 수 있습니다.</p>
+</blockquote>
+<h4 id="Webpack-Certificate-Proxy"><a href="#Webpack-Certificate-Proxy" class="headerlink" title="Webpack Certificate Proxy"></a>Webpack Certificate Proxy</h4><p>일반적으로 프론트엔드 개발을 위해서 사용하는 Webpack에서는 자체적으로 프록시 구성을 지원하는 <a href="https://github.com/webpack/webpack-dev-server">webpack-dev-server</a>를 제공합니다. 이는 리버스 프록시 구성과 동일하므로 모든 요청에 대해서 Webpack 프록시 서버를 경유하도록 한다면 다음과 같이 클라이언트 인증서를 포함할 수 있도록 설정해야합니다.</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">devServer</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">server</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'spdy'</span><span class="token punctuation">,</span> <span class="token comment">// https</span>
+            <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                <span class="token literal-property property">cert</span><span class="token operator">:</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">'cert.pem'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">key</span><span class="token operator">:</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">'privkey.pem'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">requestCert</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">rejectUnauthorized</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">minVersion</span><span class="token operator">:</span> <span class="token string">'TLSv1.2'</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">proxy</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token string-property property">'/'</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'http://127.0.0.1:5000'</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">secure</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">xfwd</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">changeOrigin</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">rejectUnauthorized</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+                <span class="token function">onProxyReq</span><span class="token punctuation">(</span><span class="token parameter">proxyReq<span class="token punctuation">,</span> req<span class="token punctuation">,</span> res</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">const</span> cert <span class="token operator">=</span> req<span class="token punctuation">.</span>socket<span class="token punctuation">.</span><span class="token function">getPeerCertificate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>cert <span class="token operator">&amp;&amp;</span> cert<span class="token punctuation">.</span>raw<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token keyword">const</span> pem <span class="token operator">=</span> <span class="token string">'-----BEGIN CERTIFICATE-----'</span> <span class="token operator">+</span> cert<span class="token punctuation">.</span>raw<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token string">'base64'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'-----END CERTIFICATE-----'</span><span class="token punctuation">;</span>
+                        proxyReq<span class="token punctuation">.</span><span class="token function">setHeader</span><span class="token punctuation">(</span><span class="token string">'X-SSL-CERT'</span><span class="token punctuation">,</span> pem<span class="token punctuation">)</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>requestCert 옵션을 켜야 onProxyReq 함수내에서 클라이언트 인증서를 가져와서 전달할 수 있습니다.</p>
 </blockquote>
 <h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
 <li><a href="https://www.cloudflare.com/ko-kr/learning/access-management/what-is-mutual-authentication/">What protocols support mutual authentication?</a></li>
 <li><a href="https://www.cloudflare.com/ko-kr/learning/access-management/what-is-mutual-tls/">What is mutual TLS (mTLS)?</a></li>
 <li><a href="https://downey.io/notes/dev/curl-using-mutual-tls/">how to curl an endpoint protected by mutual tls (mtls)</a></li>
 <li><a href="https://nginx.org/en/docs/http/ngx_http_ssl_module.html#var_ssl_client_escaped_cert">Nginx SSL Client Cert</a></li>
+<li><a href="https://webpack.js.org/configuration/dev-server/#devserverserver">Webpack DevServer.server</a></li>
 </ul>
 ]]></content>
       <tags>
@@ -4661,125 +4682,6 @@ curl -s http:&#x2F;&#x2F;127.0.0.1:9182&#x2F;metrics | curl --data-binary @- htt
       </tags>
   </entry>
   <entry>
-    <title>HandlerInterceptor은 언제 사용하나요?</title>
-    <url>/when-do-i-use-the-handler-interceptor/</url>
-    <content><![CDATA[<p><img data-src="/../images/logo/spring.png#compact"></p>
-<p>안녕하세요 Mambo입니다. 오늘은 스프링 MVC 모듈에 포함되어있는 HandlerInterceptor 인터페이스를 언제 사용하는가에 대해서 알아보겠습니다.</p>
-<h2 id="HandlerInterceptor"><a href="#HandlerInterceptor" class="headerlink" title="HandlerInterceptor"></a>HandlerInterceptor</h2><blockquote>
-<p>A HandlerInterceptor gets called before the appropriate HandlerAdapter triggers the execution of the handler itself. This mechanism can be used for a large field of preprocessing aspects, e.g. for authorization checks, or common handler behavior like locale or theme changes. Its main purpose is to allow for factoring out repetitive handler code.</p>
-</blockquote>
-<p><strong>HandlerInterceptor</strong>는 컨트롤러 핸들러 함수에 대한 전처리 동작을 수행할 수 있는 방법을 제공합니다. 필터도 전처리 동작을 수행할 수 있지만 web.xml에 정의되는 필터와 다르게 HandlerInterceptor는 애플리케이션 컨텍스트에서 관리하므로 요청 정보를 분석하여 사용자를 인증하거나 응답 뷰를 렌더링하기 전에 부가 데이터를 주입하는 동작을 수행할 수 있습니다.</p>
-<p>예를 들어, 기본으로 제공되는 HandlerInterceptor 구현체인 <strong>LocaleChangeInterceptor</strong>는 로케일 파라미터에 따라 현재 로케일을 변경하는 동작을 수행하죠.</p>
-<h3 id="정적-리소스-패턴-제외"><a href="#정적-리소스-패턴-제외" class="headerlink" title="정적 리소스 패턴 제외"></a>정적 리소스 패턴 제외</h3><p><strong>ResourceHandlerRegistry</strong>는 정적 리소스를 배포하기 위한 핸들러를 등록하는 것을 지원하는 클래스입니다. 이때, 리소스 핸들러가 처리할 경로를 매칭하기 위하여 AntPathMatcher 또는 PathPattern을 사용하게 되는데 Ant 스타일의 패턴 매칭을 사용하므로 특정 패턴을 제외하기 위한 Regex 같은 방식을 사용할 수 없습니다. </p>
-<p>리소스 핸들러가 처리하는 경로에 대해서 특정 패턴을 제외하기 위해서는 해당 패턴을 처리하지 않도록 패턴별로 등록하여야합니다. 하지만, 이렇게 올바른 패턴마다 리소스 핸들러를 등록하는 것은 불편합니다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>ResourceHandlerRegistry</span></div><code class="language-java"><span class="token annotation punctuation">@Configuration</span><span class="token punctuation">(</span>proxyBeanMethods <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addResourceHandlers</span><span class="token punctuation">(</span><span class="token class-name">ResourceHandlerRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        registry<span class="token punctuation">.</span><span class="token function">addResourceHandler</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addResourceLocations</span><span class="token punctuation">(</span><span class="token string">"classpath:/static/images/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 예시는 <strong>&#x2F;images&#x2F;</strong>** 패턴의 경로에 대해서 클래스패스의 <strong>static&#x2F;images</strong> 폴더에 있는 정적 리소스로 처리하기 위한 핸들러를 등록합니다. images 폴더에는 이미지 파일만 있다고 가정했으나 개발자의 실수로 images 폴더에 이미지가 아닌 동영상 파일이나 오디오 파일이 들어있다면 해당 리소스도 처리하게 됩니다.</p>
-<p>이렇게 특정 패턴을 방지해야하는 경우에 HandlerInterceptor를 등록하여 요청을 분석하여 리소스를 응답하지 않도록 전처리 동작을 구현할 수 있습니다.</p>
-<p>다음과 같이 <strong>이미지 파일 패턴이 아니라면 요청을 404 Not Found로 처리</strong>하는 동작을 수행할 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span><span class="token class-name">InterceptorRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token function">onlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addPathPatterns</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addResourceHandlers</span><span class="token punctuation">(</span><span class="token class-name">ResourceHandlerRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        registry<span class="token punctuation">.</span><span class="token function">addResourceHandler</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addResourceLocations</span><span class="token punctuation">(</span><span class="token string">"classpath:/static/images/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token class-name">OnlyServeImagesHandlerInterceptor</span> <span class="token function">onlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">OnlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">OnlyServeImagesHandlerInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">&#123;</span>
-        <span class="token annotation punctuation">@Override</span>
-        <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">String</span> requestURI <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>requestURI<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">".*\\/.*\\.(jpg|jpeg|png|gif)"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token class-name">HttpServletResponse</span><span class="token punctuation">.</span>SC_NOT_FOUND<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 인터셉터가 정말로 이미지 파일에 대해서만 처리할 수 있게 사전 처리를 수행하는지 확인해보겠습니다.</p>
-<p><img data-src="/images/posts/handler-interceptor-01.gif"></p>
-<p>위 결과를 보면 이미지 파일은 정적 리소스로 배포되도록 처리되었지만 동영상 파일은 처리되지 않게 된걸 확인할 수 있습니다. </p>
-<h3 id="뷰-응답-시-부가-정보-주입"><a href="#뷰-응답-시-부가-정보-주입" class="headerlink" title="뷰 응답 시 부가 정보 주입"></a>뷰 응답 시 부가 정보 주입</h3><p>두번째로는 뷰를 응답하는 핸들러 함수에 대하여 <strong>부가 정보를 주입</strong>하는데에 사용할 수 있습니다. </p>
-<p>다음의 코드는 뷰를 응답하게되는 핸들러 함수에 사용 가능한 언어와 함께 현재 로케일에 대한 메시지 코드 목록을 주입하는 인터셉터 예시입니다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>InjectionLocalesInterceptor</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">InjectionLocalesInterceptor</span> <span class="token keyword">extends</span> <span class="token class-name">HandlerInterceptorAdapter</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token class-name">MessagePool</span> messagePool <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">postHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">,</span> <span class="token class-name">ModelAndView</span> modelAndView<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>modelAndView <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> messagePool <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">Locale</span> locale <span class="token operator">=</span> messagePool<span class="token punctuation">.</span><span class="token function">getLocale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>locale <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token function">getDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-
-            modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"lang"</span><span class="token punctuation">,</span> locale<span class="token punctuation">.</span><span class="token function">getLanguage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"locale"</span><span class="token punctuation">,</span> locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-            <span class="token keyword">if</span><span class="token punctuation">(</span>handler <span class="token keyword">instanceof</span> <span class="token class-name">HandlerMethod</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token class-name">HandlerMethod</span> handlerMethod <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">HandlerMethod</span><span class="token punctuation">)</span> handler<span class="token punctuation">;</span>
-                <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> beanType <span class="token operator">=</span> handlerMethod<span class="token punctuation">.</span><span class="token function">getBeanType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token class-name">Controller</span> controller <span class="token operator">=</span> beanType<span class="token punctuation">.</span><span class="token function">getAnnotation</span><span class="token punctuation">(</span><span class="token class-name">Controller</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token keyword">if</span><span class="token punctuation">(</span>controller <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                    modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"locales"</span><span class="token punctuation">,</span> messagePool<span class="token punctuation">.</span><span class="token function">getLocales</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"messages"</span><span class="token punctuation">,</span> messagePool<span class="token punctuation">.</span><span class="token function">getMessagesInJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">postHandle</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">,</span> handler<span class="token punctuation">,</span> modelAndView<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>이제 템플릿 엔진에서 주입된 부가 정보를 사용하여 렌더링을 할 수 있게 됩니다.</p>
-<h3 id="인증을-위한-인터셉터"><a href="#인증을-위한-인터셉터" class="headerlink" title="인증을 위한 인터셉터"></a>인증을 위한 인터셉터</h3><p>또 다른 인터셉터의 활용 방안은 인증 처리입니다. 사용자에게 이메일 또는 카카오톡 메시지등을 발송하여 어떤 행동을 할 수 있는 링크를 주게 된다고 가정해보면 해당 링크를 통해 들어오는 사용자은 인증을 수행하기 전일 수 있습니다. 이때 주어지는 링크에 임시적으로 인증에 사용할 수 있는 만료성 토큰 파라미터를 포함시킴으로써 사용자를 인증하는 로직을 추가할 수 있습니다.</p>
-<p><img data-src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/31015797034/original/89mawYXJeO_K082-5HF52bd73j_SN60nLQ.png" alt="코인원의 이메일 인증하기 버튼"></p>
-<p>위 예시 이미지의 이메일 인증하기 버튼에 대한 링크에는 코인원에서 분석할 수 있는 어떠한 파라미터에 인증을 위한 식별 정보가 있을거라 추측합니다.</p>
-<p>다음은 토큰 파라미터 유무를 확인하고 토큰 파라미터를 분석하여 인증을 수행하는 인터셉터 구현의 예시입니다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>TokenBasedAuthenticationInterceptor</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">TokenBasedAuthenticationInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span> TOKEN_PARAMETER_NAME <span class="token operator">=</span> <span class="token string">"token"</span><span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">String</span> parameter <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span>TOKEN_PARAMETER_NAME<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>parameter <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>parameter<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token comment">// NOTE: 토큰 파라미터 분석 및 검증</span>
-            <span class="token class-name">String</span> token <span class="token operator">=</span> <span class="token function">analyticsToken</span><span class="token punctuation">(</span>parameter<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">boolean</span> valid <span class="token operator">=</span> <span class="token function">validateToken</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>valid<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token comment">// NOTE: 토큰 기반 인증 처리</span>
-                <span class="token function">authenticationByToken</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            <span class="token keyword">return</span> valid<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p><strong>일정 시간이 만료</strong>되면 해당 토큰으로는 인증할 수 없고 이미 인증을 수행하여 <strong>사용이 완료된 토큰</strong>으로 확인하는 것은 토큰 파라미터 분석 및 검증 로직에 포함될겁니다.</p>
-<p>간단하게 HandlerInterceptor의 활용 방안 3가지를 확인해보았습니다. 애플리케이션 마다 요구사항이 다르고 무궁무진 하기 때문에 HandlerInterceptor는 더 다양한 방식으로 활용할 수 있을 겁니다. 이상으로 HandlerInterceptor은 언제 사용하나요?를 마치겠습니다. 감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Spring MVC</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>갑자기 애플리케이션 배포에 실패한 이유</title>
     <url>/why-fail-deploy-application/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
@@ -4927,6 +4829,125 @@ task <span class="token function">awsbuild</span><span class="token punctuation"
         <tag>Spring Boot</tag>
         <tag>Beanstalk</tag>
         <tag>Gradle</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HandlerInterceptor은 언제 사용하나요?</title>
+    <url>/when-do-i-use-the-handler-interceptor/</url>
+    <content><![CDATA[<p><img data-src="/../images/logo/spring.png#compact"></p>
+<p>안녕하세요 Mambo입니다. 오늘은 스프링 MVC 모듈에 포함되어있는 HandlerInterceptor 인터페이스를 언제 사용하는가에 대해서 알아보겠습니다.</p>
+<h2 id="HandlerInterceptor"><a href="#HandlerInterceptor" class="headerlink" title="HandlerInterceptor"></a>HandlerInterceptor</h2><blockquote>
+<p>A HandlerInterceptor gets called before the appropriate HandlerAdapter triggers the execution of the handler itself. This mechanism can be used for a large field of preprocessing aspects, e.g. for authorization checks, or common handler behavior like locale or theme changes. Its main purpose is to allow for factoring out repetitive handler code.</p>
+</blockquote>
+<p><strong>HandlerInterceptor</strong>는 컨트롤러 핸들러 함수에 대한 전처리 동작을 수행할 수 있는 방법을 제공합니다. 필터도 전처리 동작을 수행할 수 있지만 web.xml에 정의되는 필터와 다르게 HandlerInterceptor는 애플리케이션 컨텍스트에서 관리하므로 요청 정보를 분석하여 사용자를 인증하거나 응답 뷰를 렌더링하기 전에 부가 데이터를 주입하는 동작을 수행할 수 있습니다.</p>
+<p>예를 들어, 기본으로 제공되는 HandlerInterceptor 구현체인 <strong>LocaleChangeInterceptor</strong>는 로케일 파라미터에 따라 현재 로케일을 변경하는 동작을 수행하죠.</p>
+<h3 id="정적-리소스-패턴-제외"><a href="#정적-리소스-패턴-제외" class="headerlink" title="정적 리소스 패턴 제외"></a>정적 리소스 패턴 제외</h3><p><strong>ResourceHandlerRegistry</strong>는 정적 리소스를 배포하기 위한 핸들러를 등록하는 것을 지원하는 클래스입니다. 이때, 리소스 핸들러가 처리할 경로를 매칭하기 위하여 AntPathMatcher 또는 PathPattern을 사용하게 되는데 Ant 스타일의 패턴 매칭을 사용하므로 특정 패턴을 제외하기 위한 Regex 같은 방식을 사용할 수 없습니다. </p>
+<p>리소스 핸들러가 처리하는 경로에 대해서 특정 패턴을 제외하기 위해서는 해당 패턴을 처리하지 않도록 패턴별로 등록하여야합니다. 하지만, 이렇게 올바른 패턴마다 리소스 핸들러를 등록하는 것은 불편합니다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>ResourceHandlerRegistry</span></div><code class="language-java"><span class="token annotation punctuation">@Configuration</span><span class="token punctuation">(</span>proxyBeanMethods <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addResourceHandlers</span><span class="token punctuation">(</span><span class="token class-name">ResourceHandlerRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        registry<span class="token punctuation">.</span><span class="token function">addResourceHandler</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addResourceLocations</span><span class="token punctuation">(</span><span class="token string">"classpath:/static/images/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 예시는 <strong>&#x2F;images&#x2F;</strong>** 패턴의 경로에 대해서 클래스패스의 <strong>static&#x2F;images</strong> 폴더에 있는 정적 리소스로 처리하기 위한 핸들러를 등록합니다. images 폴더에는 이미지 파일만 있다고 가정했으나 개발자의 실수로 images 폴더에 이미지가 아닌 동영상 파일이나 오디오 파일이 들어있다면 해당 리소스도 처리하게 됩니다.</p>
+<p>이렇게 특정 패턴을 방지해야하는 경우에 HandlerInterceptor를 등록하여 요청을 분석하여 리소스를 응답하지 않도록 전처리 동작을 구현할 수 있습니다.</p>
+<p>다음과 같이 <strong>이미지 파일 패턴이 아니라면 요청을 404 Not Found로 처리</strong>하는 동작을 수행할 수 있습니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span><span class="token class-name">InterceptorRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token function">onlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addPathPatterns</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addResourceHandlers</span><span class="token punctuation">(</span><span class="token class-name">ResourceHandlerRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        registry<span class="token punctuation">.</span><span class="token function">addResourceHandler</span><span class="token punctuation">(</span><span class="token string">"/images/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addResourceLocations</span><span class="token punctuation">(</span><span class="token string">"classpath:/static/images/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token class-name">OnlyServeImagesHandlerInterceptor</span> <span class="token function">onlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">OnlyServeImagesHandlerInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">OnlyServeImagesHandlerInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">&#123;</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">String</span> requestURI <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getRequestURI</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>requestURI<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">".*\\/.*\\.(jpg|jpeg|png|gif)"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token class-name">HttpServletResponse</span><span class="token punctuation">.</span>SC_NOT_FOUND<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 인터셉터가 정말로 이미지 파일에 대해서만 처리할 수 있게 사전 처리를 수행하는지 확인해보겠습니다.</p>
+<p><img data-src="/images/posts/handler-interceptor-01.gif"></p>
+<p>위 결과를 보면 이미지 파일은 정적 리소스로 배포되도록 처리되었지만 동영상 파일은 처리되지 않게 된걸 확인할 수 있습니다. </p>
+<h3 id="뷰-응답-시-부가-정보-주입"><a href="#뷰-응답-시-부가-정보-주입" class="headerlink" title="뷰 응답 시 부가 정보 주입"></a>뷰 응답 시 부가 정보 주입</h3><p>두번째로는 뷰를 응답하는 핸들러 함수에 대하여 <strong>부가 정보를 주입</strong>하는데에 사용할 수 있습니다. </p>
+<p>다음의 코드는 뷰를 응답하게되는 핸들러 함수에 사용 가능한 언어와 함께 현재 로케일에 대한 메시지 코드 목록을 주입하는 인터셉터 예시입니다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>InjectionLocalesInterceptor</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">InjectionLocalesInterceptor</span> <span class="token keyword">extends</span> <span class="token class-name">HandlerInterceptorAdapter</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token class-name">MessagePool</span> messagePool <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">postHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">,</span> <span class="token class-name">ModelAndView</span> modelAndView<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>modelAndView <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> messagePool <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">Locale</span> locale <span class="token operator">=</span> messagePool<span class="token punctuation">.</span><span class="token function">getLocale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>locale <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token function">getDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+
+            modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"lang"</span><span class="token punctuation">,</span> locale<span class="token punctuation">.</span><span class="token function">getLanguage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"locale"</span><span class="token punctuation">,</span> locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">if</span><span class="token punctuation">(</span>handler <span class="token keyword">instanceof</span> <span class="token class-name">HandlerMethod</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">HandlerMethod</span> handlerMethod <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">HandlerMethod</span><span class="token punctuation">)</span> handler<span class="token punctuation">;</span>
+                <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> beanType <span class="token operator">=</span> handlerMethod<span class="token punctuation">.</span><span class="token function">getBeanType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token class-name">Controller</span> controller <span class="token operator">=</span> beanType<span class="token punctuation">.</span><span class="token function">getAnnotation</span><span class="token punctuation">(</span><span class="token class-name">Controller</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>controller <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"locales"</span><span class="token punctuation">,</span> messagePool<span class="token punctuation">.</span><span class="token function">getLocales</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    modelAndView<span class="token punctuation">.</span><span class="token function">addObject</span><span class="token punctuation">(</span><span class="token string">"messages"</span><span class="token punctuation">,</span> messagePool<span class="token punctuation">.</span><span class="token function">getMessagesInJson</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">postHandle</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">,</span> handler<span class="token punctuation">,</span> modelAndView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>이제 템플릿 엔진에서 주입된 부가 정보를 사용하여 렌더링을 할 수 있게 됩니다.</p>
+<h3 id="인증을-위한-인터셉터"><a href="#인증을-위한-인터셉터" class="headerlink" title="인증을 위한 인터셉터"></a>인증을 위한 인터셉터</h3><p>또 다른 인터셉터의 활용 방안은 인증 처리입니다. 사용자에게 이메일 또는 카카오톡 메시지등을 발송하여 어떤 행동을 할 수 있는 링크를 주게 된다고 가정해보면 해당 링크를 통해 들어오는 사용자은 인증을 수행하기 전일 수 있습니다. 이때 주어지는 링크에 임시적으로 인증에 사용할 수 있는 만료성 토큰 파라미터를 포함시킴으로써 사용자를 인증하는 로직을 추가할 수 있습니다.</p>
+<p><img data-src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/31015797034/original/89mawYXJeO_K082-5HF52bd73j_SN60nLQ.png" alt="코인원의 이메일 인증하기 버튼"></p>
+<p>위 예시 이미지의 이메일 인증하기 버튼에 대한 링크에는 코인원에서 분석할 수 있는 어떠한 파라미터에 인증을 위한 식별 정보가 있을거라 추측합니다.</p>
+<p>다음은 토큰 파라미터 유무를 확인하고 토큰 파라미터를 분석하여 인증을 수행하는 인터셉터 구현의 예시입니다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>TokenBasedAuthenticationInterceptor</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">TokenBasedAuthenticationInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span> TOKEN_PARAMETER_NAME <span class="token operator">=</span> <span class="token string">"token"</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span> <span class="token class-name">Object</span> handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">String</span> parameter <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span>TOKEN_PARAMETER_NAME<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>parameter <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>parameter<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// NOTE: 토큰 파라미터 분석 및 검증</span>
+            <span class="token class-name">String</span> token <span class="token operator">=</span> <span class="token function">analyticsToken</span><span class="token punctuation">(</span>parameter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">boolean</span> valid <span class="token operator">=</span> <span class="token function">validateToken</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>valid<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// NOTE: 토큰 기반 인증 처리</span>
+                <span class="token function">authenticationByToken</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">return</span> valid<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><strong>일정 시간이 만료</strong>되면 해당 토큰으로는 인증할 수 없고 이미 인증을 수행하여 <strong>사용이 완료된 토큰</strong>으로 확인하는 것은 토큰 파라미터 분석 및 검증 로직에 포함될겁니다.</p>
+<p>간단하게 HandlerInterceptor의 활용 방안 3가지를 확인해보았습니다. 애플리케이션 마다 요구사항이 다르고 무궁무진 하기 때문에 HandlerInterceptor는 더 다양한 방식으로 활용할 수 있을 겁니다. 이상으로 HandlerInterceptor은 언제 사용하나요?를 마치겠습니다. 감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Spring MVC</tag>
       </tags>
   </entry>
   <entry>

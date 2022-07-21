@@ -7,25 +7,28 @@ tags:
 - X-SSL-CERT
 ---
 
-> 본 글은 에너지 분야에서 수요 반응(DR) 이벤트를 송수신하기 위해서 사용하는 [OpenADR 프로토콜](https://www.openadr.org/)에서 VTN과 VEN이 서로 상호 인증(Mutual Authentication)을 수행하는 구조를 이해하기 위해 정리한 것입니다. 서버와 클라이언트 간 상호 인증을 수행하는 방법 중에서 OpenADR 프로토콜에서 HTTP를 이용한다면 TLS 상호 인증을 수행합니다.
+> 본 글은 에너지 분야에서 수요 반응(DR) 이벤트를 송수신하기 위해서 사용하는 [OpenADR 프로토콜](https://www.openadr.org/)에서 VTN과 VEN이 서로 상호 인증(Mutual Authentication)을 수행하는 구조를 이해하기 위해 정리한 것입니다.
 
 ## Mutual Authentication
-_Mutual authentication or two-way authentication (not to be confused with two-factor authentication) refers to two parties authenticating each other at the same time in an authentication protocol. It is a default mode of authentication in some protocols (IKE, SSH) and optional in others (TLS)._
+_Client certificates must be used for HTTP client authentication. The entity initiating the request(the client) must have an X.509 certificate that is validated by the server during the TLS handshake. If no client certificate is supplied, or if the certificate is not valid (e.g., it is not signed by a trusted CA, or it is expired) the server must terminate the connection during the TLS handshake._
 
-위키피디아에서 설명하는 것처럼 [AWS IoT](https://docs.aws.amazon.com/ko_kr/iot/latest/developerguide/client-authentication.html)와 같은 디바이스의 신원을 검증할 수 있도록 IoT 시스템에서는 디바이스를 위한 X.509 클라이언트 인증서를 제공하는 것을 확인할 수 있습니다. 일반적으로 HTTPS 프로토콜에서 TLS 핸드쉐이크 과정에서는 서버의 공개키가 포함된 X.509 인증서를 클라이언트에게 전달하여 서버의 신원을 검증하고 서로 데이터를 안전하게 전송하기 위해서 사용할 대칭키를 교환하기 위한 일련의 작업을 수행합니다. 따라서, HTTPS 프로토콜에서 상호 인증을 구성하기 위해서는 서버가 자신의 인증서를 전달하는 것과 별개로 클라이언트에서도 서버가 신뢰할 수 있는 것으로부터 서명된 클라이언트 인증서를 전달해야만 합니다.
+OpenADR 프로토콜에서 VTN 시스템과 VEN 디바이스 간 통신을 위해서는 HTTP 또는 XMPP를 이용해야합니다. HTTP 클라이언트 통신을 위해서는 VTN과 VEN은 서로를 신뢰할 수 있는 X.509 공개키 인증서를 제공해야합니다. 클라이언트 요청에 서버가 신뢰할 수 있는 기관으로부터 서명된 X.509 인증서가 포함되지 않으면 서버 시스템에서는 TLS 핸드쉐이크 과정에서 연결을 해지할 수 있습니다. 
 
 ### X.509 Client Certificate
-일반적으로 X.509 클라이언트 인증서는 서버 시스템에서 신뢰할 수 있는 기관으로부터 클라이언트에게 발급해준 공개키 인증서를 말합니다. 그러나, 시스템이 자체적으로 서명하여 만들어지는 자체 서명 인증서와 개인키를 발급하여 클라이언트에게 제공할 수도 있습니다. 신뢰할 수 있는 기관들로부터 발급된 것이 아니므로 서버 시스템에서는 인프라 구성에 따라서 자체 서명된 CA 인증서를 별도로 제공해야할 수 있습니다.
+OpenADR 프로토콜에서의 보안은 공개키 기반 인프라(PKI)의 X.509 인증서로 수행하며 더 높은 보안 레벨을 요구하는 시스템을 구성하고 싶다면 XML 페이로드에 대한 서명을 지원할 수 있습니다. 2048 비트 이상의 RSA 또는 256 비트 이상의 ECC 키 기반의 공개키 인증서를 사용할 수 있습니다. 일반적으로 VEN은 임베디드 디바이스이므로 RSA 보다는 ECC 키 기반의 인증서를 사용하는 것이 더 효율적일 수 있습니다. OpenADR 프로토콜에서 TLS 핸드쉐이크 과정에서 최소한 TLS 1.2 버전과 함께 그에 상응하는 암호화 스위트를 사용해야합니다.
+
+- Transport Layer Security: TLS 1.2+
+- Cipher Suites: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256
 
 #### cURL
-리눅스 시스템에서 주로 사용되는 HTTP 클라이언트 통신 도구인 [cURL](https://curl.se/)에서 클라이언트 인증서를 포함하여 요청하는 방법은 [how to curl an endpoint protected by mutual tls (mtls)](https://downey.io/notes/dev/curl-using-mutual-tls/)에서 확인할 수 있습니다.
+리눅스 시스템에서 주로 사용되는 HTTP 클라이언트 통신 도구인 [cURL](https://curl.se/)를 사용해서 EiRegisterParty 서비스 엔드포인트에 대해 요청하면 VTN 과의 상호 TLS 핸드쉐이크 과정을 정상적으로 수행할 수 있는지 검증할 수 있습니다. [how to curl an endpoint protected by mutual tls (mtls)](https://downey.io/notes/dev/curl-using-mutual-tls/)에서는 cURL로 클라이언트 인증서를 포함하는 방법을 소개하고 있어 다음과 같이 명령어를 실행하면 됩니다.
 
 ```sh
-curl -v --tlsv1.2 --tls-max 1.3 --cert ./cert.pem --key ./privkey.pem https://uri/OpenADR-Endpoint
+curl -v --tlsv1.2 --tls-max 1.3 --cert ./cert.pem --key ./privkey.pem https://Host/OpenADR2/Simple/2.0b/EiRegisterParty
 ```
 
 #### Java
-자바 애플리케이션에서는 KeyStore라는 별도의 키 저장소를 사용하므로 HTTP 통신 요청 시 클라이언트 인증서를 포함하기 위한 코드가 장황해보일 수 있습니다. 일반적으로 X.509 클라이언트 인증서는 PEM 형식으로 교환되므로 KeyStore로 변환하는 과정이 필요로 합니다. 다음은 [BouncyCastle API](https://www.bouncycastle.org/java.html) 라이브러리를 사용하여 X.509 인증서와 개인키를 불러와서 HTTP 요청 시 포함하는 코드의 예시를 보여줍니다.
+웹 애플리케이션 서버 뿐만 아니라 VEN 디바이스를 구현하는 가장 일반적인 방법은 자바 언어로 구현하는 것입니다. 자바 애플리케이션에서는 KeyStore라는 별도의 키 저장소 클래스를 제공하므로 HTTP 클라이언트 요청 시 X.509 클라이언트 인증서를 포함시키기 위해서는 PKI 및 PKCS 표준에 대한 일련의 클래스들을 알아야합니다. X.509 클라이언트 인증서는 PEM 형식으로 교환되므로 KeyStore로 변환하는 과정이 필요할 수 있습니다. 다음은 [BouncyCastle API](https://www.bouncycastle.org/java.html) 자바 라이브러리를 통해서 X.509 인증서와 개인키를 불러와서 HTTP 클라이언트 요청을 시도하는 코드를 보여줍니다.
 
 ```java
 class MutualTlsTest {
@@ -70,7 +73,7 @@ class MutualTlsTest {
 
             CloseableHttpClient client = HttpClientBuilder.create().setSSLSocketFactory(sslSocketFactory).build();
 
-            HttpPost httpPost = new HttpPost("https://uri/OpenADR-Endpoint");
+            HttpPost httpPost = new HttpPost("https://Host/OpenADR2/Simple/2.0b/EiRegisterParty");
             httpPost.addHeader("Content-Type", "application/xml; charset=UTF-8");
 
             String payload = IOUtils.toString(classLoader.getResourceAsStream("payload.xml"), StandardCharsets.UTF_8);
@@ -86,7 +89,7 @@ class MutualTlsTest {
 ```
 
 #### Go
-실무에서 사용하고 있지는 않지만 개인적으로 학습중인 Go 언어에서 클라이언트 인증서를 포함하는 방법은 [A step by step guide to mTLS in Go](https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go)에 잘 설명되어있어 다음과 같이 간단하게 작성할 수 있었습니다.
+개인적으로 학습중인 Go 언어에서 HTTP 클라이언트 요청과 함께 X.509 클라이언트 인증서를 포함시키는 방법을 찾아보았습니다. [A step by step guide to mTLS in Go](https://venilnoronha.io/a-step-by-step-guide-to-mtls-in-go)에 잘 설명되어있으므로 다음과 같이 간단하게 테스트해볼 수 있습니다.
 
 ```go
 package main
@@ -133,7 +136,7 @@ func main() {
 	defer payloadXml.Close()
 
 	payload, _ := ioutil.ReadAll(payloadXml)
-	r, err := client.Post("https://uri/OpenADR-Endpoint", "application/xml", strings.NewReader(string(payload)))
+	r, err := client.Post("https://Host/OpenADR2/Simple/2.0b/EiRegisterParty", "application/xml", strings.NewReader(string(payload)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -148,9 +151,8 @@ func main() {
 }
 ``` 
 
-
 ### X.509 Client Certificate Proxy
-요즘의 인프라 시스템은 애플리케이션 서버를 감추고 요청 트래픽에 대해서 전처리하고 넘겨주는 리버스 프록시 구성하는 경우가 많습니다. 일반적으로 리버스 프록시 구성을 위해서 Nginx와 같은 웹서버를 사용할 것입니다. 이러한 인프라 구성에서는 클라이언트 요청에 대한 SSL 오프로드를 수행하는 곳에서 클라이언트가 전달한 클라이언트 인증서를 별도의 프록시 헤더에 넘겨주어야합니다.
+오늘날의 인프라 시스템은 애플리케이션 서버 정보를 감추고 클라이언트 요청에 대해 전처리 동작을 수행하고 넘겨주는 리버스 프록시를 구성하는 것이 일반적입니다. 리버스 프록시는 Nginx와 같은 웹 서버 또는 로드밸런서에서 지원하며 이러한 리버스 프록시를 수행하는 인프라 구성에서는 클라이언트 요청에 대한 TLS 핸드쉐이크 과정에서 전달된 클라이언트 인증서를 별도의 프록시 헤더에 포함시켜 넘겨주어야합니다.
 
 #### X-SSL-CERT
 일반적으로 클라이언트 인증서에 대한 프록시 헤더의 표준은 없으므로 X-SSL-CERT와 같이 애플리케이션 서버에서 읽을 수 있는 헤더를 정하여 클라이언트 인증서를 포함시켜 전달하도록 구성하면 됩니다. 다음은 Nginx에서의 리버스 프록시 구성 시 X-SSL-CERT 헤더에 클라이언트 인증서를 포함시키는 예시입니다.

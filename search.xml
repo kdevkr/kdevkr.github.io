@@ -4986,6 +4986,93 @@ dependencyManagement <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
+    <title>엘라스틱서치 업그레이드</title>
+    <url>/upgrade-elasticsearch/</url>
+    <content><![CDATA[<p>현재 조직의 기존 솔루션은 엘라스틱서치를 주 데이터베이스를 사용하고 있고 2015년에 릴리즈된 <a href="https://www.elastic.co/kr/blog/elasticsearch-1-6-0-released">엘라스틱서치 1.6.0</a>을 기반으로 동작합니다. 저는 이 조직에서 기존 솔루션을 대체할 수 있는 신규 시스템을 개발하고 있으며 <a href="https://www.elastic.co/kr/blog/elastic-stack-7-3-0-released">엘라스틱서치 7.3.2</a>를 기반으로 동작하고 있는데 엘라스틱서치는 많은 기업에서 필수적으로 사용하는 솔루션이지만 그동안 <a href="https://www.elastic.co/kr/blog/moving-from-types-to-typeless-apis-in-elasticsearch-7-0">많은 업데이트와 변화</a>로 인하여 변경사항을 고려하여 프로젝트를 시작하던 당시에 최신 버전을 사용했을 것이라고 생각합니다.</p>
+<blockquote>
+<p>신규 시스템을 개발하기 시작하던 시기에 저는 신입사원이었기에 왜 엘라스틱서치 7.3.2로 결정되었는지는 알 수 없습니다.</p>
+</blockquote>
+<p>엘라스틱서치를 주로 사용하던 기존 솔루션과는 다르게 신규 시스템은 PostgreSQL를 관계형 데이터베이스와 함께  엘라스틱서치는 단순 로그 또는 시계열 데이터를 저장하기 위한 용도로 사용하고 있습니다. 다른 주요 기업들에서 구축하는 <a href="https://www.elastic.co/kr/what-is/elk-stack">ELK 스택</a>이 아닌 엘라스틱서치를 단독으로 사용하고 있지만 기술적으로 굳이 Logstash 또는 Beats를 도입할 필요성은 없다고 생각됩니다.</p>
+<h2 id="What’s-new-in-7-x"><a href="#What’s-new-in-7-x" class="headerlink" title="What’s new in 7.x"></a>What’s new in 7.x</h2><p>개인적으로 시스템에서 사용중인 엘라스틱서치 7.3.2를 업그레이드할 필요성이 요구된다고 생각된 이유는 인덱스 매핑 관련 작업을 하다보니 엘라스틱서치 7.x에 대한 마이너 패치에 의해 추가된 기능과 성능 개선을 확인하였기 때문입니다.</p>
+<ul>
+<li>7.6 : <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.6/release-highlights-7.6.0.html#_optimized_sorting_on_long_field_types">Optimized sorting on long field types</a></li>
+<li>7.8 : <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/release-highlights.html#add-composable-index-templates">Composable index templates</a></li>
+<li>7.10 : <a href="https://www.elastic.co/kr/blog/save-space-and-money-with-improved-storage-efficiency-in-elasticsearch-7-10">Indexing speed improvement</a></li>
+<li>7.12 : <a href="https://www.elastic.co/kr/blog/whats-new-elasticsearch-7-12-0-put-a-search-box-on-s3">Elasticsearch and Kibana now support ARM</a></li>
+</ul>
+<p>7.8 에서 추가된 인덱스 템플릿과 7.10 에서 인덱싱 성능 향상에 대한 패치가 이루어졌습니다. 심지어는 최근에 <a href="/reason-for-replacing-ec2-instance-type/">AWS Graviton과 같은 ARM 아키텍처</a>를 비용 절감 목적으로 도입하므로 7.12 부터는 엘라스틱서치와 키바나가 ARM 아키텍처 기반의 빌드를 지원하기에 최소한 7.12.1로 업그레이드하는 것으로 결정합니다.</p>
+<blockquote>
+<p>아쉽게도 Log4j2 취약점은 그대로 영향권에 있으므로 이에 대한 조치는 유지되어야합니다.</p>
+</blockquote>
+<h3 id="롤링-업그레이드"><a href="#롤링-업그레이드" class="headerlink" title="롤링 업그레이드"></a>롤링 업그레이드</h3><p>엘라스틱서치는 클러스터를 구성하는 각 노드에 대한 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.12/setup-upgrade.html">롤링 업그레이드</a>를 지원합니다. 엘라스틱서치 업그레이드 관련 글들을 찾아보니 대략적으로 아래와 같은 정보가 있습니다.</p>
+<ul>
+<li><a href="https://brunch.co.kr/@alden/44">ElasticSearch 5.x에서 6.x로 업그레이드</a></li>
+<li><a href="http://kimjmin.net/2018/12/2018-12-elasticsearch-rolling-upgrade/">Elastic Stack 롤링 업그레이드</a></li>
+<li><a href="https://videos.elastic.co/watch/itLLV1rwBjaWqZdpohQLd1">Elastic Stack 7.0 업그레이드</a></li>
+</ul>
+<p>위 글들에서 엘라스틱서치 업그레이드 과정을 지켜보았다면 실제로 업그레이드를 수행할 때에는 공식 문서의 업그레이드 관련 부분을 참고해야합니다.</p>
+<blockquote>
+<p>다행히도 메이저 버전을 업그레이드해야하는 상황은 아니었습니다.</p>
+</blockquote>
+<h4 id="엘라스틱서치-7-12-1-다운로드"><a href="#엘라스틱서치-7-12-1-다운로드" class="headerlink" title="엘라스틱서치 7.12.1 다운로드"></a>엘라스틱서치 7.12.1 다운로드</h4><p>아마 대부분은 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html">패키지 매니저를 통해 서비스로 설치</a>하겠지만 조직에서 사용중인 엘라스틱서치는 압축 파일 형태로 된 번들로 되어있음을 확인하고 동일하게 압축 파일 형태의 7.12.1 버전을 다운로드 합니다.</p>
+<pre class="language-sh" data-language="sh"><code class="language-sh">wget https:&#x2F;&#x2F;artifacts.elastic.co&#x2F;downloads&#x2F;elasticsearch&#x2F;elasticsearch-7.12.1-linux-x86_64.tar.gz
+wget https:&#x2F;&#x2F;artifacts.elastic.co&#x2F;downloads&#x2F;kibana&#x2F;kibana-7.12.1-linux-x86_64.tar.gz</code></pre>
+
+<blockquote>
+<p>최신 버전이 아닌 릴리즈에 대해서는 <a href="https://www.elastic.co/kr/downloads/past-releases#elasticsearch">Past Releases</a> 페이지에서 다운로드 할 수 있습니다.</p>
+</blockquote>
+<h4 id="config-x2F-elasticsearch-yml"><a href="#config-x2F-elasticsearch-yml" class="headerlink" title="config&#x2F;elasticsearch.yml"></a>config&#x2F;elasticsearch.yml</h4><p>기존 엘라스틱서치 7.3.2 에서 적용된 설정 정보를 그대로 유지해야 합니다.</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">cluster.name</span><span class="token punctuation">:</span> cluster
+<span class="token key atrule">node.name</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">path.data</span><span class="token punctuation">:</span> /home/ec2<span class="token punctuation">-</span>user/elasticsearch/data
+<span class="token key atrule">path.logs</span><span class="token punctuation">:</span> /home/ec2<span class="token punctuation">-</span>user/elasticsearch/logs
+<span class="token key atrule">bootstrap.memory_lock</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">network.host</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">http.port</span><span class="token punctuation">:</span> <span class="token number">9200</span>
+<span class="token key atrule">discovery.seed_hosts</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"127.0.0.1"</span><span class="token punctuation">,</span> <span class="token string">"[::1]"</span><span class="token punctuation">]</span>
+<span class="token key atrule">cluster.initial_master_nodes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node-1"</span><span class="token punctuation">]</span>
+<span class="token key atrule">transport.profiles.default.port</span><span class="token punctuation">:</span> <span class="token number">9300</span>
+<span class="token key atrule">xpack.security.enabled</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre>
+
+<h4 id="config-x2F-jvm-options"><a href="#config-x2F-jvm-options" class="headerlink" title="config&#x2F;jvm.options"></a>config&#x2F;jvm.options</h4><p>메모리 설정 및 Log4j2 취약점에 대한 부분을 기존과 동일하게 설정합니다. </p>
+<pre class="language-conf" data-language="conf"><code class="language-conf">-Xms5g
+-Xmx5g
+-Dlog4j2.formatMsgNoLookups&#x3D;true</code></pre>
+
+<h4 id="ES-JAVA-HOME"><a href="#ES-JAVA-HOME" class="headerlink" title="ES_JAVA_HOME"></a>ES_JAVA_HOME</h4><p>그리고 엘라스틱서치 버전에 맞는 JDK는 번들 파일에 포함되어있으므로 ES_JAVA_HOME 환경 변수를 지정합니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">ES_JAVA_HOME</span><span class="token operator">=</span><span class="token string">"/home/ec2-user/elasticsearch-7.12.1/jdk"</span></code></pre>
+
+<h3 id="롤링-업그레이드-순서"><a href="#롤링-업그레이드-순서" class="headerlink" title="롤링 업그레이드 순서"></a>롤링 업그레이드 순서</h3><p>단일 노드로 마스터와 데이터 노드를 모두 구성하는 단일 클러스터가 아니라면 클러스터를 구성하는 마스터와 데이터 노드를 하나씩 업그레이드 해야합니다. 결국 노드 단위로 아래의 동작을 반복해서 수행해야 한다는 의미입니다.</p>
+<h4 id="샤드-할당-비활성화"><a href="#샤드-할당-비활성화" class="headerlink" title="샤드 할당 비활성화"></a>샤드 할당 비활성화</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> -X PUT <span class="token string">"localhost:9200/_cluster/settings?pretty"</span> -H <span class="token string">'Content-Type: application/json'</span> -d<span class="token string">'
+&#123;
+  "persistent": &#123;
+    "cluster.routing.allocation.enable": "primaries"
+  &#125;
+&#125;
+'</span></code></pre>
+
+<h4 id="인덱싱-중지-및-동기-플러시"><a href="#인덱싱-중지-및-동기-플러시" class="headerlink" title="인덱싱 중지 및 동기 플러시"></a>인덱싱 중지 및 동기 플러시</h4><p>보다 빠른 샤드 복구를 위해서 인덱싱을 중지하고 동기화된 형태로 플러시하는게 좋다고 합니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> -X POST <span class="token string">"localhost:9200/_flush/synced?pretty"</span></code></pre>
+
+<h4 id="해당되지-않은-작업-생략"><a href="#해당되지-않은-작업-생략" class="headerlink" title="해당되지 않은 작업 생략"></a>해당되지 않은 작업 생략</h4><p>엘라스틱서치 플러그인 업그레이드 또는 머신러닝 작업에 대한 부분은 관련되지 않으므로 생략합니다.</p>
+<h4 id="샤드-할당-활성화"><a href="#샤드-할당-활성화" class="headerlink" title="샤드 할당 활성화"></a>샤드 할당 활성화</h4><p>엘라스틱서치를 다시 실행하고나서 샤드 할당 기능을 다시 활성화합니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> -X PUT <span class="token string">"localhost:9200/_cluster/settings?pretty"</span> -H <span class="token string">'Content-Type: application/json'</span> -d<span class="token string">'
+&#123;
+  "persistent": &#123;
+    "cluster.routing.allocation.enable": null
+  &#125;
+&#125;
+'</span></code></pre>
+
+<p>사실 엘라스틱서치를 단일 노드로 동작하는 클러스터로 구성하여 사용하고 있으므로 클러스터만 재시작하면 되었기에 어려운 작업은 아니었습니다. 시스템 규모가 커져서 고 가용성을 요구하는 경우에는 최소한 3개 이상의 노드로 클러스터를 구성하게 될 것이므로 여러 노드로 구성된 클러스터에 대해 업그레이드를 해보는 기회가 있기를 바랍니다. </p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>elasticsearch</tag>
+        <tag>rolling upgrade</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Pushgateway를 활용하여 사설망 인스턴스 모니터링하기</title>
     <url>/using-pushgateway-to-monitor-private-network-instance/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다. 오늘은 Promethues의 Pushgateway를 왜 사용해야하는지에 대해서 알아보려고 합니다.</p>

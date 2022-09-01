@@ -5001,6 +5001,33 @@ manager-core</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>유닉스 타임스탬프와 시간 정밀도</title>
+    <url>/unix-timestamp/</url>
+    <content><![CDATA[<p>각 나라에서 사용하는 표준 시간은 다르고 동일한 나라에서도 여러가지 시간 기준이 존재합니다. 그러나, 개발자들은 사람마다 다른 시간을 그대로 사용할 수 없으며 전세계적으로 사용되는 표준 시간으로 정의된 것을 따라야합니다. 세계협정시라고 부르는 UTC는 1970년 1월 1일을 기준으로 산정한 시간으로 보통 유닉스 시간 또는 유닉스 타임스탬프라고 합니다.</p>
+<h3 id="유닉스-시간"><a href="#유닉스-시간" class="headerlink" title="유닉스 시간"></a>유닉스 시간</h3><p>기본적으로 타임스탬프에 대해서 초 단위로 세어지는 정수로 표현한 값을 유닉스 시간(Unix Epoch) 또는 유닉스 타임스탬프라고 합니다. PostgreSQL 에서는 타임스탬프 유형의 컬럼에 대해서 EPOCH 키워드를 통해서 초 단위로 환산된 유닉스 시간을 추출할 수 있도록 지원합니다.</p>
+<ul>
+<li><a href="https://www.epoch101.com/#epochConvertToReadable-Container">Convert Epoch&#x2F;Unix Timestamp</a></li>
+<li><a href="https://it-tools.tech/date-converter">Date-time converter</a></li>
+</ul>
+<h3 id="타임스탬프-정밀도"><a href="#타임스탬프-정밀도" class="headerlink" title="타임스탬프 정밀도"></a>타임스탬프 정밀도</h3><p>유닉스 시간이 정의되고 시간이 흘러 현재는 타임스탬프가 초 단위가 아닌 밀리고 그리고 심지어는 나노초 까지의 단위로 타임스탬프 정밀도를 지원하게 됩니다. 사용하는 언어 또는 외부 솔루션에 따라서 정밀도 표현 지원이 다르며 심지어 시계열 데이터베이스인 KDB+ 에서의 <a href="https://code.kx.com/q4m3/2_Basic_Data_Types_Atoms/#25-temporal-data">시간 유형</a>은 1970년 1월 1일이 아닌 2000년 1월 1일을 기준의 나노초 정밀도를 가지는 타임스탬프를 지원합니다.</p>
+<pre class="language-q" data-language="q"><code class="language-q"><span class="token datetime number">2000.01.01</span><span class="token verb operator">=</span><span class="token number">0</span>
+<span class="token number">1b</span>
+
+<span class="token punctuation">.</span>z<span class="token punctuation">.</span>p
+<span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span></code></pre>
+
+<p>타임스탬프를 스칼라 실수로 변환해보면 나노초 단위로 세어진 정수값으로 표현되므로 다른 시스템과 연계하기 위해 1970년 1월 1일 부터의 밀리초 단위로 세어지는 정수값으로 환산할 수 있습니다. (1 나노초는 10^6 밀리초 입니다.)</p>
+<pre class="language-q" data-language="q"><code class="language-q"><span class="token keyword">floor</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span><span class="token punctuation">)</span><span class="token verb operator">-</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">1970.01.01</span>D<span class="token datetime number">00:00</span><span class="token punctuation">)</span><span class="token verb operator">%</span><span class="token number">1e6</span>
+<span class="token number">1662068332940</span></code></pre>
+
+<p>현재 조직에서는 초 단위의 유닉스 시간이 아닌 밀리초로 환산한 정수값을 토대로 타임스탬프에 대한 데이터를 시스템 간 전달하고 있습니다. 대부분의 시스템은 여러가지 언어로 작성된 애플리케이션과 외부 솔루션과의 연계를 수행하며 동작하게 되므로 각 시스템에서 지원하는 타임스탬프의 정밀도 표현 차이로 인해서 약간의 차이가 발생할 수 있음을 고려해야할 수 있습니다.</p>
+]]></content>
+      <tags>
+        <tag>Unix Timestamp</tag>
+        <tag>Unix Epoch</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unsupported allowDuplicateContentLengths in Spring Cloud Gateway of Hoxton Version</title>
     <url>/unsupported-allowduplicatecontentlength-in-spring-cloud-gateway-of-hoxton-version/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>

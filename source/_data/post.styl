@@ -31,11 +31,15 @@ $font-famaily-post-content = 'Noto Sans KR';
   
   +mobile() {
     padding: 1rem;
-  }  
+  }
+}
+
+.main-inner > .post-block,
+.main-inner > .comments:not(:first-child):not(.sub-menu) {
+  box-shadow: none;
 }
 
 .post-body {
-    // text-align: inherit;
     letter-spacing: 0.01rem;
     line-height: 2rem;
     word-break: break-all;
@@ -84,7 +88,7 @@ $font-famaily-post-content = 'Noto Sans KR';
     }
 
     p > code {
-      color: $red;
+      color: $black-deep;
       background-color: transparent;
       padding: 0.2rem 0.3rem;
       font-weight: bold;
@@ -103,9 +107,9 @@ $font-famaily-post-content = 'Noto Sans KR';
         }
     }
     strong {
-      color: #42b983;
+      // color: $text-color;
       +desktop() {
-        font-size: 1.15rem;
+        // font-size: 1rem;
       }
     }
 
@@ -147,7 +151,6 @@ $font-famaily-post-content = 'Noto Sans KR';
       display: block;
 
       time {
-        // background-color: $snorlax-tongue;
         color: $snorlax-tongue;
         padding: 2px;
       }

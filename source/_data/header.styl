@@ -4,25 +4,21 @@
 
     .header-inner {
         box-shadow: none;
-        // border-top: 1px solid $grey;
-        background-color: $content-bg-color;
 
         .site-brand-container {
             padding: 25px 10px;
-            background-color: $content-bg-color;
+            background-color: inherit;
             border-bottom: 1px solid $grey;
             box-shadow: none;
 
             .site-nav-toggle, .site-nav-right {
                 .toggle {
-                    color: $text-color;
-
                     &:hover {
                         cursor: pointer;
                     }
 
                     .toggle-line {
-                        background: $text-color;
+                        background: var(--brand-color);
                     }
                 }
             }
@@ -88,7 +84,6 @@
         box-shadow: none;
         padding: 0;
         border-bottom: 1px solid $grey;
-        background-color: $content-bg-color;
 
         .sidebar-nav {
             border-top: 1px solid $grey;

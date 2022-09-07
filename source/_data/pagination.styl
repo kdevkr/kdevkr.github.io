@@ -1,5 +1,4 @@
 .pagination {
-    // border-top: 1px solid $grey;
     background: none !important;
 
     .prev,
@@ -18,4 +17,10 @@
       }
     }
 
+}
+
+.main-inner > .pagination:not(:first-child):not(.sub-menu) {
+  border-top: 1px solid $grey;
+  padding-top: 20px;
+  box-shadow: none;
 }

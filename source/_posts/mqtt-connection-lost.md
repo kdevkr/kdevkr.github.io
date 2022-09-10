@@ -17,66 +17,84 @@ Caused by: java.io.EOFException
 	... 1 more
 ```
 
-위 스택트레이스는 Paho Java Client 라이브러리를 사용해서 Mosquitto MQTT 브로커에 연결하고 나서 어떠한 사유에 의해 연결이 해지되었을 때 발생하는 오류이다. 이전에 [스프링 부트 MQTT 클라이언트 메시지 채널 구성하기](/spring-boot-integration-mqtt/) 또는 [AWS IoT Device SDK Java로 MQTT 연결하기](/connecting-with-mqtt-using-aws-iot-device-sdk/)에서 MQTT 프로토콜에 대해서 공유한 것처럼 Paho Java Client 라이브러리르 사용해본적은 있었으나 위와 같은 오류를 경험하지는 못했었다.
+위 스택트레이스는 Paho Java Client를 사용하여 Mosquitto 브로커에 연결하고 난 후 어떠한 사유에 의해 연결이 해지되었을 때 발생하는 오류입니다. 조직 내 동료 개발자가 Mosquitto에 연결하고 나서 5분이 지나는 시점에 연결이 해지되는 증상이 있다며 이 문제를 경험했는지 도움을 요청하였으나 이전에 [스프링 부트 MQTT 클라이언트 메시지 채널 구성하기](/spring-boot-integration-mqtt/) 또는 [AWS IoT Device SDK Java로 MQTT 연결하기](/connecting-with-mqtt-using-aws-iot-device-sdk/)에서처럼 Paho Java Client 라이브러리를 사용하면서 연결이 해지되는 것을 경험해보지는 못했었습니다.
 
 ## MQTT over Websocket
-조직 내 동료 개발자가 Paho Java Client 라이브러리를 사용해서 Mosquitto 2.0.14에 연결하고나서 5분이 지나는 시점에 연결이 해지되는 사유가 있다는 것을 알려주었고 그에 대한 원인을 찾기 위해서 도움을 요구했다. JDK, Paho Java Client 라이브러리 버전 그리고 심지어는 Mosquitto 버전에 따라 증상을 확인해본 결과 아래와 같이 파악되었다.
+조직 내 동료 개발자의 도움 요청으로 인해 리눅스 서버에 설치된 Mosquitto 버전은 2.0.14 이며 Paho Java Client 라이브러리는 1.2.5를 사용하고 있는 것으로 알게 되었습니다. 그리고 Mosquitto 연결 시에는 Websocket 프로토콜을 사용하고 있었습니다. 
 
 |JDK|Paho Java Client|Mosquitto|EOF|
 |---|---|---|---|
 |Java 1.8.0_144|1.2.5|2.0.14|💥|
-|Temurin 1.8.0_345|1.1.0 ~ 1.2.5|2.0.15|💥|
-|Temurin 11.0.16|1.1.0 ~ 1.2.5|2.0.15|💥|
-|Temurin 11.0.16|1.1.0 ~ 1.2.5|1.6.9||
+|Temurin 1.8.0_345|1.1.0 ~ 1.2.5|2.0.14|💥|
+|Temurin 11.0.16|1.1.0 ~ 1.2.5|2.0.14|💥|
 
-일반적인 TCP 방식으로 연결 시에는 Mosquitto 버전과 상관없이 정상적으로 연결을 유지함을 보였으나 웹소켓 연결에 대해서는 Mosquitto 2.0.15 버전에서 일정 시간이 지난 연결이 해지됨을 확인했다.
+JDK와 라이브러리 버전을 변경해가면서 테스트 해본 결과 일반적인 TCP 방식으로 연결 시에는 Mosquitto 버전과 상관없이 정상적으로 연결을 유지함을 보였으나 웹소켓 연결에 대해서는 리눅스 서버에 설치된 Mosquitto 2.0.14 브로커에 대해 일정 시간이 지나 연결이 해지됨을 확인할 수 있었습니다.
 
-### 클라이언트 아이디 충돌 가능성
-보통 Paho Java Client 라이브러리를 사용해서 EOFException 문제를 경험하는 경우 대부분은 클라이언트 아이디의 충돌을 원인으로 하는데 Mosquitto 브로커에 연결된 클라이언트는 UUID를 발급하여 사용중이며 로컬 테스트 시에도 단일 클라이언트가 연결되고 있으므로 이로 인해 발생하는 문제는 아니다.
+### Mosquitto Version
+위 문제가 발생했던 리눅스 서버에 Mosquitto 브로커는 도커 이미지로 구동된 상태라고 하였습니다. 그래서 로컬 컴퓨터 환경에서도 도커 컨테이너를 실행하여 간단하게 여러개의 버전을 테스트할 수 있으므로 도커 이미지를 변경하면서 웹 소켓 연결이 일정 시간 이후에 해지되는 증상이 나타나는지 체크해보았습니다. 테스트 버전은 [Mosquitto Posts about Releases](https://mosquitto.org/blog/categories/releases/)에 따라 시도해보았으며 2.0.9와 2.0.11가 릴리즈될 때 1.6.x 마이너 버전도 패치되었기에 포함했습니다.
 
-> Mosquitto 버전과 상관없이 TCP 연결은 정상적으로 유지되는 것으로 볼때에도 클라이언트 아이디 충돌은 아니다.
+|JDK|Paho Java Client|Mosquitto|EOF|
+|---|---|---|---|
+|Temurin 11.0.16|1.2.5|2.0.15|💥|
+|Temurin 11.0.16|1.2.5|2.0.14|💥|
+|Temurin 11.0.16|1.2.5|2.0.13|💥|
+|Temurin 11.0.16|1.2.5|2.0.12|💥|
+|Temurin 11.0.16|1.2.5|2.0.11|💥|
+|Temurin 11.0.16|1.2.5|2.0.10|OK|
+|Temurin 11.0.16|1.2.5|2.0.9|OK|
+|Temurin 11.0.16|1.2.5|1.6.15|💥|
+|Temurin 11.0.16|1.2.5|1.6.14|OK|
+|Temurin 11.0.16|1.2.5|1.6.9|OK|
 
-### 라이브러리 버그 가능성
-Paho Java Client 리파지토리에서 관련된 증상에 대한 이슈를 찾아보았으나 일부 웹소켓 연결에 대한 문제에 대해서 이미 조치된 1.2.5 버전에서도 해당 증상이 발생하므로 라이브러리 버그 가능성도 높지는 않아보인다.
+> 우분투 LTS 버전에 따른 Mosquitto 패키지 지원 버전은 다음의 링크에서 확인할 수 있습니다.
+> https://packages.ubuntu.com/search?keywords=mosquitto
 
-**이슈 목록**
-- [Mqtt websocket attempts to reconnect throwing EOF exception #358](https://github.com/eclipse/paho.mqtt.java/issues/358)
-- [Connection lost (32109) - java.io.EOFException #429](https://github.com/eclipse/paho.mqtt.java/issues/429)
-- [Connection lost (32109) - java.io.EOFException #673](https://github.com/eclipse/paho.mqtt.java/issues/673)
-- [Connection lost (32109) - EOFException after connect for Websocket connection #679](https://github.com/eclipse/paho.mqtt.java/issues/679)
-- [Connection lost (32109) - java.io.EOFException #867](https://github.com/eclipse/paho.mqtt.java/issues/867)
-- [Connection lost (32109) - EOFException after connect for Websocket connection #884](https://github.com/eclipse/paho.mqtt.java/issues/884)
-
-### Mosquitto 2.0 변경사항
-사실 Mosquitto 1.6.9 와 Mosquitto 2.0.15 사이에는 메이저 버전의 변경이 있으므로 많은 변경사항이 있을 수 있다. 웹 소켓 연결이 해지되는 증상에 대해서 알려진 이슈가 있는지 [Websocket connection lost with paho java client #2631](https://github.com/eclipse/mosquitto/issues/2631) 이슈를 등록해놓은 상태로 자세한 원인에 대해서는 아직까지 모르는 상황이다.
+Mosquitto 버전별 테스트 결과 2021-06-08 자로 릴리즈된 2.0.11과 1.6.15 에서부터 웹소켓 연결이 해지되는 증상을 보였습니다. 동료 개발자에게는 Paho Java Client의 AutomaticReconnect 옵션과 MqttCallbackExtended 인터페이스로 연결 해지로 인해 재연결을 시도하고 나서 토픽을 다시 구독하는 방향으로 임시 조치해야할 것 같다고 전달한 상태이며 Mosquitto 브로커 버전을 다운그레이드 해야하는지에 대해서는 조직 내에서 검토하고 결정해야할 것 같습니다.
 
 ## 테스트 환경
-혹시나 원인을 찾는데 도움이 될지 모르므로 이와 관련된 메시지 또는 로그에 대해서 기록해놓고자 한다.
+처음에는 우분투 VM 이미지로 테스트하였으나 다양한 버전을 테스트해보기 위해서 도커 컨테이너 환경을 구성했습니다. 
 
-### Mosquitto 설치
-```shell
-# Mosquitto 1.6.9
-sudo apt search mosquitto
-...
-mosquitto/focal 1.6.9-1 amd64
-  MQTT version 5.0/3.1.1/3.1 compatible message broker
-...
-sudo apt install mosquitto
+### Docker Compose
+```yaml
+version: "3.8"
+services:
+  mosquitto:
+    # image: eclipse-mosquitto:1.6.15 # EOF
+    # image: eclipse-mosquitto:1.6.14 # OK
+    # image: eclipse-mosquitto:2.0.9 # OK
+    # image: eclipse-mosquitto:2.0.10 # OK
+    # image: eclipse-mosquitto:2.0.11 # EOF
+    # image: eclipse-mosquitto:2.0.12 # EOF
+    # image: eclipse-mosquitto:2.0.13 # EOF
+    # image: eclipse-mosquitto:2.0.14 # EOF
+    # image: eclipse-mosquitto:2.0.15 # EOF
+    image: eclipse-mosquitto:2.0.10
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto.log:/mosquitto/log/mosquitto.log
+      - mosquitto-data:/mosquitto/data
+      - ./passwd:/mosquitto/config/passwd
 
-# Mosquitto 2.0.15
-sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
-sudo apt-get update
-sudo apt install mosquitto
+volumes:
+  mosquitto-data:
 ```
-
 
 ### mosquitto.conf
 ```conf
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+
 port 1883
-listener 2883
+
+listener 9001
 protocol websockets
 allow_anonymous false
-password_file /etc/mosquitto/passwd
+password_file /mosquitto/config/passwd
 set_tcp_nodelay true
 socket_domain ipv4
 
@@ -84,7 +102,10 @@ log_type all
 websockets_log_level 8
 ```
 
-### mosquitto.log
+<details>
+  <summary>테스트 로그</summary>
+  
+  #### mosquitto.log
 ```shell
 1662725110: New client connected from 192.168.0.2:3326 as paho1668189895026200 (p2, c1, k60, u'mambo').
 1662725110: No will message specified.
@@ -122,7 +143,7 @@ websockets_log_level 8
 1662727428: Client paho1670208425870800 closed its connection.
 ```
 
-### Paho Java Client log
+#### Paho Java Client log
 
 ```shell
 FINE: null: network read message
@@ -261,5 +282,9 @@ FINE: paho1622771147525800: <
 Sep 09, 2022 8:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
 FINE: paho1622771147525800: <
 ```
+</details>
 
-동료 개발자에게는 AutomaticReconnect 옵션과 MqttCallbackExtended 인터페이스로 연결 해지로 인해 재연결을 시도하고 나서 토픽을 다시 구독하는 방향으로 임시 조치해야할 것 같다고 전달하였다. 자세한 사유를 알게되면 추가로 작성할 예정이다.
+## 이슈 링크
+
+- [Websocket connection lost with paho java client #2631](https://github.com/eclipse/mosquitto/issues/2631)
+- [Websocket connection lost with mosquitto 1.6.15 and 2.0.11+ #960](https://github.com/eclipse/paho.mqtt.java/issues/960)

@@ -2899,272 +2899,6 @@ sudo systemctl start demo.service</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>MQTT Connection Lost</title>
-    <url>/mqtt-connection-lost/</url>
-    <content><![CDATA[<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Connection</span> lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>EOFException</span>
-	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span></span>CommsReceiver</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CommsReceiver</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">197</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>Thread</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Thread</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">750</span><span class="token punctuation">)</span>
-<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>EOFException</span>
-	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>DataInputStream</span><span class="token punctuation">.</span><span class="token function">readByte</span><span class="token punctuation">(</span><span class="token class-name">DataInputStream</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">267</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>wire<span class="token punctuation">.</span></span>MqttInputStream</span><span class="token punctuation">.</span><span class="token function">readMqttWireMessage</span><span class="token punctuation">(</span><span class="token class-name">MqttInputStream</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">92</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span></span>CommsReceiver</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CommsReceiver</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">137</span><span class="token punctuation">)</span>
-	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">1</span> more</code></pre>
-
-<p>위 스택트레이스는 Paho Java Client 라이브러리를 사용해서 Mosquitto MQTT 브로커에 연결하고 나서 어떠한 사유에 의해 연결이 해지되었을 때 발생하는 오류이다. 이전에 <a href="/spring-boot-integration-mqtt/">스프링 부트 MQTT 클라이언트 메시지 채널 구성하기</a> 또는 <a href="/connecting-with-mqtt-using-aws-iot-device-sdk/">AWS IoT Device SDK Java로 MQTT 연결하기</a>에서 MQTT 프로토콜에 대해서 공유한 것처럼 Paho Java Client 라이브러리르 사용해본적은 있었으나 위와 같은 오류를 경험하지는 못했었다.</p>
-<h2 id="MQTT-over-Websocket"><a href="#MQTT-over-Websocket" class="headerlink" title="MQTT over Websocket"></a>MQTT over Websocket</h2><p>조직 내 동료 개발자가 Paho Java Client 라이브러리를 사용해서 Mosquitto 2.0.14에 연결하고나서 5분이 지나는 시점에 연결이 해지되는 사유가 있다는 것을 알려주었고 그에 대한 원인을 찾기 위해서 도움을 요구했다. JDK, Paho Java Client 라이브러리 버전 그리고 심지어는 Mosquitto 버전에 따라 증상을 확인해본 결과 아래와 같이 파악되었다.</p>
-<table>
-<thead>
-<tr>
-<th>JDK</th>
-<th>Paho Java Client</th>
-<th>Mosquitto</th>
-<th>EOF</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Java 1.8.0_144</td>
-<td>1.2.5</td>
-<td>2.0.14</td>
-<td>💥</td>
-</tr>
-<tr>
-<td>Temurin 1.8.0_345</td>
-<td>1.1.0 ~ 1.2.5</td>
-<td>2.0.15</td>
-<td>💥</td>
-</tr>
-<tr>
-<td>Temurin 11.0.16</td>
-<td>1.1.0 ~ 1.2.5</td>
-<td>2.0.15</td>
-<td>💥</td>
-</tr>
-<tr>
-<td>Temurin 11.0.16</td>
-<td>1.1.0 ~ 1.2.5</td>
-<td>1.6.9</td>
-<td></td>
-</tr>
-</tbody></table>
-<p>일반적인 TCP 방식으로 연결 시에는 Mosquitto 버전과 상관없이 정상적으로 연결을 유지함을 보였으나 웹소켓 연결에 대해서는 Mosquitto 2.0.15 버전에서 일정 시간이 지난 연결이 해지됨을 확인했다.</p>
-<h3 id="클라이언트-아이디-충돌-가능성"><a href="#클라이언트-아이디-충돌-가능성" class="headerlink" title="클라이언트 아이디 충돌 가능성"></a>클라이언트 아이디 충돌 가능성</h3><p>보통 Paho Java Client 라이브러리를 사용해서 EOFException 문제를 경험하는 경우 대부분은 클라이언트 아이디의 충돌을 원인으로 하는데 Mosquitto 브로커에 연결된 클라이언트는 UUID를 발급하여 사용중이며 로컬 테스트 시에도 단일 클라이언트가 연결되고 있으므로 이로 인해 발생하는 문제는 아니다.</p>
-<blockquote>
-<p>Mosquitto 버전과 상관없이 TCP 연결은 정상적으로 유지되는 것으로 볼때에도 클라이언트 아이디 충돌은 아니다.</p>
-</blockquote>
-<h3 id="라이브러리-버그-가능성"><a href="#라이브러리-버그-가능성" class="headerlink" title="라이브러리 버그 가능성"></a>라이브러리 버그 가능성</h3><p>Paho Java Client 리파지토리에서 관련된 증상에 대한 이슈를 찾아보았으나 일부 웹소켓 연결에 대한 문제에 대해서 이미 조치된 1.2.5 버전에서도 해당 증상이 발생하므로 라이브러리 버그 가능성도 높지는 않아보인다.</p>
-<p><strong>이슈 목록</strong></p>
-<ul>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/358">Mqtt websocket attempts to reconnect throwing EOF exception #358</a></li>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/429">Connection lost (32109) - java.io.EOFException #429</a></li>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/673">Connection lost (32109) - java.io.EOFException #673</a></li>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/679">Connection lost (32109) - EOFException after connect for Websocket connection #679</a></li>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/867">Connection lost (32109) - java.io.EOFException #867</a></li>
-<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/884">Connection lost (32109) - EOFException after connect for Websocket connection #884</a></li>
-</ul>
-<h3 id="Mosquitto-2-0-변경사항"><a href="#Mosquitto-2-0-변경사항" class="headerlink" title="Mosquitto 2.0 변경사항"></a>Mosquitto 2.0 변경사항</h3><p>사실 Mosquitto 1.6.9 와 Mosquitto 2.0.15 사이에는 메이저 버전의 변경이 있으므로 많은 변경사항이 있을 수 있다. 웹 소켓 연결이 해지되는 증상에 대해서 알려진 이슈가 있는지 <a href="https://github.com/eclipse/mosquitto/issues/2631">Websocket connection lost with paho java client #2631</a> 이슈를 등록해놓은 상태로 자세한 원인에 대해서는 아직까지 모르는 상황이다.</p>
-<h2 id="테스트-환경"><a href="#테스트-환경" class="headerlink" title="테스트 환경"></a>테스트 환경</h2><p>혹시나 원인을 찾는데 도움이 될지 모르므로 이와 관련된 메시지 또는 로그에 대해서 기록해놓고자 한다.</p>
-<h3 id="Mosquitto-설치"><a href="#Mosquitto-설치" class="headerlink" title="Mosquitto 설치"></a>Mosquitto 설치</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Mosquitto 1.6.9</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> search mosquitto
-<span class="token punctuation">..</span>.
-mosquitto/focal <span class="token number">1.6</span>.9-1 amd64
-  MQTT version <span class="token number">5.0</span>/3.1.1/3.1 compatible message broker
-<span class="token punctuation">..</span>.
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> mosquitto
-
-<span class="token comment"># Mosquitto 2.0.15</span>
-<span class="token function">sudo</span> apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
-<span class="token function">sudo</span> <span class="token function">apt-get</span> update
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> mosquitto</code></pre>
-
-
-<h3 id="mosquitto-conf"><a href="#mosquitto-conf" class="headerlink" title="mosquitto.conf"></a>mosquitto.conf</h3><pre class="language-conf" data-language="conf"><code class="language-conf">port 1883
-listener 2883
-protocol websockets
-allow_anonymous false
-password_file &#x2F;etc&#x2F;mosquitto&#x2F;passwd
-set_tcp_nodelay true
-socket_domain ipv4
-
-log_type all
-websockets_log_level 8</code></pre>
-
-<h3 id="mosquitto-log"><a href="#mosquitto-log" class="headerlink" title="mosquitto.log"></a>mosquitto.log</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">1662725110</span>: New client connected from <span class="token number">192.168</span>.0.2:3326 as paho1668189895026200 <span class="token punctuation">(</span>p2, c1, k60, u<span class="token string">'mambo'</span><span class="token punctuation">)</span>.
-<span class="token number">1662725110</span>: No will message specified.
-<span class="token number">1662725110</span>: Sending CONNACK to paho1668189895026200 <span class="token punctuation">(</span><span class="token number">0</span>, <span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token number">1662725110</span>: Received SUBSCRIBE from paho1668189895026200
-<span class="token number">1662725110</span>:     <span class="token variable">$SYS</span>/broker/version <span class="token punctuation">(</span>QoS <span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token number">1662725110</span>: paho1668189895026200 <span class="token number">0</span> <span class="token variable">$SYS</span>/broker/version
-<span class="token number">1662725110</span>: Sending SUBACK to paho1668189895026200
-<span class="token number">1662725110</span>: Sending PUBLISH to paho1668189895026200 <span class="token punctuation">(</span>d0, q0, r1, m0, <span class="token string">'$SYS/broker/version'</span>, <span class="token punctuation">..</span>. <span class="token punctuation">(</span><span class="token number">24</span> bytes<span class="token punctuation">))</span>
-<span class="token number">1662725110</span>: Received SUBSCRIBE from paho1668189895026200
-<span class="token number">1662725110</span>:     test/<span class="token comment"># (QoS 0)</span>
-<span class="token number">1662725110</span>: paho1668189895026200 <span class="token number">0</span> test/<span class="token comment">#</span>
-<span class="token number">1662725110</span>: Sending SUBACK to paho1668189895026200
-<span class="token number">1662725170</span>: Received PINGREQ from paho1668189895026200
-<span class="token number">1662725170</span>: Sending PINGRESP to paho1668189895026200
-<span class="token number">1662725230</span>: Received PINGREQ from paho1668189895026200
-<span class="token number">1662725230</span>: Sending PINGRESP to paho1668189895026200
-<span class="token number">1662725290</span>: Received PINGREQ from paho1668189895026200
-<span class="token number">1662725290</span>: Sending PINGRESP to paho1668189895026200
-<span class="token number">1662725350</span>: Received PINGREQ from paho1668189895026200
-<span class="token number">1662725350</span>: Sending PINGRESP to paho1668189895026200
-<span class="token number">1662725410</span>: Client paho1668189895026200 closed its connection.</code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">1662727428</span>: lws_validity_cb: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: scheduling validity check
-<span class="token number">1662727428</span>: rops_handle_POLLOUT_ws: issuing <span class="token function">ping</span> on wsi <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: ws mqtt h2: <span class="token number">0</span>
-<span class="token number">1662727428</span>: lws_issue_raw: ssl_capable_write <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> says <span class="token number">2</span>
-<span class="token number">1662727428</span>: lws_issue_raw: ssl_capable_write <span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> says <span class="token number">6</span>
-<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: caller: close_and_handled
-<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: end LRS_FLUSHING_BEFORE_CLOSE
-<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token function">shutdown</span> conn: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span> <span class="token punctuation">(</span>sk <span class="token number">12</span>, state 0x11e<span class="token punctuation">)</span>
-<span class="token number">1662727428</span>: __lws_close_free_wsi: real just_kill_connection: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span> <span class="token punctuation">(</span>sockfd <span class="token number">12</span><span class="token punctuation">)</span>
-<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: <span class="token assign-left variable">cce</span><span class="token operator">=</span><span class="token number">1</span>
-<span class="token number">1662727428</span>: Client paho1670208425870800 closed its connection.</code></pre>
-
-<h3 id="Paho-Java-Client-log"><a href="#Paho-Java-Client-log" class="headerlink" title="Paho Java Client log"></a>Paho Java Client log</h3><pre class="language-bash" data-language="bash"><code class="language-bash">FINE: null: network <span class="token builtin class-name">read</span> message
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:09 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
-FINE: null: network <span class="token builtin class-name">read</span> message
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
-FINE: null: network <span class="token builtin class-name">read</span> message
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
-FINE: null: network <span class="token builtin class-name">read</span> message
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
-FINE: paho1622771147525800: Stopping due to IOException
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
-FINE: paho1622771147525800: Stopping due to IOException
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
-FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTING
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
-FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTING
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: notify workAvailable and <span class="token function">wait</span> <span class="token keyword">for</span> run
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: notify workAvailable and <span class="token function">wait</span> <span class="token keyword">for</span> run
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback run
-FINE: paho1622771147525800: notify spaceAvailable
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback run
-FINE: paho1622771147525800: notify spaceAvailable
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
-FINE: paho1622771147525800: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
-FINE: paho1622771147525800: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopping
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
-FINE: null: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore quiesce
-FINE: paho1622771147525800: <span class="token assign-left variable">resp</span><span class="token operator">=</span>Client is currently disconnecting <span class="token punctuation">(</span><span class="token number">32102</span><span class="token punctuation">)</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore quiesce
-FINE: paho1622771147525800: <span class="token assign-left variable">resp</span><span class="token operator">=</span>Client is currently disconnecting <span class="token punctuation">(</span><span class="token number">32102</span><span class="token punctuation">)</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms handleOldTokens
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms handleOldTokens
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState resolveOldTokens
-FINE: paho1622771147525800: reason Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState resolveOldTokens
-FINE: paho1622771147525800: reason Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore getOutstandingTokens
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore getOutstandingTokens
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState disconnected
-FINE: paho1622771147525800: disconnected
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState disconnected
-FINE: paho1622771147525800: disconnected
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState clearState
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState clearState
-FINE: paho1622771147525800: <span class="token operator">></span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore <span class="token function">clear</span>
-FINE: paho1622771147525800: <span class="token operator">></span> <span class="token number">0</span> tokens
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore <span class="token function">clear</span>
-FINE: paho1622771147525800: <span class="token operator">></span> <span class="token number">0</span> tokens
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
-FINE: paho1622771147525800: stopping sender
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
-FINE: paho1622771147525800: stopping sender
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState notifyQueueLock
-FINE: paho1622771147525800: notifying queueLock holders
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState notifyQueueLock
-FINE: paho1622771147525800: notifying queueLock holders
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
-FINE: paho1622771147525800: stopped
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
-FINE: paho1622771147525800: new work or <span class="token function">ping</span> arrived 
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.TimerPingSender stop
-FINE: paho1622771147525800: stop
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
-FINE: paho1622771147525800: new work or <span class="token function">ping</span> arrived 
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
-FINE: paho1622771147525800: no outstanding flows and not connected
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
-FINE: paho1622771147525800: no outstanding flows and not connected
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.TimerPingSender stop
-FINE: paho1622771147525800: stop
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
-FINE: paho1622771147525800: get message returned null, stopping<span class="token punctuation">&#125;</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
-FINE: paho1622771147525800: get message returned null, stopping<span class="token punctuation">&#125;</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
-FINE: paho1622771147525800: <span class="token operator">&lt;</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
-FINE: paho1622771147525800: <span class="token operator">&lt;</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
-FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTED
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
-FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTED
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback connectionLost
-FINE: paho1622771147525800: call connectionLost
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback connectionLost
-FINE: paho1622771147525800: call connectionLost
-Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
-	at org.eclipse.paho.client.mqttv3.internal.CommsReceiver.run<span class="token punctuation">(</span>CommsReceiver.java:197<span class="token punctuation">)</span>
-	at java.base/java.lang.Thread.run<span class="token punctuation">(</span>Thread.java:829<span class="token punctuation">)</span>
-Caused by: java.io.EOFException
-	at java.base/java.io.DataInputStream.readByte<span class="token punctuation">(</span>DataInputStream.java:272<span class="token punctuation">)</span>
-	at org.eclipse.paho.client.mqttv3.internal.wire.MqttInputStream.readMqttWireMessage<span class="token punctuation">(</span>MqttInputStream.java:92<span class="token punctuation">)</span>
-	at org.eclipse.paho.client.mqttv3.internal.CommsReceiver.run<span class="token punctuation">(</span>CommsReceiver.java:137<span class="token punctuation">)</span>
-	<span class="token punctuation">..</span>. <span class="token number">1</span> <span class="token function">more</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
-FINE: paho1622771147525800: <span class="token operator">&lt;</span>
-Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
-FINE: paho1622771147525800: <span class="token operator">&lt;</span></code></pre>
-
-<p>동료 개발자에게는 AutomaticReconnect 옵션과 MqttCallbackExtended 인터페이스로 연결 해지로 인해 재연결을 시도하고 나서 토픽을 다시 구독하는 방향으로 임시 조치해야할 것 같다고 전달하였다. 자세한 사유를 알게되면 추가로 작성할 예정이다.</p>
-]]></content>
-      <tags>
-        <tag>Mosquitto</tag>
-        <tag>Paho Java Client</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mutual TLS</title>
     <url>/mutual-tls/</url>
     <content><![CDATA[<blockquote>
@@ -4336,73 +4070,6 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 ]]></content>
   </entry>
   <entry>
-    <title>스프링 멀티파트 업로드</title>
-    <url>/spring-multipart-uploads/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다. 오늘은 스프링 웹 모듈에 포함되어 있는 <strong>멀티파트 리졸버(MultipartResolver)</strong> 에 대한 이야기를 해볼까합니다. 멀티파트 리졸버는 HTTP 요청 페이로드에 포함되는 멀티파트를 쉽게 가져올 수 있도록 지원하기 위한 추상화로 여러분이 파일 업로드 기능을 구현하기 위하여 컨트롤러에 핸들러 함수를 작성할 때 멀티파트 관련 클래스를 사용할 수 있게 도와주는 시작점입니다.</p>
-<p>본 글을 통해 멀티파트 폼 데이터가 포함된 요청을 분석하고 처리해주는 멀티파트 리졸버를 알아보고 컨트롤러 핸들러 함수 매개변수에 데이터가 바인딩되기까지의 과정을 이해할 수 있게 도와드리겠습니다.</p>
-<p>관련 코드는 <a href="https://github.com/mambo-dev/learning-spring/tree/main/multipart-uploads">mambo-dev&#x2F;learning-spring&#x2F;multipart-uploads</a>에서 제공합니다.</p>
-<h2 id="멀티파트-폼-데이터"><a href="#멀티파트-폼-데이터" class="headerlink" title="멀티파트 폼 데이터"></a>멀티파트 폼 데이터</h2><p>클라이언트(일반적으로 웹 브라우저)가 HTTP 프로토콜을 사용하여 바이너리 데이터를 보낼때는 HTTP 요청 페이로드에 포함된 데이터가 멀티파트 형식이라고 알려주기 위해서 Content-Type 헤더에 <code>multipart/form-data</code>를 사용하여 전송합니다.</p>
-<details class="note info no-icon"><summary><p>multipart&#x2F;form-data</p>
-</summary>
-<p><a href="https://stackoverflow.com/questions/4526273/what-does-enctype-multipart-form-data-mean"><strong>What does enctype&#x3D;’multipart&#x2F;form-data’ mean?</strong></a></p>
-
-</details>
-
-<p>다음은 HTTP 요청 클라이언트 중 하나인 Postman으로 멀티파트 폼 데이터 형식으로 파일 데이터를 전송할 때 확인할 수 있는 예시입니다.</p>
-<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-01.png" alt="멀티파트 폼 데이터 예시"></p>
-<h2 id="멀티파트-리졸버"><a href="#멀티파트-리졸버" class="headerlink" title="멀티파트 리졸버"></a>멀티파트 리졸버</h2><p>스프링의 디스패처 서블릿은 HTTP 요청에 대해서 멀티파트 유형의 데이터가 포함된 요청인지 확인하는 멀티파트 필터(MultipartFilter)로 요청에 대한 처리를 위임하며 멀티파트 필터는 멀티파트 리졸버(MultipartResolver)를 사용하여 멀티파트 관련 요청인지 확인하는 과정을 수행합니다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>MultipartResolver</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">MultipartResolver</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">boolean</span> <span class="token function">isMultipart</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token class-name">MultipartHttpServletRequest</span> <span class="token function">resolveMultipart</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">MultipartException</span><span class="token punctuation">;</span>
-	<span class="token keyword">void</span> <span class="token function">cleanupMultipart</span><span class="token punctuation">(</span><span class="token class-name">MultipartHttpServletRequest</span> request<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 코드처럼 멀티파트 리졸버는 인터페이스로 추상화되어있으며 이를 구현한 두개의 MultipartResolver 구현체를 제공합니다. 하나는 서블릿 3.0 이전에 사용하던 Apache Commons FileUpload 라이브러리를 사용하던 CommonsMultipartResolver이며 서블릿 3.0 Part API를 사용하는 StandardServletMultipartResolver입니다.</p>
-<ul>
-<li><strong>CommonsMultipartResolver</strong><br>Apache Commons FileUpload를 사용하는 멀티파트 리졸버</li>
-<li><strong>StandardServletMultipartResolver</strong><br>Servlet 3.0+ Part API를 사용하는 표준 멀티파트 리졸버</li>
-</ul>
-<p>스프링 3.1에서는 Servlet 3.0 지원을 위한 클래스들이 많이 추가되었습니다. 그 중 하나가 바로 서블릿 표준의 Part API를 사용하는 StandardServletMultipartResolver이며 스프링 3.1 이후에는 굳이 Apache Commons FileUpload 라이브러리에 대한 의존성을 가지지 않아도 멀티파트를 처리할 수 있게 되었습니다.</p>
-<p>스프링 5의 웹 모듈을 살펴보면 멀티파트 필터(MultipartFilter)에서 루트 애플리케이션 컨텍스트에 <strong>filterMultipartResolver</strong> 이름의 빈을 찾지 못하는 경우 자체적으로 StandardServletMultipartResolver를 기본적으로 사용하도록 되어있습니다. 따라서, 클라이언트의 HTTP 요청은 멀티파트 필터를 거쳐 StandardServletMultipartResolver에 의해 멀티파트 데이터 유형인지를 확인합니다.</p>
-<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-02.png" alt="멀티파트 유형 여부"></p>
-<p>앞서 포스트맨 클라이언트에서 요청한 멀티파트 폼 데이터는 컨텐트 타입이 multipart&#x2F;로 시작하므로 멀티파트 유형의 요청이며 resolveMultipart 함수에 의해 기본 HttpServletRequest가 멀티파트 관련 함수를 제공하는 MultipartHttpServletRequest로 감싸져있는 요청 클래스로 리턴하게됩니다.</p>
-<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-03.png" alt="디버그로 확인해본 MultipartHttpServletRequest"></p>
-<p>위 그림처럼 멀티파트 리졸버에 의해 래핑된 MultipartHttpServletRequest에서 임베디드 톰캣의 임시 폴더에 저장된 파일을 확인할 수 있습니다. 이렇게 멀티파트 리졸버에 의해 생성된 임시 파일들은 최종적으로 cleanupMultipart 함수에 의해 정리됩니다.</p>
-<h2 id="멀티파트-데이터-바인딩"><a href="#멀티파트-데이터-바인딩" class="headerlink" title="멀티파트 데이터 바인딩"></a>멀티파트 데이터 바인딩</h2><p>앞서 알아본 내용에 따르면 멀티파트 리졸버는 멀티파트 유형의 요청인지를 분석하고 멀티파트 관련 함수를 사용할 수 있는 MultipartHttpServletRequest로 래핑하는 역할이 전부입니다. 그렇다면 여러분이 작성하는 컨트롤러의 핸들러 함수에 대한 매개변수에 멀티파트 관련 클래스가 있는 경우 데이터를 주입하는 것은 어디서 수행하는 것 일까요?</p>
-<blockquote>
-<p>스프링의 핸들러 함수 데이터 바인딩에 대해서 잘 모르시는 분들이 많은 것 같아 이 부분도 따로 정리해보려고 준비중입니다.</p>
-</blockquote>
-<p>컨트롤러의 핸들러 함수 매개변수 유형에 따라 데이터를 바인딩(주입)하는 것은 HandlerMethodArgumentResolver가 담당하는데요. 스프링 웹 모듈에 포함되어있는 기본 HandlerMethodArgumentResolver 구현체들 중에서 멀티파트(MultipartFile 또는 Part) 유형의 클래스에 대한 데이터 바인딩은 RequestParamMethodArgumentResolver와 RequestPartMethodArgumentResolver 입니다.</p>
-<p>위 두개의 HandlerMethodArgumentResolver는 어노테이션과 관련하여 데이터 바인딩을 수행하는데 <code>@RequestParam</code>과 <code>@RequestPart</code> 입니다.</p>
-<p><strong>RequestParamMethodArgumentResolver</strong><br>이 리졸버는 @RequestParam이 선언된 매개변수에 데이터 바인딩을 수행하는데 스프링 4.3 부터는 @RequestParam이 선언되지 않은 멀티파트 유형의 매개변수에 대해서 MultipartResolutionDelegate에 의해 멀티파트 요청(MultipartRequest)인지를 확인하고 MultipartRequest에서 MultipartFile을 추출합니다.</p>
-<p><strong>RequestPartMethodArgumentResolver</strong><br>이 리졸버는 @RequestPart이 선언된 매개변수에 데이터 바인딩을 수행하며 @RequestParam가 선언되지 않은 멀티파트 유형 매개변수에 대해 MultipartResolutionDelegate로 멀티파트 데이터 바인딩을 수행합니다.</p>
-<blockquote>
-<p>위 리졸버들에서 MultipartResolutionDelegate에 의해 멀티파트 유형의 매개변수에 대한 데이터 바인딩이 수행될 수 있는 이유는 멀티파트 리졸버에 의해서 MultipartHttpServletRequest로 변환되기 때문입니다.</p>
-</blockquote>
-<h3 id="데이터-바인딩-우선순위"><a href="#데이터-바인딩-우선순위" class="headerlink" title="데이터 바인딩 우선순위"></a>데이터 바인딩 우선순위</h3><p>위 내용에 따르면 @RequestParam과 @RequestPart가 선언되지 않은 멀티파트 유형의 매개변수에 데이터 바인딩을 수행하는 것을 알 수 있습니다. 그런데 둘다 MultipartResolutionDelegate에 의해서 데이터 바인딩이 수행되는데요. 그러면 어떤 HandlerMethodArgumentResolver에 의해 데이터 바인딩이 수행될까요?</p>
-<p>RequestMappingHandlerAdapter에서 기본적으로 적용되는 HandlerMethodArgumentResolver 순서를 보면 RequestParamMethodArgumentResolver가 RequestPartMethodArgumentResolver 보다 우선적으로 추가되는 것을 확인할 수 있습니다. 따라서, RequestPartMethodArgumentResolver는 RequestParamMethodArgumentResolver에 의해 처리되지 않은 매개변수에 대해 데이터 바인딩을 수행하게 됩니다.</p>
-<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-04.png" alt="HandlerMethodArgumentResolver 순서"></p>
-<p>직접 테스트를 해보면 @RequestParam과 @RequestPart 모두 매개변수에 선언하더라도 RequestParamMethodArgumentResolver에 의해 먼저 처리됨을 확인할 수 있습니다.</p>
-<blockquote>
-<p>디버깅 시 HandlerMethodArgumentResolverComposite에서 핸들러 함수 매개변수에 대한 HandlerMethodArgumentResolver를 캐시하므로 주의하시기 바랍니다.</p>
-</blockquote>
-<h2 id="요약"><a href="#요약" class="headerlink" title="요약"></a>요약</h2><p>본 글에서 알아본 내용을 요약해보면서 다시한번 머리속에 숙지해봅시다.</p>
-<ol>
-<li>HTTP 요청 시 컨텐트 타입이 <code>multipart/</code>로 시작되는 경우를 멀티파트 요청으로 판단한다.</li>
-<li>멀티파트 필터가 동작하는 과정해서 멀티파트 리졸버에 의해 멀티파트 관련 함수를 제공하는 <code>MultipartHttpServletRequest</code>로 요청 클래스가 래핑된다.</li>
-<li>래핑된 요청 클래스는 RequestMappingHandlerAdapter에서 HandlerMethodArgumentResolver로 핸들러 매개변수에 대한 데이터 바인딩을 시도한다.</li>
-<li>@RequestParam는 @RequestPart보다 우선적으로 사용된다.</li>
-</ol>
-<p>여러분은 본 글을 통해 멀티파트 데이터 바인딩 과정을 이해하였으므로 핸들러 함수 매개변수에 어떻게 멀티파트 데이터를 바인딩하는지 알 수 있으므로 매개변수에 바인딩된 파일 데이터를 저장하는 로직을 작성하여 파일 업로드 기능을 구현할 수 있습니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Spring</tag>
-        <tag>MultipartFile</tag>
-        <tag>MultipartResolver</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring JDBC</title>
     <url>/spring-jdbc/</url>
     <content><![CDATA[<p>Spring Security OAuth2 학습을 위한 샘플 프로젝트를 만들면서 사용하게될 각 모듈에서 필요한 데이터베이스 스키마를 적용하기 위해서 Spring JDBC를 사용한 부분에 대해서 정리해보고자 합니다. 일반적으로 데이터 액세스에 대해서는 Mybatis 또는 JPA 이라는 기술을 도입하는 경우가 많을텐데 스프링 JDBC 만으로도 충분히 데이터베이스 액세스가 가능하며 Spring Session 이나 Spring Security 에서도 JDBC 기반으로 관련 기능을 제공하고 있습니다.</p>
@@ -4513,6 +4180,73 @@ $$ <span class="token keyword">LANGUAGE</span> plpgsql<span class="token punctua
       <tags>
         <tag>JDBC</tag>
         <tag>RowMapper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>스프링 멀티파트 업로드</title>
+    <url>/spring-multipart-uploads/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다. 오늘은 스프링 웹 모듈에 포함되어 있는 <strong>멀티파트 리졸버(MultipartResolver)</strong> 에 대한 이야기를 해볼까합니다. 멀티파트 리졸버는 HTTP 요청 페이로드에 포함되는 멀티파트를 쉽게 가져올 수 있도록 지원하기 위한 추상화로 여러분이 파일 업로드 기능을 구현하기 위하여 컨트롤러에 핸들러 함수를 작성할 때 멀티파트 관련 클래스를 사용할 수 있게 도와주는 시작점입니다.</p>
+<p>본 글을 통해 멀티파트 폼 데이터가 포함된 요청을 분석하고 처리해주는 멀티파트 리졸버를 알아보고 컨트롤러 핸들러 함수 매개변수에 데이터가 바인딩되기까지의 과정을 이해할 수 있게 도와드리겠습니다.</p>
+<p>관련 코드는 <a href="https://github.com/mambo-dev/learning-spring/tree/main/multipart-uploads">mambo-dev&#x2F;learning-spring&#x2F;multipart-uploads</a>에서 제공합니다.</p>
+<h2 id="멀티파트-폼-데이터"><a href="#멀티파트-폼-데이터" class="headerlink" title="멀티파트 폼 데이터"></a>멀티파트 폼 데이터</h2><p>클라이언트(일반적으로 웹 브라우저)가 HTTP 프로토콜을 사용하여 바이너리 데이터를 보낼때는 HTTP 요청 페이로드에 포함된 데이터가 멀티파트 형식이라고 알려주기 위해서 Content-Type 헤더에 <code>multipart/form-data</code>를 사용하여 전송합니다.</p>
+<details class="note info no-icon"><summary><p>multipart&#x2F;form-data</p>
+</summary>
+<p><a href="https://stackoverflow.com/questions/4526273/what-does-enctype-multipart-form-data-mean"><strong>What does enctype&#x3D;’multipart&#x2F;form-data’ mean?</strong></a></p>
+
+</details>
+
+<p>다음은 HTTP 요청 클라이언트 중 하나인 Postman으로 멀티파트 폼 데이터 형식으로 파일 데이터를 전송할 때 확인할 수 있는 예시입니다.</p>
+<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-01.png" alt="멀티파트 폼 데이터 예시"></p>
+<h2 id="멀티파트-리졸버"><a href="#멀티파트-리졸버" class="headerlink" title="멀티파트 리졸버"></a>멀티파트 리졸버</h2><p>스프링의 디스패처 서블릿은 HTTP 요청에 대해서 멀티파트 유형의 데이터가 포함된 요청인지 확인하는 멀티파트 필터(MultipartFilter)로 요청에 대한 처리를 위임하며 멀티파트 필터는 멀티파트 리졸버(MultipartResolver)를 사용하여 멀티파트 관련 요청인지 확인하는 과정을 수행합니다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>MultipartResolver</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">MultipartResolver</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">boolean</span> <span class="token function">isMultipart</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token class-name">MultipartHttpServletRequest</span> <span class="token function">resolveMultipart</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">MultipartException</span><span class="token punctuation">;</span>
+	<span class="token keyword">void</span> <span class="token function">cleanupMultipart</span><span class="token punctuation">(</span><span class="token class-name">MultipartHttpServletRequest</span> request<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 코드처럼 멀티파트 리졸버는 인터페이스로 추상화되어있으며 이를 구현한 두개의 MultipartResolver 구현체를 제공합니다. 하나는 서블릿 3.0 이전에 사용하던 Apache Commons FileUpload 라이브러리를 사용하던 CommonsMultipartResolver이며 서블릿 3.0 Part API를 사용하는 StandardServletMultipartResolver입니다.</p>
+<ul>
+<li><strong>CommonsMultipartResolver</strong><br>Apache Commons FileUpload를 사용하는 멀티파트 리졸버</li>
+<li><strong>StandardServletMultipartResolver</strong><br>Servlet 3.0+ Part API를 사용하는 표준 멀티파트 리졸버</li>
+</ul>
+<p>스프링 3.1에서는 Servlet 3.0 지원을 위한 클래스들이 많이 추가되었습니다. 그 중 하나가 바로 서블릿 표준의 Part API를 사용하는 StandardServletMultipartResolver이며 스프링 3.1 이후에는 굳이 Apache Commons FileUpload 라이브러리에 대한 의존성을 가지지 않아도 멀티파트를 처리할 수 있게 되었습니다.</p>
+<p>스프링 5의 웹 모듈을 살펴보면 멀티파트 필터(MultipartFilter)에서 루트 애플리케이션 컨텍스트에 <strong>filterMultipartResolver</strong> 이름의 빈을 찾지 못하는 경우 자체적으로 StandardServletMultipartResolver를 기본적으로 사용하도록 되어있습니다. 따라서, 클라이언트의 HTTP 요청은 멀티파트 필터를 거쳐 StandardServletMultipartResolver에 의해 멀티파트 데이터 유형인지를 확인합니다.</p>
+<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-02.png" alt="멀티파트 유형 여부"></p>
+<p>앞서 포스트맨 클라이언트에서 요청한 멀티파트 폼 데이터는 컨텐트 타입이 multipart&#x2F;로 시작하므로 멀티파트 유형의 요청이며 resolveMultipart 함수에 의해 기본 HttpServletRequest가 멀티파트 관련 함수를 제공하는 MultipartHttpServletRequest로 감싸져있는 요청 클래스로 리턴하게됩니다.</p>
+<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-03.png" alt="디버그로 확인해본 MultipartHttpServletRequest"></p>
+<p>위 그림처럼 멀티파트 리졸버에 의해 래핑된 MultipartHttpServletRequest에서 임베디드 톰캣의 임시 폴더에 저장된 파일을 확인할 수 있습니다. 이렇게 멀티파트 리졸버에 의해 생성된 임시 파일들은 최종적으로 cleanupMultipart 함수에 의해 정리됩니다.</p>
+<h2 id="멀티파트-데이터-바인딩"><a href="#멀티파트-데이터-바인딩" class="headerlink" title="멀티파트 데이터 바인딩"></a>멀티파트 데이터 바인딩</h2><p>앞서 알아본 내용에 따르면 멀티파트 리졸버는 멀티파트 유형의 요청인지를 분석하고 멀티파트 관련 함수를 사용할 수 있는 MultipartHttpServletRequest로 래핑하는 역할이 전부입니다. 그렇다면 여러분이 작성하는 컨트롤러의 핸들러 함수에 대한 매개변수에 멀티파트 관련 클래스가 있는 경우 데이터를 주입하는 것은 어디서 수행하는 것 일까요?</p>
+<blockquote>
+<p>스프링의 핸들러 함수 데이터 바인딩에 대해서 잘 모르시는 분들이 많은 것 같아 이 부분도 따로 정리해보려고 준비중입니다.</p>
+</blockquote>
+<p>컨트롤러의 핸들러 함수 매개변수 유형에 따라 데이터를 바인딩(주입)하는 것은 HandlerMethodArgumentResolver가 담당하는데요. 스프링 웹 모듈에 포함되어있는 기본 HandlerMethodArgumentResolver 구현체들 중에서 멀티파트(MultipartFile 또는 Part) 유형의 클래스에 대한 데이터 바인딩은 RequestParamMethodArgumentResolver와 RequestPartMethodArgumentResolver 입니다.</p>
+<p>위 두개의 HandlerMethodArgumentResolver는 어노테이션과 관련하여 데이터 바인딩을 수행하는데 <code>@RequestParam</code>과 <code>@RequestPart</code> 입니다.</p>
+<p><strong>RequestParamMethodArgumentResolver</strong><br>이 리졸버는 @RequestParam이 선언된 매개변수에 데이터 바인딩을 수행하는데 스프링 4.3 부터는 @RequestParam이 선언되지 않은 멀티파트 유형의 매개변수에 대해서 MultipartResolutionDelegate에 의해 멀티파트 요청(MultipartRequest)인지를 확인하고 MultipartRequest에서 MultipartFile을 추출합니다.</p>
+<p><strong>RequestPartMethodArgumentResolver</strong><br>이 리졸버는 @RequestPart이 선언된 매개변수에 데이터 바인딩을 수행하며 @RequestParam가 선언되지 않은 멀티파트 유형 매개변수에 대해 MultipartResolutionDelegate로 멀티파트 데이터 바인딩을 수행합니다.</p>
+<blockquote>
+<p>위 리졸버들에서 MultipartResolutionDelegate에 의해 멀티파트 유형의 매개변수에 대한 데이터 바인딩이 수행될 수 있는 이유는 멀티파트 리졸버에 의해서 MultipartHttpServletRequest로 변환되기 때문입니다.</p>
+</blockquote>
+<h3 id="데이터-바인딩-우선순위"><a href="#데이터-바인딩-우선순위" class="headerlink" title="데이터 바인딩 우선순위"></a>데이터 바인딩 우선순위</h3><p>위 내용에 따르면 @RequestParam과 @RequestPart가 선언되지 않은 멀티파트 유형의 매개변수에 데이터 바인딩을 수행하는 것을 알 수 있습니다. 그런데 둘다 MultipartResolutionDelegate에 의해서 데이터 바인딩이 수행되는데요. 그러면 어떤 HandlerMethodArgumentResolver에 의해 데이터 바인딩이 수행될까요?</p>
+<p>RequestMappingHandlerAdapter에서 기본적으로 적용되는 HandlerMethodArgumentResolver 순서를 보면 RequestParamMethodArgumentResolver가 RequestPartMethodArgumentResolver 보다 우선적으로 추가되는 것을 확인할 수 있습니다. 따라서, RequestPartMethodArgumentResolver는 RequestParamMethodArgumentResolver에 의해 처리되지 않은 매개변수에 대해 데이터 바인딩을 수행하게 됩니다.</p>
+<p><img data-src="/images/posts/spring-multipart-uploads/spring-multipart-uploads-04.png" alt="HandlerMethodArgumentResolver 순서"></p>
+<p>직접 테스트를 해보면 @RequestParam과 @RequestPart 모두 매개변수에 선언하더라도 RequestParamMethodArgumentResolver에 의해 먼저 처리됨을 확인할 수 있습니다.</p>
+<blockquote>
+<p>디버깅 시 HandlerMethodArgumentResolverComposite에서 핸들러 함수 매개변수에 대한 HandlerMethodArgumentResolver를 캐시하므로 주의하시기 바랍니다.</p>
+</blockquote>
+<h2 id="요약"><a href="#요약" class="headerlink" title="요약"></a>요약</h2><p>본 글에서 알아본 내용을 요약해보면서 다시한번 머리속에 숙지해봅시다.</p>
+<ol>
+<li>HTTP 요청 시 컨텐트 타입이 <code>multipart/</code>로 시작되는 경우를 멀티파트 요청으로 판단한다.</li>
+<li>멀티파트 필터가 동작하는 과정해서 멀티파트 리졸버에 의해 멀티파트 관련 함수를 제공하는 <code>MultipartHttpServletRequest</code>로 요청 클래스가 래핑된다.</li>
+<li>래핑된 요청 클래스는 RequestMappingHandlerAdapter에서 HandlerMethodArgumentResolver로 핸들러 매개변수에 대한 데이터 바인딩을 시도한다.</li>
+<li>@RequestParam는 @RequestPart보다 우선적으로 사용된다.</li>
+</ol>
+<p>여러분은 본 글을 통해 멀티파트 데이터 바인딩 과정을 이해하였으므로 핸들러 함수 매개변수에 어떻게 멀티파트 데이터를 바인딩하는지 알 수 있으므로 매개변수에 바인딩된 파일 데이터를 저장하는 로직을 작성하여 파일 업로드 기능을 구현할 수 있습니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Spring</tag>
+        <tag>MultipartFile</tag>
+        <tag>MultipartResolver</tag>
       </tags>
   </entry>
   <entry>
@@ -6785,6 +6519,350 @@ R<span class="token verb operator">:</span><span class="token punctuation">(</sp
       <tags>
         <tag>KDB+/q</tag>
         <tag>TP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MQTT Connection Lost</title>
+    <url>/mqtt-connection-lost/</url>
+    <content><![CDATA[<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Connection</span> lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>EOFException</span>
+	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span></span>CommsReceiver</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CommsReceiver</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">197</span><span class="token punctuation">)</span>
+	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>Thread</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Thread</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">750</span><span class="token punctuation">)</span>
+<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>EOFException</span>
+	at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span>DataInputStream</span><span class="token punctuation">.</span><span class="token function">readByte</span><span class="token punctuation">(</span><span class="token class-name">DataInputStream</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">267</span><span class="token punctuation">)</span>
+	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span>wire<span class="token punctuation">.</span></span>MqttInputStream</span><span class="token punctuation">.</span><span class="token function">readMqttWireMessage</span><span class="token punctuation">(</span><span class="token class-name">MqttInputStream</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">92</span><span class="token punctuation">)</span>
+	at <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>eclipse<span class="token punctuation">.</span>paho<span class="token punctuation">.</span>client<span class="token punctuation">.</span>mqttv3<span class="token punctuation">.</span>internal<span class="token punctuation">.</span></span>CommsReceiver</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CommsReceiver</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">137</span><span class="token punctuation">)</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">1</span> more</code></pre>
+
+<p>위 스택트레이스는 Paho Java Client를 사용하여 Mosquitto 브로커에 연결하고 난 후 어떠한 사유에 의해 연결이 해지되었을 때 발생하는 오류입니다. 조직 내 동료 개발자가 Mosquitto에 연결하고 나서 5분이 지나는 시점에 연결이 해지되는 증상이 있다며 이 문제를 경험했는지 도움을 요청하였으나 이전에 <a href="/spring-boot-integration-mqtt/">스프링 부트 MQTT 클라이언트 메시지 채널 구성하기</a> 또는 <a href="/connecting-with-mqtt-using-aws-iot-device-sdk/">AWS IoT Device SDK Java로 MQTT 연결하기</a>에서처럼 Paho Java Client 라이브러리를 사용하면서 연결이 해지되는 것을 경험해보지는 못했었습니다.</p>
+<h2 id="MQTT-over-Websocket"><a href="#MQTT-over-Websocket" class="headerlink" title="MQTT over Websocket"></a>MQTT over Websocket</h2><p>조직 내 동료 개발자의 도움 요청으로 인해 리눅스 서버에 설치된 Mosquitto 버전은 2.0.14 이며 Paho Java Client 라이브러리는 1.2.5를 사용하고 있는 것으로 알게 되었습니다. 그리고 Mosquitto 연결 시에는 Websocket 프로토콜을 사용하고 있었습니다. </p>
+<table>
+<thead>
+<tr>
+<th>JDK</th>
+<th>Paho Java Client</th>
+<th>Mosquitto</th>
+<th>EOF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java 1.8.0_144</td>
+<td>1.2.5</td>
+<td>2.0.14</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 1.8.0_345</td>
+<td>1.1.0 ~ 1.2.5</td>
+<td>2.0.14</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.1.0 ~ 1.2.5</td>
+<td>2.0.14</td>
+<td>💥</td>
+</tr>
+</tbody></table>
+<p>JDK와 라이브러리 버전을 변경해가면서 테스트 해본 결과 일반적인 TCP 방식으로 연결 시에는 Mosquitto 버전과 상관없이 정상적으로 연결을 유지함을 보였으나 웹소켓 연결에 대해서는 리눅스 서버에 설치된 Mosquitto 2.0.14 브로커에 대해 일정 시간이 지나 연결이 해지됨을 확인할 수 있었습니다.</p>
+<h3 id="Mosquitto-Version"><a href="#Mosquitto-Version" class="headerlink" title="Mosquitto Version"></a>Mosquitto Version</h3><p>위 문제가 발생했던 리눅스 서버에 Mosquitto 브로커는 도커 이미지로 구동된 상태라고 하였습니다. 그래서 로컬 컴퓨터 환경에서도 도커 컨테이너를 실행하여 간단하게 여러개의 버전을 테스트할 수 있으므로 도커 이미지를 변경하면서 웹 소켓 연결이 일정 시간 이후에 해지되는 증상이 나타나는지 체크해보았습니다. 테스트 버전은 <a href="https://mosquitto.org/blog/categories/releases/">Mosquitto Posts about Releases</a>에 따라 시도해보았으며 2.0.9와 2.0.11가 릴리즈될 때 1.6.x 마이너 버전도 패치되었기에 포함했습니다.</p>
+<table>
+<thead>
+<tr>
+<th>JDK</th>
+<th>Paho Java Client</th>
+<th>Mosquitto</th>
+<th>EOF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.15</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.14</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.13</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.12</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.11</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.10</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>2.0.9</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>1.6.15</td>
+<td>💥</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>1.6.14</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Temurin 11.0.16</td>
+<td>1.2.5</td>
+<td>1.6.9</td>
+<td>OK</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>우분투 LTS 버전에 따른 Mosquitto 패키지 지원 버전은 다음의 링크에서 확인할 수 있습니다.<br><a href="https://packages.ubuntu.com/search?keywords=mosquitto">https://packages.ubuntu.com/search?keywords=mosquitto</a></p>
+</blockquote>
+<p>Mosquitto 버전별 테스트 결과 2021-06-08 자로 릴리즈된 2.0.11과 1.6.15 에서부터 웹소켓 연결이 해지되는 증상을 보였습니다. 동료 개발자에게는 Paho Java Client의 AutomaticReconnect 옵션과 MqttCallbackExtended 인터페이스로 연결 해지로 인해 재연결을 시도하고 나서 토픽을 다시 구독하는 방향으로 임시 조치해야할 것 같다고 전달한 상태이며 Mosquitto 브로커 버전을 다운그레이드 해야하는지에 대해서는 조직 내에서 검토하고 결정해야할 것 같습니다.</p>
+<h2 id="테스트-환경"><a href="#테스트-환경" class="headerlink" title="테스트 환경"></a>테스트 환경</h2><p>처음에는 우분투 VM 이미지로 테스트하였으나 다양한 버전을 테스트해보기 위해서 도커 컨테이너 환경을 구성했습니다. </p>
+<h3 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">"3.8"</span>
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">mosquitto</span><span class="token punctuation">:</span>
+    <span class="token comment"># image: eclipse-mosquitto:1.6.15 # EOF</span>
+    <span class="token comment"># image: eclipse-mosquitto:1.6.14 # OK</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.9 # OK</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.10 # OK</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.11 # EOF</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.12 # EOF</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.13 # EOF</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.14 # EOF</span>
+    <span class="token comment"># image: eclipse-mosquitto:2.0.15 # EOF</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> eclipse<span class="token punctuation">-</span>mosquitto<span class="token punctuation">:</span>2.0.10
+    <span class="token key atrule">container_name</span><span class="token punctuation">:</span> mosquitto
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"1883:1883"</span>
+      <span class="token punctuation">-</span> <span class="token string">"9001:9001"</span>
+    <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> ./mosquitto.conf<span class="token punctuation">:</span>/mosquitto/config/mosquitto.conf
+      <span class="token punctuation">-</span> ./mosquitto.log<span class="token punctuation">:</span>/mosquitto/log/mosquitto.log
+      <span class="token punctuation">-</span> mosquitto<span class="token punctuation">-</span>data<span class="token punctuation">:</span>/mosquitto/data
+      <span class="token punctuation">-</span> ./passwd<span class="token punctuation">:</span>/mosquitto/config/passwd
+
+<span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+  mosquitto<span class="token punctuation">-</span>data<span class="token punctuation">:</span></code></pre>
+
+<h3 id="mosquitto-conf"><a href="#mosquitto-conf" class="headerlink" title="mosquitto.conf"></a>mosquitto.conf</h3><pre class="language-conf" data-language="conf"><code class="language-conf">persistence true
+persistence_location &#x2F;mosquitto&#x2F;data&#x2F;
+log_dest file &#x2F;mosquitto&#x2F;log&#x2F;mosquitto.log
+
+port 1883
+
+listener 9001
+protocol websockets
+allow_anonymous false
+password_file &#x2F;mosquitto&#x2F;config&#x2F;passwd
+set_tcp_nodelay true
+socket_domain ipv4
+
+log_type all
+websockets_log_level 8</code></pre>
+
+<details>
+  <summary>테스트 로그</summary>
+  
+<h4 id="mosquitto-log"><a href="#mosquitto-log" class="headerlink" title="mosquitto.log"></a>mosquitto.log</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">1662725110</span>: New client connected from <span class="token number">192.168</span>.0.2:3326 as paho1668189895026200 <span class="token punctuation">(</span>p2, c1, k60, u<span class="token string">'mambo'</span><span class="token punctuation">)</span>.
+<span class="token number">1662725110</span>: No will message specified.
+<span class="token number">1662725110</span>: Sending CONNACK to paho1668189895026200 <span class="token punctuation">(</span><span class="token number">0</span>, <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token number">1662725110</span>: Received SUBSCRIBE from paho1668189895026200
+<span class="token number">1662725110</span>:     <span class="token variable">$SYS</span>/broker/version <span class="token punctuation">(</span>QoS <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token number">1662725110</span>: paho1668189895026200 <span class="token number">0</span> <span class="token variable">$SYS</span>/broker/version
+<span class="token number">1662725110</span>: Sending SUBACK to paho1668189895026200
+<span class="token number">1662725110</span>: Sending PUBLISH to paho1668189895026200 <span class="token punctuation">(</span>d0, q0, r1, m0, <span class="token string">'$SYS/broker/version'</span>, <span class="token punctuation">..</span>. <span class="token punctuation">(</span><span class="token number">24</span> bytes<span class="token punctuation">))</span>
+<span class="token number">1662725110</span>: Received SUBSCRIBE from paho1668189895026200
+<span class="token number">1662725110</span>:     test/<span class="token comment"># (QoS 0)</span>
+<span class="token number">1662725110</span>: paho1668189895026200 <span class="token number">0</span> test/<span class="token comment">#</span>
+<span class="token number">1662725110</span>: Sending SUBACK to paho1668189895026200
+<span class="token number">1662725170</span>: Received PINGREQ from paho1668189895026200
+<span class="token number">1662725170</span>: Sending PINGRESP to paho1668189895026200
+<span class="token number">1662725230</span>: Received PINGREQ from paho1668189895026200
+<span class="token number">1662725230</span>: Sending PINGRESP to paho1668189895026200
+<span class="token number">1662725290</span>: Received PINGREQ from paho1668189895026200
+<span class="token number">1662725290</span>: Sending PINGRESP to paho1668189895026200
+<span class="token number">1662725350</span>: Received PINGREQ from paho1668189895026200
+<span class="token number">1662725350</span>: Sending PINGRESP to paho1668189895026200
+<span class="token number">1662725410</span>: Client paho1668189895026200 closed its connection.</code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">1662727428</span>: lws_validity_cb: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: scheduling validity check
+<span class="token number">1662727428</span>: rops_handle_POLLOUT_ws: issuing <span class="token function">ping</span> on wsi <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: ws mqtt h2: <span class="token number">0</span>
+<span class="token number">1662727428</span>: lws_issue_raw: ssl_capable_write <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> says <span class="token number">2</span>
+<span class="token number">1662727428</span>: lws_issue_raw: ssl_capable_write <span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> says <span class="token number">6</span>
+<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: caller: close_and_handled
+<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: end LRS_FLUSHING_BEFORE_CLOSE
+<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token function">shutdown</span> conn: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span> <span class="token punctuation">(</span>sk <span class="token number">12</span>, state 0x11e<span class="token punctuation">)</span>
+<span class="token number">1662727428</span>: __lws_close_free_wsi: real just_kill_connection: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span> <span class="token punctuation">(</span>sockfd <span class="token number">12</span><span class="token punctuation">)</span>
+<span class="token number">1662727428</span>: __lws_close_free_wsi: <span class="token punctuation">[</span>wsisrv<span class="token operator">|</span><span class="token number">0</span><span class="token operator">|</span>adopted<span class="token punctuation">]</span>: <span class="token assign-left variable">cce</span><span class="token operator">=</span><span class="token number">1</span>
+<span class="token number">1662727428</span>: Client paho1670208425870800 closed its connection.</code></pre>
+
+<h4 id="Paho-Java-Client-log"><a href="#Paho-Java-Client-log" class="headerlink" title="Paho Java Client log"></a>Paho Java Client log</h4><pre class="language-bash" data-language="bash"><code class="language-bash">FINE: null: network <span class="token builtin class-name">read</span> message
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:09 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
+FINE: null: network <span class="token builtin class-name">read</span> message
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
+FINE: null: network <span class="token builtin class-name">read</span> message
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver run
+FINE: null: network <span class="token builtin class-name">read</span> message
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
+FINE: paho1622771147525800: Stopping due to IOException
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
+FINE: paho1622771147525800: Stopping due to IOException
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
+FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTING
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
+FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTING
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: notify workAvailable and <span class="token function">wait</span> <span class="token keyword">for</span> run
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: notify workAvailable and <span class="token function">wait</span> <span class="token keyword">for</span> run
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback run
+FINE: paho1622771147525800: notify spaceAvailable
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback run
+FINE: paho1622771147525800: notify spaceAvailable
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
+FINE: paho1622771147525800: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
+FINE: paho1622771147525800: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopping
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.websocket.WebSocketReceiver stop
+FINE: null: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore quiesce
+FINE: paho1622771147525800: <span class="token assign-left variable">resp</span><span class="token operator">=</span>Client is currently disconnecting <span class="token punctuation">(</span><span class="token number">32102</span><span class="token punctuation">)</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore quiesce
+FINE: paho1622771147525800: <span class="token assign-left variable">resp</span><span class="token operator">=</span>Client is currently disconnecting <span class="token punctuation">(</span><span class="token number">32102</span><span class="token punctuation">)</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms handleOldTokens
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms handleOldTokens
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState resolveOldTokens
+FINE: paho1622771147525800: reason Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState resolveOldTokens
+FINE: paho1622771147525800: reason Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore getOutstandingTokens
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore getOutstandingTokens
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState disconnected
+FINE: paho1622771147525800: disconnected
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState disconnected
+FINE: paho1622771147525800: disconnected
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState clearState
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState clearState
+FINE: paho1622771147525800: <span class="token operator">></span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore <span class="token function">clear</span>
+FINE: paho1622771147525800: <span class="token operator">></span> <span class="token number">0</span> tokens
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsTokenStore <span class="token function">clear</span>
+FINE: paho1622771147525800: <span class="token operator">></span> <span class="token number">0</span> tokens
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
+FINE: paho1622771147525800: stopping sender
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
+FINE: paho1622771147525800: stopping sender
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState notifyQueueLock
+FINE: paho1622771147525800: notifying queueLock holders
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState notifyQueueLock
+FINE: paho1622771147525800: notifying queueLock holders
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender stop
+FINE: paho1622771147525800: stopped
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
+FINE: paho1622771147525800: new work or <span class="token function">ping</span> arrived 
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.TimerPingSender stop
+FINE: paho1622771147525800: stop
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
+FINE: paho1622771147525800: new work or <span class="token function">ping</span> arrived 
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
+FINE: paho1622771147525800: no outstanding flows and not connected
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientState get
+FINE: paho1622771147525800: no outstanding flows and not connected
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.TimerPingSender stop
+FINE: paho1622771147525800: stop
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
+FINE: paho1622771147525800: get message returned null, stopping<span class="token punctuation">&#125;</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
+FINE: paho1622771147525800: get message returned null, stopping<span class="token punctuation">&#125;</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
+FINE: paho1622771147525800: <span class="token operator">&lt;</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsSender run
+FINE: paho1622771147525800: <span class="token operator">&lt;</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
+FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTED
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.ClientComms shutdownConnection
+FINE: paho1622771147525800: <span class="token assign-left variable">state</span><span class="token operator">=</span>DISCONNECTED
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback connectionLost
+FINE: paho1622771147525800: call connectionLost
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsCallback connectionLost
+FINE: paho1622771147525800: call connectionLost
+Connection lost <span class="token punctuation">(</span><span class="token number">32109</span><span class="token punctuation">)</span> - java.io.EOFException
+	at org.eclipse.paho.client.mqttv3.internal.CommsReceiver.run<span class="token punctuation">(</span>CommsReceiver.java:197<span class="token punctuation">)</span>
+	at java.base/java.lang.Thread.run<span class="token punctuation">(</span>Thread.java:829<span class="token punctuation">)</span>
+Caused by: java.io.EOFException
+	at java.base/java.io.DataInputStream.readByte<span class="token punctuation">(</span>DataInputStream.java:272<span class="token punctuation">)</span>
+	at org.eclipse.paho.client.mqttv3.internal.wire.MqttInputStream.readMqttWireMessage<span class="token punctuation">(</span>MqttInputStream.java:92<span class="token punctuation">)</span>
+	at org.eclipse.paho.client.mqttv3.internal.CommsReceiver.run<span class="token punctuation">(</span>CommsReceiver.java:137<span class="token punctuation">)</span>
+	<span class="token punctuation">..</span>. <span class="token number">1</span> <span class="token function">more</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
+FINE: paho1622771147525800: <span class="token operator">&lt;</span>
+Sep 09, <span class="token number">2022</span> <span class="token number">8</span>:33:10 AM org.eclipse.paho.client.mqttv3.internal.CommsReceiver run
+FINE: paho1622771147525800: <span class="token operator">&lt;</span></code></pre>
+</details>
+
+<h2 id="이슈-링크"><a href="#이슈-링크" class="headerlink" title="이슈 링크"></a>이슈 링크</h2><ul>
+<li><a href="https://github.com/eclipse/mosquitto/issues/2631">Websocket connection lost with paho java client #2631</a></li>
+<li><a href="https://github.com/eclipse/paho.mqtt.java/issues/960">Websocket connection lost with mosquitto 1.6.15 and 2.0.11+ #960</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Mosquitto</tag>
+        <tag>Paho Java Client</tag>
       </tags>
   </entry>
   <entry>

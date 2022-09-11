@@ -2,42 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kdevkr.github.io/network/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/no-emit-deprecation-warnings-of-dart-sass/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/not-support-ebs-modify-volume/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/python-docker-image-optimization/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/reason-for-replacing-ec2-instance-type/</loc>
     
     <lastmod>2022-09-11</lastmod>
@@ -146,15 +110,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/system-failure-occurs-from-trivial-things/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/trace-oauth-requests/</loc>
     
     <lastmod>2022-09-11</lastmod>
@@ -228,15 +183,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/why-fail-deploy-application/</loc>
-    
-    <lastmod>2022-09-11</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/pki/</loc>
     
     <lastmod>2022-09-11</lastmod>
     
@@ -407,7 +353,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/elastic-beanstalk-docker-with-python/</loc>
+    <loc>https://kdevkr.github.io/ed25519/</loc>
     
     <lastmod>2022-09-11</lastmod>
     
@@ -416,7 +362,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/ed25519/</loc>
+    <loc>https://kdevkr.github.io/elastic-beanstalk-docker-with-python/</loc>
     
     <lastmod>2022-09-11</lastmod>
     
@@ -605,6 +551,42 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/network/</loc>
+    
+    <lastmod>2022-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/no-emit-deprecation-warnings-of-dart-sass/</loc>
+    
+    <lastmod>2022-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/not-support-ebs-modify-volume/</loc>
+    
+    <lastmod>2022-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/python-docker-image-optimization/</loc>
+    
+    <lastmod>2022-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/http-requests-from-client-to-response-from-spring/</loc>
     
     <lastmod>2022-09-11</lastmod>
@@ -633,6 +615,15 @@
   
   <url>
     <loc>https://kdevkr.github.io/mqtt-connection-lost/</loc>
+    
+    <lastmod>2022-09-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/pki/</loc>
     
     <lastmod>2022-09-11</lastmod>
     
@@ -801,6 +792,20 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/tags/ECC/</loc>
+    <lastmod>2022-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/tags/Ed25519/</loc>
+    <lastmod>2022-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/tags/Beanstalk/</loc>
     <lastmod>2022-09-11</lastmod>
     <changefreq>weekly</changefreq>
@@ -816,20 +821,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/Python/</loc>
-    <lastmod>2022-09-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/ECC/</loc>
-    <lastmod>2022-09-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Ed25519/</loc>
     <lastmod>2022-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1292,20 +1283,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/Service-Failure/</loc>
-    <lastmod>2022-09-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/System-Failure/</loc>
-    <lastmod>2022-09-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Troubleshooting/</loc>
     <lastmod>2022-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

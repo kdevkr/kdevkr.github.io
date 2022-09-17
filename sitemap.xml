@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://kdevkr.github.io/kibana-cannot-connect-elasticsearch/</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/limit-region-aws-iam-user/</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/limit-resources-docker-desktop-using-wslconfig/</loc>
     
     <lastmod>2022-09-17</lastmod>
@@ -83,34 +101,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/not-support-ebs-modify-volume/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/optimize-dockerfile/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/reason-for-replacing-ec2-instance-type/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/service-status/</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -156,15 +147,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/spring-jdbc/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/spring-multipart-uploads/</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -254,15 +236,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/using-pushgateway-to-monitor-private-network-instance/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/webpack5-for-vue/</loc>
     
     <lastmod>2022-09-17</lastmod>
@@ -273,15 +246,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/when-do-i-use-the-handler-interceptor/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/why-fail-deploy-application/</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -362,7 +326,88 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/setup-kubernetes-cluster/</loc>
+    <loc>https://kdevkr.github.io/archive/connecting-with-mqtt-using-aws-iot-device-sdk.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/distrust-symantec-ca-in-jdk.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/improve-webpack5-build-speed.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/not-support-ebs-modify-volume.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/reason-for-replacing-ec2-instance-type.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/service-status.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/spring-multipart-uploads.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/using-pushgateway-to-monitor-private-network-instance.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/why-fail-deploy-application.html</loc>
+    
+    <lastmod>2022-09-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/setup-kubernetes-cluster.html</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -416,25 +461,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/connecting-with-mqtt-using-aws-iot-device-sdk/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/csv/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/distrust-symantec-ca-in-jdk/</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -542,15 +569,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/improve-webpack5-build-speed/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/infrastructure/</loc>
     
     <lastmod>2022-09-17</lastmod>
@@ -570,24 +588,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/java-datetime-format/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/kibana-cannot-connect-elasticsearch/</loc>
-    
-    <lastmod>2022-09-17</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/limit-region-aws-iam-user/</loc>
     
     <lastmod>2022-09-17</lastmod>
     
@@ -713,13 +713,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/MQTT/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/tags/RFC-4180/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -728,20 +721,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/CSV/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Symantec-Root-CA/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Distrust/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -847,20 +826,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/Lifecycle/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Webpack5/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Persistent-cache/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1077,27 +1042,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/EBS/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/R5b/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/io2-Block-Express/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/tags/%EB%8F%84%EC%BB%A4-%EC%9D%B4%EB%AF%B8%EC%A7%80/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -1106,34 +1050,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/%EC%B5%9C%EC%A0%81%ED%99%94/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/AWS-Graviton2/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Service-Status/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Uptime/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Synthetic-Monitoring/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1183,27 +1099,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/RowMapper/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Spring/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/MultipartFile/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/MultipartResolver/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1371,14 +1266,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/Promethues/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Pushgateway/</loc>
+    <loc>https://kdevkr.github.io/tags/Webpack5/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1497,6 +1385,13 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/tags/Spring/</loc>
+    <lastmod>2022-09-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/tags/AJAX/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -1512,13 +1407,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/Deployment/</loc>
-    <lastmod>2022-09-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Kubernetes/</loc>
     <lastmod>2022-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

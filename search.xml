@@ -1830,6 +1830,143 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
+    <title>IP 대역 그리고 위치추적</title>
+    <url>/ip-band-and-location-tracking/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 IT 인프라를 구성하는 IP 대역과 NAT 그리고 IP를 활용한 위치 추적에 대해서 알아봅니다. </p>
+<h2 id="IP-대역"><a href="#IP-대역" class="headerlink" title="IP 대역"></a>IP 대역</h2><p>IT 인프라에서 IP는 퍼블릭 IP 그리고 프라이빗 IP로 구분되어집니다. <strong>퍼블릭 IP</strong>는 인터넷에 접속할 수 있는 공인 IP를 말하며 <strong>프라이빗 IP</strong>는 개인적으로 구성한 네트워크 망에서 사용하는 사설 IP를 말합니다. 따라서, <strong>사설망 IP로는 외부 인터넷 접속을 통해 구글 또는 네이버 사이트에 접근할 수 없습니다.</strong></p>
+<h3 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h3><p><a href="https://datatracker.ietf.org/doc/html/rfc1631">NAT(IP Network Address Translator)</a>는 IPv4 주소체계의 한계로 인하여 IP 주소가 부족해지는 현상을 보완하기 위해 사용하는 기술입니다. NAT는 <strong>내부 사설망 IP를 가지고 외부 네트워크망에 접속할 수 있도록 공인 IP로 변환</strong>하는 기능을 수행합니다. 일반적으로 사용하는 공유기에는 NAT 기능을 포함하고 있기 때문에 공유기에서 192.168.0.2와 같은 주소를 할당하더라도 외부 인터넷에 접속할 경우에는 공인 IP로 변환하여 요청하게 됩니다.</p>
+<p>이러한 차이로 윈도우 컴퓨터의 명령프롬프트에서 <strong>ifconfig</strong> 명령어를 실행하면 <strong>공유기에서 할당한 사설 IP</strong>를 확인할 수 있지만 아이피 정보를 확인할 수 있는 <a href="https://ipconfig.io/">ipconfig.io</a>, <a href="https://ifconfig.io/">ifconfig.io</a>, <a href="https://ifconfig.me/">ifconfig.me</a>에 접속해보면 사설 IP가 아닌 <strong>공인 IP</strong>를 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-01.png" alt="내부 아이피 조회"></p>
+<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-02.png" alt="외부 아이피 조회"></p>
+<h3 id="IP-위치-조회"><a href="#IP-위치-조회" class="headerlink" title="IP 위치 조회"></a>IP 위치 조회</h3><p>위에서 확인한 공인 IP에 대해서 위치추적 사이트라는 곳에서 조회를 해보면 실제로 살고있는 곳 보다는 터무니없는 곳을 보여주는 경우가 많습니다. 이렇게 위치추적 사이트에서 IP에 대한 위치 조회가 정확하지 않은 이유는 <strong>인터넷 서비스 사업자(ISP)인 KT 인터넷과 같은 업체에서 지역을 정해서 IP 대역을 할당</strong>하고 그 지역내에서 DHCP를 통해 동적으로 할당하기 때문입니다. 예를 들어, 한국인터넷진흥원에서 제공하는 <a href="https://후이즈검색.한국/">WHOIS</a> 서비스를 통해 IP를 조회해보면 조금 더 상세한 지역을 안내해줍니다.</p>
+<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-03.png" alt="WHOIS 조회"></p>
+<p>실제로 제가 살고 있는 경기도 양주시에서 사용중인 IP라고 안내해주었습니다. 이렇게 한국인터넷진흥원에서 보다 정확한 위치를 확인할 수 있는 이유는 <strong>KT 인터넷과 같은 인터넷 서비스 사업자에서 한국인터넷진흥원에 지역에 대한 IP 대역 정보를 등록</strong>하기 때문입니다.</p>
+<p>공인 IP 대역의 <strong>218.152.0.0부터 218.159.255.255는 KT 인터넷에서 사용중인 IP 대역</strong>이며 그 중에서 218.156.190.X에 대한 IP 대역은 경기도 양주시에서 사용하도록 할당하는 것을 알 수 있습니다. 위치 추적 사이트에서 인터넷 서비스 사업자의 IP 대역은 알 수 있지만 <strong>특정 IP가 실제로 KT 인터넷이 어떤 지역에 할당했는지에 대한 정보가 없기 때문에</strong> KT 인터넷에 대한 본사 또는 지역적으로 퍼져있는 KT 인터넷 장비의 위치 정보를 대신 표시해주는 것 입니다.</p>
+<blockquote>
+<p>인터넷 서비스 사업자는 지역에 대하여 IP 대역을 형성하기 때문에 특정 IP 대역에서 트래픽 과부화가 발생하면 인터넷 속도를 제한하는 락을 걸기도 합니다. 실제로 인터넷 속도가 충분하게 나오지 않아서 인터넷 기사를 불러 확인해보면 주변 장비에 대한 정보를 확인하고 락 해제를 요청하는 걸 많이 경험했습니다.</p>
+<p>지난 4월에 난리였던 <a href="https://www.seoul.co.kr/news/newsView.php?id=20210420500154">KT ‘10기가 인터넷’ 속도저하 논란에 방통위 조사 나선다</a>와 같은 경우도 트래픽 규모에 따라 제한을 둔 것인데 기술적으로 결함이 있지 않았나 싶네요.</p>
+</blockquote>
+<h3 id="현실과-영화는-다르다"><a href="#현실과-영화는-다르다" class="headerlink" title="현실과 영화는 다르다"></a>현실과 영화는 다르다</h3><p>아무튼, 영화에서는 IP 정보를 알게되면 해당 IP를 사용하는 범죄자의 위치를 정확히 아는 것처럼 나오는 경우가 많습니다. 실제로는 경찰이 필요에 의해 웹 서비스 회사에 특정 아이디에 대한 IP 이력 정보를 요구하는 공조 요청을 하게 되고 <strong>제공받은 IP를 다시 인터넷 서비스 사업자인 KT 본사에게 IP 대역에 대한 정보를 요청</strong>하게 됩니다. 그래서 최종적으로는 <strong>정확한 위치는 아니더라도 대략적으로 읍면동까지</strong>는 알게됩니다.</p>
+<p>범죄자가 사용하는 IP가 해외에서 사용하는 공인 IP 정보로 조회되는 경우에는 더 까다로워지는 것은 맞습니다. 해당 IP 대역을 할당하는 인터넷 서비스 업체에게 공조 요청을 하는게 아니라 <strong>국제형사사법 공조법에 의거</strong>해서 국가 간 공조 요청을 하고 제공받아야합니다. 경찰분들이 담당하는 사건들이 하나가 아니기 때문에 해외 IP에 대한 추적을 꺼려하는게 어찌보면 당연할 수 있습니다. </p>
+<p>그럼에도 불구하고 <a href="https://www.youtube.com/watch?v=aWqK1b5w9Yo">성 착취 영상물을 유포한 사건</a>의 용의자도 집요한 추적 끝에 잡아내기도 하죠. 해외 VPN 서버를 사용하면 추적할 수 없다는 이야기를 하는 사람들이 많은데 <strong>사실은 추적은 되지만 귀찮을 수 있다</strong>라고 봐야겠죠.</p>
+<h2 id="실무-환경에서의-IP"><a href="#실무-환경에서의-IP" class="headerlink" title="실무 환경에서의 IP"></a>실무 환경에서의 IP</h2><p>그러면 실무 환경인 회사에서 사용하는 IP에 대해서 알아보도록 하겠습니다. 회사에서도 자체 내부 사설망을 구축하여 회사 내부에서 근무하는 직원들이 사용할 수 있는 IP를 할당하게 됩니다. 이러한 것은 회사 네트워크를 관리하는 네트워크 담당자가 수행합니다. </p>
+<h3 id="NAT-아이피"><a href="#NAT-아이피" class="headerlink" title="NAT 아이피"></a>NAT 아이피</h3><p>일반적으로 라우터 장비로부터 DHCP로 동적으로 할당받는 내부 아이피를 사용하여 인터넷을 사용하지만 경우에 따라서는 외부 인터넷망에서 회사 네트워크 대역에 접근할 수 있도록 NAT 아이피를 요청해야하는 경우도 있습니다.</p>
+<p style="text-align:center; font-weight:bold;">"외부에서 접근하기 위한 NAT 아이피가 필요합니다."</p>
+
+<p>그러면 네트워크 담당자는 NAT 아이피가 필요한 사유를 검토하고 NAT 아이피와 함께 외부에서 접근 가능한 도메인 주소와 포트 정보를 전달해줍니다. 회사 라우터 장비에서는 외부 트래픽의 도메인과 포트를 확인하고 연결된 NAT 아이피로 트래픽을 전달해줌으로써 내부 사설망에서 실행중인 애플리케이션에 접근할 수 있게 됩니다.</p>
+<h3 id="VPN"><a href="#VPN" class="headerlink" title="VPN"></a>VPN</h3><p>코로나 19로 인하여 <strong>대부분의 IT 기업들이 재택근무를 허용</strong>하게 되었습니다. 필요에 의해 회사로 출근하기도 하지만 대부분의 업무는 집에서 수행합니다. 하지만, 개발 조직에서는 개발 환경에서 사용하는 많은 인스턴스를 외부에서 접근이 불가능한 회사 내부 사설망 서버에 구축합니다. 그리고 아마존 웹 서비스와 같은 클라우드 환경을 사용한다고 하더라도 <strong>SSH를 통한 인스턴스 접근은 회사에서 사용중인 아이피 대역에 대해서만 허용</strong>하는 경우가 많습니다.</p>
+<p>집에서 사용하는 공인 IP는 회사에서 사용하는 아이피 대역이 아니므로 SSH 접근이 불가능합니다. 그렇기 때문에 회사 외부에서도 회사에서 사용하는 아이피 대역처럼 사용할 수 있는 VPN을 활용하게 됩니다. 제가 다니고 있는 회사에서는 <strong>TLS 프로토콜을 적용하여 통신하는 OpenVPN을 사용</strong>하고 있으며 여자친구가 일하는 회사에서는 Pulse Secure와 함께 <a href="https://vip.symantec.com/">VIP Access</a>을 사용하여 2단계 인증까지 요구하기도 합니다.</p>
+<p>이 글을 보신 여러분들도 인터넷 접속을 위해 할당받은 외부 아이피를 확인해보고 한국인터넷진흥원의 WHOIS 서비스를 통해 어느 지역까지 추적되는지 경험해보시기 바랍니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>IP Band</tag>
+        <tag>NAT</tag>
+        <tag>Location Tracking</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>자바 날짜 및 시간 포맷</title>
+    <url>/java-datetime-format/</url>
+    <content><![CDATA[<p>여러 국가를 대상으로 해야하는 서비스를 만들어가게 되는 경우 언어 뿐만 아니라 시간을 다루는 것도 중요합니다. 단순하게 말해서 한국에서 서비스를 제공한다고해서 한국 시간으로 모든 시간 데이터를 다루는 것은 좋은 방식이 아닙니다. 기본적으로는 UTC라고 하는 세계 협정 시간을 기준으로 시간을 저장해야합니다. PostgreSQL과 같은 데이터베이스에서도 Timestamp를 저장하게 되는 경우 내부적으로는 UTC로 저장됩니다. 따라서, 2022년 3월 19일 12시 라는 시간은 <code>2022년 3월 19일 03시</code>로 저장되는것이죠.</p>
+<blockquote>
+<p>애플리케이션 뿐만 아니라 서버 그리고 데이터베이스 모두 UTC로 설정하여 사용하는게 일반적입니다. 예를 들어, 아마존 웹 서비스의 EC2는 한국 리전인데도 불구하고 한국 시간대가 아닌 UTC로 설정되어있습니다.</p>
+</blockquote>
+<p>그리고 시간 데이터를 전달할 때는 <code>2022-03-19 12:00</code>과 같은 문자열 형태가 아닌 <a href="https://www.unixtimestamp.com/">Unix Timestamp</a>의 밀리초가 부여된 상태로 서버와 클라이언트간 요청과 응답에 사용됩니다. 가끔씩 국내 시간만 다루던 개발자들이 UTC 또는 Unix Timestamp에 대해서 모르는 경우도 꽤 많았습니다. 밀리초 형식의 Unix Timestamp를 전달받았으나 실제로 변환해보니 9시간이 빠진게 아니라 오히려 9시간이 더해진 상태로 전달하던 경험도 있습니다.</p>
+<h2 id="Java-Date-Format"><a href="#Java-Date-Format" class="headerlink" title="Java Date Format"></a>Java Date Format</h2><p>서버와 클라이언트 간에 시간 데이터를 전달하거나 개발자 사이에 API를 제공할 때에는 앞서 이야기한 Unix Timestamp로 전달하도록 스펙을 맞출 수 있습니다. 그러나 개발자가 아닌 일반 사용자가 서비스 내에서 CSV 또는 엑셀 파일 형식으로 데이터를 업로드하거나 다운로드 받을때에는 숫자값인 Unix Timestamp가 아닌 <code>2022-03-19 12:00:00</code>과 같은 어떠한 문자 형태이어야합니다. 왜냐하면 일반인들은 UTC가 무엇인지 Unix Timestamp가 무엇인지 모르는 사람이 많으니까요. 심지어는 개발자들 중에서도…</p>
+<blockquote>
+<p>자바 8의 Date&#x2F;Time API에 대해서는 네이버 D2에 공유된 <a href="%5Bhttps://d2.naver.com/helloworld/645609">Java의 날짜와 시간 API</a>를 참고하시면 좋을 것 같습니다.</p>
+</blockquote>
+<h3 id="DateTimeFormatter"><a href="#DateTimeFormatter" class="headerlink" title="DateTimeFormatter"></a>DateTimeFormatter</h3><p>자바 8의 날짜 및 시간 클래스에 대해서 날짜 포맷을 적용해야하는 경우 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>를 사용해야합니다. 그리고 일반적으로 다음과 같은 코드로 날짜 데이터를 변환할 수 있죠.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">String</span> dateStr <span class="token operator">=</span> <span class="token string">"2022-03-19 12:00:00"</span><span class="token punctuation">;</span>
+<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd HH:mm:ss"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<blockquote>
+<p>위 코드는 이해하기에는 쉬우나 한가지 문제점은 어떤 특정한 형태의 문자열로 구성된 데이터만 변환할 수 있다는 점입니다.</p>
+</blockquote>
+<p>만약, 서비스 사용자가 2022년 3월 19일 0시의 시간을 표현하고자 한다면 2022-03-19 00:00:00과 같이 불필요하게 00:00:00을 붙여야하는 단점이 생기게 됩니다. 이를 보완하기 위해서는 여러가지 형식의 날짜 포맷을 처리할 수 있는 코드가 필요합니다.</p>
+<h3 id="DateTimeFormatterBuilder"><a href="#DateTimeFormatterBuilder" class="headerlink" title="DateTimeFormatterBuilder"></a>DateTimeFormatterBuilder</h3><p>여러가지 형태의 날짜 형식을 지원해야하는 경우에는 <strong>Optional 패턴</strong>을 적용해서 처리할 수 있습니다. DateTimeFormatter에 그대로 적용할수도 있으나 DateTimeFormatterBuilder를 통해 여러가지 처리 방식에 대한 옵션이 적용된 형태로 DateTimeFormatter를 만들 수 있습니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DateTimeFormatterBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm:ss]"</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm]"</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd]"</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>HOUR_OF_DAY<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>MINUTE_OF_HOUR<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>SECOND_OF_MINUTE<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">toFormatter</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> dateStrArr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"2022-03-19 00:00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19 00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">String</span> dateStr <span class="token operator">:</span> dateStrArr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 2022-03-19 00:00:00 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span>
+<span class="token comment">// 2022-03-19 00:00 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span>
+<span class="token comment">// 2022-03-19 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span></code></pre>
+
+<h4 id="Unable-to-obtain-LocalTime-from-TemporalAccessor"><a href="#Unable-to-obtain-LocalTime-from-TemporalAccessor" class="headerlink" title="Unable to obtain LocalTime from TemporalAccessor"></a>Unable to obtain LocalTime from TemporalAccessor</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd HH:mm][yyyy-MM-dd]"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> dateStrArr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"2022-03-19 00:00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19 00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">String</span> dateStr <span class="token operator">:</span> dateStrArr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위와 같이 DateTimeFormatterBuilder를 사용하지 않고서도 DateTimeFormatter 패턴 자체로 날짜 포맷 체이닝을 구성할 수 있습니다. 그러나, 2022-03-19와 같이 시간 부분이 없는 형태의 경우에는 다음과 같이 처리할 수 없다는 예외가 발생하게 됩니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeParseException</span><span class="token operator">:</span> <span class="token class-name">Text</span> '<span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span>' could not be parsed<span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">createError</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2017</span><span class="token punctuation">)</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1952</span><span class="token punctuation">)</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">598</span><span class="token punctuation">)</span>
+	at <span class="token class-name"><span class="token namespace">test<span class="token punctuation">.</span></span>Main</span><span class="token punctuation">.</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">Main</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">17</span><span class="token punctuation">)</span>
+<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">566</span><span class="token punctuation">)</span>
+<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
+
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span><span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token class-name">Parsed</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">235</span><span class="token punctuation">)</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1948</span><span class="token punctuation">)</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">2</span> more
+<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">LocalTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
+<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">LocalTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
+
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>LocalTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">LocalTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">431</span><span class="token punctuation">)</span>
+	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">561</span><span class="token punctuation">)</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">4</span> more</code></pre>
+
+<blockquote>
+<p>따라서, DateTimeFormatterBuilder로 문자열로 구성된 날짜 및 시간 데이터에 구성되지 않는 부분을 어떻게 처리할 것인가에 대한 옵션을 적용하여 DateTimeFormatter를 만들어서 사용하는게 좋아보입니다.</p>
+</blockquote>
+<p>만약, 이 글을 보시는 여러분들이 여러가지 형태의 날짜 포맷을 처리하기 위해서 아래와 같이 DateTimeFormattter를 여러개 만들어서 처리하는 코드를 작성했다면 DateTimeFormatterBuilder로 하나의 DateTimeFormatter를 사용해서 좀 더 깔끔한 형태의 코드로 만들어보시기를 추천해드립니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">String</span> dateStr <span class="token operator">=</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">;</span>
+<span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+    dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd HH:mm"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">DateTimeException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">LocalDateTime</span> localDateTime <span class="token operator">=</span> <span class="token class-name">LocalDate</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">atStartOfDay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>localDateTime<span class="token punctuation">,</span> tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>TimeZone</tag>
+        <tag>ZoneId</tag>
+        <tag>Instant</tag>
+        <tag>ZonedDateTime</tag>
+        <tag>DateTimeFormatter</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>개발자를 위한 인프라 지식</title>
     <url>/infrastructure/</url>
     <content><![CDATA[<blockquote>
@@ -1969,143 +2106,6 @@ journalctl -b
       <tags>
         <tag>Infrastructure</tag>
         <tag>Microarchitecture</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>IP 대역 그리고 위치추적</title>
-    <url>/ip-band-and-location-tracking/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 IT 인프라를 구성하는 IP 대역과 NAT 그리고 IP를 활용한 위치 추적에 대해서 알아봅니다. </p>
-<h2 id="IP-대역"><a href="#IP-대역" class="headerlink" title="IP 대역"></a>IP 대역</h2><p>IT 인프라에서 IP는 퍼블릭 IP 그리고 프라이빗 IP로 구분되어집니다. <strong>퍼블릭 IP</strong>는 인터넷에 접속할 수 있는 공인 IP를 말하며 <strong>프라이빗 IP</strong>는 개인적으로 구성한 네트워크 망에서 사용하는 사설 IP를 말합니다. 따라서, <strong>사설망 IP로는 외부 인터넷 접속을 통해 구글 또는 네이버 사이트에 접근할 수 없습니다.</strong></p>
-<h3 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h3><p><a href="https://datatracker.ietf.org/doc/html/rfc1631">NAT(IP Network Address Translator)</a>는 IPv4 주소체계의 한계로 인하여 IP 주소가 부족해지는 현상을 보완하기 위해 사용하는 기술입니다. NAT는 <strong>내부 사설망 IP를 가지고 외부 네트워크망에 접속할 수 있도록 공인 IP로 변환</strong>하는 기능을 수행합니다. 일반적으로 사용하는 공유기에는 NAT 기능을 포함하고 있기 때문에 공유기에서 192.168.0.2와 같은 주소를 할당하더라도 외부 인터넷에 접속할 경우에는 공인 IP로 변환하여 요청하게 됩니다.</p>
-<p>이러한 차이로 윈도우 컴퓨터의 명령프롬프트에서 <strong>ifconfig</strong> 명령어를 실행하면 <strong>공유기에서 할당한 사설 IP</strong>를 확인할 수 있지만 아이피 정보를 확인할 수 있는 <a href="https://ipconfig.io/">ipconfig.io</a>, <a href="https://ifconfig.io/">ifconfig.io</a>, <a href="https://ifconfig.me/">ifconfig.me</a>에 접속해보면 사설 IP가 아닌 <strong>공인 IP</strong>를 확인할 수 있습니다.</p>
-<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-01.png" alt="내부 아이피 조회"></p>
-<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-02.png" alt="외부 아이피 조회"></p>
-<h3 id="IP-위치-조회"><a href="#IP-위치-조회" class="headerlink" title="IP 위치 조회"></a>IP 위치 조회</h3><p>위에서 확인한 공인 IP에 대해서 위치추적 사이트라는 곳에서 조회를 해보면 실제로 살고있는 곳 보다는 터무니없는 곳을 보여주는 경우가 많습니다. 이렇게 위치추적 사이트에서 IP에 대한 위치 조회가 정확하지 않은 이유는 <strong>인터넷 서비스 사업자(ISP)인 KT 인터넷과 같은 업체에서 지역을 정해서 IP 대역을 할당</strong>하고 그 지역내에서 DHCP를 통해 동적으로 할당하기 때문입니다. 예를 들어, 한국인터넷진흥원에서 제공하는 <a href="https://후이즈검색.한국/">WHOIS</a> 서비스를 통해 IP를 조회해보면 조금 더 상세한 지역을 안내해줍니다.</p>
-<p><img data-src="/images/posts/ip-band-and-location-tracking/ipconfig-03.png" alt="WHOIS 조회"></p>
-<p>실제로 제가 살고 있는 경기도 양주시에서 사용중인 IP라고 안내해주었습니다. 이렇게 한국인터넷진흥원에서 보다 정확한 위치를 확인할 수 있는 이유는 <strong>KT 인터넷과 같은 인터넷 서비스 사업자에서 한국인터넷진흥원에 지역에 대한 IP 대역 정보를 등록</strong>하기 때문입니다.</p>
-<p>공인 IP 대역의 <strong>218.152.0.0부터 218.159.255.255는 KT 인터넷에서 사용중인 IP 대역</strong>이며 그 중에서 218.156.190.X에 대한 IP 대역은 경기도 양주시에서 사용하도록 할당하는 것을 알 수 있습니다. 위치 추적 사이트에서 인터넷 서비스 사업자의 IP 대역은 알 수 있지만 <strong>특정 IP가 실제로 KT 인터넷이 어떤 지역에 할당했는지에 대한 정보가 없기 때문에</strong> KT 인터넷에 대한 본사 또는 지역적으로 퍼져있는 KT 인터넷 장비의 위치 정보를 대신 표시해주는 것 입니다.</p>
-<blockquote>
-<p>인터넷 서비스 사업자는 지역에 대하여 IP 대역을 형성하기 때문에 특정 IP 대역에서 트래픽 과부화가 발생하면 인터넷 속도를 제한하는 락을 걸기도 합니다. 실제로 인터넷 속도가 충분하게 나오지 않아서 인터넷 기사를 불러 확인해보면 주변 장비에 대한 정보를 확인하고 락 해제를 요청하는 걸 많이 경험했습니다.</p>
-<p>지난 4월에 난리였던 <a href="https://www.seoul.co.kr/news/newsView.php?id=20210420500154">KT ‘10기가 인터넷’ 속도저하 논란에 방통위 조사 나선다</a>와 같은 경우도 트래픽 규모에 따라 제한을 둔 것인데 기술적으로 결함이 있지 않았나 싶네요.</p>
-</blockquote>
-<h3 id="현실과-영화는-다르다"><a href="#현실과-영화는-다르다" class="headerlink" title="현실과 영화는 다르다"></a>현실과 영화는 다르다</h3><p>아무튼, 영화에서는 IP 정보를 알게되면 해당 IP를 사용하는 범죄자의 위치를 정확히 아는 것처럼 나오는 경우가 많습니다. 실제로는 경찰이 필요에 의해 웹 서비스 회사에 특정 아이디에 대한 IP 이력 정보를 요구하는 공조 요청을 하게 되고 <strong>제공받은 IP를 다시 인터넷 서비스 사업자인 KT 본사에게 IP 대역에 대한 정보를 요청</strong>하게 됩니다. 그래서 최종적으로는 <strong>정확한 위치는 아니더라도 대략적으로 읍면동까지</strong>는 알게됩니다.</p>
-<p>범죄자가 사용하는 IP가 해외에서 사용하는 공인 IP 정보로 조회되는 경우에는 더 까다로워지는 것은 맞습니다. 해당 IP 대역을 할당하는 인터넷 서비스 업체에게 공조 요청을 하는게 아니라 <strong>국제형사사법 공조법에 의거</strong>해서 국가 간 공조 요청을 하고 제공받아야합니다. 경찰분들이 담당하는 사건들이 하나가 아니기 때문에 해외 IP에 대한 추적을 꺼려하는게 어찌보면 당연할 수 있습니다. </p>
-<p>그럼에도 불구하고 <a href="https://www.youtube.com/watch?v=aWqK1b5w9Yo">성 착취 영상물을 유포한 사건</a>의 용의자도 집요한 추적 끝에 잡아내기도 하죠. 해외 VPN 서버를 사용하면 추적할 수 없다는 이야기를 하는 사람들이 많은데 <strong>사실은 추적은 되지만 귀찮을 수 있다</strong>라고 봐야겠죠.</p>
-<h2 id="실무-환경에서의-IP"><a href="#실무-환경에서의-IP" class="headerlink" title="실무 환경에서의 IP"></a>실무 환경에서의 IP</h2><p>그러면 실무 환경인 회사에서 사용하는 IP에 대해서 알아보도록 하겠습니다. 회사에서도 자체 내부 사설망을 구축하여 회사 내부에서 근무하는 직원들이 사용할 수 있는 IP를 할당하게 됩니다. 이러한 것은 회사 네트워크를 관리하는 네트워크 담당자가 수행합니다. </p>
-<h3 id="NAT-아이피"><a href="#NAT-아이피" class="headerlink" title="NAT 아이피"></a>NAT 아이피</h3><p>일반적으로 라우터 장비로부터 DHCP로 동적으로 할당받는 내부 아이피를 사용하여 인터넷을 사용하지만 경우에 따라서는 외부 인터넷망에서 회사 네트워크 대역에 접근할 수 있도록 NAT 아이피를 요청해야하는 경우도 있습니다.</p>
-<p style="text-align:center; font-weight:bold;">"외부에서 접근하기 위한 NAT 아이피가 필요합니다."</p>
-
-<p>그러면 네트워크 담당자는 NAT 아이피가 필요한 사유를 검토하고 NAT 아이피와 함께 외부에서 접근 가능한 도메인 주소와 포트 정보를 전달해줍니다. 회사 라우터 장비에서는 외부 트래픽의 도메인과 포트를 확인하고 연결된 NAT 아이피로 트래픽을 전달해줌으로써 내부 사설망에서 실행중인 애플리케이션에 접근할 수 있게 됩니다.</p>
-<h3 id="VPN"><a href="#VPN" class="headerlink" title="VPN"></a>VPN</h3><p>코로나 19로 인하여 <strong>대부분의 IT 기업들이 재택근무를 허용</strong>하게 되었습니다. 필요에 의해 회사로 출근하기도 하지만 대부분의 업무는 집에서 수행합니다. 하지만, 개발 조직에서는 개발 환경에서 사용하는 많은 인스턴스를 외부에서 접근이 불가능한 회사 내부 사설망 서버에 구축합니다. 그리고 아마존 웹 서비스와 같은 클라우드 환경을 사용한다고 하더라도 <strong>SSH를 통한 인스턴스 접근은 회사에서 사용중인 아이피 대역에 대해서만 허용</strong>하는 경우가 많습니다.</p>
-<p>집에서 사용하는 공인 IP는 회사에서 사용하는 아이피 대역이 아니므로 SSH 접근이 불가능합니다. 그렇기 때문에 회사 외부에서도 회사에서 사용하는 아이피 대역처럼 사용할 수 있는 VPN을 활용하게 됩니다. 제가 다니고 있는 회사에서는 <strong>TLS 프로토콜을 적용하여 통신하는 OpenVPN을 사용</strong>하고 있으며 여자친구가 일하는 회사에서는 Pulse Secure와 함께 <a href="https://vip.symantec.com/">VIP Access</a>을 사용하여 2단계 인증까지 요구하기도 합니다.</p>
-<p>이 글을 보신 여러분들도 인터넷 접속을 위해 할당받은 외부 아이피를 확인해보고 한국인터넷진흥원의 WHOIS 서비스를 통해 어느 지역까지 추적되는지 경험해보시기 바랍니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>IP Band</tag>
-        <tag>NAT</tag>
-        <tag>Location Tracking</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>자바 날짜 및 시간 포맷</title>
-    <url>/java-datetime-format/</url>
-    <content><![CDATA[<p>여러 국가를 대상으로 해야하는 서비스를 만들어가게 되는 경우 언어 뿐만 아니라 시간을 다루는 것도 중요합니다. 단순하게 말해서 한국에서 서비스를 제공한다고해서 한국 시간으로 모든 시간 데이터를 다루는 것은 좋은 방식이 아닙니다. 기본적으로는 UTC라고 하는 세계 협정 시간을 기준으로 시간을 저장해야합니다. PostgreSQL과 같은 데이터베이스에서도 Timestamp를 저장하게 되는 경우 내부적으로는 UTC로 저장됩니다. 따라서, 2022년 3월 19일 12시 라는 시간은 <code>2022년 3월 19일 03시</code>로 저장되는것이죠.</p>
-<blockquote>
-<p>애플리케이션 뿐만 아니라 서버 그리고 데이터베이스 모두 UTC로 설정하여 사용하는게 일반적입니다. 예를 들어, 아마존 웹 서비스의 EC2는 한국 리전인데도 불구하고 한국 시간대가 아닌 UTC로 설정되어있습니다.</p>
-</blockquote>
-<p>그리고 시간 데이터를 전달할 때는 <code>2022-03-19 12:00</code>과 같은 문자열 형태가 아닌 <a href="https://www.unixtimestamp.com/">Unix Timestamp</a>의 밀리초가 부여된 상태로 서버와 클라이언트간 요청과 응답에 사용됩니다. 가끔씩 국내 시간만 다루던 개발자들이 UTC 또는 Unix Timestamp에 대해서 모르는 경우도 꽤 많았습니다. 밀리초 형식의 Unix Timestamp를 전달받았으나 실제로 변환해보니 9시간이 빠진게 아니라 오히려 9시간이 더해진 상태로 전달하던 경험도 있습니다.</p>
-<h2 id="Java-Date-Format"><a href="#Java-Date-Format" class="headerlink" title="Java Date Format"></a>Java Date Format</h2><p>서버와 클라이언트 간에 시간 데이터를 전달하거나 개발자 사이에 API를 제공할 때에는 앞서 이야기한 Unix Timestamp로 전달하도록 스펙을 맞출 수 있습니다. 그러나 개발자가 아닌 일반 사용자가 서비스 내에서 CSV 또는 엑셀 파일 형식으로 데이터를 업로드하거나 다운로드 받을때에는 숫자값인 Unix Timestamp가 아닌 <code>2022-03-19 12:00:00</code>과 같은 어떠한 문자 형태이어야합니다. 왜냐하면 일반인들은 UTC가 무엇인지 Unix Timestamp가 무엇인지 모르는 사람이 많으니까요. 심지어는 개발자들 중에서도…</p>
-<blockquote>
-<p>자바 8의 Date&#x2F;Time API에 대해서는 네이버 D2에 공유된 <a href="%5Bhttps://d2.naver.com/helloworld/645609">Java의 날짜와 시간 API</a>를 참고하시면 좋을 것 같습니다.</p>
-</blockquote>
-<h3 id="DateTimeFormatter"><a href="#DateTimeFormatter" class="headerlink" title="DateTimeFormatter"></a>DateTimeFormatter</h3><p>자바 8의 날짜 및 시간 클래스에 대해서 날짜 포맷을 적용해야하는 경우 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">DateTimeFormatter</a>를 사용해야합니다. 그리고 일반적으로 다음과 같은 코드로 날짜 데이터를 변환할 수 있죠.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">String</span> dateStr <span class="token operator">=</span> <span class="token string">"2022-03-19 12:00:00"</span><span class="token punctuation">;</span>
-<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd HH:mm:ss"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<blockquote>
-<p>위 코드는 이해하기에는 쉬우나 한가지 문제점은 어떤 특정한 형태의 문자열로 구성된 데이터만 변환할 수 있다는 점입니다.</p>
-</blockquote>
-<p>만약, 서비스 사용자가 2022년 3월 19일 0시의 시간을 표현하고자 한다면 2022-03-19 00:00:00과 같이 불필요하게 00:00:00을 붙여야하는 단점이 생기게 됩니다. 이를 보완하기 위해서는 여러가지 형식의 날짜 포맷을 처리할 수 있는 코드가 필요합니다.</p>
-<h3 id="DateTimeFormatterBuilder"><a href="#DateTimeFormatterBuilder" class="headerlink" title="DateTimeFormatterBuilder"></a>DateTimeFormatterBuilder</h3><p>여러가지 형태의 날짜 형식을 지원해야하는 경우에는 <strong>Optional 패턴</strong>을 적용해서 처리할 수 있습니다. DateTimeFormatter에 그대로 적용할수도 있으나 DateTimeFormatterBuilder를 통해 여러가지 처리 방식에 대한 옵션이 적용된 형태로 DateTimeFormatter를 만들 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DateTimeFormatterBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm:ss]"</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm]"</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">appendPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd]"</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>HOUR_OF_DAY<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>MINUTE_OF_HOUR<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">parseDefaulting</span><span class="token punctuation">(</span><span class="token class-name">ChronoField</span><span class="token punctuation">.</span>SECOND_OF_MINUTE<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">toFormatter</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> dateStrArr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"2022-03-19 00:00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19 00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">String</span> dateStr <span class="token operator">:</span> dateStrArr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">// 2022-03-19 00:00:00 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span>
-<span class="token comment">// 2022-03-19 00:00 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span>
-<span class="token comment">// 2022-03-19 -> 2022-03-19T00:00+09:00[Asia/Seoul]</span></code></pre>
-
-<h4 id="Unable-to-obtain-LocalTime-from-TemporalAccessor"><a href="#Unable-to-obtain-LocalTime-from-TemporalAccessor" class="headerlink" title="Unable to obtain LocalTime from TemporalAccessor"></a>Unable to obtain LocalTime from TemporalAccessor</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">TimeZone</span> tzSeoul <span class="token operator">=</span> <span class="token class-name">TimeZone</span><span class="token punctuation">.</span><span class="token function">getTimeZone</span><span class="token punctuation">(</span><span class="token string">"Asia/Seoul"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">DateTimeFormatter</span> dateTimeFormatter <span class="token operator">=</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd HH:mm][yyyy-MM-dd]"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> dateStrArr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"2022-03-19 00:00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19 00:00"</span><span class="token punctuation">,</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
-
-<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">String</span> dateStr <span class="token operator">:</span> dateStrArr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> dateTimeFormatter<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s -> %s%n"</span><span class="token punctuation">,</span> dateStr<span class="token punctuation">,</span> dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위와 같이 DateTimeFormatterBuilder를 사용하지 않고서도 DateTimeFormatter 패턴 자체로 날짜 포맷 체이닝을 구성할 수 있습니다. 그러나, 2022-03-19와 같이 시간 부분이 없는 형태의 경우에는 다음과 같이 처리할 수 없다는 예외가 발생하게 됩니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeParseException</span><span class="token operator">:</span> <span class="token class-name">Text</span> '<span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span>' could not be parsed<span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">createError</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2017</span><span class="token punctuation">)</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1952</span><span class="token punctuation">)</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">598</span><span class="token punctuation">)</span>
-	at <span class="token class-name"><span class="token namespace">test<span class="token punctuation">.</span></span>Main</span><span class="token punctuation">.</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">Main</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">17</span><span class="token punctuation">)</span>
-<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">566</span><span class="token punctuation">)</span>
-<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">ZonedDateTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
-
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span><span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><span class="token class-name">Parsed</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">235</span><span class="token punctuation">)</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1948</span><span class="token punctuation">)</span>
-	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">2</span> more
-<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">LocalTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
-<span class="token class-name">Caused</span> by<span class="token operator">:</span> <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>DateTimeException</span><span class="token operator">:</span> <span class="token class-name">Unable</span> <span class="token keyword">to</span> <span class="token namespace">obtain</span> <span class="token class-name">LocalTime</span> from <span class="token class-name">TemporalAccessor</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>ISO<span class="token punctuation">,</span><span class="token class-name">Asia</span><span class="token operator">/</span><span class="token class-name">Seoul</span> resolved <span class="token keyword">to</span> <span class="token number">2022</span><span class="token operator">-</span><span class="token number">03</span><span class="token operator">-</span><span class="token number">19</span> of type <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>format<span class="token punctuation">.</span></span>Parsed</span>
-
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>LocalTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">LocalTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">431</span><span class="token punctuation">)</span>
-	at java<span class="token punctuation">.</span>base<span class="token operator">/</span><span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span>ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">561</span><span class="token punctuation">)</span>
-	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token number">4</span> more</code></pre>
-
-<blockquote>
-<p>따라서, DateTimeFormatterBuilder로 문자열로 구성된 날짜 및 시간 데이터에 구성되지 않는 부분을 어떻게 처리할 것인가에 대한 옵션을 적용하여 DateTimeFormatter를 만들어서 사용하는게 좋아보입니다.</p>
-</blockquote>
-<p>만약, 이 글을 보시는 여러분들이 여러가지 형태의 날짜 포맷을 처리하기 위해서 아래와 같이 DateTimeFormattter를 여러개 만들어서 처리하는 코드를 작성했다면 DateTimeFormatterBuilder로 하나의 DateTimeFormatter를 사용해서 좀 더 깔끔한 형태의 코드로 만들어보시기를 추천해드립니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">String</span> dateStr <span class="token operator">=</span> <span class="token string">"2022-03-19"</span><span class="token punctuation">;</span>
-<span class="token class-name">ZonedDateTime</span> dateTime <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-    dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd HH:mm"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">DateTimeException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">LocalDateTime</span> localDateTime <span class="token operator">=</span> <span class="token class-name">LocalDate</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>dateStr<span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">"yyyy-MM-dd"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withZone</span><span class="token punctuation">(</span>tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">atStartOfDay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    dateTime <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>localDateTime<span class="token punctuation">,</span> tzSeoul<span class="token punctuation">.</span><span class="token function">toZoneId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>dateTime<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>TimeZone</tag>
-        <tag>ZoneId</tag>
-        <tag>Instant</tag>
-        <tag>ZonedDateTime</tag>
-        <tag>DateTimeFormatter</tag>
       </tags>
   </entry>
   <entry>
@@ -3283,153 +3283,6 @@ sudo systemctl start demo.service</code></pre>
       <tags>
         <tag>도커 이미지</tag>
         <tag>최적화</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>파이썬 도커 이미지 최적화</title>
-    <url>/python-docker-image-optimization/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 파이썬 도커 이미지에 대한 최적화에 대해서 알아봅니다. 회사에서 운영중인 서비스의 분석 서버는 파이썬으로 작성된 플래스크 기반의 웹 애플리케이션입니다. 여러가지 방식으로 배포하던 애플리케이션을 Elastic Beanstalk 환경을 통해 배포하는 구조로 통합하기 위해서 파이썬 애플리케이션을 Elastic Beanstalk의 도커 플랫폼으로 전환하기 위한 작업을 진행했습니다. 파이썬 플랫폼이 아닌 도커 플랫폼을 활용하는 이유는 도커 이미지로 구동하는 쿠버네티스 환경을 준비하고 있기 때문으로 동일하게 도커 이미지를 사용하여 애플리케이션을 배포하고자 결정하였습니다.</p>
-<h2 id="파이썬-도커-이미지"><a href="#파이썬-도커-이미지" class="headerlink" title="파이썬 도커 이미지"></a>파이썬 도커 이미지</h2><p>파이썬으로 작성된 애플리케이션을 도커 이미지화하는 과정에서 발견한 문제에 대하여 몇가지 개선 작업을 진행한 것을 공유하고자 합니다. </p>
-<h3 id="로컬-환경의-Dockerfile"><a href="#로컬-환경의-Dockerfile" class="headerlink" title="로컬 환경의 Dockerfile"></a>로컬 환경의 Dockerfile</h3><p>먼저, 로컬 환경에서 애플리케이션을 구동해보기 위해서 간단하게 작성하여 사용중이던 Dockerfile을 다시 만들어야 했습니다.</p>
-<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> python:3.7</span>
-<span class="token instruction"><span class="token keyword">ADD</span> ./src /www</span>
-<span class="token instruction"><span class="token keyword">WORKDIR</span> /www</span>
-<span class="token instruction"><span class="token keyword">EXPOSE</span> 5000</span>
-<span class="token instruction"><span class="token keyword">ENV</span> ENV <span class="token string">"dev"</span></span>
-<span class="token instruction"><span class="token keyword">RUN</span> python3 -m venv .venv</span>
-<span class="token instruction"><span class="token keyword">RUN</span> chmod +x ./.venv/bin/activate</span>
-<span class="token instruction"><span class="token keyword">RUN</span> ./.venv/bin/activate</span>
-<span class="token instruction"><span class="token keyword">RUN</span> python3 -m pip install --upgrade pip</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install -r requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install Flask</span>
-<span class="token instruction"><span class="token keyword">CMD</span> gunicorn main:app -b 0.0.0.0:5000 -w 1 -t=50 -k gevent --preload</span></code></pre>
-
-<p>Dockerfile이 정리되어있지 않고 불필요한 명령어를 수행하는 것도 있지만 제일 크다고 생각한 문제점은 <a href="https://gunicorn.org/">Gunicorn WSGI 서버</a>에 대해 다양한 옵션을 적용하기 힘들다는 점이었습니다. 웹 요청을 애플리케이션 마스터 프로세스에 전달하는 워커 프로세스의 개수를 지정하는 옵션 만큼은 이미지를 빌드하는 시점 이후에도 쉽게 변경할 수 있게 적용하는게 좋을 것 같았습니다.</p>
-<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> python:3.8</span>
-
-<span class="token instruction"><span class="token keyword">WORKDIR</span> /app</span>
-<span class="token instruction"><span class="token keyword">RUN</span> mkdir -p /app/logs</span>
-
-<span class="token instruction"><span class="token keyword">ARG</span> PORT=8000</span>
-<span class="token instruction"><span class="token keyword">ARG</span> MAIN=application</span>
-<span class="token instruction"><span class="token keyword">ARG</span> MAIN_APP=application</span>
-<span class="token instruction"><span class="token keyword">ARG</span> WORKERS=application</span>
-<span class="token instruction"><span class="token keyword">ARG</span> WORKERS=2</span>
-<span class="token instruction"><span class="token keyword">ARG</span> WORKERCLASS=gevent</span>
-<span class="token instruction"><span class="token keyword">ARG</span> TIMEOUT=60</span>
-
-<span class="token instruction"><span class="token keyword">ENV</span> PORT <span class="token variable">$&#123;PORT&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> MAIN <span class="token variable">$&#123;MAIN&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> MAIN_APP <span class="token variable">$&#123;MAIN_APP&#125;</span></span>
-<span class="token comment"># This number should generally be between 2-4 workers per core in the server.</span>
-<span class="token instruction"><span class="token keyword">ENV</span> WORKERS <span class="token variable">$&#123;WORKERS&#125;</span></span>
-<span class="token comment"># one of sync, eventlet, gevent, tornado, gthread</span>
-<span class="token instruction"><span class="token keyword">ENV</span> WORKERCLASS <span class="token variable">$&#123;WORKERCLASS&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> TIMEOUT <span class="token variable">$&#123;TIMEOUT&#125;</span></span>
-
-<span class="token instruction"><span class="token keyword">COPY</span> entrypoint.sh entrypoint.sh</span>
-<span class="token instruction"><span class="token keyword">COPY</span> src/ .</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install -r requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install gunicorn gevent</span>
-
-<span class="token instruction"><span class="token keyword">EXPOSE</span> <span class="token variable">$&#123;PORT&#125;</span></span>
-
-<span class="token comment"># https://docs.gunicorn.org/en/stable/run.html</span>
-<span class="token instruction"><span class="token keyword">RUN</span> [<span class="token string">"chmod"</span>, <span class="token string">"+x"</span>, <span class="token string">"./entrypoint.sh"</span>]</span>
-<span class="token instruction"><span class="token keyword">ENTRYPOINT</span> <span class="token string">"./entrypoint.sh"</span></span></code></pre>
-
-<p>다시 작성한 Dockerfile에서는 <strong>ARG 키워드로 빌드 시점에 옵션을 적용</strong>하고 <strong>ENV 키워드를 사용하여 도커 컨테이너를 실행하는 시점</strong>에 환경 변수로 다양한 옵션을 적용할 수 있도록 하였습니다.</p>
-<h3 id="터무니없는-빌드된-이미지-크기"><a href="#터무니없는-빌드된-이미지-크기" class="headerlink" title="터무니없는 빌드된 이미지 크기"></a>터무니없는 빌드된 이미지 크기</h3><p>Dockerfile을 다시 작성하면서 꽤 깔끔해졌지만 또 다른 문제가 내재되어있었습니다. 그것은 빌드된 이미지의 크기가 3.7GB라는 터무니 없는 크기를 가지고 있던 것이었습니다. </p>
-<p><img data-src="/images/posts/python-docker-image-optimization/python-docker-image-optimization-01.png" alt="3.71GB"></p>
-<p>분석 서버를 개발하시는 실장님도 파이썬을 전문으로 하는 개발자가 아니었기 때문에 이러한 이미지 크기가 정상적인 것 같다고 하셨으나 <strong>requirements.txt에 정의된 패키지에 의해 설치된 용량이 무려 2.8GB</strong>인 것을 확인하고 requirements.txt에 <strong>정의된 패키지 중 사용하지 않는 패키지들을 제거</strong>하는 작업을 수행하고보니 <strong>97개의 패키지가 39개로 축소</strong>되었습니다.</p>
-<p><img data-src="/images/posts/python-docker-image-optimization/python-docker-image-optimization-02.png" alt="1.28GB"></p>
-<p>축소된 requirements.txt에 의해 설치된 패키지의 용량은 2.8GB에서 368MB로 줄어든 것으로 확인되었습니다.</p>
-<h3 id="파이썬-기반-이미지-변경"><a href="#파이썬-기반-이미지-변경" class="headerlink" title="파이썬 기반 이미지 변경"></a>파이썬 기반 이미지 변경</h3><p>그럼에도 불구하고 아직 1.28GB라는 상당히 무거운 이미지 사이즈를 가지고 있었습니다. 그 이유는 기본 파이썬 이미지에서 이미 많은 패키지가 설치되기 때문입니다.</p>
-<p><img data-src="/images/posts/python-docker-image-optimization/python-docker-image-optimization-03.png"></p>
-<p>일반적으로 도커 이미지를 줄이기 위해서 알파인 리눅스 기반으로 만들어진 이미지를 사용하는 것으로 변경합니다. 그런데 알파인 리눅스로 된 파이썬 이미지를 사용하면 <a href="https://jonnung.dev/docker/2020/04/08/optimizing-docker-images/">도커 이미지 잘 만드는 방법</a>에서 확인할 수 있듯이 <strong>빌드 소요시간이 15분 이상 걸리는 현상</strong>을 보였습니다.</p>
-<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> python:3.8-slim-buster</span>
-
-<span class="token instruction"><span class="token keyword">RUN</span> apt-get update &amp;&amp; apt-get install -y <span class="token operator">\</span>
- gcc libpq-dev</span>
-
-...</code></pre>
-
-<p>결국 알파인 리눅스 기반 이미지 대신에 <code>3.8-slim-buster</code>을 기반의 이미지로 변경하였고 PostgreSQL 모듈을 설치할 때 오류가 발생하여 gcc 와 libpg-dev 패키지를 설치하였습니다.</p>
-<p><img data-src="/images/posts/python-docker-image-optimization/python-docker-image-optimization-04.png"></p>
-<p><strong>1.28GB의 도커 이미지가 655MB의 용량을 가지는 이미지로 축소</strong>되었습니다. 결과적으로 약 3.14GB의 크기를 줄이게 되었고 <strong>캐시되지 않은 상태에서 약 40초 정도의 시간이 소요됨</strong>을 확인했습니다. </p>
-<h3 id="Dockerfile-키워드-순서-변경"><a href="#Dockerfile-키워드-순서-변경" class="headerlink" title="Dockerfile 키워드 순서 변경"></a>Dockerfile 키워드 순서 변경</h3><p><strong>도커 이미지 잘 만드는 방법</strong>을 참고하면 애플리케이션 소스는 패키지를 설치하고나서 복사하는 것이 빌드 시간을 단축한다는 것을 보고 COPY 키워드 순서를 변경하였습니다.</p>
-<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker">...
-<span class="token instruction"><span class="token keyword">COPY</span> src/requirements.txt requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install -r requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install gunicorn gevent</span>
-
-<span class="token instruction"><span class="token keyword">COPY</span> entrypoint.sh entrypoint.sh</span>
-<span class="token instruction"><span class="token keyword">COPY</span> src/ .</span>
-...</code></pre>
-
-<p>먼저, requirements.txt을 우선적으로 복사하고 패키지를 설치한 뒤 애플리케이션 실행을 위한 엔트리포인트 스크립트 파일과 애플리케이션 소스 폴더를 복사하도록 변경했습니다.</p>
-<h3 id="Gunicorn-설정-개선"><a href="#Gunicorn-설정-개선" class="headerlink" title="Gunicorn 설정 개선"></a>Gunicorn 설정 개선</h3><p>다시 작성한 Dockerfile을 살펴보니 ARG와 ENV 키워드가 많아 쓸데없이 파일이 지저분해보였습니다. ARG와 ENV 키워드들은 용량을 차지하지 않으므로 이미지 크기에 영향을 주지는 않으나 Gunicorn의 여러가지 옵션을 하나의 환경 변수로 지원하도록 추가 개선하였습니다.</p>
-<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> python:3.8-slim-buster</span>
-
-<span class="token instruction"><span class="token keyword">RUN</span> apt-get update &amp;&amp; apt-get install -y <span class="token operator">\</span>
- gcc libpq-dev</span>
-
-<span class="token instruction"><span class="token keyword">WORKDIR</span> /app</span>
-<span class="token instruction"><span class="token keyword">RUN</span> mkdir -p /app/logs</span>
-
-<span class="token comment"># Build Arguments</span>
-<span class="token instruction"><span class="token keyword">ARG</span> PORT=8000</span>
-<span class="token instruction"><span class="token keyword">ARG</span> MAIN=application</span>
-<span class="token instruction"><span class="token keyword">ARG</span> MAIN_APP=application</span>
-<span class="token instruction"><span class="token keyword">ARG</span> GUNICORN_ARGS=--preload</span>
-
-<span class="token comment"># Environoment Variables</span>
-<span class="token instruction"><span class="token keyword">ARG</span> PORT <span class="token variable">$&#123;PORT&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> MAIN <span class="token variable">$&#123;MAIN&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> MAIN_APP <span class="token variable">$&#123;MAIN_APP&#125;</span></span>
-<span class="token instruction"><span class="token keyword">ENV</span> GUNICORN_ARGS <span class="token variable">$&#123;GUNICORN_ARGS&#125;</span></span>
-
-<span class="token instruction"><span class="token keyword">COPY</span> requirements.txt requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install -r requirements.txt</span>
-<span class="token instruction"><span class="token keyword">RUN</span> pip3 install gunicorn gevent</span>
-
-<span class="token instruction"><span class="token keyword">COPY</span> gunicorn.conf.py gunicorn.conf.py</span>
-<span class="token instruction"><span class="token keyword">COPY</span> entrypoint.sh entrypoint.sh</span>
-<span class="token instruction"><span class="token keyword">COPY</span> src/ .</span>
-
-<span class="token instruction"><span class="token keyword">EXPOSE</span> <span class="token variable">$&#123;PORT&#125;</span></span>
-
-<span class="token comment"># https://docs.gunicorn.org/en/stable/run.html</span>
-<span class="token instruction"><span class="token keyword">RUN</span> [<span class="token string">"chmod"</span>, <span class="token string">"+x"</span>, <span class="token string">"./entrypoint.sh"</span>]</span>
-<span class="token instruction"><span class="token keyword">ENTRYPOINT</span> <span class="token string">"./entrypoint.sh"</span></span></code></pre>
-
-<p>다음과 같이 기본 옵션이 정의된 <strong>gunicorn.conf.py</strong> 파일을 적용하였습니다.</p>
-<pre class="language-python" data-language="python"><div class="caption"><span>gunicorn.conf.py</span></div><code class="language-python"><span class="token comment"># https://docs.gunicorn.org/en/stable/settings.html</span>
-<span class="token keyword">import</span> multiprocessing
-
-bind <span class="token operator">=</span> <span class="token string">'0.0.0.0:8000'</span>
-workers <span class="token operator">=</span> multiprocessing<span class="token punctuation">.</span>cpu_count<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span>
-worker_connections <span class="token operator">=</span> <span class="token number">1000</span>
-worker_class <span class="token operator">=</span> <span class="token string">'gevent'</span>
-threads <span class="token operator">=</span> <span class="token number">1</span>
-max_requests <span class="token operator">=</span> <span class="token number">0</span>
-timeout <span class="token operator">=</span> <span class="token number">30</span>
-keepalive <span class="token operator">=</span> <span class="token number">2</span></code></pre>
-
-<p>그리고 기본으로 적용된 옵션을 하나로 통합된 <strong>GUNICORN_ARGS</strong> 환경 변수를 통해 자유롭게 옵션을 재정의하도록 하였습니다.</p>
-<p><strong>requirements.txt에 정의된 패키지 정리</strong>하고 <strong>slim-buster 기반의 이미지로 변경</strong> 그리고 <strong>Dockerfile 키워드 순서를 변경</strong>함으로써 파이썬 애플리케이션에 대한 도커 이미지를 최적화하는 것을 알아보았습니다. 결과적으로 도커 이미지 사이즈를 많이 줄이게되어 이미지 용량에 대한 부담과 빌드 및 배포하기까지의 시간을 단축하게되어 다행이라고 생각합니다.</p>
-<p>감사합니다.</p>
-<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a href="http://blog.hwahae.co.kr/all/tech/tech-tech/5567/">gunicorn 설정의 A to Z</a></li>
-<li><a href="https://jonnung.dev/docker/2020/04/08/optimizing-docker-images/">도커 이미지 잘 만드는 방법</a>  </li>
-<li><a href="https://kimeuichan.github.io/posts/deploy-docker-more-faster/">자주 변경되는 도커 이미지 빠르게 배포하기</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Docker</tag>
-        <tag>Python</tag>
       </tags>
   </entry>
   <entry>

@@ -41,7 +41,9 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
     line-height: 2rem;
     word-break: break-all;
     font-family: $font-famaily-post-content;
-    font-size: $font-size-headings-base - 0.525em;
+    +tablet-desktop() {
+      font-size: $font-size-headings-base - 0.625em;
+    }
 
     h1 {
       border-top: 1px solid $grey;
@@ -121,6 +123,10 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
       p {
         margin: 0;
       }
+    }
+
+    pre {
+      font-size: $font-size-headings-base - 0.625em;
     }
 }
 

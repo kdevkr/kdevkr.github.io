@@ -1,14 +1,15 @@
 .darkmode--activated {
+    background: var(--content-bg-color);
 
     h2, h3 {
         border-bottom: none;
     }
     .header {
-        border-right: none;
+        border-right: 1px solid var(--body-bg-color);
         .header-inner {
-            background: var(--content-bg-color);
+            // background: var(--content-bg-color);
             .site-brand-container {
-                background: var(--content-bg-color);
+                // background: var(--content-bg-color);
                 border-bottom: 1px solid var(--body-bg-color);
             }
 
@@ -19,9 +20,9 @@
     }
 
     .sidebar {
-        background-color: var(--content-bg-color);
+        // background-color: var(--content-bg-color);
         .sidebar-inner {
-            background-color: var(--content-bg-color);
+            // background-color: var(--content-bg-color);
             border-bottom: 1px solid var(--body-bg-color);
 
             .sidebar-nav,.sidebar-panel {
@@ -29,7 +30,6 @@
             }
         }
     }
-    
     .post-body {
         blockquote {
             background-color: #444;
@@ -44,11 +44,14 @@
     }
     .post-footer {
         .post-nav {
-            border-top: none;
+            border-top: 1px solid var(--body-bg-color);
         }    
     }
-    .pagination .page-number.current {
-        color: var(--text-color);
+    .pagination {
+        border-top: 1px solid var(--body-bg-color) !important;
+        .page-number.current {
+            color: var(--text-color);
+        }    
     }
     .comments {
         border-top: none;    

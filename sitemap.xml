@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kdevkr.github.io/spring-jdbc/</loc>
-    
-    <lastmod>2022-10-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/ssh/</loc>
     
     <lastmod>2022-10-09</lastmod>
@@ -552,6 +543,15 @@
   
   <url>
     <loc>https://kdevkr.github.io/spring-boot-integration-vuejs/</loc>
+    
+    <lastmod>2022-10-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/spring-jdbc/</loc>
     
     <lastmod>2022-10-09</lastmod>
     

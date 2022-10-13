@@ -1,6 +1,6 @@
 ---
 title: 우분투 리눅스 서버 환경 구축하기
-date: 2022-10-13
+date: 2022-10-14
 tags:
 - Ubuntu
 - WSL2

@@ -755,6 +755,58 @@ ec2-user@ec2-3-36-96-111.ap-northeast-2.compute.amazonaws.com: Permission denied
 ]]></content>
   </entry>
   <entry>
+    <title>전기에 대해서 배워보자</title>
+    <url>/electricity/</url>
+    <content><![CDATA[<h4 id="전기가-만들어지고-사용되기까지의-과정"><a href="#전기가-만들어지고-사용되기까지의-과정" class="headerlink" title="전기가 만들어지고 사용되기까지의 과정"></a>전기가 만들어지고 사용되기까지의 과정</h4><p>전기 에너지는 다양한 방식으로 발전기를 회전시켜서 만들게 된다. 원자력 또는 태양광 발전 등으로 만들어지는 전기 에너지는 송전용 변전소를 통해서 전기를 승압시켜서 송전선을 거쳐서 각 지역에 위치한 배전용 변전소까지 도달하게 된다. 배전용 변전소로 도달한 전기를 가정(220V)이나 공장(380V)에서 사용할 수 있는 전압으로 강압시켜서 배분하는 과정을 거치게 된다.</p>
+<p><a href="https://www.youtube.com/watch?v=QaNrvW-3MHQ">전기는 어떻게 생겨날까?</a>  </p>
+<p>송전 과정에서 전기의 전압을 높이게 되는 이유는 전력 손실을 줄여서 송전 효율을 높이기 위함이라고 한다. 한전에서는 <a href="https://www.kepco-enc.com/portal/contents.do?key=1454">765kV, 345kV, 154kV</a>로 높여서 송전 사업을 하고 있음을 알 수 있다. 일반적으로 교류 전송을 하는 것으로 알고 있는데 초장거리간 송전에는 <a href="http://www.e2news.com/news/articleView.html?idxno=241142">LS전선의 HVDC를 사용한 해저 전력망</a>처럼 초고압직류송전 방식을 사용한다고 한다.</p>
+<p><a href="https://youngji.medium.com/%ED%95%9C%EA%B5%AD%EC%9D%98-%EC%86%A1%EB%B0%B0%EC%A0%84-%EC%84%A4%EB%B9%84-%EC%82%B4%ED%8E%B4%EB%B3%B4%EA%B8%B0-c92cce0dc914">한국의 송배전 설비 살펴보기</a><br><a href="https://media.skens.com/2373">[에너지백과] 발전&#x2F;송전&#x2F;배전&#x2F;변전</a>  </p>
+<h4 id="전기-에너지와-전력"><a href="#전기-에너지와-전력" class="headerlink" title="전기 에너지와 전력"></a>전기 에너지와 전력</h4><p>단위 시간 동안 사용되는 전기 에너지를 측정하기 위해서 전력이라는 개념을 사용하게 된다. 전력의 최소 단위는 와트(W)이며 전압 x 전류로 표현할 수 있다.</p>
+<ul>
+<li>전압(Voltage, V) : 전기 에너지의 전위차</li>
+<li>전류(Current, I) : 단위 시간 당 흐르는 전하의 양</li>
+<li>전력(Power, P) : P &#x3D; IV</li>
+</ul>
+<p><a href="https://www.youtube.com/watch?v=wZQCK3BpH9k">전력과 전력량</a></p>
+<p>전력량은 단위 시간 동안 사용된 전력의 양을 의미하며 한전에서 전기 요금을 계산할 때에는 전력이 얼마나 소비되었는지를 전력량으로 판단한다. 순시 전력은 수시로 바뀌게 되므로 가장 높은 기준의 전력을 기준으로 한시간 기준의 전력량(kWh)을 환산한다.</p>
+<h4 id="전력-계통의-주파수"><a href="#전력-계통의-주파수" class="headerlink" title="전력 계통의 주파수"></a>전력 계통의 주파수</h4><p>에너지 분야의 핵심 키워드는 ESS를 통해 안정적인 전력 계통 운영을 수행하는 것으로 <a href="https://www.electimes.com/news/articleView.html?idxno=206921">Fast DR</a>을 통해 주파수 조정으로 전력망을 안정적으로 유지하는데 있다. 전기의 수요보다 발전 출력이 부족하게 되면 전력 계통 주파수가 60Hz에서 떨어지게 되므로 주파수 조정을 통해 전기 수요에 대한 발전 출력의 균형을 맞추는 것이다.</p>
+<p><a href="http://www.keaj.kr/news/articleView.html?idxno=3608">우리나라 주파수는 왜 60Hz일까?</a><br><a href="https://www.samsungsemiconstory.com/kr/%EC%8A%AC%EA%B8%B0%EB%A1%9C%EC%9A%B4-%EC%A0%84%EA%B8%B0%EC%83%9D%ED%99%9C%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%A0%84%EA%B8%B0%EC%83%81%EC%8B%9D%EC%9A%A9%EC%96%B4-%EC%A3%BC%ED%8C%8C%EC%88%98/">슬기로운 전기생활을 위한 전기상식용어 ‘주파수’</a><br><a href="https://www.e2news.com/news/articleView.html?idxno=224321">전력계통 주파수 하락 시 태양광 동시탈락 위험</a></p>
+<p>전력거래소에서는 전력계통 운영정보를 공개하고 있으며 <a href="https://new.kpx.or.kr/board.es?mid=a10109020600&bid=0066">주파수 유지율</a>을 확인할 수 있다. </p>
+<h4 id="전력수요관리"><a href="#전력수요관리" class="headerlink" title="전력수요관리"></a>전력수요관리</h4><p>수요반응(DR)은 수요관리사업자가 참여고객들을 모집해 수요자원을 구성하고 전력사용량을 줄이면 전력시장으로부터 보상을 받는 것이다. 전력 수요가 많아져서 <a href="https://new.kpx.or.kr/powerinfoSubmain.es?mid=a10606030000">공급 예비력</a>이 부족하다고 판단하게되면 정부로부터 경제성 혹은 신뢰성 DR 이벤트가 발령된다. 신재생에너지 발전 비율이 높은 제주도의 경우 전력수요보다 공급량이 넘어서는 관계로 플러스 DR을 통해 전력사용량을 늘려서 전력계통을 안정화하는 수요반응 이벤트도 존재한다.</p>
+<p><a href="https://www.electimes.com/news/articleView.html?idxno=303940">전력수요관리는 ‘변화 중’…2022년 ‘DR의 해’ 되나</a></p>
+<h4 id="ESS-화재"><a href="#ESS-화재" class="headerlink" title="ESS 화재"></a>ESS 화재</h4><p>에너지 저장 시스템(ESS)는 피크 시프트 혹은 주파수 조정 등 전력 계통을 안정적으로 유지하기 위한 주요 설비이지만 안정성에 대한 문제가 지속되고 있다. 다수의 배터리가 모여있고 지속적인 충전과 방전으로 인해 배터리 내 셀의 노후화 문제로 인하여 열폭주 현상으로 화재가 발생하고 있다.</p>
+<p><a href="https://www.e2news.com/news/articleView.html?idxno=238938">울산서 34번째 ESS화재…SK배터리도 예외 없었다</a><br><a href="https://www.e2news.com/news/articleView.html?idxno=245281">현대제철 피크부하저감 ESS서 국내 37번째 화재</a>  </p>
+<h4 id="전력-계통-용어"><a href="#전력-계통-용어" class="headerlink" title="전력 계통 용어"></a>전력 계통 용어</h4><p>한국전력의 <a href="https://cyber.kepco.co.kr/ckepco/front/jsp/CY/E/D/CYEDHP00202.jsp">계량기</a> 정보와 <a href="https://www.tesla.com/ko_kr/powerwall">테슬라 가정용 ESS</a> 제품 정보를 보면 여러가지 항목을 확인할 수 있다. 앞서 전력과 전력량에 대해서 알아보았는데 실제로 사용되는 전력 계통 용어는 너무나도 다양하다.</p>
+<p><a href="https://www.youtube.com/watch?v=MQhiZOfrZT8">개쉬운 전기용어정리 : 피상전력, 유효전력, 무효전력</a>  </p>
+<ul>
+<li>계약 전력 : 전기공급사업자가 일반 소비자에게 공급하기로 동의한 전력</li>
+<li>유효 전력(Active Power, W) : 실제로 소비되는 전력(소비 전력)</li>
+<li>무효 전력(Reactive Power, VAR) : 소비되지 않고 남아있는 전력</li>
+<li>피상 전력(Apparent Power, VA)</li>
+<li>역률(Power Factor, PF)</li>
+<li>설비 용량 : 최대 생산 가능용량</li>
+<li>부하 용량 : 부하(설비)에 공급할 수 있는 최대 출력</li>
+<li>단상 2선식 : 주상 변압기로부터 2가닥의 전선으로 결선되는 방식</li>
+<li>삼상 4선식</li>
+<li>선간전압 : 두 상간의 전위차</li>
+<li>상전압 : 대지와 한 상간의 전위차</li>
+<li>송전 전력 : 전원 공급 측 전력</li>
+<li>수전 전력 : 부하단의 전력</li>
+<li>수전 설비 : 전기사업자로부터 공급되는 고전압(22.9kV)의 전기를 받아서 사용하기 위한 전기로 변전하는 설비</li>
+<li>차단기(Circuit Breaker, CB) : 전기를 개폐하는 장치</li>
+<li>변압기(Transformer, TR) : 교류 전압이나 전류의 값을 바꾸는 장치</li>
+<li>보호계전기(Relay) : 전기 계통에서 설비를 보호하는 장치</li>
+<li>충방전효율 : 충전량에 대한 방전 용량의 비율</li>
+<li>충전상태(SOC) : 사용할 수 있는 배터리의 잔존 용량</li>
+</ul>
+<p>교류 전기의 삼상을 표현하는 것도 국가마다 RST, ABC, UVW로 다르게 표현한다.</p>
+]]></content>
+      <tags>
+        <tag>송배전</tag>
+        <tag>전력계통</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>신뢰할 수 있는 이메일 발송 도메인</title>
     <url>/email-spf-dkim-dmarc/</url>
     <content><![CDATA[<p>시스템을 개발하는 단계에서는 메일 발송 기능을 위해서 회사 내 서버 인프라 엔지니어분께 사내 메일 서버를 대신 이용할 수 있도록 요청하고 메일 서버를 이용할 수 있는 SMTP 서버와 사용자 인증 정보를 전달받아서 테스트하곤 했습니다. 그러나, 실제로 시스템을 운용하는 시점에 들어서자 회사 사내 메일 서버로 전달되는 전송 건들이 많아져서 회사 인프라 담당 엔지니어분으로부터 <a href="https://aws.amazon.com/ko/ses/">Amazon SES</a>로 메일 서버를 전환해달라는 요청을 받고 화사 사내 메일 서버 대신에 클라우드 환경에서 제공하는 SMTP 서버를 사용하도록 작업을 하였습니다. </p>

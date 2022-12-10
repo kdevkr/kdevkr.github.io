@@ -1416,6 +1416,106 @@ journalctl -b
       </tags>
   </entry>
   <entry>
+    <title>KDB Connection Pool</title>
+    <url>/kdb-connection-pool/</url>
+    <content><![CDATA[<blockquote>
+<p>TCP 소켓이 연결된 상태로 남아있는 <a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2022-12-08.md">TCP 커넥션 누수 문제</a>를 경험하고나서 커넥션 풀 기능 구현에 대해서 다시한번 학습해보고 정리하는 글입니다.</p>
+</blockquote>
+<p>아마도 관계형 데이터베이스와 자주 사용되는 일부 데이터베이스들에 대한 커넥션 풀 기능은 직접 구현하지 않아도 되는 경우가 많습니다. 시스템에서 사용중인 시계열 데이터베이스는 <a href="https://github.com/KxSystems/javakdb/blob/master/javakdb/src/main/java/com/kx/c.java">자바 클라이언트 라이브러리</a>를 제공하고 있지만 시계열 데이터베이스가 단일 요청을 순차적으로 처리하는 싱글 스레드 방식임에 따라서 커넥션 풀 기능은 자체적으로 내장하고 있지 않습니다. 커넥션 풀 기능이 반드시 필요한 것은 아니지만 TCP 연결에 대한 부하를 생각한다면 자주 TCP 소켓을 연결하므로 발생할 수 있는 레이턴시를 및 자원 낭비를 무시할 수 없습니다.</p>
+<h4 id="자바-커넥션-풀-라이브러리"><a href="#자바-커넥션-풀-라이브러리" class="headerlink" title="자바 커넥션 풀 라이브러리"></a>자바 커넥션 풀 라이브러리</h4><p>자바 애플리케이션은 대부분 <a href="https://commons.apache.org/proper/commons-pool/">Apache Commons Pool2</a> 라이브러리를 활용해서 커넥션 풀 기능을 구현하는 경우가 많습니다. 대표적으로 레디스 클라이언트로 많이 사용중인 <a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java">Lettuce의 커넥션 풀 지원</a>을 확인할 수 있으며 <a href="https://commons.apache.org/proper/commons-dbcp/">Apache Commons DBCP2</a>라고 하는 관계형 데이터베이스에 대한 대표적인 커넥션 풀 라이브러리도 Commons Pool로 구현되어있음을 확인할 수 있습니다.</p>
+<blockquote>
+<p>Apache Commons Pool2에서는 <a href="https://commons.apache.org/proper/commons-pool/examples.html">간단한 PooledObjectFactory 예제</a>를 제공하고 있지만 자세한 설명이 없습니다.</p>
+</blockquote>
+<p>커넥션 풀 구현 예제를 검색해보면 생각보다 관련된 글이 없었기에 직접적으로 커넥션 풀 기능을 구현하는 개발자는 많지 않을 것이라 생각됩니다. 커넥션 오브젝트에 대한 라이프 사이클을 관리하는 것은 PooledObjectFactory 인터페이스가 담당하므로 원하는 커넥션 풀 동작을 BasePooledObjectFactory를 상속하여 구현하면 됩니다. 다만, 커네션 풀 구현 시 중요하게 생각해야할 부분은 BasePooledObjectFactory에서 기본적으로 구현해두어서 구현을 강제하지 않는 함수 중 커넥션 풀에서 관리하는 오브젝트가 삭제되는 대상이 되는 경우 호출되는 destoryObject 함수 동작을 생략해버릴 수 있다는 점 입니다.</p>
+<h4 id="CPooledObjectFactory"><a href="#CPooledObjectFactory" class="headerlink" title="CPooledObjectFactory"></a>CPooledObjectFactory</h4><p>커넥션 풀 기능을 처음 구현했을 당시에 고려하지 못한 미흡한 점을 인지하고 KDB 프로세스에 대한 커넥션의 라이프 사이클을 관리하는 CPooledObjectFactory를 다시 작성해보았습니다. </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CPooledObjectFactory</span> <span class="token keyword">extends</span> <span class="token class-name">BasePooledObjectFactory</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> host<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> port<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">CPooledObjectFactory</span><span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token keyword">int</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>host <span class="token operator">=</span> host<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> c <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token function">c</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token function">wrap</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DefaultPooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validateObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            c c <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>s <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>s<span class="token punctuation">.</span><span class="token function">isConnected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            c<span class="token punctuation">.</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">c<span class="token punctuation">.</span></span>KException</span> <span class="token operator">|</span> <span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroyObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// ignored</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>더 자세하게 PooledObjectFactory 구현에 대해서 고민하고 싶은 분들이라면 아래의 오픈소스들을 참고해보시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java#L201">RedisPooledObjectFactory</a></li>
+<li><a href="https://github.com/apache/commons-dbcp/blob/master/src/main/java/org/apache/commons/dbcp2/PoolableConnectionFactory.java">PoolableConnectionFactory</a></li>
+</ul>
+<h4 id="CObjectPool"><a href="#CObjectPool" class="headerlink" title="CObjectPool"></a>CObjectPool</h4><p>이제는 커넥션 오브젝트를 관리할 방식에 대해서 설정하는 것을 고민해보아야 합니다. Apache Commons Pool에서 커넥션 오브젝트 라이프사이클에 따라 어떻게 관리할지 결정하기 위해서는 GenericObjectPoolConfig를 사용해야 합니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CObjectPoolConfig</span> <span class="token keyword">extends</span> <span class="token class-name">GenericObjectPoolConfig</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">CObjectPoolConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxTotal</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxIdle</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMinIdle</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxWait</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTimeBetweenEvictionRuns</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTestWhileIdle</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setJmxEnabled</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>커넥션 풀 라이브러리에서 제공하는 기본값 중에서 JMX 모니터링 기능을 사용하지 않으므로 비활성화 해두었으며 유휴 상태로 관리중인 커넥션에 대해서도 미리 커넥션 상태를 확인할 수 있도록 TestWhileIdle 옵션을 활성화하였습니다. MaxWait의 경우 사용중인 각 커넥션이 최대로 소요할 수 있는 임계치에 따라 3분 까지 기다릴 수 있도록 해두었습니다. </p>
+<blockquote>
+<p>By default, kdb+ is single-threaded, and processes incoming queries sequentially.</p>
+</blockquote>
+<p>커넥션 라이프 사이클에 따라서 커넥션 풀에서 커넥션 오브젝트가 삭제되는 사유에는 대표적으로 두가지가 있는데요. 하나는 유휴 상태에 있는 커넥션이 벨리데이션 쿼리를 수행하는 과정에서 소켓 통신 오류가 발생하거나 너무 오랬동안 커넥션이 사용되지 않아서 버려지고 새로운 커넥션을 만들어서 풀을 유지하는 상황입니다. 위 문구 내용처럼 시계열 데이터베이스는 빠르게 요청을 처리하기 위해서 싱글 스레드 방식을 통해서 단일 요청을 순차적으로 처리하는게 기본적인 기술 관점입니다. 이는 레디스에서 동시성을 구현하기 위해서 채택한 방법이기도 하므로 단순히 싱글 스레드여서 문제가 있다고 바라보면 안됩니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">exec</span> <span class="token number">0</span> ms <span class="token punctuation">(</span><span class="token number">481900</span> ns<span class="token punctuation">)</span></code></pre>
+
+<p>시계열 데이터베이스가 아무리 빠르다고 해도 긴 범위의 시계열 데이터를 조회하고 연산을 한다거나 TCP 소켓을 통해 전달해야할 데이터가 상당히 많은 경우라면 싱글 스레드의 단점으로 인하여 선행 요청에 의해 후행 요청이 기다리는 시간으로 인해 병목 현상이 발생할 수 있다는 점을 고려해야합니다. 만약, 그러한 상황이 자주 발생한다면 빠른 성능을 위해 싱글 스레드를 채택한 시계열 데이터베이스를 활용하는 방법이 잘못된 것일 수 있습니다.</p>
+<p>KDB 시계열 데이터베이스와 커넥션 풀 동작에 대해서 확인하고 싶다면 아래의 링크들을 참고하시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/kdevkr/kdb">Learning KDB+</a></li>
+<li><a href="https://github.com/kdevkr/spring-demo-kdb">Spring Demo KDB</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>TCP</tag>
+        <tag>Connection Pool</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>키바나에서 엘라스틱서치 클러스터로 연결할 수 없음</title>
     <url>/kibana-cannot-connect-elasticsearch/</url>
     <content><![CDATA[<p><img data-src="/images/posts/kibana-cannot-connect-elasticsearch/01.png"></p>

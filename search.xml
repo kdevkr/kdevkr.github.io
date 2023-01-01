@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>젠킨스에 Amazon Corretto JDK 추가하기</title>
+    <url>/add-jdk-installations-jenkins/</url>
+    <content><![CDATA[<p>최근에는 <a href="https://www.youtube.com/watch?v=iLqGzEkusIw">깃허브 액션의 워크플로우 활용</a>하는 경우가 늘고 있는 것 같지만 대부분의 회사에서는 <a href="https://www.youtube.com/watch?v=0Emq5FypiMM">CI&#x2F;CD</a> 도구로 젠킨스를 많이 사용할 것이다. 그런데 대부분 어떤 개발자에 의해서 젠킨스가 이미 구성되어있기 때문에 신입 또는 주니어 개발자가 직접 경험하는 부분이 없을 수 있다. 리눅스 서버에 JDK를 설치하고 젠킨스를 실행하더라도 운영되는 환경에 따라 사용되는 JDK를 사용하여 애플리케이션을 빌드하도록 구성해야한다.</p>
+<h4 id="JDK-Installations"><a href="#JDK-Installations" class="headerlink" title="JDK Installations"></a>JDK Installations</h4><p>Jenkins 관리 &gt; Global Tool Configuration &gt; JDK installations 에서 젠킨스 시스템에서 사용될 JDK 목록을 관리할 수 있도록 제공하고 있다. 이를 활용해서 각 프로젝트에서 사용될 JDK을 설치해서 운영 환경에서 사용될 JVM 버전과 동일한 JDK 벤더를 사용해서 애플리케이션을 빌드할 수 있다.</p>
+<ul>
+<li><a href="https://github.com/adoptium/temurin17-binaries/releases">https://github.com/adoptium/temurin17-binaries/releases</a></li>
+<li><a href="https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz">https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz</a></li>
+</ul>
+<p>일반적으로 범용적인 목적으로는 Temurin이라는 OpenJDK를 사용하고 회사에서는 운영 환경인 CSP와 동일한 Amazon Corretto JDK를 사용하고 있다. 기본적으로는 젠킨스가 설치된 서버 시스템에 <a href="https://www.youtube.com/watch?v=qx3XK82BZPk">여러개의 JDK를 설치</a>해서 사용하는 것으로 설명한다. 다행히도 JDK Tool Plugin 에서는 다운로드 링크를 지정해서 추가할 수 있는 <a href="https://stackoverflow.com/a/55244659">Extract .zip&#x2F;.tar.gz</a>을 제공하고 있다. </p>
+<blockquote>
+<p>Downloads a tool archive and installs it within Jenkins’s working directory.<br>Example: https:&#x2F;&#x2F;downloads.apache.org&#x2F;ant&#x2F;binaries&#x2F;apache-ant-1.10.12-bin.zip and specify a subdir of apache-ant-1.10.12 .</p>
+</blockquote>
+<p>위 설명에 따라서 다운로드 링크에 의해서 압축이 해제될 폴더를 지정해야한다.</p>
+<p><img data-src="/images/posts/add-jdk-installations-jenkins/01.png"></p>
+<h4 id="프로젝트에서-Amazon-Corretto-JDK-사용하기"><a href="#프로젝트에서-Amazon-Corretto-JDK-사용하기" class="headerlink" title="프로젝트에서 Amazon Corretto JDK 사용하기"></a>프로젝트에서 Amazon Corretto JDK 사용하기</h4><p>프로젝트 빌드 유형에 따라서 설치한 JDK를 지정하는 방법을 공유하고자 한다. 회사에서는 Freestyle Project로 간단하게 사용하고 있는데 인터넷에서는 파이프라인도 많이 활용하고 있는 것 같다.</p>
+<p><img data-src="/images/posts/add-jdk-installations-jenkins/02.png" alt="Freestyle Project"></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Started by user mambo
+Running as SYSTEM
+<span class="token punctuation">[</span>EnvInject<span class="token punctuation">]</span> - Loading <span class="token function">node</span> environment variables.
+Building <span class="token keyword">in</span> workspace /var/jenkins_home/workspace/Test
+<span class="token punctuation">[</span>Test<span class="token punctuation">]</span> $ /bin/sh -xe /tmp/jenkins17925040181999271110.sh
++ <span class="token function">which</span> java
+/var/jenkins_home/tools/hudson.model.JDK/Amazon_Corretto_11/amazon-corretto-11.0.17.8.1-linux-x64/bin/java
++ java --version
+openjdk <span class="token number">11.0</span>.17 <span class="token number">2022</span>-10-18 LTS
+OpenJDK Runtime Environment Corretto-11.0.17.8.1 <span class="token punctuation">(</span>build <span class="token number">11.0</span>.17+8-LTS<span class="token punctuation">)</span>
+OpenJDK <span class="token number">64</span>-Bit Server VM Corretto-11.0.17.8.1 <span class="token punctuation">(</span>build <span class="token number">11.0</span>.17+8-LTS, mixed mode<span class="token punctuation">)</span>
+Finished: SUCCESS</code></pre>
+
+<p>위와 같이 Execute Shell 커맨드를 사용해서 현재 빌드 환경에 대한 자바 버전을 확인해보니 정상적으로 JDK로 지정한 Amazon Corretto 11을 사용중인 것으로 출력되었다. 그리고 파이프라인 프로젝트에서는 어떻게 지정하는지 검색해보니 아래와 같이 문법을 작성한다고 한다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">pipeline <span class="token punctuation">&#123;</span>
+    agent any
+    
+    tools <span class="token punctuation">&#123;</span>
+        jdk <span class="token interpolation-string"><span class="token string">"Amazon Corretto 11"</span></span>
+    <span class="token punctuation">&#125;</span>
+    
+    environment <span class="token punctuation">&#123;</span>
+        JAVA_HOME <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"tool Amazon Corretto 11"</span></span>
+    <span class="token punctuation">&#125;</span>
+
+    stages <span class="token punctuation">&#123;</span>
+        <span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'Java Version'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            steps <span class="token punctuation">&#123;</span>
+                sh <span class="token string">'java -version'</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>프론트엔드 빌드에 사용될 Node 버전을 설치하기 위해서는 NodeJS 플러그인을 설치하면 동일하게 Global Tool Configuration 기능에 NodeJS installations 항목이 추가됩니다.</p>
+</blockquote>
+]]></content>
+  </entry>
+  <entry>
     <title>스프링 부트에서 모든 메시지 코드 가져오기</title>
     <url>/all-message-codes-in-spring-boot/</url>
     <content><![CDATA[<h2 id="ResourceBundleMessageSource"><a href="#ResourceBundleMessageSource" class="headerlink" title="ResourceBundleMessageSource"></a>ResourceBundleMessageSource</h2><p>스프링 부트에서 기본적으로 제공하는 <code>ResourceBundleMessageSource</code>는 메시지에 대한 모든 코드를 가져올 수 있는 기능이 존재하지 않습니다. 예외적으로 ReloadableResourceBundleMessageSource이라는 메시지 소스는 <code>getMergedProperties(Locale locale)</code> 함수를 통해 로케일에 대한 메시지 프로퍼티를 가져올 수 있습니다.</p>
@@ -910,6 +966,75 @@ configuration<span class="token punctuation">.</span><span class="token function
 <p>MultiTemplateLoader의 생성자에 전달되는 템플릿 로더의 순서대로 템플릿을 찾도록 위임한다는 것에 주의해야합니다.</p>
 </blockquote>
 <p>사용자의 요청에 대한 응답을 뷰로 처리하기 위해서 템플릿 엔진을 적용하기도 하지만 이메일 발송과 같은 백그라운드 작업에서도 프리마커 템플릿 엔진을 다양한 방식으로 활용할 수 있다는 것을 알게되었습니다. 프리마커 템플릿을 동적으로 처리하는 방법에 대해서 고민하게 되면서 알아본 내용이지만 많은 분들에게 도움이 되었으면 합니다.</p>
+<p>감사합니다.</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>깃허브 풀 리퀘스트 상태 검사</title>
+    <url>/github-pr-status-checks/</url>
+    <content><![CDATA[<p>현재 회사에서 필요성에 의해 여러가지를 도입하더라도 제대로 활용하지는 않는 결과를 자주 경험했지만 이번에 새롭게 적용하고자하는 것은 풀 리퀘스트에 대한 리뷰 이외에도 코드 변경사항에 대한 상태 검사를 통해서 코드 품질을 유지하고자 하는 것에 있다. 기존에 개발 조직 자체적으로 결정한 코딩 컨벤션 가이드가 존재하지 않았고 단위 테스트 코드를 작성하도록 요구한다거나 정적 분석 도구를 통해서 코드 품질에 대해서 분석하고 리팩토링 하는 과정이 없다보니 개발자 스스로 편한 방식을 사용해서 요건에 의해 소스코드를 추가하거나 수정해왔다.</p>
+<p>페어 프로그래밍을 선호하는 시니어 개발자도 깃허브 코드리뷰에 대해서는 습관화 되어있지 않으므로 브랜치 보호 기능을 통해 리뷰어 승인을 받도록 강제하더라도 상세하게 코드 변경사항을 검토하지 않고 승인만 해버리는 상황이 발생하였다. 사실은 브랜치 보호 기능을 설정한 이유는 긴급하게 동시에 진행되는 여러가지 프로젝트 일정으로 인해 반영되어야하지 않을 항목에 포함됨에 따라 예상하지 못한 결함을 내재한 채로 배포되고 전혀 상관없는 환경에서 문제가 발생하였기 때문이다. 그러나, 브랜치 보호 기능을 통해 리뷰를 하도록 가이드하였으나 바쁜 일정으로 인하여 깃허브 풀 리퀘스트에 대해 리뷰 버튼을 누르고 승인(Approve) 상태로 만들고 머지만 하는 상황이 만들어지곤 했다.</p>
+<blockquote>
+<p>풀 리퀘스트에 대해 제대로 리뷰해야한다고 말했으나 당장 업무를 처리하는데 불편함이 있으므로 받아들여지지 않은게  현재 조직에 대해 지속되는 아쉬움 중 하나이다.</p>
+</blockquote>
+<p>데브옵스에 이어 GitOps가 떠오르던 시기에 확인했던 것은 풀 리퀘스트에 대해 상태 체크를 수행할 수 있도록 설정할 수 있다는 것이었다. 실제로 다음과 같이 대부분의 오픈소스에서는 풀 리퀘스트로 변경되는 부분에 대해서 상태 체크를 수행하도록 깃허브 액션을 통해 워크플로우를 구성해놓은 것을 확인할 수 있다.</p>
+<p><img data-src="/images/posts/github-pr-status-check/01.png"></p>
+<p>풀 리퀘스트 시 코드 상태 검사를 수행하는 것에 대한 이점은 무엇이 있을까? 현재 조직의 기준에서는 제대로 된 코드 리뷰 문화가 갖추어져있지 않기 때문에 기본적인 코드 품질에 대해서는 Checkstyle 또는 ESLint를 수행하여 정적 분석을 수행하고 자동으로 컨벤션을 맞추도록 강제할 수 있다는 것에 있다. 자신만의 코딩 컨벤션이 갖추어지지 않은 신입 개발자들에게는 시니어 개발자들이 리뷰하지 않더라도 컨벤션에 대한 중요성을 인지시키고 가이드할 수 있기 때문이다.</p>
+<h4 id="깃허브-액션"><a href="#깃허브-액션" class="headerlink" title="깃허브 액션"></a>깃허브 액션</h4><p>풀 리퀘스트 시 상태 검사를 수행할 수 있도록 깃허브 액션을 통해 워크플로우를 작성할 수 있다. 많은 개발자들이 공유하여 사용하는 액션들 중에서 상태 검사를 위해 <a href="https://github.com/reviewdog/reviewdog">reviewdog</a>를 기반으로 수행하는 아래의 두가지 워크플로우를 적용해보기로 하였다.</p>
+<ul>
+<li><a href="https://github.com/marketplace/actions/run-java-checkstyle">Run java checkstyle</a></li>
+<li><a href="https://github.com/marketplace/actions/run-eslint-with-reviewdog">Run eslint with reviewdog</a></li>
+</ul>
+<p>조직 내에서 결정한 자바 코딩 컨벤션이 없어도 기본적인 구글 자바 스타일을 통해서 상태 검사를 수행할 수 있으며 프론트엔드 코드에 대해서도 ESLint를 수행하도록 되어있으므로 위 두가지 워크플로우만 수행하더라도 충분히 코드 품질을 향상시키고 유지할 수 있을 것이라 생각된다.</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> PR Checks
+
+<span class="token key atrule">on</span><span class="token punctuation">:</span>
+  <span class="token key atrule">workflow_dispatch</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span>
+    <span class="token key atrule">branches</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> main
+<span class="token key atrule">jobs</span><span class="token punctuation">:</span>
+  <span class="token key atrule">checks</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> Checks
+    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span>latest <span class="token comment"># ubuntu-22.04</span>
+
+    <span class="token key atrule">strategy</span><span class="token punctuation">:</span>
+      <span class="token key atrule">matrix</span><span class="token punctuation">:</span>
+        <span class="token key atrule">java</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span>
+        <span class="token key atrule">node</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span>
+
+    <span class="token key atrule">steps</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/checkout@v2
+
+      <span class="token comment">###########################################</span>
+      <span class="token comment">## Java Checkstyle</span>
+      <span class="token comment">###########################################</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Set up JDK $<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> matrix.Java <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+        <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/setup<span class="token punctuation">-</span>java@v3
+        <span class="token key atrule">with</span><span class="token punctuation">:</span>
+          <span class="token key atrule">distribution</span><span class="token punctuation">:</span> corretto
+          <span class="token key atrule">java-version</span><span class="token punctuation">:</span> $<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> matrix.java <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Run checkstyle
+        <span class="token key atrule">uses</span><span class="token punctuation">:</span> nikitasavinov/checkstyle<span class="token punctuation">-</span>action@master
+        <span class="token key atrule">with</span><span class="token punctuation">:</span>
+          <span class="token key atrule">github_token</span><span class="token punctuation">:</span> $<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> secrets.GITHUB_TOKEN <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+          <span class="token key atrule">reporter</span><span class="token punctuation">:</span> github<span class="token punctuation">-</span>pr<span class="token punctuation">-</span>check
+          <span class="token key atrule">tool_name</span><span class="token punctuation">:</span> <span class="token string">'reviewdog'</span>
+
+      <span class="token comment">###########################################</span>
+      <span class="token comment">## Node ESLint</span>
+      <span class="token comment">###########################################</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Setup Node.js $<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> matrix.node <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+        <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/setup<span class="token punctuation">-</span>node@v2
+        <span class="token key atrule">with</span><span class="token punctuation">:</span>
+          <span class="token key atrule">node-version</span><span class="token punctuation">:</span> $<span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> matrix.node <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> npm install
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Run eslint
+        <span class="token key atrule">uses</span><span class="token punctuation">:</span> reviewdog/action<span class="token punctuation">-</span>eslint@v1
+        <span class="token key atrule">with</span><span class="token punctuation">:</span>
+          <span class="token key atrule">reporter</span><span class="token punctuation">:</span> github<span class="token punctuation">-</span>check
+          <span class="token key atrule">eslint_flags</span><span class="token punctuation">:</span> <span class="token string">'--ext .js,.vue ./src/main/resources/static/js'</span></code></pre>
+
 <p>감사합니다.</p>
 ]]></content>
   </entry>

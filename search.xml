@@ -1897,6 +1897,26 @@ swap=0</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>리눅스 웹 콘솔</title>
+    <url>/linux-web-console/</url>
+    <content><![CDATA[<p>AWS에서는 웹 콘솔을 통해서 EC2에 연결할 수 있는 다양한 방법을 제공한다. 그러나, 개인적인 학습을 위해서 Oracle VM VirtualBox를 사용해서 우분투와 같은 리눅스에 대한 VM 머신을 실행하면 윈도우 터미널을 통해 SSH 접속을 수행해야한다. 알고보니 리눅스 서버에 웹 콘솔 기능을 제공하는 <a href="https://cockpit-project.org/">Cockpit</a> 패키지가 있었음을 이제야 확인했다.</p>
+<h4 id="Cockpit-패키지-추가"><a href="#Cockpit-패키지-추가" class="headerlink" title="Cockpit 패키지 추가"></a>Cockpit 패키지 추가</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Ubuntu</span>
+<span class="token function">sudo</span> <span class="token function">apt</span> update -y
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> -y cockpit
+
+<span class="token comment"># CentOS</span>
+<span class="token function">sudo</span> dnf update -y
+<span class="token function">sudo</span> dnf <span class="token function">install</span> -y cockpit</code></pre>
+
+<h4 id="Cockpit-서비스-실행"><a href="#Cockpit-서비스-실행" class="headerlink" title="Cockpit 서비스 실행"></a>Cockpit 서비스 실행</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> systemctl start cockpit
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> --now cockpit.socket</code></pre>
+
+<p>이제 https:&#x2F;&#x2F;사설IP:9090 으로 접속하면 리눅스 웹 콘솔이 표시된다.</p>
+<p><img data-src="https://file.okky.kr/images/1674996458378.png"></p>
+<p>SSH 접속 명령어를 학습해야할 상황이 아니라면 웹 콘솔을 통해서 리눅스 명령어를 수행해볼 수 있게 되었다.</p>
+]]></content>
+  </entry>
+  <entry>
     <title>부하 및 성능 테스트는 어떻게 하는거지?</title>
     <url>/load-testing/</url>
     <content><![CDATA[<p>오래전 컴퓨터공학 전공의 졸업 요건으로써 취득하고 잊은지 오래된 정보처리기사에서는 소프트웨어 테스트 부분에서 부하, 성능, 스트레스 등 다양한 테스트에 대한 개념에 대해서 설명합니다. 작은 규모의 조직에서 개발자로써 일하면서 해오지 않았던 것 중에는 지속적으로 만들어가고 있는 제품에 대한 부하 및 성능 테스트를 수행해보지 않았다는 것입니다. 최근에 발생하였던 시스템 장애 혹은 이슈들은 조직 차원에서 모든 개발자들에게 부하 및 성능 테스트를 수행할 수 있도록 가이드하거나 성능 테스트를 수행하고나서 기본적인 지표를 정리해두었다면 미리 취약점을 발견하거나 원인을 빠르게 찾아갈 수 있는 정보가 되어 생각보다 더 빠르게 대응이 가능했을 지 모릅니다.</p>

@@ -222,7 +222,7 @@ lazyload: true
 
 google_analytics:
     tracking_id: G-V8LF04VMBF
-    only_pageview: true
+    only_pageview: false
 
 busuanzi_count:
     enable: false

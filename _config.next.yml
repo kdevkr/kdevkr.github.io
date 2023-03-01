@@ -221,7 +221,7 @@ mediumzoom: true
 lazyload: true
 
 google_analytics:
-    tracking_id: UA-93954323-1
+    tracking_id: G-V8LF04VMBF
     only_pageview: true
 
 busuanzi_count:

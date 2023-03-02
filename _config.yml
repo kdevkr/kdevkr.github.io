@@ -28,7 +28,7 @@ default_layout: post
 render_drafts: false
 titlecase: true
 external_link:
-  enable: true
+    enable: true
 post_asset_folder: true
 future: false
 
@@ -46,91 +46,91 @@ per_page: 10
 pagination_dir: page
 
 deploy:
-  type: git
-  repo: https://__GITHUB_TOKEN__@github.com/kdevkr/kdevkr.github.io.git
-  branch: main
+    type: git
+    repo: https://__GITHUB_TOKEN__@github.com/kdevkr/kdevkr.github.io.git
+    branch: main
 
 article_emoji:
-  full: true
+    full: true
 
 browsersync:
-  port: 14000
-  ui: false
+    port: 14000
+    ui: false
 
 # https://futurecreator.github.io/2016/06/23/search-engine-optimization-hexo-plugins/
 nofollow:
-  enable: true
+    enable: true
 
 sitemap:
-  path: sitemap.xml
-  tag: false
-  category: false
+    path: sitemap.xml
+    tag: false
+    category: false
 
 markdown: "default"
 
 highlight:
-  enable: false
-  line_number: false
-  wrap: true
-  hljs: false
+    enable: false
+    line_number: false
+    wrap: true
+    hljs: false
 
 prismjs:
-  enable: true
-  preprocess: true
-  line_number: false
-  tab_replace: ""
+    enable: true
+    preprocess: true
+    line_number: false
+    tab_replace: ""
 
 index_generator:
-  path: ""
-  per_page: 1
-  order_by: -date
+    path: ""
+    per_page: 1
+    order_by: -date
 
 category_generator:
-  per_page: 10
+    per_page: 10
 
 archive_generator:
-  enabled: false
-  per_page: 10
-  yearly: true
-  monthly: true
-  daily: true
-  order_by: -date
+    enabled: true
+    per_page: 10
+    yearly: true
+    monthly: true
+    daily: true
+    order_by: -date
 
 tag_generator:
-  per_page: 10
-  order_by: -date
+    per_page: 10
+    order_by: -date
 
 theme: next
 theme_config:
-  # ---------------------------------------------------------------
-  # Menu Settings
-  # ---------------------------------------------------------------
-  menu:
-    home: / || fas fa-home
-    archives: /archives/ || fas fa-archive
-    about: /about/ || fas fa-user
+    # ---------------------------------------------------------------
+    # Menu Settings
+    # ---------------------------------------------------------------
+    menu:
+        home: / || fas fa-home
+        archives: /archives/ || fas fa-archive
+        about: /about/ || fas fa-user
 
-  google_site_verification: LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg
-  naver_site_verification: 967670e7891eb52e115709ce4890e2e8f576a1e5
-  google_adsense:
-    client_id: ca-pub-9304279418886145
+    google_site_verification: LMcddVW6xLBS7X1htGQ3duOIEmVp4ljku8sd3UuIcBg
+    naver_site_verification: 967670e7891eb52e115709ce4890e2e8f576a1e5
+    google_adsense:
+        client_id: ca-pub-9304279418886145
 
 # Darkmode JS
 # For more information: https://github.com/rqh656418510/hexo-next-darkmode, https://github.com/sandoche/Darkmode.js
 darkmode_js:
-  enable: true
-  bottom: "unset" # default: '32px'
-  right: "15px" # default: '32px'
-  left: "unset" # default: 'unset'
-  time: "0.5s" # default: '0.3s'
-  mixColor: "transparent" # default: '#fff'
-  backgroundColor: "transparent" # default: '#fff'
-  buttonColorDark: "#100f2c" # default: '#100f2c'
-  buttonColorLight: "#fff" # default: '#fff'
-  isActivated: false # default false
-  saveInCookies: true # default: true
-  label: "🌗" # default: ''
-  autoMatchOsTheme: true # default: true
-  libUrl: # Set custom library cdn url for Darkmode.js
+    enable: true
+    bottom: "unset" # default: '32px'
+    right: "15px" # default: '32px'
+    left: "unset" # default: 'unset'
+    time: "0.5s" # default: '0.3s'
+    mixColor: "transparent" # default: '#fff'
+    backgroundColor: "transparent" # default: '#fff'
+    buttonColorDark: "#100f2c" # default: '#100f2c'
+    buttonColorLight: "#fff" # default: '#fff'
+    isActivated: false # default false
+    saveInCookies: true # default: true
+    label: "🌗" # default: ''
+    autoMatchOsTheme: true # default: true
+    libUrl: # Set custom library cdn url for Darkmode.js
 
 all_minifier: true

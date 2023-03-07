@@ -59,19 +59,27 @@ Finished: SUCCESS</code></pre>
   <entry>
     <title>스프링 부트에서 모든 메시지 코드 가져오기</title>
     <url>/all-message-codes-in-spring-boot/</url>
-    <content><![CDATA[<h2 id="ResourceBundleMessageSource"><a href="#ResourceBundleMessageSource" class="headerlink" title="ResourceBundleMessageSource"></a>ResourceBundleMessageSource</h2><p>스프링 부트에서 기본적으로 제공하는 <code>ResourceBundleMessageSource</code>는 메시지에 대한 모든 코드를 가져올 수 있는 기능이 존재하지 않습니다. 예외적으로 ReloadableResourceBundleMessageSource이라는 메시지 소스는 <code>getMergedProperties(Locale locale)</code> 함수를 통해 로케일에 대한 메시지 프로퍼티를 가져올 수 있습니다.</p>
-<h2 id="ReloadableResourceBundleMessageSource"><a href="#ReloadableResourceBundleMessageSource" class="headerlink" title="ReloadableResourceBundleMessageSource"></a>ReloadableResourceBundleMessageSource</h2><p>하지만, getMergedProperties 함수는 접근제어자가 protected이므로 <code>ReloadableResourceBundleMessageSource</code>를 확장하는 클래스를 만들어야합니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ExtendReloadableResourceBundleMessageSource</span> <span class="token keyword">extends</span> <span class="token class-name">ReloadableResourceBundleMessageSource</span> <span class="token punctuation">&#123;</span>
+    <content><![CDATA[<blockquote>
+<p>관련 코드:<br><a href="https://github.com/kdevkr/spring-demo/commit/aed02f456d13316aee257aaa04eda49a52e07320">https://github.com/kdevkr/spring-demo/commit/aed02f456d13316aee257aaa04eda49a52e07320</a></p>
+</blockquote>
+<p>스프링 부트에서 자동 구성에 의해 제공하는 ResourceBundleMessageSource는 특정 로케일에 대한 모든 메시지 코드를 가져오는 함수를 지원하지 않는다. 그러나, ReloadableResourceBundleMessageSource는 프로퍼티 뿐만 아니라 XML 파일로 되어있는 메시지 번들을 불러와서 메시지 소스를 구성할 수 있게 지원하며 getMergedProperties(Locale locale) 함수를 통해서 특정 로케일에 대한 메시지 프로퍼티를 가져오는 것을 확인할 수 있다. 다만, getMergedProperties 함수의 접근 제어자가 protected 인 관계로 ReloadableResourceBundleMessageSource에 대한 인스턴스를 생성해도 호출할 수 없다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">protected</span> <span class="token class-name">PropertiesHolder</span> <span class="token function">getMergedProperties</span><span class="token punctuation">(</span><span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">PropertiesHolder</span> mergedHolder <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>cachedMergedProperties<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mergedHolder <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> mergedHolder<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="CustomResourceBundleMessageSource"><a href="#CustomResourceBundleMessageSource" class="headerlink" title="CustomResourceBundleMessageSource"></a>CustomResourceBundleMessageSource</h4><p>ReloadableResourceBundleMessageSource의 getMergedProperties 함수를 호출하기 위하여 확장 클래스를 만들어야한다. 앞서 이야기했듯이 접근제어자가 protected 이므로 특정 로케일을 가지는 프로퍼티를 조회하는 함수를 작성할 수 있다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CustomResourceBundleMessageSource</span> <span class="token keyword">extends</span> <span class="token class-name">ReloadableResourceBundleMessageSource</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">public</span> <span class="token class-name">Properties</span> <span class="token function">getMessages</span><span class="token punctuation">(</span><span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
         <span class="token keyword">return</span> <span class="token function">getMergedProperties</span><span class="token punctuation">(</span>locale<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h2 id="MessageSource-Configuration"><a href="#MessageSource-Configuration" class="headerlink" title="MessageSource Configuration"></a>MessageSource Configuration</h2><p>구성 메타 클래스를 만들어 ExtendReloadableResourceBundleMessageSource를 메시지 소스로 등록합니다. 애플리케이션 컨텍스트에 <code>messageSource</code> 빈이 존재하는 경우 <code>MessageSourceAutoConfiguration</code>은 적용되지 않습니다.</p>
-<p>따라서, 다음과 같이 <code>MessageSourceProperties</code>도 등록되도록 합니다.</p>
+<h4 id="MessageConfiguration"><a href="#MessageConfiguration" class="headerlink" title="MessageConfiguration"></a>MessageConfiguration</h4><p>그리고 이제 스프링 부트의 자동 구성에 의해 추가되는 메시지 소스가 아니라 CustomResourceBundleMessageSource가 애플리케이션 컨텍스트에 등록될 수 있도록 구성 클래스를 추가해야한다. 스프링 부트에 의해 자동 구성되어지는 MessageSourceAutoConfiguration는 messageSource라는 이름의 빈이 등록되지 않는 경우에 활성화 되도록 되어있으므로 messageSource를 빈으로 등록하면 된다.</p>
 <pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
-<span class="token annotation punctuation">@EnableConfigurationProperties</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MessageSourceConfig</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MessageConfiguration</span> <span class="token punctuation">&#123;</span>
 
     <span class="token annotation punctuation">@Bean</span>
     <span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"spring.messages"</span><span class="token punctuation">)</span>
@@ -80,8 +88,8 @@ Finished: SUCCESS</code></pre>
     <span class="token punctuation">&#125;</span>
 
     <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> <span class="token class-name">MessageSource</span> <span class="token function">messageSource</span><span class="token punctuation">(</span><span class="token class-name">MessageSourceProperties</span> properties<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">ExtendReloadableResourceBundleMessageSource</span> messageSource <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExtendReloadableResourceBundleMessageSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token class-name">MessageSource</span> <span class="token function">messageSource</span><span class="token punctuation">(</span><span class="token class-name">MessageSourceProperties</span> properties<span class="token punctuation">,</span> <span class="token class-name">ResourceLoader</span> resourceLoader<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">CustomResourceBundleMessageSource</span> messageSource <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CustomResourceBundleMessageSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">StringUtils</span><span class="token punctuation">.</span><span class="token function">hasText</span><span class="token punctuation">(</span>properties<span class="token punctuation">.</span><span class="token function">getBasename</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
             messageSource<span class="token punctuation">.</span><span class="token function">setBasenames</span><span class="token punctuation">(</span><span class="token class-name">StringUtils</span>
                     <span class="token punctuation">.</span><span class="token function">commaDelimitedListToStringArray</span><span class="token punctuation">(</span><span class="token class-name">StringUtils</span><span class="token punctuation">.</span><span class="token function">trimAllWhitespace</span><span class="token punctuation">(</span>properties<span class="token punctuation">.</span><span class="token function">getBasename</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -96,19 +104,17 @@ Finished: SUCCESS</code></pre>
         <span class="token punctuation">&#125;</span>
         messageSource<span class="token punctuation">.</span><span class="token function">setAlwaysUseMessageFormat</span><span class="token punctuation">(</span>properties<span class="token punctuation">.</span><span class="token function">isAlwaysUseMessageFormat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         messageSource<span class="token punctuation">.</span><span class="token function">setUseCodeAsDefaultMessage</span><span class="token punctuation">(</span>properties<span class="token punctuation">.</span><span class="token function">isUseCodeAsDefaultMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        messageSource<span class="token punctuation">.</span><span class="token function">setResourceLoader</span><span class="token punctuation">(</span>resourceLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token keyword">return</span> messageSource<span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
+<h4 id="spring-messages-basename"><a href="#spring-messages-basename" class="headerlink" title="spring.messages.basename"></a>spring.messages.basename</h4><p>ReloadableResourceBundleMessageSource를 확장하는 클래스를 만들었지만 스프링 부트의 기본 spring.messages.basename 값인 messages 로는 메시지 프로퍼티를 가져올 수 없다. 기본적으로 사용되는 리소스 로더가 DefaultResourceLoader 이므로 리소스 여부를 확인할 때 메시지 파일을 올바르게 찾을 수 없다. 따라서, spring.messages.basename에 클래스패스를 포함하여 명시해야 한다.</p>
+<pre class="language-properties" data-language="properties"><code class="language-properties"><span class="token key attr-name">spring.messages.basename</span><span class="token punctuation">=</span><span class="token value attr-value">classpath:i18n/messages</span></code></pre>
 
-<h3 id="spring-messages-basename"><a href="#spring-messages-basename" class="headerlink" title="spring.messages.basename"></a>spring.messages.basename</h3><p>ReloadableResourceBundleMessageSource를 확장하는 클래스를 만들었지만 스프링 부트의 기본 <code>spring.messages.basename</code> 값인 <code>messages</code>으로 메시지 프로퍼티를 가져올 수 없습니다.</p>
-<p>ReloadableResourceBundleMessageSource에서 사용중인 ResourceLoader가 DefaultResourceLoader이므로 클래스패스에 위치한 <code>messages.properties</code>을 리소스로 가져오지 못합니다.</p>
-<p>따라서, spring.messages.basename에 클래스패스를 포함하여 명시합니다.</p>
-<pre class="language-properties" data-language="properties"><code class="language-properties"><span class="token key attr-name">spring.messages.basename</span><span class="token punctuation">=</span><span class="token value attr-value">classpath:/messages</span></code></pre>
-
-<h2 id="Messages-API"><a href="#Messages-API" class="headerlink" title="Messages API"></a>Messages API</h2><p>이제 ExtendReloadableResourceBundleMessageSource를 통해 메시지 정보를 가져올 수 있게 되고 API로도 제공하여 프론트엔드 클라이언트에서도 동일한 메시지 코드를 활용할 수 있습니다.</p>
+<h4 id="Messages-API"><a href="#Messages-API" class="headerlink" title="Messages API"></a>Messages API</h4><p>메시지 소스가 CustomResourceBundleMessageSource로 등록되어있으므로 메시지 코드를 제공하는 API를 만들어서 프론트엔드 애플리케이션에서도 동일한 메시지를 활용할 수 있게 제공할 수 있다.</p>
 <pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/messages"</span><span class="token punctuation">)</span>
 <span class="token keyword">public</span> <span class="token class-name">ResponseEntity</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Object</span><span class="token punctuation">></span></span> <span class="token function">messages</span><span class="token punctuation">(</span><span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">ExtendReloadableResourceBundleMessageSource</span> messageSource <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ExtendReloadableResourceBundleMessageSource</span><span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>messageSource<span class="token punctuation">;</span>
+    <span class="token class-name">CustomResourceBundleMessageSource</span> messageSource <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">CustomResourceBundleMessageSource</span><span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>messageSource<span class="token punctuation">;</span>
     <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> messages <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token class-name">Properties</span> allMessages <span class="token operator">=</span> messageSource<span class="token punctuation">.</span><span class="token function">getMessages</span><span class="token punctuation">(</span>locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -122,10 +128,7 @@ Finished: SUCCESS</code></pre>
     <span class="token punctuation">&#125;</span>
 
     <span class="token keyword">return</span> <span class="token class-name">ResponseEntity</span><span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>감사합니다.</p>
-]]></content>
+<span class="token punctuation">&#125;</span></code></pre>]]></content>
       <tags>
         <tag>Spring Boot</tag>
         <tag>Message Source</tag>

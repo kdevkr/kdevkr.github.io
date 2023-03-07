@@ -39,16 +39,16 @@
     "hexo-generator-tag": "^2.0.0",
     "hexo-next-darkmode": "^0.1.9",
     "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
-    "hexo-renderer-markdown-it": "^7.0.0",
-    "hexo-renderer-marked": "^6.0.0",
+    "hexo-renderer-markdown-it": "^6.1.0",
+    "hexo-renderer-marked": "^5.0.0",
     "hexo-renderer-stylus": "^2.1.0",
     "hexo-server": "^3.0.0",
     "hexo-theme-next": "^8.13.2",
     "hexo-util": "^2.6.1",
-    "highlight.js": "^10.7.3",
+    "highlight.js": "^11.7.0",
     "markdown-it-named-headings": "^1.1.0",
     "prism-themes": "^1.9.0",
-    "prismjs": "^1.28.0"
+    "prismjs": "^1.29.0"
   },
   "devDependencies": {
     "shelljs": "^0.8.5"

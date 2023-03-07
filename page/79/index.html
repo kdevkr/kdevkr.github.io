@@ -6,271 +6,271 @@
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[로그인]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[Login]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre><h3 id="커스텀-리소스-번들"><a href="#커스텀-리소스-번들" class="headerlink" title="커스텀 리소스 번들"></a>커스텀 리소스 번들</h3><p>프로퍼티 파일 대신에 XML로 메시지 소스를 만들기 위해서는 리소스 번들부터 만들어야합니다. ResourceBundle 클래스의 getBundle 함수를 사용해서 XML 파일을 읽어 리소스 번들로 변환할 수 있습니다. 리소스 번들로 메시지 소스를 만드는 구조는 <a target="_blank" rel="noopener" href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a>에서 확인할 수 있습니다.</p><h4 id="XmlResourceBundle"><a href="#XmlResourceBundle" class="headerlink" title="XmlResourceBundle"></a>XmlResourceBundle</h4><p>그러나 앞서 알아본 다국어 메시지에 대한 XML 파일은 프로퍼티 구조를 따르지 않습니다. 그래서 <strong>Properties.loadFromXML</strong> 함수를 통해 XML을 프로퍼티 기준으로 읽으면 안됩니다. 다음처럼 XML 구성에 따라서 메시지 정보를 만들어야합니다.</p><pre class="language-java" data-language="java"><code class="language-java">import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre><h3 id="커스텀-리소스-번들"><a href="#커스텀-리소스-번들" class="headerlink" title="커스텀 리소스 번들"></a>커스텀 리소스 번들</h3><p>프로퍼티 파일 대신에 XML로 메시지 소스를 만들기 위해서는 리소스 번들부터 만들어야합니다. ResourceBundle 클래스의 getBundle 함수를 사용해서 XML 파일을 읽어 리소스 번들로 변환할 수 있습니다. 리소스 번들로 메시지 소스를 만드는 구조는 <a target="_blank" rel="noopener" href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a>에서 확인할 수 있습니다.</p><h4 id="XmlResourceBundle"><a href="#XmlResourceBundle" class="headerlink" title="XmlResourceBundle"></a>XmlResourceBundle</h4><p>그러나 앞서 알아본 다국어 메시지에 대한 XML 파일은 프로퍼티 구조를 따르지 않습니다. 그래서 <strong>Properties.loadFromXML</strong> 함수를 통해 XML을 프로퍼티 기준으로 읽으면 안됩니다. 다음처럼 XML 구성에 따라서 메시지 정보를 만들어야합니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>w3c<span class="token punctuation">.</span>dom<span class="token punctuation">.</span></span><span class="token class-name">Document</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>w3c<span class="token punctuation">.</span>dom<span class="token punctuation">.</span></span><span class="token class-name">Element</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>w3c<span class="token punctuation">.</span>dom<span class="token punctuation">.</span></span><span class="token class-name">Node</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>w3c<span class="token punctuation">.</span>dom<span class="token punctuation">.</span></span><span class="token class-name">NodeList</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>sax<span class="token punctuation">.</span></span><span class="token class-name">SAXException</span></span><span class="token punctuation">;</span>
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>parsers<span class="token punctuation">.</span></span><span class="token class-name">DocumentBuilder</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>parsers<span class="token punctuation">.</span></span><span class="token class-name">DocumentBuilderFactory</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>parsers<span class="token punctuation">.</span></span><span class="token class-name">ParserConfigurationException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStream</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
 
-public class XmlResourceBundle extends ResourceBundle &#123;
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">XmlResourceBundle</span> <span class="token keyword">extends</span> <span class="token class-name">ResourceBundle</span> <span class="token punctuation">&#123;</span>
 
-    private Map&lt;String, Map&lt;String, String&gt;&gt; messages;
-    private Locale i18n;
+    <span class="token keyword">private</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Map</span><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span><span class="token punctuation">></span></span> messages<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Locale</span> i18n<span class="token punctuation">;</span>
 
-    public XmlResourceBundle(InputStream is, Locale i18n) throws IOException, ParserConfigurationException, SAXException &#123;
-        try (is) &#123;
-            this.i18n &#x3D; i18n;
-            messages &#x3D; new HashMap&lt;&gt;();
+    <span class="token keyword">public</span> <span class="token class-name">XmlResourceBundle</span><span class="token punctuation">(</span><span class="token class-name">InputStream</span> is<span class="token punctuation">,</span> <span class="token class-name">Locale</span> i18n<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ParserConfigurationException</span><span class="token punctuation">,</span> <span class="token class-name">SAXException</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">(</span>is<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span>i18n <span class="token operator">=</span> i18n<span class="token punctuation">;</span>
+            messages <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            DocumentBuilderFactory factory &#x3D; DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder &#x3D; factory.newDocumentBuilder();
-            Document doc &#x3D; builder.parse(is);
-            doc.getDocumentElement().normalize();
+            <span class="token class-name">DocumentBuilderFactory</span> factory <span class="token operator">=</span> <span class="token class-name">DocumentBuilderFactory</span><span class="token punctuation">.</span><span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">DocumentBuilder</span> builder <span class="token operator">=</span> factory<span class="token punctuation">.</span><span class="token function">newDocumentBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Document</span> doc <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>is<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            doc<span class="token punctuation">.</span><span class="token function">getDocumentElement</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">normalize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            NodeList entries &#x3D; doc.getElementsByTagName(&quot;entry&quot;);
+            <span class="token class-name">NodeList</span> entries <span class="token operator">=</span> doc<span class="token punctuation">.</span><span class="token function">getElementsByTagName</span><span class="token punctuation">(</span><span class="token string">"entry"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            for (int i &#x3D; 0; i &lt; entries.getLength(); i++) &#123;
-                Element entry &#x3D; (Element) entries.item(i);
-                String key &#x3D; entry.getAttribute(&quot;key&quot;);
-                NodeList childNodes &#x3D; entry.getChildNodes();
-                for (int j &#x3D; 0; j &lt; childNodes.getLength(); j++) &#123;
-                    Node n &#x3D; childNodes.item(j);
-                    if (n.getNodeType() &#x3D;&#x3D; Node.ELEMENT_NODE) &#123;
-                        String locale &#x3D; n.getNodeName();
-                        String message &#x3D; n.getTextContent();
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> entries<span class="token punctuation">.</span><span class="token function">getLength</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">Element</span> entry <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Element</span><span class="token punctuation">)</span> entries<span class="token punctuation">.</span><span class="token function">item</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token class-name">String</span> key <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span><span class="token string">"key"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token class-name">NodeList</span> childNodes <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getChildNodes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> childNodes<span class="token punctuation">.</span><span class="token function">getLength</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">Node</span> n <span class="token operator">=</span> childNodes<span class="token punctuation">.</span><span class="token function">item</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>n<span class="token punctuation">.</span><span class="token function">getNodeType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token class-name">Node</span><span class="token punctuation">.</span><span class="token constant">ELEMENT_NODE</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token class-name">String</span> locale <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">getNodeName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token class-name">String</span> message <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">getTextContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-                        if (!messages.containsKey(locale)) &#123;
-                            messages.put(locale, new HashMap&lt;&gt;());
-                        &#125;
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>messages<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>locale<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            messages<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>locale<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span>
 
-                        messages.get(locale).put(key, message);
-                    &#125;
-                &#125;
-            &#125;
-        &#125;
-    &#125;
+                        messages<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>locale<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    @Override
-    protected Object handleGetObject(String key) &#123;
-        return messages.get(i18n).get(key);
-    &#125;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token class-name">Object</span> <span class="token function">handleGetObject</span><span class="token punctuation">(</span><span class="token class-name">String</span> key<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> messages<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>i18n<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    @Override
-    public Enumeration&lt;String&gt; getKeys() &#123;
-        Set&lt;String&gt; handleKeys &#x3D; messages.keySet();
-        return Collections.enumeration(handleKeys);
-    &#125;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Enumeration</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">getKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> handleKeys <span class="token operator">=</span> messages<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token class-name">Collections</span><span class="token punctuation">.</span><span class="token function">enumeration</span><span class="token punctuation">(</span>handleKeys<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public void setLocale(Locale locale) &#123;
-        this.i18n &#x3D; locale;
-    &#125;
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setLocale</span><span class="token punctuation">(</span><span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>i18n <span class="token operator">=</span> locale<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public Map&lt;String, Map&lt;String, String&gt;&gt; getMessages() &#123;
-        return messages;
-    &#125;
+    <span class="token keyword">public</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Map</span><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span><span class="token punctuation">></span></span> <span class="token function">getMessages</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> messages<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public Map&lt;String, String&gt; getMessages(Locale locale) &#123;
-        return messages.get(locale.toString());
-    &#125;
-&#125;</code></pre><blockquote><p>기존의 handleGetObject 함수는 키 파라미터만 받도록 되어있기 때문에 메시지를 가져올 경우에 언어를 지정할 수 없으므로 리소스 번들을 생성하는 시점에 언어를 지정할 수 있게 하였습니다.</p></blockquote><h4 id="XmlResourceBundleLoader"><a href="#XmlResourceBundleLoader" class="headerlink" title="XmlResourceBundleLoader"></a>XmlResourceBundleLoader</h4><p>XmlResourceBundle를 로드하기 위한 클래스를 만들기 위해서 <a target="_blank" rel="noopener" href="http://www.java2s.com/Tutorial/Java/0220__I18N/XMLresourcebundle.htm">The Strings.xml Resource Bundle</a>을 참고하여 코드를 작성합니다.</p><pre class="language-java" data-language="java"><code class="language-java">import lombok.extern.slf4j.Slf4j;
-import org.xml.sax.SAXException;
+    <span class="token keyword">public</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">getMessages</span><span class="token punctuation">(</span><span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> messages<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>기존의 handleGetObject 함수는 키 파라미터만 받도록 되어있기 때문에 메시지를 가져올 경우에 언어를 지정할 수 없으므로 리소스 번들을 생성하는 시점에 언어를 지정할 수 있게 하였습니다.</p></blockquote><h4 id="XmlResourceBundleLoader"><a href="#XmlResourceBundleLoader" class="headerlink" title="XmlResourceBundleLoader"></a>XmlResourceBundleLoader</h4><p>XmlResourceBundle를 로드하기 위한 클래스를 만들기 위해서 <a target="_blank" rel="noopener" href="http://www.java2s.com/Tutorial/Java/0220__I18N/XMLresourcebundle.htm">The Strings.xml Resource Bundle</a>을 참고하여 코드를 작성합니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span>extern<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">Slf4j</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>sax<span class="token punctuation">.</span></span><span class="token class-name">SAXException</span></span><span class="token punctuation">;</span>
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>parsers<span class="token punctuation">.</span></span><span class="token class-name">ParserConfigurationException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">BufferedInputStream</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">InputStream</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>net<span class="token punctuation">.</span></span><span class="token class-name">URL</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>net<span class="token punctuation">.</span></span><span class="token class-name">URLConnection</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Collections</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">List</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Locale</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">ResourceBundle</span></span><span class="token punctuation">;</span>
 
-@Slf4j
-public class XmlResourceBundleLoader extends ResourceBundle.Control &#123;
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">XmlResourceBundleLoader</span> <span class="token keyword">extends</span> <span class="token class-name">ResourceBundle<span class="token punctuation">.</span>Control</span> <span class="token punctuation">&#123;</span>
 
-    private static final List&lt;String&gt; formats &#x3D; Collections.singletonList(&quot;xml&quot;);
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> formats <span class="token operator">=</span> <span class="token class-name">Collections</span><span class="token punctuation">.</span><span class="token function">singletonList</span><span class="token punctuation">(</span><span class="token string">"xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    @Override
-    public List&lt;String&gt; getFormats(String baseName) &#123;
-        return formats;
-    &#125;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">getFormats</span><span class="token punctuation">(</span><span class="token class-name">String</span> baseName<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> formats<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    @Override
-    public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException, InstantiationException, IOException &#123;
-        ResourceBundle resourceBundle &#x3D; null;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">ResourceBundle</span> <span class="token function">newBundle</span><span class="token punctuation">(</span><span class="token class-name">String</span> baseName<span class="token punctuation">,</span> <span class="token class-name">Locale</span> locale<span class="token punctuation">,</span> <span class="token class-name">String</span> format<span class="token punctuation">,</span> <span class="token class-name">ClassLoader</span> loader<span class="token punctuation">,</span> <span class="token keyword">boolean</span> reload<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IllegalAccessException</span><span class="token punctuation">,</span> <span class="token class-name">InstantiationException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ResourceBundle</span> resourceBundle <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
 
-        String bundleName &#x3D; toBundleName(baseName, locale);
-        String resourceName &#x3D; toResourceName(bundleName, format);
+        <span class="token class-name">String</span> bundleName <span class="token operator">=</span> <span class="token function">toBundleName</span><span class="token punctuation">(</span>baseName<span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">String</span> resourceName <span class="token operator">=</span> <span class="token function">toResourceName</span><span class="token punctuation">(</span>bundleName<span class="token punctuation">,</span> format<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        URL url &#x3D; loader.getResource(resourceName);
-        if (url &#x3D;&#x3D; null) &#123;
-            return null;
-        &#125;
+        <span class="token class-name">URL</span> url <span class="token operator">=</span> loader<span class="token punctuation">.</span><span class="token function">getResource</span><span class="token punctuation">(</span>resourceName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>url <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
 
-        URLConnection connection &#x3D; url.openConnection();
-        if (connection &#x3D;&#x3D; null) &#123;
-            return null;
-        &#125;
-        if (reload) &#123;
-            connection.setUseCaches(false);
-        &#125;
-        InputStream stream &#x3D; connection.getInputStream();
-        if (stream &#x3D;&#x3D; null) &#123;
-            return null;
-        &#125;
-        try (BufferedInputStream bis &#x3D; new BufferedInputStream(stream)) &#123;
-            if (locale &#x3D;&#x3D; Locale.ROOT) &#123;
-                locale &#x3D; Locale.getDefault();
-            &#125;
-            resourceBundle &#x3D; new XmlResourceBundle(bis, locale);
-        &#125; catch (SAXException | ParserConfigurationException e) &#123;
-            log.error(e.getMessage());
-        &#125;
+        <span class="token class-name">URLConnection</span> connection <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">openConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>connection <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>reload<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            connection<span class="token punctuation">.</span><span class="token function">setUseCaches</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token class-name">InputStream</span> stream <span class="token operator">=</span> connection<span class="token punctuation">.</span><span class="token function">getInputStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>stream <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">(</span><span class="token class-name">BufferedInputStream</span> bis <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BufferedInputStream</span><span class="token punctuation">(</span>stream<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>locale <span class="token operator">==</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token constant">ROOT</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token function">getDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            resourceBundle <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XmlResourceBundle</span><span class="token punctuation">(</span>bis<span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">SAXException</span> <span class="token operator">|</span> <span class="token class-name">ParserConfigurationException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
 
-        return resourceBundle;
-    &#125;
-&#125;</code></pre><h3 id="메시지-소스"><a href="#메시지-소스" class="headerlink" title="메시지 소스"></a>메시지 소스</h3><p>준비된 리소스 번들을 사용하기 위해서 메시지 소스로 변환해야합니다. 사용자 정의 메시지 소스를 만들기 위해서는 <strong>AbstractMessageSource</strong>를 상속하면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">package com.example.springboot.i18n;
+        <span class="token keyword">return</span> resourceBundle<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><h3 id="메시지-소스"><a href="#메시지-소스" class="headerlink" title="메시지 소스"></a>메시지 소스</h3><p>준비된 리소스 번들을 사용하기 위해서 메시지 소스로 변환해야합니다. 사용자 정의 메시지 소스를 만들기 위해서는 <strong>AbstractMessageSource</strong>를 상속하면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">com<span class="token punctuation">.</span>example<span class="token punctuation">.</span>springboot<span class="token punctuation">.</span>i18n</span><span class="token punctuation">;</span>
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.AbstractMessageSource;
-import org.springframework.stereotype.Component;
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">lombok<span class="token punctuation">.</span>extern<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span></span><span class="token class-name">Slf4j</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Autowired</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span></span><span class="token class-name">NoSuchMessageException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>i18n<span class="token punctuation">.</span></span><span class="token class-name">LocaleContextHolder</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>support<span class="token punctuation">.</span></span><span class="token class-name">AbstractMessageSource</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span></span><span class="token class-name">Component</span></span><span class="token punctuation">;</span>
 
-import java.text.MessageFormat;
-import java.util.*;
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>text<span class="token punctuation">.</span></span><span class="token class-name">MessageFormat</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token operator">*</span></span><span class="token punctuation">;</span>
 
-@Slf4j
-@Component
-public class CustomMessageSource extends AbstractMessageSource &#123;
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CustomMessageSource</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractMessageSource</span> <span class="token punctuation">&#123;</span>
 
-    private final Map&lt;String, Map&lt;String, MessageFormat&gt;&gt; formats &#x3D; new HashMap&lt;&gt;();
-    private Map&lt;String, Map&lt;String, String&gt;&gt; messages &#x3D; new HashMap&lt;&gt;();
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Map</span><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">MessageFormat</span><span class="token punctuation">></span><span class="token punctuation">></span></span> formats <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Map</span><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span><span class="token punctuation">></span></span> messages <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    @Autowired
-    public CustomMessageSource() &#123;
-        try &#123;
-            load();
-        &#125; catch (Exception e) &#123;
-            e.printStackTrace();
-        &#125;
-    &#125;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">public</span> <span class="token class-name">CustomMessageSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public void load() &#123;
-        ResourceBundle resourceBundle &#x3D; ResourceBundle.getBundle(&quot;messages&quot;, Locale.ROOT, new XmlResourceBundleLoader());
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ResourceBundle</span> resourceBundle <span class="token operator">=</span> <span class="token class-name">ResourceBundle</span><span class="token punctuation">.</span><span class="token function">getBundle</span><span class="token punctuation">(</span><span class="token string">"messages"</span><span class="token punctuation">,</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token constant">ROOT</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">XmlResourceBundleLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        XmlResourceBundle xmlResourceBundle &#x3D; (XmlResourceBundle) resourceBundle;
-        this.messages &#x3D; xmlResourceBundle.getMessages();
-    &#125;
+        <span class="token class-name">XmlResourceBundle</span> xmlResourceBundle <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">XmlResourceBundle</span><span class="token punctuation">)</span> resourceBundle<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>messages <span class="token operator">=</span> xmlResourceBundle<span class="token punctuation">.</span><span class="token function">getMessages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    &#x2F;&#x2F; 메시지 소스에서 지원하는 언어 목록
-    public List&lt;String&gt; getLocales() &#123;
-        return new ArrayList&lt;&gt;(messages.keySet());
-    &#125;
+    <span class="token comment">// 메시지 소스에서 지원하는 언어 목록</span>
+    <span class="token keyword">public</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token function">getLocales</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>messages<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    @Override
-    protected MessageFormat resolveCode(String code, Locale locale) &#123;
-        synchronized (formats) &#123;
-            &#x2F;&#x2F; 언어 포맷이 없을 경우 메시지 포맷을 새로 생성
-            if (!formats.containsKey(locale.toString())) &#123;
-                formats.put(locale.toString(), new HashMap&lt;&gt;());
-            &#125;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token class-name">MessageFormat</span> <span class="token function">resolveCode</span><span class="token punctuation">(</span><span class="token class-name">String</span> code<span class="token punctuation">,</span> <span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>formats<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// 언어 포맷이 없을 경우 메시지 포맷을 새로 생성</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>formats<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                formats<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
 
-            Map&lt;String, MessageFormat&gt; map &#x3D; formats.get(locale.toString());
+            <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">MessageFormat</span><span class="token punctuation">></span></span> map <span class="token operator">=</span> formats<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            &#x2F;&#x2F; 언어 포맷에 메시지 코드가 없으면 메시지 정보를 통해 포맷을 저장
-            if (!map.containsKey(code)) &#123;
-                if (!messages.containsKey(locale.toString())) &#123;
-                    locale &#x3D; Locale.getDefault();
-                &#125;
-                Map&lt;String, String&gt; msgs &#x3D; messages.get(locale.toString());
-                map.put(code, new MessageFormat(msgs.getOrDefault(code, code), locale));
-            &#125;
-            return map.get(code);
-        &#125;
-    &#125;
+            <span class="token comment">// 언어 포맷에 메시지 코드가 없으면 메시지 정보를 통해 포맷을 저장</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>map<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>messages<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token function">getDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> msgs <span class="token operator">=</span> messages<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>locale<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                map<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">MessageFormat</span><span class="token punctuation">(</span>msgs<span class="token punctuation">.</span><span class="token function">getOrDefault</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> code<span class="token punctuation">)</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">return</span> map<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public String getMessage(String code) &#123;
-        try &#123;
-            return getMessage(code, new Object[0], LocaleContextHolder.getLocale());
-        &#125; catch (NoSuchMessageException e) &#123;
-            return code;
-        &#125;
-    &#125;
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token class-name">String</span> code<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">getMessage</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token class-name">LocaleContextHolder</span><span class="token punctuation">.</span><span class="token function">getLocale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchMessageException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> code<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public String getMessage(String code, Object[] args) &#123;
-        try &#123;
-            return getMessage(code, args, LocaleContextHolder.getLocale());
-        &#125; catch (NoSuchMessageException e) &#123;
-            return code;
-        &#125;
-    &#125;
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token class-name">String</span> code<span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">getMessage</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> args<span class="token punctuation">,</span> <span class="token class-name">LocaleContextHolder</span><span class="token punctuation">.</span><span class="token function">getLocale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchMessageException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> code<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public String getMessage(String code, Object[] args, String defaultMessage) &#123;
-        try &#123;
-            return getMessage(code, args, defaultMessage, LocaleContextHolder.getLocale());
-        &#125; catch (NoSuchMessageException e) &#123;
-            return code;
-        &#125;
-    &#125;
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token class-name">String</span> code<span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">,</span> <span class="token class-name">String</span> defaultMessage<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">getMessage</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> args<span class="token punctuation">,</span> defaultMessage<span class="token punctuation">,</span> <span class="token class-name">LocaleContextHolder</span><span class="token punctuation">.</span><span class="token function">getLocale</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchMessageException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> code<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public String getMessage(String code, Locale locale) &#123;
-        try &#123;
-            return getMessage(code, new Object[0], locale);
-        &#125; catch (NoSuchMessageException e) &#123;
-            return code;
-        &#125;
-    &#125;
-&#125;</code></pre><h4 id="메시지-소스-갱신"><a href="#메시지-소스-갱신" class="headerlink" title="메시지 소스 갱신"></a>메시지 소스 갱신</h4><p>로컬 환경에서 애플리케이션을 개발하는 동안에는 메시지 소스 정보가 계속 변경되어야하는 요구사항이 있습니다. 스프링 부트를 사용하고 있다면 <strong>spring-boot-devtool</strong>을 사용해서 애플리케이션이 다시 실행할 수 있게 변경할 수 있습니다. 그러나, 메시지 정보가 변경되는 것이 애플리케이션 자체에 특별한 영향을 미치지는 않습니다. 애플리케이션을 다시 실행하지 않고 변경된 메시지 정보를 반영할 수 있도록 하는 것이 좋습니다.</p><blockquote><p>우리가 구현해야할 동작은 ReloadableResourceBundleMessageSource가 변경된 프로퍼티 파일을 다시 로드하는 것과 비슷합니다.</p></blockquote><pre class="language-java" data-language="java"><code class="language-java">@Repository
-public class CustomMessageSource extends AbstractMessageSource &#123;
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token class-name">String</span> code<span class="token punctuation">,</span> <span class="token class-name">Locale</span> locale<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token function">getMessage</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchMessageException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> code<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><h4 id="메시지-소스-갱신"><a href="#메시지-소스-갱신" class="headerlink" title="메시지 소스 갱신"></a>메시지 소스 갱신</h4><p>로컬 환경에서 애플리케이션을 개발하는 동안에는 메시지 소스 정보가 계속 변경되어야하는 요구사항이 있습니다. 스프링 부트를 사용하고 있다면 <strong>spring-boot-devtool</strong>을 사용해서 애플리케이션이 다시 실행할 수 있게 변경할 수 있습니다. 그러나, 메시지 정보가 변경되는 것이 애플리케이션 자체에 특별한 영향을 미치지는 않습니다. 애플리케이션을 다시 실행하지 않고 변경된 메시지 정보를 반영할 수 있도록 하는 것이 좋습니다.</p><blockquote><p>우리가 구현해야할 동작은 ReloadableResourceBundleMessageSource가 변경된 프로퍼티 파일을 다시 로드하는 것과 비슷합니다.</p></blockquote><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CustomMessageSource</span> <span class="token keyword">extends</span> <span class="token class-name">AbstractMessageSource</span> <span class="token punctuation">&#123;</span>
 
-    @Autowired
-    public CustomMessageSource(Environment environment) &#123;
-        instance &#x3D; this;
-        try &#123;
-            load();
-        &#125; catch (Exception e) &#123;
-            e.printStackTrace();
-        &#125;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">public</span> <span class="token class-name">CustomMessageSource</span><span class="token punctuation">(</span><span class="token class-name">Environment</span> environment<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        instance <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
 
-        if (!ArrayUtils.contains(environment.getActiveProfiles(), &quot;production&quot;)) &#123;
-            reload();
-        &#125;
-    &#125;
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token class-name">ArrayUtils</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>environment<span class="token punctuation">.</span><span class="token function">getActiveProfiles</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"production"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">reload</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
 
-    public void reload() &#123;
-        new Thread(() -&gt; &#123;
-            try &#123;
-                File file &#x3D; new ClassPathResource(&quot;messages.xml&quot;).getFile();
-                long lastModified &#x3D; -1;
-                while (true) &#123;
-                    try &#123;
-                        if (lastModified &lt; file.lastModified()) &#123;
-                            load();
-                            log.info(&quot;Reload MessageSource - &#123;&#125;&quot;, System.currentTimeMillis());
-                            lastModified &#x3D; file.lastModified();
-                        &#125;
-                    &#125; catch (Exception e) &#123;
-                        log.error(e.getMessage());
-                    &#125;
-                    Thread.sleep(5000);
-                &#125;
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">reload</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">File</span> file <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathResource</span><span class="token punctuation">(</span><span class="token string">"messages.xml"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getFile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">long</span> lastModified <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>lastModified <span class="token operator">&lt;</span> file<span class="token punctuation">.</span><span class="token function">lastModified</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"Reload MessageSource - &#123;&#125;"</span><span class="token punctuation">,</span> <span class="token class-name">System</span><span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            lastModified <span class="token operator">=</span> file<span class="token punctuation">.</span><span class="token function">lastModified</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span>
+                    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                    <span class="token class-name">Thread</span><span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
 
-            &#125; catch (Exception e) &#123;
-                log.error(e.getMessage());
-                if (e instanceof InterruptedException) &#123;
-                    Thread.currentThread().interrupt();
-                &#125;
-            &#125;
-        &#125;).start();
-    &#125;
-&#125;</code></pre><blockquote><p>위 처럼 파일 수정일을 비교하지 않아도 <a target="_blank" rel="noopener" href="https://www.baeldung.com/java-nio2-watchservice">자바 7의 WatchService를 활용</a>해도 파일을 감시할 수 있습니다.</p></blockquote><h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul><li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/i18n/serviceproviders/resourcebundlecontrolprovider.html">Installing a Custom Resource Bundle as an Extension</a></li><li><a target="_blank" rel="noopener" href="http://www.java2s.com/Tutorial/Java/0220__I18N/XMLresourcebundle.htm">XML resource bundle</a></li><li><a target="_blank" rel="noopener" href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a></li><li><a target="_blank" rel="noopener" href="http://www.fun25.co.kr/blog/java-xml-parser-example-documentbuilder">[자바] XML 파싱 예제 - DocumentBuilder</a></li></ul></div><footer class="post-footer"><div class="post-eof"></div></footer></article></div><nav class="pagination"><a class="extend prev" rel="prev" href="/page/78/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/78/">78</a><span class="page-number current">79</span><a class="page-number" href="/page/80/">80</a><a class="page-number" href="/page/81/">81</a><a class="extend next" rel="next" href="/page/80/"><i class="fa fa-angle-right" aria-label="Next page"></i></a></nav></div></main><footer class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2023</span> <span class="with-love"><i class="fa fa-heart"></i> </span><span class="author" itemprop="copyrightHolder">Mambo</span></div><div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script><script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script><script src="/js/third-party/fancybox.js"></script><script src="/js/third-party/pace.js"></script><script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script><script>var options={bottom:"unset",right:"15px",left:"unset",time:"0.5s",mixColor:"transparent",backgroundColor:"transparent",buttonColorDark:"#100f2c",buttonColorLight:"#fff",saveInCookies:!0,label:"🌗",autoMatchOsTheme:!0};const darkmode=new Darkmode(options);window.darkmode=darkmode,darkmode.showWidget()</script></body></html>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>e <span class="token keyword">instanceof</span> <span class="token class-name">InterruptedException</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">Thread</span><span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">interrupt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>위 처럼 파일 수정일을 비교하지 않아도 <a target="_blank" rel="noopener" href="https://www.baeldung.com/java-nio2-watchservice">자바 7의 WatchService를 활용</a>해도 파일을 감시할 수 있습니다.</p></blockquote><h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul><li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/i18n/serviceproviders/resourcebundlecontrolprovider.html">Installing a Custom Resource Bundle as an Extension</a></li><li><a target="_blank" rel="noopener" href="http://www.java2s.com/Tutorial/Java/0220__I18N/XMLresourcebundle.htm">XML resource bundle</a></li><li><a target="_blank" rel="noopener" href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a></li><li><a target="_blank" rel="noopener" href="http://www.fun25.co.kr/blog/java-xml-parser-example-documentbuilder">[자바] XML 파싱 예제 - DocumentBuilder</a></li></ul></div><footer class="post-footer"><div class="post-eof"></div></footer></article></div><nav class="pagination"><a class="extend prev" rel="prev" href="/page/78/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/78/">78</a><span class="page-number current">79</span><a class="page-number" href="/page/80/">80</a><a class="page-number" href="/page/81/">81</a><a class="extend next" rel="next" href="/page/80/"><i class="fa fa-angle-right" aria-label="Next page"></i></a></nav></div></main><footer class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2023</span> <span class="with-love"><i class="fa fa-heart"></i> </span><span class="author" itemprop="copyrightHolder">Mambo</span></div><div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script><script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script><script src="/js/third-party/fancybox.js"></script><script src="/js/third-party/pace.js"></script><script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script><script>var options={bottom:"unset",right:"15px",left:"unset",time:"0.5s",mixColor:"transparent",backgroundColor:"transparent",buttonColorDark:"#100f2c",buttonColorLight:"#fff",saveInCookies:!0,label:"🌗",autoMatchOsTheme:!0};const darkmode=new Darkmode(options);window.darkmode=darkmode,darkmode.showWidget()</script></body></html>

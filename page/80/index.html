@@ -14,138 +14,138 @@
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependencies</span><span class="token punctuation">></span></span></code></pre><h4 id="with-Gradle"><a href="#with-Gradle" class="headerlink" title="with Gradle"></a>with Gradle</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript">dependencies <span class="token punctuation">&#123;</span>
 	compile <span class="token string">'org.springframework.security:spring-security-web:4.2.2.RELEASE'</span>
 	compile <span class="token string">'org.springframework.security:spring-security-config:4.2.2.RELEASE'</span>
-<span class="token punctuation">&#125;</span></code></pre><blockquote><p>저는 메이븐 대신 그래들을 사용해봤습니다.</p></blockquote><h3 id="Java-Configuration"><a href="#Java-Configuration" class="headerlink" title="Java Configuration"></a>Java Configuration</h3><p>스프링 시큐리티 레퍼런스에서는 자바 기반의 설정으로 설명하고 있습니다. 그 이유는 무엇일까요?</p><p>스프링 프레임워크 3.1에서부터 어노테이션을 통한 자바 설정을 지원하기 때문에 스프링 시큐리티 3.2부터는 XML로 설정하지 않고도 간단하게 설정할 수 있도록 지원하기 때문입니다.</p><p>원래 XML 기반의 설정에서는 web.xml에 org.springframework.web.filter.DelegatingFilterProxy라는 springSecurityFilterChain을 등록하는 것으로 시작합니다만, 자바 기반의 설정에서는 WebSecurityConfigurerAdapter를 상속받은 클래스에 @EnableWebSecurity 어노테이션을 명시하는 것만으로도 springSecurityFilterChain가 자동으로 포함되어집니다.</p><pre class="language-java" data-language="java"><code class="language-java">@EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter &#123;
-&#125;</code></pre><p>그리고 포함된 springSecurityFilterChain을 등록하기 위해서는 AbstractSecurityWebApplicationInitializer를 상속받은 WebApplicationInitializer를 만들어두면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">public class SecurityWebApplicationInitializer
-	extends AbstractSecurityWebApplicationInitializer &#123;
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>저는 메이븐 대신 그래들을 사용해봤습니다.</p></blockquote><h3 id="Java-Configuration"><a href="#Java-Configuration" class="headerlink" title="Java Configuration"></a>Java Configuration</h3><p>스프링 시큐리티 레퍼런스에서는 자바 기반의 설정으로 설명하고 있습니다. 그 이유는 무엇일까요?</p><p>스프링 프레임워크 3.1에서부터 어노테이션을 통한 자바 설정을 지원하기 때문에 스프링 시큐리티 3.2부터는 XML로 설정하지 않고도 간단하게 설정할 수 있도록 지원하기 때문입니다.</p><p>원래 XML 기반의 설정에서는 web.xml에 org.springframework.web.filter.DelegatingFilterProxy라는 springSecurityFilterChain을 등록하는 것으로 시작합니다만, 자바 기반의 설정에서는 WebSecurityConfigurerAdapter를 상속받은 클래스에 @EnableWebSecurity 어노테이션을 명시하는 것만으로도 springSecurityFilterChain가 자동으로 포함되어집니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@EnableWebSecurity</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WebSecurityConfig</span> <span class="token keyword">extends</span> <span class="token class-name">WebSecurityConfigurerAdapter</span> <span class="token punctuation">&#123;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>그리고 포함된 springSecurityFilterChain을 등록하기 위해서는 AbstractSecurityWebApplicationInitializer를 상속받은 WebApplicationInitializer를 만들어두면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SecurityWebApplicationInitializer</span>
+	<span class="token keyword">extends</span> <span class="token class-name">AbstractSecurityWebApplicationInitializer</span> <span class="token punctuation">&#123;</span>
 
-&#125;</code></pre><blockquote><p>XML을 작성하는 것보다는 자바 기반의 구성이 더욱 쉽습니다.</p></blockquote><p>그 다음에는 보통 스프링 MVC를 이용해서 애플리케이션을 구성하기 때문에 ApplicationIniticalizer에 WebSecurityConfigurerAdapter를 상속받은 클래스를 getRootConfigClasses() 메소드에 추가하는 것으로 스프링 시큐리티에 대한 기본적인 적용은 끝입니다.</p><pre class="language-java" data-language="java"><code class="language-java">public class ApplicationInitializer extends
-		AbstractAnnotationConfigDispatcherServletInitializer &#123;
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>XML을 작성하는 것보다는 자바 기반의 구성이 더욱 쉽습니다.</p></blockquote><p>그 다음에는 보통 스프링 MVC를 이용해서 애플리케이션을 구성하기 때문에 ApplicationIniticalizer에 WebSecurityConfigurerAdapter를 상속받은 클래스를 getRootConfigClasses() 메소드에 추가하는 것으로 스프링 시큐리티에 대한 기본적인 적용은 끝입니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ApplicationInitializer</span> <span class="token keyword">extends</span>
+		<span class="token class-name">AbstractAnnotationConfigDispatcherServletInitializer</span> <span class="token punctuation">&#123;</span>
 
-	@Override
-	protected Class&lt;?&gt;[] getRootConfigClasses() &#123;
-		return new Class[] &#123; WebSecurityConfig.class &#125;;
-	&#125;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">protected</span> <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">getRootConfigClasses</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Class</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span> <span class="token class-name">WebSecurityConfig</span><span class="token punctuation">.</span><span class="token keyword">class</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	&#x2F;&#x2F; ... other overrides ...
-&#125;</code></pre><blockquote><p>이로써 유추 해볼때, springSecurityFilterChain은 루트 컨텍스트에서 등록되어야하는 것을 알 수 있겠습니다. 각 필터에 대한 우선순위에 대해서도 추가적으로 알 필요성이 생기는 부분입니다.</p></blockquote><h4 id="HttpSecurity"><a href="#HttpSecurity" class="headerlink" title="HttpSecurity"></a>HttpSecurity</h4><p>그리고나서 configure(HttpSecurity http) 메소드를 통해서 우리만의 인증 매커니즘을 구성해야합니다. 그런데 아직까지는 어떻게 구성해야할지 막막하기만 합니다. 관련된 정보를 좀더 찾아보도록 하겠습니다.</p><pre class="language-java" data-language="java"><code class="language-java">@Override
-protected void configure(HttpSecurity http) throws Exception &#123;
-	http.httpBasic()
-		.and()
-		.authorizeRequests()
-			.antMatchers(&quot;&#x2F;users&#x2F;&#123;userId&#125;&quot;).access(&quot;@authenticationCheckHandler.checkUserId(authentication,#userId)&quot;)
-			.antMatchers(&quot;&#x2F;admin&#x2F;db&#x2F;**&quot;).access(&quot;hasRole(&#39;ADMIN_MASTER&#39;) or hasRole(&#39;ADMIN&#39;) and hasRole(&#39;DBA&#39;)&quot;)
-			.antMatchers(&quot;&#x2F;register&#x2F;**&quot;).hasRole(&quot;ANONYMOUS&quot;)
-		.and()
-		.formLogin()
-			.loginPage(&quot;&#x2F;login&quot;)
-			.usernameParameter(&quot;email&quot;)
-			.passwordParameter(&quot;password&quot;)
-			.successHandler(successHandler())
-			.failureHandler(failureHandler())
-			.permitAll();
-&#125;</code></pre><p>뭐 사실상 별게 없습니다. HttpSecurity의 인스턴스를 통해 자신만의 인증 매커니즘을 만들 수 있는 것이라고 보면 됩니다. 대부분의 설정은 여기를 통하게 되니까요 .authorizeRequests()를 통해 요청에 대한 권한을 지정할 수 있게 되는 것 같습니다. 그리고 기본적인 형태의 <code>.anyRequest().authenticated()</code>라는 의미는 어떠한 요청이든지 인증되어야한다는 것이겟죠? .formLogin()은 폼을 통한 로그인을 이용한다는 의미이며, .loginPage(“&#x2F;login”)을 통해 로그인 페이지는 &#x2F;login 경로로 제공하며 &#x2F;login의 POST 요청이 바로 로그인 처리 과정이라는 것입니다.</p><p>확장된 형태에서의 .antMatchers().hasRole() 또는 .antMatchers().access()는 해당 경로에 대해서 어떠한 권한을 가져야만 접근할 수 있는가를 표현하는 것입니다. 다음은 antMatchers() 다음으로 지정할 수 있는 항목들입니다.</p><ul><li>anonymous()<br>인증되지 않은 사용자가 접근할 수 있습니다.</li><li>authenticated()<br>인증된 사용자만 접근할 수 있습니다.</li><li>fullyAuthenticated()<br>완전히 인증된 사용자만 접근할 수 있습니다(?)</li><li>hasRole() or hasAnyRole()<br>특정 권한을 가지는 사용자만 접근할 수 있습니다.</li><li>hasAuthority() or hasAnyAuthority()<br>특정 권한을 가지는 사용자만 접근할 수 있습니다.</li><li>hasIpAddress()<br>특정 아이피 주소를 가지는 사용자만 접근할 수 있습니다.</li><li>access()<br>SpEL 표현식에 의한 결과에 따라 접근할 수 있습니다.</li><li>not()<br>접근 제한 기능을 해제합니다.</li><li>permitAll() or denyAll()<br>접근을 전부 허용하거나 제한합니다.</li><li>rememberMe()<br>리멤버 기능을 통해 로그인한 사용자만 접근할 수 있습니다.</li></ul><blockquote><p>Role은 역할이고 Authority는 권한이지만 사실은 표현의 차이입니다. Role은 “ADMIN”으로 표현하고 Authority는 “ROLE_ADMIN”으로 표기하는 것 뿐입니다. 실제로 hasRole()에 ROLE_ADMIN으로 표기하면 ROLE을 지우라는 에러를 볼수 있게 됩니다.</p></blockquote><blockquote><p>스프링 시큐리티 태그 라이브러리 또한 SpEL 표현식을 사용할 수 있습니다. &lt;sec:authentication /&gt; 이렇게 말입니다.</p></blockquote><h4 id="AuthenticationManagerBuilder"><a href="#AuthenticationManagerBuilder" class="headerlink" title="AuthenticationManagerBuilder"></a>AuthenticationManagerBuilder</h4><p>AuthenticationManagerBuilder를 통해 인증 객체를 만들 수 있도록 제공하고 있습니다. 아래는 스프링 시큐리티 레퍼런스에서 알려주는 방식인데 AuthenticationManagerBuilder를 메소드를 통해 주입받아 처리하는 방식입니다. WebSecurityConfigurerAdapter의 configure(AuthenticationManagerBuilder auth)를 오버라이딩하는 것에 대한 차이는 없습니다.</p><pre class="language-java" data-language="java"><code class="language-java">@Autowired
-public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception &#123;
-	auth.inMemoryAuthentication().withUser(&quot;scott&quot;).password(&quot;tiger&quot;).roles(&quot;ROLE_USER&quot;);
-&#125;
+	<span class="token comment">// ... other overrides ...</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>이로써 유추 해볼때, springSecurityFilterChain은 루트 컨텍스트에서 등록되어야하는 것을 알 수 있겠습니다. 각 필터에 대한 우선순위에 대해서도 추가적으로 알 필요성이 생기는 부분입니다.</p></blockquote><h4 id="HttpSecurity"><a href="#HttpSecurity" class="headerlink" title="HttpSecurity"></a>HttpSecurity</h4><p>그리고나서 configure(HttpSecurity http) 메소드를 통해서 우리만의 인증 매커니즘을 구성해야합니다. 그런데 아직까지는 어떻게 구성해야할지 막막하기만 합니다. 관련된 정보를 좀더 찾아보도록 하겠습니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">configure</span><span class="token punctuation">(</span><span class="token class-name">HttpSecurity</span> http<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	http<span class="token punctuation">.</span><span class="token function">httpBasic</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">and</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">authorizeRequests</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">antMatchers</span><span class="token punctuation">(</span><span class="token string">"/users/&#123;userId&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">access</span><span class="token punctuation">(</span><span class="token string">"@authenticationCheckHandler.checkUserId(authentication,#userId)"</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">antMatchers</span><span class="token punctuation">(</span><span class="token string">"/admin/db/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">access</span><span class="token punctuation">(</span><span class="token string">"hasRole('ADMIN_MASTER') or hasRole('ADMIN') and hasRole('DBA')"</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">antMatchers</span><span class="token punctuation">(</span><span class="token string">"/register/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">hasRole</span><span class="token punctuation">(</span><span class="token string">"ANONYMOUS"</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">and</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">formLogin</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">loginPage</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">usernameParameter</span><span class="token punctuation">(</span><span class="token string">"email"</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">passwordParameter</span><span class="token punctuation">(</span><span class="token string">"password"</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">successHandler</span><span class="token punctuation">(</span><span class="token function">successHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">failureHandler</span><span class="token punctuation">(</span><span class="token function">failureHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">.</span><span class="token function">permitAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>뭐 사실상 별게 없습니다. HttpSecurity의 인스턴스를 통해 자신만의 인증 매커니즘을 만들 수 있는 것이라고 보면 됩니다. 대부분의 설정은 여기를 통하게 되니까요 .authorizeRequests()를 통해 요청에 대한 권한을 지정할 수 있게 되는 것 같습니다. 그리고 기본적인 형태의 <code>.anyRequest().authenticated()</code>라는 의미는 어떠한 요청이든지 인증되어야한다는 것이겟죠? .formLogin()은 폼을 통한 로그인을 이용한다는 의미이며, .loginPage(“&#x2F;login”)을 통해 로그인 페이지는 &#x2F;login 경로로 제공하며 &#x2F;login의 POST 요청이 바로 로그인 처리 과정이라는 것입니다.</p><p>확장된 형태에서의 .antMatchers().hasRole() 또는 .antMatchers().access()는 해당 경로에 대해서 어떠한 권한을 가져야만 접근할 수 있는가를 표현하는 것입니다. 다음은 antMatchers() 다음으로 지정할 수 있는 항목들입니다.</p><ul><li>anonymous()<br>인증되지 않은 사용자가 접근할 수 있습니다.</li><li>authenticated()<br>인증된 사용자만 접근할 수 있습니다.</li><li>fullyAuthenticated()<br>완전히 인증된 사용자만 접근할 수 있습니다(?)</li><li>hasRole() or hasAnyRole()<br>특정 권한을 가지는 사용자만 접근할 수 있습니다.</li><li>hasAuthority() or hasAnyAuthority()<br>특정 권한을 가지는 사용자만 접근할 수 있습니다.</li><li>hasIpAddress()<br>특정 아이피 주소를 가지는 사용자만 접근할 수 있습니다.</li><li>access()<br>SpEL 표현식에 의한 결과에 따라 접근할 수 있습니다.</li><li>not()<br>접근 제한 기능을 해제합니다.</li><li>permitAll() or denyAll()<br>접근을 전부 허용하거나 제한합니다.</li><li>rememberMe()<br>리멤버 기능을 통해 로그인한 사용자만 접근할 수 있습니다.</li></ul><blockquote><p>Role은 역할이고 Authority는 권한이지만 사실은 표현의 차이입니다. Role은 “ADMIN”으로 표현하고 Authority는 “ROLE_ADMIN”으로 표기하는 것 뿐입니다. 실제로 hasRole()에 ROLE_ADMIN으로 표기하면 ROLE을 지우라는 에러를 볼수 있게 됩니다.</p></blockquote><blockquote><p>스프링 시큐리티 태그 라이브러리 또한 SpEL 표현식을 사용할 수 있습니다. &lt;sec:authentication /&gt; 이렇게 말입니다.</p></blockquote><h4 id="AuthenticationManagerBuilder"><a href="#AuthenticationManagerBuilder" class="headerlink" title="AuthenticationManagerBuilder"></a>AuthenticationManagerBuilder</h4><p>AuthenticationManagerBuilder를 통해 인증 객체를 만들 수 있도록 제공하고 있습니다. 아래는 스프링 시큐리티 레퍼런스에서 알려주는 방식인데 AuthenticationManagerBuilder를 메소드를 통해 주입받아 처리하는 방식입니다. WebSecurityConfigurerAdapter의 configure(AuthenticationManagerBuilder auth)를 오버라이딩하는 것에 대한 차이는 없습니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Autowired</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">configureGlobal</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationManagerBuilder</span> auth<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	auth<span class="token punctuation">.</span><span class="token function">inMemoryAuthentication</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withUser</span><span class="token punctuation">(</span><span class="token string">"scott"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">password</span><span class="token punctuation">(</span><span class="token string">"tiger"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">roles</span><span class="token punctuation">(</span><span class="token string">"ROLE_USER"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-@Override
-protected void configure(AuthenticationManagerBuilder auth) throws Exception &#123;
-	&#x2F;&#x2F; TODO Auto-generated method stub
-	auth.inMemoryAuthentication().withUser(&quot;admin&quot;).password(&quot;admin&quot;).roles(&quot;ADMIN&quot;, &quot;DBA&quot;);
-	auth.inMemoryAuthentication().withUser(&quot;scott&quot;).password(&quot;tiger&quot;).roles(&quot;USER&quot;, &quot;SETTING&quot;);
-&#125;</code></pre><p>원하는 방식을 사용하면 됩니다. 하지만, 스프링 시큐리티 레퍼런스와 샘플을 만든 개발자가 왜 첫번째 방식으로 설명하는지에 대한 의미를 생각해봅시다.</p><blockquote><p>아시는 분이 있다면 알려주시면 감사하겠습니다.</p></blockquote><h3 id="스프링-시큐리티-속으로-들어가기"><a href="#스프링-시큐리티-속으로-들어가기" class="headerlink" title="스프링 시큐리티 속으로 들어가기"></a>스프링 시큐리티 속으로 들어가기</h3><p>지금까지 했던 설정들은 아주 기본적인 형태들이기 때문에 실제로 우리만의 인증 매커니즘으로 커스터마이징을 한 뒤 스프링 시큐리티에서 제공하는 부가적인 기능을 추가해야합니다.</p><h4 id="Method-Security"><a href="#Method-Security" class="headerlink" title="Method Security"></a>Method Security</h4><p>스프링 시큐리티 2.0 에서부터 서비스 계층의 메소드에 보안을 추가할 수 있도록 지원합니다. @Secured 어노테이션 뿐만 아니라 JSR-250 어노테이션도 지원하도록 제공됩니다. 스프링 시큐리티 3.0에서는 표현 기반의 어노테이션을 사용할 수 있게 됩니다.</p><p>우리는 Configuration 클래스에 @EnableGlobalMethodSecurity를 적용함으로써 어노테이션 기반의 보안을 활성화시킬 수 있습니다. 예를 들어, 스프링 시큐리티의 @Secured 어노테이션을 활성화시키려면 다음과 같이 구성하게 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">@EnableGlobalMethodSecurity(securedEnabled &#x3D; true)
-public class WebSecurityConfig &#123;
-&#x2F;&#x2F; ...
-&#125;</code></pre><p>그리고나서 클래스 또는 인터페이스의 메소드에 @Secured 어노테이션을 추가하면 그에 따른 해당 메소드에 대한 액세스가 제한됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">public interface BankService &#123;
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">configure</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationManagerBuilder</span> auth<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">// TODO Auto-generated method stub</span>
+	auth<span class="token punctuation">.</span><span class="token function">inMemoryAuthentication</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withUser</span><span class="token punctuation">(</span><span class="token string">"admin"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">password</span><span class="token punctuation">(</span><span class="token string">"admin"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">roles</span><span class="token punctuation">(</span><span class="token string">"ADMIN"</span><span class="token punctuation">,</span> <span class="token string">"DBA"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	auth<span class="token punctuation">.</span><span class="token function">inMemoryAuthentication</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withUser</span><span class="token punctuation">(</span><span class="token string">"scott"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">password</span><span class="token punctuation">(</span><span class="token string">"tiger"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">roles</span><span class="token punctuation">(</span><span class="token string">"USER"</span><span class="token punctuation">,</span> <span class="token string">"SETTING"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>원하는 방식을 사용하면 됩니다. 하지만, 스프링 시큐리티 레퍼런스와 샘플을 만든 개발자가 왜 첫번째 방식으로 설명하는지에 대한 의미를 생각해봅시다.</p><blockquote><p>아시는 분이 있다면 알려주시면 감사하겠습니다.</p></blockquote><h3 id="스프링-시큐리티-속으로-들어가기"><a href="#스프링-시큐리티-속으로-들어가기" class="headerlink" title="스프링 시큐리티 속으로 들어가기"></a>스프링 시큐리티 속으로 들어가기</h3><p>지금까지 했던 설정들은 아주 기본적인 형태들이기 때문에 실제로 우리만의 인증 매커니즘으로 커스터마이징을 한 뒤 스프링 시큐리티에서 제공하는 부가적인 기능을 추가해야합니다.</p><h4 id="Method-Security"><a href="#Method-Security" class="headerlink" title="Method Security"></a>Method Security</h4><p>스프링 시큐리티 2.0 에서부터 서비스 계층의 메소드에 보안을 추가할 수 있도록 지원합니다. @Secured 어노테이션 뿐만 아니라 JSR-250 어노테이션도 지원하도록 제공됩니다. 스프링 시큐리티 3.0에서는 표현 기반의 어노테이션을 사용할 수 있게 됩니다.</p><p>우리는 Configuration 클래스에 @EnableGlobalMethodSecurity를 적용함으로써 어노테이션 기반의 보안을 활성화시킬 수 있습니다. 예를 들어, 스프링 시큐리티의 @Secured 어노테이션을 활성화시키려면 다음과 같이 구성하게 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@EnableGlobalMethodSecurity</span><span class="token punctuation">(</span>securedEnabled <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">WebSecurityConfig</span> <span class="token punctuation">&#123;</span>
+<span class="token comment">// ...</span>
+<span class="token punctuation">&#125;</span></code></pre><p>그리고나서 클래스 또는 인터페이스의 메소드에 @Secured 어노테이션을 추가하면 그에 따른 해당 메소드에 대한 액세스가 제한됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">BankService</span> <span class="token punctuation">&#123;</span>
 
-@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)
-public Account readAccount(Long id);
+<span class="token annotation punctuation">@Secured</span><span class="token punctuation">(</span><span class="token string">"IS_AUTHENTICATED_ANONYMOUSLY"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span> <span class="token function">readAccount</span><span class="token punctuation">(</span><span class="token class-name">Long</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-@Secured(&quot;IS_AUTHENTICATED_ANONYMOUSLY&quot;)
-public Account[] findAccounts();
+<span class="token annotation punctuation">@Secured</span><span class="token punctuation">(</span><span class="token string">"IS_AUTHENTICATED_ANONYMOUSLY"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">findAccounts</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-@Secured(&quot;ROLE_TELLER&quot;)
-public Account post(Account account, double amount);
-&#125;</code></pre><blockquote><p>역할 단위로 제약조건을 지정할 수 있음을 알 수 있습니다.</p></blockquote><p>스프링 시큐리티 3.0부터 지원하는 표현식 기반의 문법을 사용하기 위해서는 다음과 같이 구성합니다.</p><pre class="language-java" data-language="java"><code class="language-java">@EnableGlobalMethodSecurity(prePostEnabled &#x3D; true)
-public class MethodSecurityConfig &#123;
-&#x2F;&#x2F; ...
-&#125;</code></pre><pre class="language-java" data-language="java"><code class="language-java">public interface BankService &#123;
+<span class="token annotation punctuation">@Secured</span><span class="token punctuation">(</span><span class="token string">"ROLE_TELLER"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span> <span class="token function">post</span><span class="token punctuation">(</span><span class="token class-name">Account</span> account<span class="token punctuation">,</span> <span class="token keyword">double</span> amount<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>역할 단위로 제약조건을 지정할 수 있음을 알 수 있습니다.</p></blockquote><p>스프링 시큐리티 3.0부터 지원하는 표현식 기반의 문법을 사용하기 위해서는 다음과 같이 구성합니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@EnableGlobalMethodSecurity</span><span class="token punctuation">(</span>prePostEnabled <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MethodSecurityConfig</span> <span class="token punctuation">&#123;</span>
+<span class="token comment">// ...</span>
+<span class="token punctuation">&#125;</span></code></pre><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">BankService</span> <span class="token punctuation">&#123;</span>
 
-@PreAuthorize(&quot;isAnonymous()&quot;)
-public Account readAccount(Long id);
+<span class="token annotation punctuation">@PreAuthorize</span><span class="token punctuation">(</span><span class="token string">"isAnonymous()"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span> <span class="token function">readAccount</span><span class="token punctuation">(</span><span class="token class-name">Long</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-@PreAuthorize(&quot;isAnonymous()&quot;)
-public Account[] findAccounts();
+<span class="token annotation punctuation">@PreAuthorize</span><span class="token punctuation">(</span><span class="token string">"isAnonymous()"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">findAccounts</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-@PreAuthorize(&quot;hasAuthority(&#39;ROLE_TELLER&#39;)&quot;)
-public Account post(Account account, double amount);
-&#125;</code></pre><h4 id="Remember-Me"><a href="#Remember-Me" class="headerlink" title="Remember-Me"></a>Remember-Me</h4><p>리멤버-미 기능은 도대체 무엇일까요? 구글에 what is remember me 라는 키워드로 검색을 해보았습니다.</p><ul><li><a target="_blank" rel="noopener" href="https://www.formsite.com/faq/general/What-does-Remember-Me-mean-on-the-Login-page.html">What-does-Remember-Me-mean-on-the-Login-page</a></li><li><a target="_blank" rel="noopener" href="http://help.thunderbird.edu/portal-login/remember-me">What is “Remember Me” ?</a></li></ul><p>단순히 아이디를 기억해놓는 것이 아니라 로그인 정보를 유지하는 것을 말합니다.</p><p>Do NOT use “Remember Me” on any public computer, on campus, in Internet cafe’s, or anywhere else where you cannot control access!</p><pre class="language-java" data-language="java"><code class="language-java">@Override
-protected void configure(HttpSecurity http) throws Exception &#123;
-	http.rememberMe().rememberMeParameter(&quot;remember-me&quot;).key(REMEMBER_ME_KEY).rememberMeServices(persistentTokenBasedRememberMeServices());
-&#125;
+<span class="token annotation punctuation">@PreAuthorize</span><span class="token punctuation">(</span><span class="token string">"hasAuthority('ROLE_TELLER')"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">Account</span> <span class="token function">post</span><span class="token punctuation">(</span><span class="token class-name">Account</span> account<span class="token punctuation">,</span> <span class="token keyword">double</span> amount<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><h4 id="Remember-Me"><a href="#Remember-Me" class="headerlink" title="Remember-Me"></a>Remember-Me</h4><p>리멤버-미 기능은 도대체 무엇일까요? 구글에 what is remember me 라는 키워드로 검색을 해보았습니다.</p><ul><li><a target="_blank" rel="noopener" href="https://www.formsite.com/faq/general/What-does-Remember-Me-mean-on-the-Login-page.html">What-does-Remember-Me-mean-on-the-Login-page</a></li><li><a target="_blank" rel="noopener" href="http://help.thunderbird.edu/portal-login/remember-me">What is “Remember Me” ?</a></li></ul><p>단순히 아이디를 기억해놓는 것이 아니라 로그인 정보를 유지하는 것을 말합니다.</p><p>Do NOT use “Remember Me” on any public computer, on campus, in Internet cafe’s, or anywhere else where you cannot control access!</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">configure</span><span class="token punctuation">(</span><span class="token class-name">HttpSecurity</span> http<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	http<span class="token punctuation">.</span><span class="token function">rememberMe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">rememberMeParameter</span><span class="token punctuation">(</span><span class="token string">"remember-me"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">key</span><span class="token punctuation">(</span><span class="token constant">REMEMBER_ME_KEY</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">rememberMeServices</span><span class="token punctuation">(</span><span class="token function">persistentTokenBasedRememberMeServices</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-@Bean
-public PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices()&#123;
-	PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices &#x3D;
-			new PersistentTokenBasedRememberMeServices(REMEMBER_ME_KEY, userDetailsService, persistentTokenRepository());
-	return persistentTokenBasedRememberMeServices;
-&#125;
+<span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">PersistentTokenBasedRememberMeServices</span> <span class="token function">persistentTokenBasedRememberMeServices</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	<span class="token class-name">PersistentTokenBasedRememberMeServices</span> persistentTokenBasedRememberMeServices <span class="token operator">=</span>
+			<span class="token keyword">new</span> <span class="token class-name">PersistentTokenBasedRememberMeServices</span><span class="token punctuation">(</span><span class="token constant">REMEMBER_ME_KEY</span><span class="token punctuation">,</span> userDetailsService<span class="token punctuation">,</span> <span class="token function">persistentTokenRepository</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> persistentTokenBasedRememberMeServices<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-@Bean
-public PersistentTokenRepository persistentTokenRepository()&#123;
-	TokenRepositoryImpl tokenRepositoryImpl &#x3D; new TokenRepositoryImpl();
-	return tokenRepositoryImpl;
-&#125;</code></pre><p>저는 영속성 기반의 리멤버-미 기능을 추가하였습니다. 이때, 리멤버-미 토큰을 저장할 수 있도록 TokenRepository 인터페이스를 구현해야하는데요. 일종의 서비스 객체라고 생각하시면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">@Transactional
-public class TokenRepositoryImpl  implements PersistentTokenRepository &#123;
+<span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">PersistentTokenRepository</span> <span class="token function">persistentTokenRepository</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	<span class="token class-name">TokenRepositoryImpl</span> tokenRepositoryImpl <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TokenRepositoryImpl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> tokenRepositoryImpl<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>저는 영속성 기반의 리멤버-미 기능을 추가하였습니다. 이때, 리멤버-미 토큰을 저장할 수 있도록 TokenRepository 인터페이스를 구현해야하는데요. 일종의 서비스 객체라고 생각하시면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Transactional</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TokenRepositoryImpl</span>  <span class="token keyword">implements</span> <span class="token class-name">PersistentTokenRepository</span> <span class="token punctuation">&#123;</span>
 
-	@Autowired
-	private TokenRepository tokenRepository;
+	<span class="token annotation punctuation">@Autowired</span>
+	<span class="token keyword">private</span> <span class="token class-name">TokenRepository</span> tokenRepository<span class="token punctuation">;</span>
 
-	@Override
-	public void createNewToken(PersistentRememberMeToken token) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		Token newToken &#x3D; new Token();
-		newToken.setEmail(token.getUsername());
-		newToken.setToken(token.getTokenValue());
-		newToken.setLast_used(token.getDate());
-		newToken.setSeries(token.getSeries());
-		tokenRepository.save(newToken);
-	&#125;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">createNewToken</span><span class="token punctuation">(</span><span class="token class-name">PersistentRememberMeToken</span> token<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		<span class="token class-name">Token</span> newToken <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Token</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		newToken<span class="token punctuation">.</span><span class="token function">setEmail</span><span class="token punctuation">(</span>token<span class="token punctuation">.</span><span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		newToken<span class="token punctuation">.</span><span class="token function">setToken</span><span class="token punctuation">(</span>token<span class="token punctuation">.</span><span class="token function">getTokenValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		newToken<span class="token punctuation">.</span><span class="token function">setLast_used</span><span class="token punctuation">(</span>token<span class="token punctuation">.</span><span class="token function">getDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		newToken<span class="token punctuation">.</span><span class="token function">setSeries</span><span class="token punctuation">(</span>token<span class="token punctuation">.</span><span class="token function">getSeries</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		tokenRepository<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>newToken<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Override
-	public void updateToken(String series, String tokenValue, Date lastUsed) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">updateToken</span><span class="token punctuation">(</span><span class="token class-name">String</span> series<span class="token punctuation">,</span> <span class="token class-name">String</span> tokenValue<span class="token punctuation">,</span> <span class="token class-name">Date</span> lastUsed<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
 
-		Token updateToken &#x3D; tokenRepository.findOne(series);
-		updateToken.setToken(tokenValue);
-		updateToken.setLast_used(lastUsed);
-		updateToken.setSeries(series);
-		tokenRepository.save(updateToken);
-	&#125;
+		<span class="token class-name">Token</span> updateToken <span class="token operator">=</span> tokenRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span>series<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		updateToken<span class="token punctuation">.</span><span class="token function">setToken</span><span class="token punctuation">(</span>tokenValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		updateToken<span class="token punctuation">.</span><span class="token function">setLast_used</span><span class="token punctuation">(</span>lastUsed<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		updateToken<span class="token punctuation">.</span><span class="token function">setSeries</span><span class="token punctuation">(</span>series<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		tokenRepository<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>updateToken<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Override
-	public PersistentRememberMeToken getTokenForSeries(String series) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		Token token &#x3D; tokenRepository.findOne(series);
-		PersistentRememberMeToken persistentRememberMeToken &#x3D; new PersistentRememberMeToken(token.getEmail(), series, token.getToken(), token.getLast_used());
-		return persistentRememberMeToken;
-	&#125;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token class-name">PersistentRememberMeToken</span> <span class="token function">getTokenForSeries</span><span class="token punctuation">(</span><span class="token class-name">String</span> series<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		<span class="token class-name">Token</span> token <span class="token operator">=</span> tokenRepository<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span>series<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token class-name">PersistentRememberMeToken</span> persistentRememberMeToken <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PersistentRememberMeToken</span><span class="token punctuation">(</span>token<span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> series<span class="token punctuation">,</span> token<span class="token punctuation">.</span><span class="token function">getToken</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> token<span class="token punctuation">.</span><span class="token function">getLast_used</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> persistentRememberMeToken<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Override
-	public void removeUserTokens(String username) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		tokenRepository.deleteByEmail(username);
-	&#125;
-&#125;</code></pre><p><code>본 애플리케이션에서의 Email은 유니크한 속성을 가집니다.</code></p><h4 id="Password-Encoding"><a href="#Password-Encoding" class="headerlink" title="Password Encoding"></a>Password Encoding</h4><p>AuthenticationManagerBuilder.userDetailsService().passwordEncoder()를 통해 패스워드 암호화에 사용될 PasswordEncoder 구현체를 지정할 수 있습니다. PasswordEncoder 인터페이스는 다음과 같이 구성되어 있습니다.</p><pre class="language-java" data-language="java"><code class="language-java">public interface PasswordEncoder &#123;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">removeUserTokens</span><span class="token punctuation">(</span><span class="token class-name">String</span> username<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		tokenRepository<span class="token punctuation">.</span><span class="token function">deleteByEmail</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><p><code>본 애플리케이션에서의 Email은 유니크한 속성을 가집니다.</code></p><h4 id="Password-Encoding"><a href="#Password-Encoding" class="headerlink" title="Password Encoding"></a>Password Encoding</h4><p>AuthenticationManagerBuilder.userDetailsService().passwordEncoder()를 통해 패스워드 암호화에 사용될 PasswordEncoder 구현체를 지정할 수 있습니다. PasswordEncoder 인터페이스는 다음과 같이 구성되어 있습니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">PasswordEncoder</span> <span class="token punctuation">&#123;</span>
 
-	&#x2F;**
+	<span class="token comment">/**
 	 * Encode the raw password. Generally, a good encoding algorithm applies a SHA-1 or
 	 * greater hash combined with an 8-byte or greater randomly generated salt.
-	 *&#x2F;
-	String encode(CharSequence rawPassword);
+	 */</span>
+	<span class="token class-name">String</span> <span class="token function">encode</span><span class="token punctuation">(</span><span class="token class-name">CharSequence</span> rawPassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-	&#x2F;**
+	<span class="token comment">/**
 	 * Verify the encoded password obtained from storage matches the submitted raw
 	 * password after it too is encoded. Returns true if the passwords match, false if
 	 * they do not. The stored password itself is never decoded.
@@ -154,80 +154,80 @@ public class TokenRepositoryImpl  implements PersistentTokenRepository &#123;
 	 * @param encodedPassword the encoded password from storage to compare with
 	 * @return true if the raw password, after encoding, matches the encoded password from
 	 * storage
-	 *&#x2F;
-	boolean matches(CharSequence rawPassword, String encodedPassword);
-&#125;</code></pre><blockquote><p>단순히 인코딩하는 함수와 평문으로 제공되는 패스워드와 인코딩되어있는 패스워드(예를들어, 데이터베이스에 인코딩되어 저장되어 있는 패스워드)를 비교할 수 있습니다.</p></blockquote><p>저는 PasswordEncoder 구현체인 BCryptPasswordEncoder를 지정했습니다. 당연히 직접 구현체를 만들어서 적용해도 됩니다! (아무래도 직접 만들어서 사용하는 것이 더 좋겟죠?)</p><pre class="language-java" data-language="java"><code class="language-java">@Override
-protected void configure(AuthenticationManagerBuilder auth) throws Exception &#123;
-	&#x2F;&#x2F; TODO Auto-generated method stub
-	auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-&#125;
+	 */</span>
+	<span class="token keyword">boolean</span> <span class="token function">matches</span><span class="token punctuation">(</span><span class="token class-name">CharSequence</span> rawPassword<span class="token punctuation">,</span> <span class="token class-name">String</span> encodedPassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>단순히 인코딩하는 함수와 평문으로 제공되는 패스워드와 인코딩되어있는 패스워드(예를들어, 데이터베이스에 인코딩되어 저장되어 있는 패스워드)를 비교할 수 있습니다.</p></blockquote><p>저는 PasswordEncoder 구현체인 BCryptPasswordEncoder를 지정했습니다. 당연히 직접 구현체를 만들어서 적용해도 됩니다! (아무래도 직접 만들어서 사용하는 것이 더 좋겟죠?)</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">configure</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationManagerBuilder</span> auth<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">// TODO Auto-generated method stub</span>
+	auth<span class="token punctuation">.</span><span class="token function">userDetailsService</span><span class="token punctuation">(</span>userDetailsService<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">passwordEncoder</span><span class="token punctuation">(</span><span class="token function">passwordEncoder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
 
-@Bean
-public PasswordEncoder passwordEncoder()&#123;
-	return new BCryptPasswordEncoder();
-&#125;</code></pre><p>PasswordEncoder를 빈으로 등록해두면 다음과 같이 저장된 패스워드를 비교할 수 있습니다. 저장된 패스워드는 PasswordEncoder에 의해 암호화된 평문이기 때문입니다.</p><pre class="language-java" data-language="java"><code class="language-java">@RequestMapping(value&#x3D;&quot;&#x2F;users&#x2F;&#123;userId&#125;&quot;, method&#x3D;RequestMethod.POST)
-@PreAuthorize(&quot;#updateUser.email &#x3D;&#x3D; authentication.name&quot;)
-public String update(@PathVariable(&quot;userId&quot;) Long id, @ModelAttribute @Valid UserDTO.Update updateUser, Model model)&#123;
-	User currentUser &#x3D; userService.findOne(id);
-	if(!passwordEncoder.matches(updateUser.getPassword(), currentUser.getPassword()))&#123;
-		throw new RuntimeException(&quot;Not password equals...&quot;);
-	&#125;
-	&#x2F;&#x2F;...
-&#125;</code></pre><h4 id="WebSecurity-Ignoring"><a href="#WebSecurity-Ignoring" class="headerlink" title="WebSecurity Ignoring"></a>WebSecurity Ignoring</h4><p>스프링 시큐리티 레퍼런스와는 달리 리소스와 관련해서는 <code>WebSecurity.ignoring()</code>를 이용해서 보안이 적용되지 않도록 할 수 있도록 지원합니다. 스프링 시큐리티 API 문서에서 확인할 수 있는데 레퍼런스에 설명이 없다는 것이 좀 아쉬운 부분입니다.</p><p><code>음... permitAll과 ignoring의 차이가 있는가를 아시는분은 댓글 남겨주시기 바랍니다 ㅠㅠ</code></p><h4 id="Localization"><a href="#Localization" class="headerlink" title="Localization"></a>Localization</h4><p>스프링 시큐리티는 메시지에 대한 현지화를 지원합니다. 메시지 소스 관련 프로퍼티 파일들은 spring-security-core.jar에 포함 되어져있습니다.</p><p>우리는 메시지 프로퍼티 파일들을 메시지소스로 등록하면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">@Configuration
-public class ApplicationConfiguration extends WebMvcConfigurerAdapter &#123;
+<span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">PasswordEncoder</span> <span class="token function">passwordEncoder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">BCryptPasswordEncoder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>PasswordEncoder를 빈으로 등록해두면 다음과 같이 저장된 패스워드를 비교할 수 있습니다. 저장된 패스워드는 PasswordEncoder에 의해 암호화된 평문이기 때문입니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value<span class="token operator">=</span><span class="token string">"/users/&#123;userId&#125;"</span><span class="token punctuation">,</span> method<span class="token operator">=</span><span class="token class-name">RequestMethod</span><span class="token punctuation">.</span><span class="token constant">POST</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@PreAuthorize</span><span class="token punctuation">(</span><span class="token string">"#updateUser.email == authentication.name"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"userId"</span><span class="token punctuation">)</span> <span class="token class-name">Long</span> id<span class="token punctuation">,</span> <span class="token annotation punctuation">@ModelAttribute</span> <span class="token annotation punctuation">@Valid</span> <span class="token class-name">UserDTO<span class="token punctuation">.</span>Update</span> updateUser<span class="token punctuation">,</span> <span class="token class-name">Model</span> model<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+	<span class="token class-name">User</span> currentUser <span class="token operator">=</span> userService<span class="token punctuation">.</span><span class="token function">findOne</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>passwordEncoder<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span>updateUser<span class="token punctuation">.</span><span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> currentUser<span class="token punctuation">.</span><span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">RuntimeException</span><span class="token punctuation">(</span><span class="token string">"Not password equals..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//...</span>
+<span class="token punctuation">&#125;</span></code></pre><h4 id="WebSecurity-Ignoring"><a href="#WebSecurity-Ignoring" class="headerlink" title="WebSecurity Ignoring"></a>WebSecurity Ignoring</h4><p>스프링 시큐리티 레퍼런스와는 달리 리소스와 관련해서는 <code>WebSecurity.ignoring()</code>를 이용해서 보안이 적용되지 않도록 할 수 있도록 지원합니다. 스프링 시큐리티 API 문서에서 확인할 수 있는데 레퍼런스에 설명이 없다는 것이 좀 아쉬운 부분입니다.</p><p><code>음... permitAll과 ignoring의 차이가 있는가를 아시는분은 댓글 남겨주시기 바랍니다 ㅠㅠ</code></p><h4 id="Localization"><a href="#Localization" class="headerlink" title="Localization"></a>Localization</h4><p>스프링 시큐리티는 메시지에 대한 현지화를 지원합니다. 메시지 소스 관련 프로퍼티 파일들은 spring-security-core.jar에 포함 되어져있습니다.</p><p>우리는 메시지 프로퍼티 파일들을 메시지소스로 등록하면 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ApplicationConfiguration</span> <span class="token keyword">extends</span> <span class="token class-name">WebMvcConfigurerAdapter</span> <span class="token punctuation">&#123;</span>
 
-	@Bean
-	public MessageSource messageSource()&#123;
-		ResourceBundleMessageSource messageSource &#x3D; new ResourceBundleMessageSource();
-		messageSource.addBasenames(&quot;security&#x2F;messages&quot;);
-		messageSource.setDefaultEncoding(&quot;UTF-8&quot;);
-		return messageSource;
-	&#125;
+	<span class="token annotation punctuation">@Bean</span>
+	<span class="token keyword">public</span> <span class="token class-name">MessageSource</span> <span class="token function">messageSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token class-name">ResourceBundleMessageSource</span> messageSource <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ResourceBundleMessageSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		messageSource<span class="token punctuation">.</span><span class="token function">addBasenames</span><span class="token punctuation">(</span><span class="token string">"security/messages"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		messageSource<span class="token punctuation">.</span><span class="token function">setDefaultEncoding</span><span class="token punctuation">(</span><span class="token string">"UTF-8"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> messageSource<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor()&#123;
-		LocaleChangeInterceptor localeChangeInterceptor &#x3D; new LocaleChangeInterceptor();
-		localeChangeInterceptor.setParamName(&quot;lang&quot;);
-		return localeChangeInterceptor;
-	&#125;
+	<span class="token annotation punctuation">@Bean</span>
+	<span class="token keyword">public</span> <span class="token class-name">LocaleChangeInterceptor</span> <span class="token function">localeChangeInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token class-name">LocaleChangeInterceptor</span> localeChangeInterceptor <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocaleChangeInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		localeChangeInterceptor<span class="token punctuation">.</span><span class="token function">setParamName</span><span class="token punctuation">(</span><span class="token string">"lang"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> localeChangeInterceptor<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Bean
-	public LocaleResolver localeResolver()&#123;
-		SessionLocaleResolver localeResolver &#x3D; new SessionLocaleResolver();
-		localeResolver.setDefaultLocale(Locale.KOREAN);
-		return localeResolver;
-	&#125;
+	<span class="token annotation punctuation">@Bean</span>
+	<span class="token keyword">public</span> <span class="token class-name">LocaleResolver</span> <span class="token function">localeResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token class-name">SessionLocaleResolver</span> localeResolver <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SessionLocaleResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		localeResolver<span class="token punctuation">.</span><span class="token function">setDefaultLocale</span><span class="token punctuation">(</span><span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token constant">KOREAN</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> localeResolver<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		registry.addInterceptor(localeChangeInterceptor());
-	&#125;
-&#125;</code></pre><blockquote><p>메시지 프로퍼티 파일들은 src&#x2F;main&#x2F;resource&#x2F;security 폴더에 위치하고 있습니다.</p></blockquote><h4 id="AuthenticationSuccessHandler-amp-AuthenticationFailureHandler"><a href="#AuthenticationSuccessHandler-amp-AuthenticationFailureHandler" class="headerlink" title="AuthenticationSuccessHandler &amp; AuthenticationFailureHandler"></a>AuthenticationSuccessHandler &amp; AuthenticationFailureHandler</h4><p>OKKY의 질문게시판에서 로그인 실패를 어떻게 체크하는가에 대해서 질문하는 글을 보았습니다. 저는 스프링 시큐리티에서 사용하는 AuthenticationFailureHandler 구현체를 상속받아서 처리하도록 하겠습니다.</p><pre class="language-java" data-language="java"><code class="language-java">public class AuthenticationSuccessHandlerImpl extends SavedRequestAwareAuthenticationSuccessHandler  &#123;
-	private static final Logger logger &#x3D; LoggerFactory.getLogger(AuthenticationSuccessHandlerImpl.class);
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span><span class="token class-name">InterceptorRegistry</span> registry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token function">localeChangeInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><blockquote><p>메시지 프로퍼티 파일들은 src&#x2F;main&#x2F;resource&#x2F;security 폴더에 위치하고 있습니다.</p></blockquote><h4 id="AuthenticationSuccessHandler-amp-AuthenticationFailureHandler"><a href="#AuthenticationSuccessHandler-amp-AuthenticationFailureHandler" class="headerlink" title="AuthenticationSuccessHandler &amp; AuthenticationFailureHandler"></a>AuthenticationSuccessHandler &amp; AuthenticationFailureHandler</h4><p>OKKY의 질문게시판에서 로그인 실패를 어떻게 체크하는가에 대해서 질문하는 글을 보았습니다. 저는 스프링 시큐리티에서 사용하는 AuthenticationFailureHandler 구현체를 상속받아서 처리하도록 하겠습니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AuthenticationSuccessHandlerImpl</span> <span class="token keyword">extends</span> <span class="token class-name">SavedRequestAwareAuthenticationSuccessHandler</span>  <span class="token punctuation">&#123;</span>
+	<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">Logger</span> logger <span class="token operator">=</span> <span class="token class-name">LoggerFactory</span><span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationSuccessHandlerImpl</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException &#123;
-		logger.info(&quot;Login Success... - &#123;&#125;&quot;, authentication.getPrincipal());
-		response.sendRedirect(&quot;&#x2F;?login&quot;);
-	&#125;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onAuthenticationSuccess</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span>
+			<span class="token class-name">Authentication</span> authentication<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+		logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"Login Success... - &#123;&#125;"</span><span class="token punctuation">,</span> authentication<span class="token punctuation">.</span><span class="token function">getPrincipal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		response<span class="token punctuation">.</span><span class="token function">sendRedirect</span><span class="token punctuation">(</span><span class="token string">"/?login"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-&#125;</code></pre><p>AuthenticationSuccessHandler 구현체에서는 로그인을 성공했을때 호출(인증 객체가 생성되어진 후)되기 때문에 Authentication 인스턴스 파라미터를 이용할 수 있습니다. authentication.getPrincipal()을 호출하게 되면 저 같은 경우에는 org.springframework.security.core.userdetails.User 가 아닌 com.kdev.app.security.userdetails.UserDetails를 이용할 수 있습니다.</p><pre class="language-java" data-language="java"><code class="language-java">public class AuthenticationFailureHandlerImpl extends SimpleUrlAuthenticationFailureHandler &#123;
-	private static final Logger logger &#x3D; LoggerFactory.getLogger(AuthenticationFailureHandlerImpl.class);
+<span class="token punctuation">&#125;</span></code></pre><p>AuthenticationSuccessHandler 구현체에서는 로그인을 성공했을때 호출(인증 객체가 생성되어진 후)되기 때문에 Authentication 인스턴스 파라미터를 이용할 수 있습니다. authentication.getPrincipal()을 호출하게 되면 저 같은 경우에는 org.springframework.security.core.userdetails.User 가 아닌 com.kdev.app.security.userdetails.UserDetails를 이용할 수 있습니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AuthenticationFailureHandlerImpl</span> <span class="token keyword">extends</span> <span class="token class-name">SimpleUrlAuthenticationFailureHandler</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">Logger</span> logger <span class="token operator">=</span> <span class="token class-name">LoggerFactory</span><span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationFailureHandlerImpl</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-	public AuthenticationFailureHandlerImpl() &#123;
-		this.setDefaultFailureUrl(&quot;&#x2F;login?error&quot;);
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">AuthenticationFailureHandlerImpl</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setDefaultFailureUrl</span><span class="token punctuation">(</span><span class="token string">"/login?error"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException exception) throws IOException, ServletException &#123;
-		logger.info(&quot;Login Failed... - &#123;&#125;&quot;,request.getParameter(&quot;email&quot;));
-		super.onAuthenticationFailure(request, response, exception);
-	&#125;
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onAuthenticationFailure</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> response<span class="token punctuation">,</span>
+			<span class="token class-name">AuthenticationException</span> exception<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span><span class="token punctuation">,</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+		logger<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"Login Failed... - &#123;&#125;"</span><span class="token punctuation">,</span>request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"email"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">onAuthenticationFailure</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">,</span> exception<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-&#125;</code></pre><p>로그인 실패 시 SimpleUrlAuthenticationFailureHandler의 defaultFailureUrl를 지정하면 SPRING_SECURITY_LAST_EXCEPTION에 대한 정보를 가지면서 해당 경로로 이동하게 됩니다.</p><p>AuthenticationException으로 로그인 실패의 이유도 체크할 수 있게 되죠</p><h3 id="스프링-시큐리티-페이지"><a href="#스프링-시큐리티-페이지" class="headerlink" title="스프링 시큐리티 페이지"></a>스프링 시큐리티 페이지</h3><p>스프링 시큐리티에서 제공해주는 기본 로그인 페이지 대신에 우리만의 로그인 페이지를 만들어보도록 하겠습니다.</p><pre class="language-markup" data-language="markup"><code class="language-markup">&lt;%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<span class="token punctuation">&#125;</span></code></pre><p>로그인 실패 시 SimpleUrlAuthenticationFailureHandler의 defaultFailureUrl를 지정하면 SPRING_SECURITY_LAST_EXCEPTION에 대한 정보를 가지면서 해당 경로로 이동하게 됩니다.</p><p>AuthenticationException으로 로그인 실패의 이유도 체크할 수 있게 되죠</p><h3 id="스프링-시큐리티-페이지"><a href="#스프링-시큐리티-페이지" class="headerlink" title="스프링 시큐리티 페이지"></a>스프링 시큐리티 페이지</h3><p>스프링 시큐리티에서 제공해주는 기본 로그인 페이지 대신에 우리만의 로그인 페이지를 만들어보도록 하겠습니다.</p><pre class="language-markup" data-language="markup"><code class="language-markup">&lt;%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 &lt;%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 &lt;%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -292,98 +292,98 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter &#123;
 &lt;![endif]--></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js<span class="token punctuation">"</span></span> <span class="token attr-name">integrity</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa<span class="token punctuation">"</span></span> <span class="token attr-name">crossorigin</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>anonymous<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></code></pre><p><code>SPRING_SECURITY_LAST_EXCEPTION</code>의 존재 여부에 따라서 스프링 시큐리티에서 발생하는 예외에 대한 메시지를 출력할 수 있습니다.</p><blockquote><p>스프링 시큐리티 레퍼런스에서는 단순히 파라미터의 존재여부에 따라서 출력형태를 지정하고 있습니다. 이 부분도 참 아쉽습니다.</p></blockquote><h3 id="UserDetails-amp-UserDetailsService"><a href="#UserDetails-amp-UserDetailsService" class="headerlink" title="UserDetails &amp; UserDetailsService"></a>UserDetails &amp; UserDetailsService</h3><p>아 죄송합니다. UserDetails 인터페이스에 대해서 설명을 안했네요 ㅠㅠ</p><p>스프링 시큐리티는 사용자 정보를 UserDetails 구현체로 사용합니다. 그래서 스프링 시큐리티는 org.springframework.security.core.userdetails.User라는 클래스를 제공합니다. 그러나, 이름과 패스워드 그리고 권한들에 대한 필드만 존재하기 때문에 이메일 정보 또는 프로필 이미지 경로 등과 같은 부가적인 정보를 담을 수 없습니다.</p><p>따라서, UserDetails 구현체를 직접 만들어야 합니다. org.springframework.security.core.userdetails.User 자체도 UserDetails 구현체이기 때문에 이를 상속받아서 구현해도 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java">public class UserDetails extends org.springframework.security.core.userdetails.User &#123;
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></code></pre><p><code>SPRING_SECURITY_LAST_EXCEPTION</code>의 존재 여부에 따라서 스프링 시큐리티에서 발생하는 예외에 대한 메시지를 출력할 수 있습니다.</p><blockquote><p>스프링 시큐리티 레퍼런스에서는 단순히 파라미터의 존재여부에 따라서 출력형태를 지정하고 있습니다. 이 부분도 참 아쉽습니다.</p></blockquote><h3 id="UserDetails-amp-UserDetailsService"><a href="#UserDetails-amp-UserDetailsService" class="headerlink" title="UserDetails &amp; UserDetailsService"></a>UserDetails &amp; UserDetailsService</h3><p>아 죄송합니다. UserDetails 인터페이스에 대해서 설명을 안했네요 ㅠㅠ</p><p>스프링 시큐리티는 사용자 정보를 UserDetails 구현체로 사용합니다. 그래서 스프링 시큐리티는 org.springframework.security.core.userdetails.User라는 클래스를 제공합니다. 그러나, 이름과 패스워드 그리고 권한들에 대한 필드만 존재하기 때문에 이메일 정보 또는 프로필 이미지 경로 등과 같은 부가적인 정보를 담을 수 없습니다.</p><p>따라서, UserDetails 구현체를 직접 만들어야 합니다. org.springframework.security.core.userdetails.User 자체도 UserDetails 구현체이기 때문에 이를 상속받아서 구현해도 됩니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDetails</span> <span class="token keyword">extends</span> <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>security<span class="token punctuation">.</span>core<span class="token punctuation">.</span>userdetails<span class="token punctuation">.</span></span>User</span> <span class="token punctuation">&#123;</span>
 
-	private static final long serialVersionUID &#x3D; -4855890427225819382L;
+	<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">long</span> serialVersionUID <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">4855890427225819382L</span><span class="token punctuation">;</span>
 
-	private Long id;
-	private String nickname;
-	private String email;
-	private Date createdAt;
+	<span class="token keyword">private</span> <span class="token class-name">Long</span> id<span class="token punctuation">;</span>
+	<span class="token keyword">private</span> <span class="token class-name">String</span> nickname<span class="token punctuation">;</span>
+	<span class="token keyword">private</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
+	<span class="token keyword">private</span> <span class="token class-name">Date</span> createdAt<span class="token punctuation">;</span>
 
 
-	public UserDetails(String username, String password, Collection&lt;? extends GrantedAuthority&gt; authorities) &#123;
-		super(username, password, authorities);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">UserDetails</span><span class="token punctuation">(</span><span class="token class-name">String</span> username<span class="token punctuation">,</span> <span class="token class-name">String</span> password<span class="token punctuation">,</span> <span class="token class-name">Collection</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span> authorities<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">super</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">,</span> authorities<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token comment">// TODO Auto-generated constructor stub</span>
+	<span class="token punctuation">&#125;</span>
 
-	public UserDetails(User user)&#123;
-		super(user.getEmail(), user.getPassword(), user.isAccountNonExpired(), user.isAccountNonLocked(), user.isCredentialsNonExpired(), user.isEnabled(), authorities(user));
+	<span class="token keyword">public</span> <span class="token class-name">UserDetails</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token keyword">super</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">isAccountNonExpired</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">isAccountNonLocked</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">isCredentialsNonExpired</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> user<span class="token punctuation">.</span><span class="token function">isEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">authorities</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-		this.id &#x3D; user.getId();
-		this.nickname &#x3D; user.getNickname();
-		this.email &#x3D; user.getEmail();
-		this.createdAt &#x3D; user.getCreatedAt();
-	&#125;
+		<span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>nickname <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getNickname</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>email <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>createdAt <span class="token operator">=</span> user<span class="token punctuation">.</span><span class="token function">getCreatedAt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public Long getId() &#123;
-		return id;
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">Long</span> <span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> id<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public void setId(Long id) &#123;
-		this.id &#x3D; id;
-	&#125;
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setId</span><span class="token punctuation">(</span><span class="token class-name">Long</span> id<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> id<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public String getNickname() &#123;
-		return nickname;
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getNickname</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> nickname<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public void setNickname(String nickname) &#123;
-		this.nickname &#x3D; nickname;
-	&#125;
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setNickname</span><span class="token punctuation">(</span><span class="token class-name">String</span> nickname<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>nickname <span class="token operator">=</span> nickname<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public String getEmail() &#123;
-		return email;
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">getEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> email<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public void setEmail(String email) &#123;
-		this.email &#x3D; email;
-	&#125;
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setEmail</span><span class="token punctuation">(</span><span class="token class-name">String</span> email<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>email <span class="token operator">=</span> email<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public Date getCreatedAt() &#123;
-		return createdAt;
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">Date</span> <span class="token function">getCreatedAt</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> createdAt<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public void setCreatedAt(Date createdAt) &#123;
-		this.createdAt &#x3D; createdAt;
-	&#125;
+	<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setCreatedAt</span><span class="token punctuation">(</span><span class="token class-name">Date</span> createdAt<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>createdAt <span class="token operator">=</span> createdAt<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	private static Collection&lt;? extends GrantedAuthority&gt; authorities(User user) &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		List&lt;GrantedAuthority&gt; authorities &#x3D; new ArrayList&lt;GrantedAuthority&gt;();
-		user.getAuthorities().forEach(a -&gt; &#123;
-			authorities.add(new SimpleGrantedAuthority(a.getAuthority()));
-		&#125;);
-		return authorities;
-	&#125;
+	<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token class-name">Collection</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span> <span class="token function">authorities</span><span class="token punctuation">(</span><span class="token class-name">User</span> user<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span> authorities <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		user<span class="token punctuation">.</span><span class="token function">getAuthorities</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>a <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+			authorities<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SimpleGrantedAuthority</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span><span class="token function">getAuthority</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> authorities<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public UserDetails(String username, String password, Collection&lt;? extends GrantedAuthority&gt; authorities,
-			String nickname) &#123;
-		super(username, password, authorities);
-		this.nickname &#x3D; nickname;
-		this.email &#x3D; username;
-	&#125;
+	<span class="token keyword">public</span> <span class="token class-name">UserDetails</span><span class="token punctuation">(</span><span class="token class-name">String</span> username<span class="token punctuation">,</span> <span class="token class-name">String</span> password<span class="token punctuation">,</span> <span class="token class-name">Collection</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span> authorities<span class="token punctuation">,</span>
+			<span class="token class-name">String</span> nickname<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">super</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">,</span> authorities<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>nickname <span class="token operator">=</span> nickname<span class="token punctuation">;</span>
+		<span class="token keyword">this</span><span class="token punctuation">.</span>email <span class="token operator">=</span> username<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
 
-	public UserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
-			boolean credentialsNonExpired, boolean accountNonLocked,
-			Collection&lt;? extends GrantedAuthority&gt; authorities) &#123;
-		super(username, password, authorities);
-		&#x2F;&#x2F; TODO Auto-generated constructor stub
-	&#125;
-&#125;</code></pre><p>그러면 우리는 Authentication.getPrincipal() 메소드를 통해 얻은 Principal 객체를 통해서도 부가적인 필드에 접근할 수 있습니다.</p><pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">sec:</span>authentication</span> <span class="token attr-name">property</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>principal.email<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span></code></pre><p>org.springframework.security.core.userdetails.UserDetailsService 구현체는 스프링 시큐리티 인증 시에 사용됩니다. UserRepository를 통해 영속성으로 저장된 인증정보를 검색한 후 존재하지 않다면 UsernameNotFoundException을 던지고 있다면 UserDetails 객체를 반환합니다.</p><pre class="language-java" data-language="java"><code class="language-java">@Service
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService &#123;
+	<span class="token keyword">public</span> <span class="token class-name">UserDetails</span><span class="token punctuation">(</span><span class="token class-name">String</span> username<span class="token punctuation">,</span> <span class="token class-name">String</span> password<span class="token punctuation">,</span> <span class="token keyword">boolean</span> enabled<span class="token punctuation">,</span> <span class="token keyword">boolean</span> accountNonExpired<span class="token punctuation">,</span>
+			<span class="token keyword">boolean</span> credentialsNonExpired<span class="token punctuation">,</span> <span class="token keyword">boolean</span> accountNonLocked<span class="token punctuation">,</span>
+			<span class="token class-name">Collection</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">GrantedAuthority</span><span class="token punctuation">></span></span> authorities<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">super</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">,</span> authorities<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token comment">// TODO Auto-generated constructor stub</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>그러면 우리는 Authentication.getPrincipal() 메소드를 통해 얻은 Principal 객체를 통해서도 부가적인 필드에 접근할 수 있습니다.</p><pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">sec:</span>authentication</span> <span class="token attr-name">property</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>principal.email<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span></code></pre><p>org.springframework.security.core.userdetails.UserDetailsService 구현체는 스프링 시큐리티 인증 시에 사용됩니다. UserRepository를 통해 영속성으로 저장된 인증정보를 검색한 후 존재하지 않다면 UsernameNotFoundException을 던지고 있다면 UserDetails 객체를 반환합니다.</p><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDetailsService</span> <span class="token keyword">implements</span> <span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>security<span class="token punctuation">.</span>core<span class="token punctuation">.</span>userdetails<span class="token punctuation">.</span></span>UserDetailsService</span> <span class="token punctuation">&#123;</span>
 
-	@Autowired
-	private UserRepository userRepository;
+	<span class="token annotation punctuation">@Autowired</span>
+	<span class="token keyword">private</span> <span class="token class-name">UserRepository</span> userRepository<span class="token punctuation">;</span>
 
-	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException &#123;
-		&#x2F;&#x2F; TODO Auto-generated method stub
-		User user &#x3D; userRepository.findByEmail(email);
-		if(user &#x3D;&#x3D; null)&#123;
-			throw new UsernameNotFoundException(email);
-		&#125;
-		com.kdev.app.security.userdetails.UserDetails userDetails &#x3D; new com.kdev.app.security.userdetails.UserDetails(user);
-		return userDetails;
-	&#125;
-&#125;</code></pre><p>그런데 좀 이상하다고 느껴집니다. 그러면 패스워드 검증은 언제하는것일까요? 바로 AuthenticationProvider 구현체에서 진행하게 됩니다. AuthenticationProvider 구현체에서는 authenticate() 메소드를 통해서 Authentication 객체(UsernamePasswordAuthentication)를 반환합니다. 즉, 반환하기 직전에 패스워드를 검증하는 것입니다.</p><p>우리는 AuthenticationProvider를 직접적으로 구현하지 않았으니까 이 부분에 대해서 모르고 넘어갈 뻔 했습니다.</p><p><a target="_blank" rel="noopener" href="http://syaku.tistory.com/286">샤쿠님의 스프링 시큐리티 커스텀 로그인</a>이라는 글에서 직접 AuthenticationProvider를 구현해서 사용하는 것을 확인할 수 있습니다.</p><h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>우리가 알아본 것 이외에도 스프링 시큐리티가 제공하는 기능들이 더 존재합니다. 예를 들어, 웹소켓, RESTful API등에도 보안을 적용할 수 있습니다.</p><p>공부하면서 알게된 부분인데, 스프링 프레임워크에서 제공하는 인-메모리 기반 인증 객체(inMemoryAuthentication())는 파라미터로 제공되는 UserDetails의 정보를 활용하여 User 객체를 생성하기 때문에 UserDetails의 구현체를 만든다 하더라도 의미가 없게 됩니다. 만약, 인 메모리 방식과 영속성 방식을 혼용해서 사용하고 싶다면 이 부분에 대해서 연구해볼 필요가 있겠습니다.</p><p>다음은 스프링 시큐리티에 대해서 알아볼 때 좋은 포스트 및 동영상들입니다.</p><ul><li><a target="_blank" rel="noopener" href="http://syaku.tistory.com/278">샤쿠님의 스프링 시큐리티 커스텀 로그인</a></li><li><a target="_blank" rel="noopener" href="http://zgundam.tistory.com/43">제타건담님의 스프링 시큐리티</a></li><li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=C0BQplG7Epo&list=PLvudjKUrAA6bLu1CvgSPEKLhlIEIAJXjm">아라한사님의 스프링 시큐리티 따라해보기</a></li><li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=AiDjJzMXWmM">백기선님의 스프링 시큐리티</a></li><li><a target="_blank" rel="noopener" href="http://hamait.tistory.com/325">하마님의 스프링 시큐리티</a></li></ul><blockquote><p>아는게 없으니 쉽게 이해하지 못하는 부분이 많습니다. 많은 신입 개발자들을 응원합니다 ^ㅡ^</p></blockquote></div><footer class="post-footer"><div class="post-eof"></div></footer></article></div><nav class="pagination"><a class="extend prev" rel="prev" href="/page/79/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/79/">79</a><span class="page-number current">80</span><a class="page-number" href="/page/81/">81</a><a class="extend next" rel="next" href="/page/81/"><i class="fa fa-angle-right" aria-label="Next page"></i></a></nav></div></main><footer class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2023</span> <span class="with-love"><i class="fa fa-heart"></i> </span><span class="author" itemprop="copyrightHolder">Mambo</span></div><div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script><script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script><script src="/js/third-party/fancybox.js"></script><script src="/js/third-party/pace.js"></script><script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script><script>var options={bottom:"unset",right:"15px",left:"unset",time:"0.5s",mixColor:"transparent",backgroundColor:"transparent",buttonColorDark:"#100f2c",buttonColorLight:"#fff",saveInCookies:!0,label:"🌗",autoMatchOsTheme:!0};const darkmode=new Darkmode(options);window.darkmode=darkmode,darkmode.showWidget()</script></body></html>
+	<span class="token annotation punctuation">@Override</span>
+	<span class="token keyword">public</span> <span class="token class-name">UserDetails</span> <span class="token function">loadUserByUsername</span><span class="token punctuation">(</span><span class="token class-name">String</span> email<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">UsernameNotFoundException</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// TODO Auto-generated method stub</span>
+		<span class="token class-name">User</span> user <span class="token operator">=</span> userRepository<span class="token punctuation">.</span><span class="token function">findByEmail</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span><span class="token punctuation">(</span>user <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+			<span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UsernameNotFoundException</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>kdev<span class="token punctuation">.</span>app<span class="token punctuation">.</span>security<span class="token punctuation">.</span>userdetails<span class="token punctuation">.</span></span>UserDetails</span> userDetails <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>kdev<span class="token punctuation">.</span>app<span class="token punctuation">.</span>security<span class="token punctuation">.</span>userdetails<span class="token punctuation">.</span></span>UserDetails</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> userDetails<span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre><p>그런데 좀 이상하다고 느껴집니다. 그러면 패스워드 검증은 언제하는것일까요? 바로 AuthenticationProvider 구현체에서 진행하게 됩니다. AuthenticationProvider 구현체에서는 authenticate() 메소드를 통해서 Authentication 객체(UsernamePasswordAuthentication)를 반환합니다. 즉, 반환하기 직전에 패스워드를 검증하는 것입니다.</p><p>우리는 AuthenticationProvider를 직접적으로 구현하지 않았으니까 이 부분에 대해서 모르고 넘어갈 뻔 했습니다.</p><p><a target="_blank" rel="noopener" href="http://syaku.tistory.com/286">샤쿠님의 스프링 시큐리티 커스텀 로그인</a>이라는 글에서 직접 AuthenticationProvider를 구현해서 사용하는 것을 확인할 수 있습니다.</p><h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>우리가 알아본 것 이외에도 스프링 시큐리티가 제공하는 기능들이 더 존재합니다. 예를 들어, 웹소켓, RESTful API등에도 보안을 적용할 수 있습니다.</p><p>공부하면서 알게된 부분인데, 스프링 프레임워크에서 제공하는 인-메모리 기반 인증 객체(inMemoryAuthentication())는 파라미터로 제공되는 UserDetails의 정보를 활용하여 User 객체를 생성하기 때문에 UserDetails의 구현체를 만든다 하더라도 의미가 없게 됩니다. 만약, 인 메모리 방식과 영속성 방식을 혼용해서 사용하고 싶다면 이 부분에 대해서 연구해볼 필요가 있겠습니다.</p><p>다음은 스프링 시큐리티에 대해서 알아볼 때 좋은 포스트 및 동영상들입니다.</p><ul><li><a target="_blank" rel="noopener" href="http://syaku.tistory.com/278">샤쿠님의 스프링 시큐리티 커스텀 로그인</a></li><li><a target="_blank" rel="noopener" href="http://zgundam.tistory.com/43">제타건담님의 스프링 시큐리티</a></li><li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=C0BQplG7Epo&list=PLvudjKUrAA6bLu1CvgSPEKLhlIEIAJXjm">아라한사님의 스프링 시큐리티 따라해보기</a></li><li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=AiDjJzMXWmM">백기선님의 스프링 시큐리티</a></li><li><a target="_blank" rel="noopener" href="http://hamait.tistory.com/325">하마님의 스프링 시큐리티</a></li></ul><blockquote><p>아는게 없으니 쉽게 이해하지 못하는 부분이 많습니다. 많은 신입 개발자들을 응원합니다 ^ㅡ^</p></blockquote></div><footer class="post-footer"><div class="post-eof"></div></footer></article></div><nav class="pagination"><a class="extend prev" rel="prev" href="/page/79/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/79/">79</a><span class="page-number current">80</span><a class="page-number" href="/page/81/">81</a><a class="extend next" rel="next" href="/page/81/"><i class="fa fa-angle-right" aria-label="Next page"></i></a></nav></div></main><footer class="footer"><div class="footer-inner"><div class="copyright">&copy; <span itemprop="copyrightYear">2023</span> <span class="with-love"><i class="fa fa-heart"></i> </span><span class="author" itemprop="copyrightHolder">Mambo</span></div><div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script><script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script><script src="/js/third-party/fancybox.js"></script><script src="/js/third-party/pace.js"></script><script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script><script>var options={bottom:"unset",right:"15px",left:"unset",time:"0.5s",mixColor:"transparent",backgroundColor:"transparent",buttonColorDark:"#100f2c",buttonColorLight:"#fff",saveInCookies:!0,label:"🌗",autoMatchOsTheme:!0};const darkmode=new Darkmode(options);window.darkmode=darkmode,darkmode.showWidget()</script></body></html>

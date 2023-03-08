@@ -4003,6 +4003,69 @@ $$ <span class="token keyword">LANGUAGE</span> plpgsql<span class="token punctua
       </tags>
   </entry>
   <entry>
+    <title>스프링 벨리데이션</title>
+    <url>/spring-validation/</url>
+    <content><![CDATA[<h4 id="자카르타-벨리데이션"><a href="#자카르타-벨리데이션" class="headerlink" title="자카르타 벨리데이션"></a>자카르타 벨리데이션</h4><p>스프링 부트에서 제공하는 벨리데이션은 spring-boot-starter-validation 모듈에 포함되어 있으며 <a href="https://beanvalidation.org/">Jakarta Bean Validation</a>을 따르는 <a href="https://github.com/hibernate/hibernate-validator/">Hibhernate Validator</a>를 의존하고 있다. 스프링 부트에 의한 자동 구성은 ValidationAutoConfiguration으로 수행하며 LocalValidatorFactoryBean를 기본 Validator 빈으로써 등록함을 확인할 수 있다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-validation'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="LocalValidatorFactoryBean"><a href="#LocalValidatorFactoryBean" class="headerlink" title="LocalValidatorFactoryBean"></a>LocalValidatorFactoryBean</h4><p>애플리케이션 컨텍스트에 존재하는 메시지 소스를 기반으로 보간을 처리하는 MessageSourceMessageInterpolator가 사용되도록 구현되어있다. <a href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/validation/MessageInterpolatorFactory.java">MessageInterpolatorFactory</a>의 내부 구현을 살펴보면 메시지 소스가 없다면 하이버네이트 벨리데이터의 ResourceBundleMessageInterpolator가 사용되나 스프링 부트에 의해 메시지 소스 자체도 자동 구성되므로 결국 MessageSourceMessageInterpolator가 사용된다고 인지하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@Role</span><span class="token punctuation">(</span><span class="token class-name">BeanDefinition</span><span class="token punctuation">.</span><span class="token constant">ROLE_INFRASTRUCTURE</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">Validator</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">defaultValidator</span><span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span> applicationContext<span class="token punctuation">,</span>
+        <span class="token class-name">ObjectProvider</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ValidationConfigurationCustomizer</span><span class="token punctuation">></span></span> customizers<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    factoryBean<span class="token punctuation">.</span><span class="token function">setConfigurationInitializer</span><span class="token punctuation">(</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span> <span class="token operator">-></span> customizers<span class="token punctuation">.</span><span class="token function">orderedStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>customizer<span class="token punctuation">)</span> <span class="token operator">-></span> customizer<span class="token punctuation">.</span><span class="token function">customize</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">MessageInterpolatorFactory</span> interpolatorFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MessageInterpolatorFactory</span><span class="token punctuation">(</span>applicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>interpolatorFactory<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>최종적으로는 MessageSourceMessageInterpolator가 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-context/src/main/java/org/springframework/validation/beanvalidation/LocaleContextMessageInterpolator.java">LocaleContextMessageInterpolator</a>로 래핑되며 LocaleContextHolder.getLocale()를 사용하여 스프링 웹 요청에 의한 스레드에 대해 로케일 기반으로 메시지 보간이 처리되도록 지원한다. </p>
+<h4 id="기본-벨리데이션-메시지"><a href="#기본-벨리데이션-메시지" class="headerlink" title="기본 벨리데이션 메시지"></a>기본 벨리데이션 메시지</h4><p>하이버네이트 벨리데이터 라이브러리 내에는 기본으로 정의된 <a href="https://github.com/hibernate/hibernate-validator/tree/main/engine/src/main/resources/org/hibernate/validator">ValidationMessages</a>를 포함하고 있다. 따라서, @NotEmpty 또는 @Length, @Email 과 같은 자카르타 벨리데이션에 정의되어있는 Constraints에 대해서는 기본적으로 메시지 보간으로 처리될 수 있다.</p>
+<p><img data-src="/images/posts/spring-validation/hibernate-validator-01.png" alt="org.hibernate.validator.ValidationMessages"></p>
+<h4 id="유효성-검사"><a href="#유효성-검사" class="headerlink" title="유효성 검사"></a>유효성 검사</h4><p><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a>에서 알 수 있듯이 자카르타 벨리데이션의 팩토리 함수를 통해 간단하게 벨리데이터를 생성하고 자바 빈 클래스에 저장된 정보가 올바른지 필드 검증을 쉽게 수행할 수 있다. 그러나, 스프링 부트를 사용한다면 자동 구성되는 LocalValidatorFactoryBean를 사용하는 것이 좋다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginService</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validate</span><span class="token punctuation">(</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span> login<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">buildDefaultValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> constraintViolations<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="사용자-정의-메시지-제약사항"><a href="#사용자-정의-메시지-제약사항" class="headerlink" title="사용자 정의 메시지 제약사항"></a>사용자 정의 메시지 제약사항</h4><p>스프링 메시지 소스에 사용자 정의 메시지를 지정하더라도 메시지 패턴에서 {value}와 같은 파라미터 표현이 불가능하다. 예를 들어, 다음과 같이 어떤 값에 대한 길이를 제한한다고 가정하여 @Min 어노테이션을 부여했다고 가정해보자.</p>
+<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>messages</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entry</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>javax.validation.constraints.Min.message<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(사용자 정의) &#123;value&#125; 보다 같거나 커야합니다]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(Custom) must be greater than or equal to &#123;value&#125;]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre>
+
+<pre class="language-none"><code class="language-none">org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.validation.ValidationException: HV000149: An exception occurred during message interpolation
+...
+Caused by: java.lang.IllegalArgumentException: can&#39;t parse argument number: value
+	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1451) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.applyPattern(MessageFormat.java:491) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.&lt;init&gt;(MessageFormat.java:390) ~[na:na]
+...
+Caused by: java.lang.NumberFormatException: For input string: &quot;value&quot;
+	at java.base&#x2F;java.lang.NumberFormatException.forInputString(NumberFormatException.java:65) ~[na:na]
+	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:652) ~[na:na]
+	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:770) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1449) ~[na:na]</code></pre>
+
+<p>이러한 파라미터 표현은 Hibernate Validator에서 지원하는 표현식이므로 MessageFormat으로 지원하는 표현식과는 다르다. MessageFormat는 {0}, {1} 이렇게 숫자 기반의 표현식을 지원하기 때문에 표현식 제약이 발생한다. 아쉬운 부분이지만 사용자 정의 메시지에서 파라미터 표현식을 사용해야한다면 ValidationMessages 리소스 번들을 클래스패스에 재정의해서 사용할 수 밖에 없을 것 같다.</p>
+]]></content>
+      <tags>
+        <tag>Jakarta Bean Validation</tag>
+        <tag>Hibernate Validator</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SSH 키 페어 발급 및 원격 호스트 연결하기</title>
     <url>/ssh/</url>
     <content><![CDATA[<p>개발자 또는 시스템을 운용하는 사람들이 서버 엔지니어가 구축한 원격 호스트에 접속하기 위해서 SSH 프로토콜을 사용한다. 우리가 컴퓨터에 로그인하는 것처럼 간단하게 사용자 이름과 비밀번호를 사용하기도 하며 공개키 기반 인증으로 비밀번호를 대체하거나 2FA(OTP)를 추가적으로 인증하여 보안을 적용하기도 한다. SSH 프로토콜을 사용하는 이유에는 TCP 보안 채널을 연결하고 통신 내용에 대해 암호화하여 패킷을 보호하고 안전하게 서버에 접속하여 통신할 수 있도록 구성하기 위함에 있다. 초보 개발자라면 이 글을 통해서 SSH 키페어를 발급해보고 아마존 웹 서비스의 EC2 인스턴스 또는 깃허브 저장소에 등록하여 원격 호스트에 연결하는 방법을 통해서 SSH에 대해 이해해보기를 바란다.</p>
@@ -7352,224 +7415,6 @@ docker compose exec nginx nginx -s reload
 ]]></content>
       <tags>
         <tag>Nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>벨리데이션 오류 메시지가 사용자 언어로 처리되지 않은 이유</title>
-    <url>/spring-validation/</url>
-    <content><![CDATA[<blockquote>
-<p>스프링 부트 애플리케이션에서 벨리데이션 오류 메시지가 사용자가 언어로 처리되지 않는 사유를 경험하여 이와 같은 문제가 발생한 이유에 대해서 알아보고 스프링에서 제공하는 벨리데이션에 대해서 정리한 글입니다.<br>관련 코드는 <a href="https://github.com/kdevkr/spring-demo-validation">spring-demo-validation</a>에서 확인할 수 있습니다.</p>
-</blockquote>
-<h2 id="자카르타-벨리데이션"><a href="#자카르타-벨리데이션" class="headerlink" title="자카르타 벨리데이션"></a>자카르타 벨리데이션</h2><p>스프링 부트 애플리케이션에서는 벨리데이션 스타터를 통해 <a href="https://beanvalidation.org/2.0/">자카르타 벨리데이션</a> 기반의 <a href="https://hibernate.org/validator/">하이버네이트 벨리데이터</a>를 사용하여 벨리데이션을 수행할 수 있는 기능을 제공합니다. 이 스타터가 포함되면 <strong>ValidationAutoConfiguration</strong>이라는 자동 구성 클래스를 통해 기본적인 벨리데이터(Validator)를 사용할 수 있도록 빈으로 등록해줍니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-validation'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>그래서 스프링 부트 개발자들은 별도의 설정없이 컨트롤러 핸들러 함수에 전달되는 사용자 요청 정보를 간단하게 검증할 수 있게 됩니다. 또한, 하이버네이트 벨리데이터 라이브러리에는 벨리데이션을 위한 어노테이션에 대한 기본적인 <strong>벨리데이션 메시지 소스 번들</strong> 을 포함하고 있어 한국어나 영어와 같이 주요 국가에서 사용하는 언어에 대해서는 메시지를 처리하여 번역된 메시지를 사용자에게 제공할 수 있습니다.</p>
-<p><img data-src="/images/posts/spring-validation/hibernate-validator-01.png" alt="org.hibernate.validator.ValidationMessages"></p>
-<h3 id="유효성-검사"><a href="#유효성-검사" class="headerlink" title="유효성 검사"></a>유효성 검사</h3><p><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a>에서 알 수 있듯이 자카르타 벨리데이션의 팩토리 함수를 통해 간단하게 벨리데이터를 생성하고 자바 빈 클래스에 저장된 정보가 올바른지 필드 검증을 쉽게 수행할 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginService</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validate</span><span class="token punctuation">(</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span> login<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">buildDefaultValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> constraintViolations<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h3 id="로케일-이슈"><a href="#로케일-이슈" class="headerlink" title="로케일 이슈"></a>로케일 이슈</h3><p>자카르타 벨리데이션의 팩토리 함수로 만들어지는 벨리데이터는 기본값으로 정의된 설정을 통해서 벨리데이션을 수행하기 때문에 <code>사용자의 언어 정보에 따라 벨리데이션에 대한 오류 메시지가 번역되지 않는 문제</code>가 있습니다. 이러한 문제는 고객의 요구사항에 의해서 CSV 또는 엑셀 파일을 업로드하여 웹 서비스를 이용할 때 필수로 등록되어야하는 과정을 벌크 형식으로 지원해야했고 구현 과정에서 애플리케이션 컨텍스트에 등록된 벨리데이터가 아닌 팩토리 함수로 만들어지는 벨리데이터를 사용해서 벨리데이션을 수행하면서 발견되었습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">LoginController <span class="token builtin class-name">:</span> <span class="token punctuation">[</span>ConstraintViolationImpl<span class="token punctuation">&#123;</span>interpolatedMessage<span class="token operator">=</span><span class="token string">'공백일 수 없습니다'</span>, <span class="token assign-left variable">propertyPath</span><span class="token operator">=</span>loginId, <span class="token assign-left variable">rootBeanClass</span><span class="token operator">=</span>class com.example.springboot.bean.Account<span class="token variable">$Login</span>, <span class="token assign-left variable">messageTemplate</span><span class="token operator">=</span><span class="token string">'&#123;javax.validation.constraints.NotBlank.message&#125;'</span><span class="token punctuation">&#125;</span><span class="token punctuation">]</span>
-LoginController <span class="token builtin class-name">:</span> locale: en_US</code></pre>
-
-<blockquote>
-<p>위와 같이 로그인 요청 정보에 대한 벨리데이션을 수행하였고 로그인 요청을 한 사용자의 언어 정보와 함께 벨리데이션 오류에 대한 메시지를 출력해보면 사용자의 언어가 아니라 시스템 로케일 정보인 한국어로 메시지가 번역되어 처리되었음을 확인할 수 있습니다.</p>
-</blockquote>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">MessageInterpolator</span> messageInterpolator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDefaultMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span>messageInterpolator <span class="token keyword">instanceof</span> <span class="token class-name">ResourceBundleMessageInterpolator</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"defaultMessageInterpolator is ResourceBundleMessageInterpolator"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">messageInterpolator</span><span class="token punctuation">(</span>messageInterpolator<span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">buildValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>loginInfo<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>기본 메시지 인터폴레이터를 가져와서 ResourceBundleMessageInterpolator 클래스의 인스턴스인지를 비교해보면 위 로그가 출력되는 것을 확인할 수 있습니다. 그리고 동일하게 사용자 언어가 아닌 시스템 로케일을 기반으로 메시지가 처리됨을 보여줍니다.</p>
-<pre class="language-none"><code class="language-none">LoginController : defaultMessageInterpolator is ResourceBundleMessageInterpolator
-LoginController : [ConstraintViolationImpl&#123;interpolatedMessage&#x3D;&#39;공백일 수 없습니다&#39;, propertyPath&#x3D;loginId, rootBeanClass&#x3D;class com.example.springboot.bean.Account$Login, messageTemplate&#x3D;&#39;&#123;javax.validation.constraints.NotBlank.message&#125;&#39;&#125;]
-LoginController : locale: en_US</code></pre>
-
-<h2 id="사용자-언어-기반의-메시지-처리"><a href="#사용자-언어-기반의-메시지-처리" class="headerlink" title="사용자 언어 기반의 메시지 처리"></a>사용자 언어 기반의 메시지 처리</h2><p>기본 벨리데이터는 시스템 로케일을 기반으로 메시지가 처리됨을 확인하였으니 사용자의 언어 정보를 기반으로 메시지를 처리하기 위해서는 어떻게 하여야하는지 알아보도록 하겠습니다. <a href="https://docs.jboss.org/hibernate/validator/3.0/api/org/hibernate/validator/MessageInterpolator.html">MessageInterpolator</a> 인터페이스를 사용하여 메시지를 처리하도록 되어있기 때문에 사용자의 언어 정보를 사용하는 MessageInterpolator를 적용해야합니다.</p>
-<p>스프링에서 사용자의 요청에 의한 스레드 내에서는 LocaleContextHolder 클래스를 통해 사용자의 로케일 정보를 쉽게 가져올 수 있도록 제공합니다. 그리고 이 클래스를 사용해서 로케일 정보를 가져와서 메시지를 처리하는 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/beanvalidation/LocaleContextMessageInterpolator.html"><strong>LocaleContextMessageInterpolator</strong></a>를 제공하고 있습니다.</p>
-<p>기본 메시지 인터폴레이터인 ResourceBundleMessageInterpolator를 LocaleContextMessageInterpolator의 생성자로 전달하여 MessageInterpolator를 대체하여 적용해보도록 하겠습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">MessageInterpolator</span> messageInterpolator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDefaultMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span>messageInterpolator <span class="token keyword">instanceof</span> <span class="token class-name">ResourceBundleMessageInterpolator</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"defaultMessageInterpolator is ResourceBundleMessageInterpolator"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-messageInterpolator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocaleContextMessageInterpolator</span><span class="token punctuation">(</span>messageInterpolator<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">messageInterpolator</span><span class="token punctuation">(</span>messageInterpolator<span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">buildValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>loginInfo<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>그리고 다시 사용자의 로그인 요청을 수행해보고 어떻게 벨리데이션 오류 메시지가 번역되는지 확인해보죠.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">LoginController <span class="token builtin class-name">:</span> <span class="token punctuation">[</span>ConstraintViolationImpl<span class="token punctuation">&#123;</span>interpolatedMessage<span class="token operator">=</span><span class="token string">'must not be blank'</span>, <span class="token assign-left variable">propertyPath</span><span class="token operator">=</span>loginId, <span class="token assign-left variable">rootBeanClass</span><span class="token operator">=</span>class com.example.springboot.bean.Account<span class="token variable">$Login</span>, <span class="token assign-left variable">messageTemplate</span><span class="token operator">=</span><span class="token string">'&#123;javax.validation.constraints.NotBlank.message&#125;'</span><span class="token punctuation">&#125;</span><span class="token punctuation">]</span>
-LoginController <span class="token builtin class-name">:</span> locale: en_US</code></pre>
-
-<blockquote>
-<p>앞선 과정을 통해서 벨리데이션에 대한 메시지 처리는 MessageInterpolator를 사용하므로 LocaleContextMessageInterpolator를 적용하면 스프링에서 관리하는 로케일 정보를 사용해서 메시지를 처리할 수 있음을 이해했습니다.</p>
-</blockquote>
-<h3 id="LocalValidatorFactoryBean"><a href="#LocalValidatorFactoryBean" class="headerlink" title="LocalValidatorFactoryBean"></a>LocalValidatorFactoryBean</h3><p><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/validation/beanvalidation/LocalValidatorFactoryBean.html">LocalValidatorFactoryBean</a>는 벨리데이션 스타터에 의해서 자동으로 등록되는 벨리데이터입니다. 컨트롤러의 핸들러 함수로 전달되는 과정에서 이 벨리데이터를 통해서 사용자의 요청 정보를 검증하며 벨리데이션 오류 메시지를 제공하게 됩니다.</p>
-<p>현재 조직에서는 오래전에 공유한 <a href="managing-i18n-messages-with-xml">XML로 다국어 메시지 관리하기</a>에서처럼 XML 파일을 기반으로 다국어 메시지 정보를 관리하고 있으며 이 메시지 소스를 사용하도록 자동 구성이 아닌 LocalValidatorFactoryBean를 직접 벨리데이터 빈으로 등록하여 사용하고 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span></span><span class="token class-name">MessageSource</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Bean</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>context<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span></span><span class="token class-name">Configuration</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>validation<span class="token punctuation">.</span>beanvalidation<span class="token punctuation">.</span></span><span class="token class-name">LocalValidatorFactoryBean</span></span><span class="token punctuation">;</span>
-
-<span class="token annotation punctuation">@Configuration</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MessageConfig</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">validator</span><span class="token punctuation">(</span><span class="token class-name">CustomMessageSource</span> customMessageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        factoryBean<span class="token punctuation">.</span><span class="token function">setValidationMessageSource</span><span class="token punctuation">(</span>customMessageSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위와 같이 LocalValidatorFactoryBean를 등록할 때 벨리데이션 메시지 소스를 지정하는 것은 하이버네이트 벨리데이터에 의해 클래스패스에 포함된 ValidationMessages를 사용하지 못한다는 내재된 결함을 가지게 됩니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">LoginController <span class="token builtin class-name">:</span> <span class="token punctuation">[</span>ConstraintViolationImpl<span class="token punctuation">&#123;</span>interpolatedMessage<span class="token operator">=</span><span class="token string">'javax.validation.constraints.NotBlank.message'</span>, <span class="token assign-left variable">propertyPath</span><span class="token operator">=</span>loginId, <span class="token assign-left variable">rootBeanClass</span><span class="token operator">=</span>class com.example.springboot.bean.Account<span class="token variable">$Login</span>, <span class="token assign-left variable">messageTemplate</span><span class="token operator">=</span><span class="token string">'&#123;javax.validation.constraints.NotBlank.message&#125;'</span><span class="token punctuation">&#125;</span><span class="token punctuation">]</span>
-LoginController <span class="token builtin class-name">:</span> locale: en_US</code></pre>
-
-<blockquote>
-<p>기본으로 사용되는 ValidationMessages 대신에 벨리데이션 메시지 소스를 지정하였기에 해당 메시지로 처리되지 않았습니다. 왜냐하면 JSR-303 어노테이션에 대한 메시지는 직접 정의하지 않았기 때문이죠.</p>
-</blockquote>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token keyword">public</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">validator</span><span class="token punctuation">(</span><span class="token class-name">CustomMessageSource</span> messageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setValidationMessageSource</span><span class="token punctuation">(</span>messageSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token class-name">MessageInterpolator</span> defaultMessageInterpolator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDefaultMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">LocaleContextMessageInterpolator</span> localeContextMessageInterpolator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocaleContextMessageInterpolator</span><span class="token punctuation">(</span>defaultMessageInterpolator<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>localeContextMessageInterpolator<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>현재 조직처럼 사용자 정의 메시지 소스를 벨리데이션 메시지 소스로도 사용하도록 지정하였다면 위와 같이 MessageInterpolator를 지정하는게 좋습니다. 이때에도 사용자의 언어 정보에 따라 메시지가 처리되도록 LocaleContextMessageInterpolator를 적용해야합니다.</p>
-<h4 id="MessageInterpolatorFactory"><a href="#MessageInterpolatorFactory" class="headerlink" title="MessageInterpolatorFactory"></a>MessageInterpolatorFactory</h4><p>LocalValidatorFactoryBean을 자동 구성하는 ValidationAutoConfiguration 클래스를 살펴보면 LocaleContextMessageInterpolator이 아니라 스프링 부트에서 추가된 MessageInterpolatorFactory를 통해 MessageInterpolator를 가져와서 등록하는 것을 확인할 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ValidationAutoConfiguration</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">defaultValidator</span><span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span> applicationContext<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">MessageInterpolatorFactory</span> interpolatorFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MessageInterpolatorFactory</span><span class="token punctuation">(</span>applicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>interpolatorFactory<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>이를 참고하여 사용자 정의 메시지 소스 번들을 벨리데이션 메시지 소스로 지정하였더라도 MessageInterpolatorFactory를 통해 ResourceBundleMessageInterpolator에 의해서 메시지가 번역되어 처리됨을 확인할 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token keyword">public</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">validator</span><span class="token punctuation">(</span><span class="token class-name">CustomMessageSource</span> messageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setValidationMessageSource</span><span class="token punctuation">(</span>messageSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token class-name">MessageInterpolatorFactory</span> messageInterpolatorFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MessageInterpolatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>messageInterpolatorFactory<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>그런데 앞선 자카르타 팩토리 함수에 의해 생성된 벨리데이터도 ResourceBundleMessageInterpolator를 사용하였는데 어떻게 LocalValidatorFactoryBean는 사용자 언어 정보에 따라 오류 메시지를 처리해주게 되는 것일까요?</p>
-</blockquote>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">MessageInterpolator</span> targetInterpolator <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>messageInterpolator<span class="token punctuation">;</span>
-<span class="token keyword">if</span> <span class="token punctuation">(</span>targetInterpolator <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    targetInterpolator <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getDefaultMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-configuration<span class="token punctuation">.</span><span class="token function">messageInterpolator</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LocaleContextMessageInterpolator</span><span class="token punctuation">(</span>targetInterpolator<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>위 코드는 LocalValidatorFactoryBean이 빈으로 등록되고 난 후 afterPropertiesSet 함수에 의해 수행되는 코드 중 일부입니다. LocalValidatorFactoryBean을 빈으로 등록할 때 MessageInterpolatorFactory에 의해 가져온 ResourceBundleMessageInterpolator를 지정하였지만 이를 다시 LocaleContextMessageInterpolator로 변환하여 등록함을 확인할 수 있습니다. </p>
-<p>결국 LocalValidatorFactoryBean을 빈으로 등록할 때는 다음과 같이 LocaleContextMessageInterpolator를 전달하지 않아도 됨을 의미합니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token keyword">public</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">validator</span><span class="token punctuation">(</span><span class="token class-name">CustomMessageSource</span> messageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setValidationMessageSource</span><span class="token punctuation">(</span>messageSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span><span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">byDefaultProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDefaultMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h3 id="사용자-정의-메시지"><a href="#사용자-정의-메시지" class="headerlink" title="사용자 정의 메시지"></a>사용자 정의 메시지</h3><p>그렇다면 다음과 같이 ValidationMessages에 정의된 메시지 코드를 정의하면 어떻게 메시지가 처리될까요?</p>
-<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>messages</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entry</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>javax.validation.constraints.NotBlank.message<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[[사용자 정의] 공백일 수 없습니다]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[[Custom] must not be blank]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre>
-
-<p>NotBlank에 대한 메시지를 정의했지만 ValidationMessages에 정의된 메시지로 처리됨을 확인할 수 있을겁니다. 이렇게 되는 이유는 setValidationMessageSource 함수 동작에 있습니다. setValidationMessageSource 함수의 코드를 살펴보면 파라미터로 전달된 메시지 소스를 기반으로 ResourceBundleMessageInterpolator를 만들어서 MessageInterpolator를 변경하도록 되어있기 때문입니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setValidationMessageSource</span><span class="token punctuation">(</span><span class="token class-name">MessageSource</span> messageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>messageInterpolator <span class="token operator">=</span> <span class="token class-name">HibernateValidatorDelegate</span><span class="token punctuation">.</span><span class="token function">buildMessageInterpolator</span><span class="token punctuation">(</span>messageSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">HibernateValidatorDelegate</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">MessageInterpolator</span> <span class="token function">buildMessageInterpolator</span><span class="token punctuation">(</span><span class="token class-name">MessageSource</span> messageSource<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ResourceBundleMessageInterpolator</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">MessageSourceResourceBundleLocator</span><span class="token punctuation">(</span>messageSource<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>결국 setValidationMessageSource와 setMessageInterpolator는 동시에 적용할 수 없으므로 사용자 정의 메시지 소스를 지정한 것이 의미없는 쓰레기 코드가 됩니다.</p>
-</blockquote>
-<p>스프링 부트 2.6.0 버전부터는 MessageInterpolatorFactory 생성자가 메시지 소스를 받을 수 있도록 수정되었고 생성자에 의해 전달된 메시지 소스가 있다면 MessageSourceMessageInterpolator로 변경하여주는 코드가 추가되어있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-<span class="token keyword">public</span> <span class="token class-name">MessageInterpolator</span> <span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">BeansException</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">MessageInterpolator</span> messageInterpolator <span class="token operator">=</span> <span class="token function">getMessageInterpolator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>messageSource <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">MessageSourceMessageInterpolator</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>messageSource<span class="token punctuation">,</span> messageInterpolator<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> messageInterpolator<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h3 id="사용자-정의-제약사항"><a href="#사용자-정의-제약사항" class="headerlink" title="사용자 정의 제약사항"></a>사용자 정의 제약사항</h3><p>사용자 정의 메시지 소스를 제공하더라도 메시지 패턴에서 {value}와 같은 파라미터 표현이 불가능합니다. 예를 들어, 다음과 같이 어떤 값에 대한 길이를 제한한다고 가정하여 @Min 어노테이션을 부여했다고 가정하겠습니다.</p>
-<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>messages</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entry</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>javax.validation.constraints.Min.message<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(사용자 정의) &#123;value&#125; 보다 같거나 커야합니다]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(Custom) must be greater than or equal to &#123;value&#125;]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre>
-
-<p>사용자 정의 메시지에서 VailidationMessages에 정의된 것처럼 파라미터 표현을 사용해보겠습니다.</p>
-<pre class="language-none"><code class="language-none">org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.validation.ValidationException: HV000149: An exception occurred during message interpolation
-...
-Caused by: java.lang.IllegalArgumentException: can&#39;t parse argument number: value
-	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1451) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.applyPattern(MessageFormat.java:491) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.&lt;init&gt;(MessageFormat.java:390) ~[na:na]
-...
-Caused by: java.lang.NumberFormatException: For input string: &quot;value&quot;
-	at java.base&#x2F;java.lang.NumberFormatException.forInputString(NumberFormatException.java:65) ~[na:na]
-	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:652) ~[na:na]
-	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:770) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1449) ~[na:na]</code></pre>
-
-<blockquote>
-<p>이러한 파라미터 표현은 Hibernate Validator에서 지원하는 표현식이므로 MessageFormat가 지원하는 표현식과는 다릅니다. MessageFormat는 {0}, {1} 이렇게 숫자 기반의 표현식을 지원하기 때문에 표현식 제약이 발생합니다. 아쉽지만 사용자 정의 메시지에서 파라미터 표현식을 사용하지 않을 수 밖에 없고 파라미터 표현식을 사용해야한다면 ValidationMessages 리소스 번들을 클래스패스에 재정의해서 사용할 수 밖에 없습니다. </p>
-</blockquote>
-<p>언어별 메시지가 정의된 프로퍼티 파일을 보완하고자 XML로 메시지를 정의하여 메시지 소스를 만들어서 사용했지만 의도하지 않은 제약이 생겨버렸습니다. 불편하더라도 벨리데이션 메시지는 프로퍼티 파일로 관리해서 ResourceBundleMessageInterpolator에 의해 처리되도록 해야할 것 같습니다.</p>
-<p>감사합니다.</p>
-<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a href="/managing-i18n-messages-with-xml">XML로 다국어 메시지 관리하기</a></li>
-<li><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Jakarta Bean Validation</tag>
-        <tag>Hibernate Validator</tag>
       </tags>
   </entry>
   <entry>

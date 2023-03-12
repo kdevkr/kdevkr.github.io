@@ -1043,31 +1043,6 @@ configuration<span class="token punctuation">.</span><span class="token function
 ]]></content>
   </entry>
   <entry>
-    <title>Gmail SMTP</title>
-    <url>/gmail-smtp/</url>
-    <content><![CDATA[<p>오래전에 <a href="/sending-mail-with-freemarker-template/">프리마커 템플릿으로 이메일 발송하기</a>라는 주제로 구글 SMTP 서버를 사용해서 스프링 부트 애플리케이션에서 이메일을 발송하는 것을 다루어 보았었는데요. 구글의 보안 정책의 변경에 따라서 <a href="https://support.google.com/accounts/answer/6010255">2022년 5월 30</a>일부터는 보안 수준이 낮은 앱의 액세스가 활성된 계정으로는 SMTP 서버를 이용할 수 없게 되었습니다. 그러면 구글 SMTP 서버를 더이상 사용할 수 없는 것일까요?</p>
-<h2 id="Gmail-SMTP"><a href="#Gmail-SMTP" class="headerlink" title="Gmail SMTP"></a>Gmail SMTP</h2><p>보안 수준이 낮은 앱의 액세스를 활성화한 계정에서는 사용자 이름과 비밀번호를 사용해서 Gmail SMTP와 같은 서드 파티 앱에 인증할 수 있었지만 이제는 사용자의 계정을 더 안전하게 보호하기 위해서 사용자 이름과 비밀번호를 사용해서 서드 파티 앱과 기기에 로그인 요청하는 것을 지원하지 않습니다. 이제는 Gmail SMTP 서버를 이용하기 위해서는 보안 수준이 높은 Gmail 계정을 만들고나서 사용자 이름과 비밀번호가 아닌 다른 방식으로 인증을 요청해야만 합니다.</p>
-<h3 id="2단계-인증-활성화"><a href="#2단계-인증-활성화" class="headerlink" title="2단계 인증 활성화"></a>2단계 인증 활성화</h3><p>보안 수준이 높은 Gmail 계정을 만들기 위해서는 먼저 2단계 인증을 활성화하여야 합니다. 구글 계정 관리 &gt; 보안 메뉴에 들어가면 아래와 같이 2단계 인증을 사용중인지를 확인할 수 있습니다.</p>
-<p><img data-src="/images/posts/gmail-smtp/02.png"></p>
-<p>위와 같이 2단계 인증을 활성화 하지 않았다면 2단계 인증을 클릭해서 안내에 따라서 다음과 같이 인증을 완료하고 2단계 인증을 활성화합니다.</p>
-<p><img data-src="/images/posts/gmail-smtp/03.png" alt="구글 계정에 입력된 전화번호로 인증"></p>
-<p><img data-src="/images/posts/gmail-smtp/04.png" alt="전화 또는 문자메시지로 받은 인증번호 입력 후 인증 완료"></p>
-<p><img data-src="/images/posts/gmail-smtp/05.png" alt="2단계 인증 활성화 완료"></p>
-<h3 id="앱-비밀번호-추가"><a href="#앱-비밀번호-추가" class="headerlink" title="앱 비밀번호 추가"></a>앱 비밀번호 추가</h3><p>2단계 인증이 활성화 되고나서 앱 비밀번호라는 부분이 추가되었습니다. 앱 비밀번호를 추가하면 Gmail SMTP와 같은 2단계 인증을 지원하지 않는 앱에서도 로그인할 수 있다고 알려주는데요. 앞서 말한 사용자 이름과 비밀번호 방식이 아닌 다른 방식으로 인증할 수 있다는 이야기입니다.</p>
-<p><img data-src="/images/posts/gmail-smtp/06.png"></p>
-<p><img data-src="/images/posts/gmail-smtp/07.png"></p>
-<p>이제 발급된 16자리의 앱 비밀번호를 잘 복사해두고 Gmail SMTP 인증에 사용하면 됩니다.</p>
-<h3 id="이메일-발송"><a href="#이메일-발송" class="headerlink" title="이메일 발송"></a>이메일 발송</h3><p><a href="https://github.com/kdevkr/spring-demo-freemarker/tree/main/src/main/resources/config">Gmail SMTP를 사용하기 위한 정보</a>는 달라지지 않으며 우리가 수정해야할 부분은 구글 이메일 계정에 대한 비밀번호 대신에 앞서 발급한 16자리의 앱 비밀번호를 사용하는 것입니다. </p>
-<p><img data-src="/images/posts/gmail-smtp/08.png"></p>
-<p>더이상 보안 수준 낮은 앱의 액세스 활성화 없이도 Gmail SMTP 서버를 이용해볼 수 있는 것을 확인했습니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Gmail</tag>
-        <tag>SMTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>깃허브 풀 리퀘스트 상태 검사</title>
     <url>/github-pr-status-checks/</url>
     <content><![CDATA[<p>현재 회사에서 새해 목표는 빠른 업무 처리를 위해서 간단한 방식을 취함에 따라서 지속적인 성장을 이루어냈으나 제품에 대한 신뢰성의 문제를 경험하고나서는 제품 품질을 강화하기 위한 코드 품질 또는 테스트 자동화에 대한 환경 구축의 필요성을 느끼고 많은 것들을 시도하고 있다. 깃허브 풀 리퀘스트를 수행하고 있었으나 코드 리뷰가 주요 테크 기업이나 스타트업처럼 개발 문화로 정착되어있지 않음으로 인해서 단위 테스트 코드를 작성하도록 요구한다거나 정적 분석 도구를 통해 코드 품질에 대해서 분석하고 리팩토링을 수행하는 과정이 없다보니 개발자들이 스스로 편한 방식을 사용해서 작업 요건에 대해서 처리해왔다.</p>
@@ -1173,6 +1148,31 @@ configuration<span class="token punctuation">.</span><span class="token function
 <p>구글 체크스타일은 회사 코드에 적합하지 않다고 판단되어 가장 간단한 규칙으로 수행할 수 있도록 커스터마이징 된 체크스타일 파일을 추가했습니다.</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Gmail SMTP</title>
+    <url>/gmail-smtp/</url>
+    <content><![CDATA[<p>오래전에 <a href="/sending-mail-with-freemarker-template/">프리마커 템플릿으로 이메일 발송하기</a>라는 주제로 구글 SMTP 서버를 사용해서 스프링 부트 애플리케이션에서 이메일을 발송하는 것을 다루어 보았었는데요. 구글의 보안 정책의 변경에 따라서 <a href="https://support.google.com/accounts/answer/6010255">2022년 5월 30</a>일부터는 보안 수준이 낮은 앱의 액세스가 활성된 계정으로는 SMTP 서버를 이용할 수 없게 되었습니다. 그러면 구글 SMTP 서버를 더이상 사용할 수 없는 것일까요?</p>
+<h2 id="Gmail-SMTP"><a href="#Gmail-SMTP" class="headerlink" title="Gmail SMTP"></a>Gmail SMTP</h2><p>보안 수준이 낮은 앱의 액세스를 활성화한 계정에서는 사용자 이름과 비밀번호를 사용해서 Gmail SMTP와 같은 서드 파티 앱에 인증할 수 있었지만 이제는 사용자의 계정을 더 안전하게 보호하기 위해서 사용자 이름과 비밀번호를 사용해서 서드 파티 앱과 기기에 로그인 요청하는 것을 지원하지 않습니다. 이제는 Gmail SMTP 서버를 이용하기 위해서는 보안 수준이 높은 Gmail 계정을 만들고나서 사용자 이름과 비밀번호가 아닌 다른 방식으로 인증을 요청해야만 합니다.</p>
+<h3 id="2단계-인증-활성화"><a href="#2단계-인증-활성화" class="headerlink" title="2단계 인증 활성화"></a>2단계 인증 활성화</h3><p>보안 수준이 높은 Gmail 계정을 만들기 위해서는 먼저 2단계 인증을 활성화하여야 합니다. 구글 계정 관리 &gt; 보안 메뉴에 들어가면 아래와 같이 2단계 인증을 사용중인지를 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/gmail-smtp/02.png"></p>
+<p>위와 같이 2단계 인증을 활성화 하지 않았다면 2단계 인증을 클릭해서 안내에 따라서 다음과 같이 인증을 완료하고 2단계 인증을 활성화합니다.</p>
+<p><img data-src="/images/posts/gmail-smtp/03.png" alt="구글 계정에 입력된 전화번호로 인증"></p>
+<p><img data-src="/images/posts/gmail-smtp/04.png" alt="전화 또는 문자메시지로 받은 인증번호 입력 후 인증 완료"></p>
+<p><img data-src="/images/posts/gmail-smtp/05.png" alt="2단계 인증 활성화 완료"></p>
+<h3 id="앱-비밀번호-추가"><a href="#앱-비밀번호-추가" class="headerlink" title="앱 비밀번호 추가"></a>앱 비밀번호 추가</h3><p>2단계 인증이 활성화 되고나서 앱 비밀번호라는 부분이 추가되었습니다. 앱 비밀번호를 추가하면 Gmail SMTP와 같은 2단계 인증을 지원하지 않는 앱에서도 로그인할 수 있다고 알려주는데요. 앞서 말한 사용자 이름과 비밀번호 방식이 아닌 다른 방식으로 인증할 수 있다는 이야기입니다.</p>
+<p><img data-src="/images/posts/gmail-smtp/06.png"></p>
+<p><img data-src="/images/posts/gmail-smtp/07.png"></p>
+<p>이제 발급된 16자리의 앱 비밀번호를 잘 복사해두고 Gmail SMTP 인증에 사용하면 됩니다.</p>
+<h3 id="이메일-발송"><a href="#이메일-발송" class="headerlink" title="이메일 발송"></a>이메일 발송</h3><p><a href="https://github.com/kdevkr/spring-demo-freemarker/tree/main/src/main/resources/config">Gmail SMTP를 사용하기 위한 정보</a>는 달라지지 않으며 우리가 수정해야할 부분은 구글 이메일 계정에 대한 비밀번호 대신에 앞서 발급한 16자리의 앱 비밀번호를 사용하는 것입니다. </p>
+<p><img data-src="/images/posts/gmail-smtp/08.png"></p>
+<p>더이상 보안 수준 낮은 앱의 액세스 활성화 없이도 Gmail SMTP 서버를 이용해볼 수 있는 것을 확인했습니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Gmail</tag>
+        <tag>SMTP</tag>
+      </tags>
   </entry>
   <entry>
     <title>그래들 빌드 라이프사이클</title>
@@ -5163,6 +5163,114 @@ ubuntu@ubuntu:~$</code></pre>
         <tag>Undertow</tag>
         <tag>WebSocket</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>언더토우</title>
+    <url>/undertow/</url>
+    <content><![CDATA[<p>자바 언어로 웹 애플리케이션을 개발하는 경우에 대부분 스프링 프레임워크 또는 스프링 부트 프로젝트를 기반으로 시작하기 때문에 직접 자바 서블릿을 작성하여 아파치 톰캣이나 언더토우와 같은 웹 애플리케이션 서버를 실행하여 배포해보는 경험을 하는 신입 개발자가 많지 않을 것 같다. 그래서 초보 개발자들을 위해 그래들 프로젝트로 언더토우 라이브러리를 추가하고 간단하게 Hello World를 찍어보는 것을 공유하고자 한다.</p>
+<h4 id="인텔리제이-커뮤니티-에디션-설치하기"><a href="#인텔리제이-커뮤니티-에디션-설치하기" class="headerlink" title="인텔리제이 커뮤니티 에디션 설치하기"></a>인텔리제이 커뮤니티 에디션 설치하기</h4><p>인텔리제이 커뮤니티 에디션은 스프링에 대한 유용한 기능을 지원하지는 않지만 메이븐이나 그래들 프로젝트에 대해서는 지원하고 있다. 빌드 시스템은 Gradle로 선택하고 Download JDK를 통해서 Temurin 17을 선택하여 다운로드 하자. 그러면 JUnit이 기본적으로 포함된 그래들 프로젝트가 생성된다. </p>
+<p><img data-src="/images/posts/undertow/01.png"><br><img data-src="/images/posts/undertow/02.png"></p>
+<h4 id="언더토우-패키지-추가하기"><a href="#언더토우-패키지-추가하기" class="headerlink" title="언더토우 패키지 추가하기"></a>언더토우 패키지 추가하기</h4><p><a href="https://central.sonatype.com/search?smo=true&q=io.undertow&namespace=io.undertow">메이븐 중앙 저장소</a>에 등록되어 있는 패키지 중에서 undertow-core와 undertow-servlet 모듈을 추가하자. </p>
+<pre class="language-gradle" data-language="gradle"><code class="language-gradle"><span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-core:2.3.4.Final'</span>
+    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-servlet:2.3.4.Final'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Hello-World-핸들러-작성하기"><a href="#Hello-World-핸들러-작성하기" class="headerlink" title="Hello World 핸들러 작성하기"></a>Hello World 핸들러 작성하기</h4><p><a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-core">언더토우 공식 문서</a>에 따라 기본적으로 생성되어있는 Main 클래스를 수정해서 Hello World를 출력하는 웹 애플리케이션을 작성해보자. 그리고 Main 클래스 좌측에 표시된 화살표를 눌러서 디버그 모드로 애플리케이션을 실행하자. 특히 백엔드 개발자라면 무조건 디버그 모드로 실행하는 습관을 들여야한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span>exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                    exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="언더토우-HTTP-핸들러-교체하기"><a href="#언더토우-HTTP-핸들러-교체하기" class="headerlink" title="언더토우 HTTP 핸들러 교체하기"></a>언더토우 HTTP 핸들러 교체하기</h4><p>크롬 브라우저를 실행해서 localhost:8080을 입력하면 Hello World가 출력된다. 그러나, 인텔리제이 콘솔에 표시된 것을 살펴보면 Hello World가 두번 출력될 것이다. 우리는 브라우저로 한번 접근했을 뿐인데 왜 두번 출력되는지 의아한 것을 인지해야한다. 이러한 접근은 문제 파악의 시작점이다. (아직은 익숙치 않겠지만) F12를 눌러 개발자 도구를 표시한 후 Network 탭을 누른 뒤 F5를 눌러서 페이지를 새로고침 해보면 localhost 이외에 favicon.ico라는 것이 있음을 확인할 수 있다. 이 파비콘이라는 것은 웹 사이트 탭 왼쪽에 표시되는 작은 로고를 의미한다. 그러니까, 브라우저는 파비콘 표시를 위해 자동으로 추가 요청하고 있는 것이다. 더 자세하게 살펴보면 우리가 작성한 코드대로 text&#x2F;plain 타입에 Hello World가 전달되었음을 확인할 수 있을 것이다.</p>
+<p><img data-src="/images/posts/undertow/03.png"></p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                            exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>결국, 기존 코드의 핸들러는 모든 요청에 대해 Hello World를 출력하는 애플리케이션이 된 것을 의미한다. 이것을 메인 요청에 대해서만 Hello World를 출력할 수 있도록 핸들러를 교체해보자. 위와 같이 PathHandler를 사용하면 특정 경로를 처리할 핸들러를 별도로 등록할 수 있게 제공한다. 실행중인 애플리케이션을 종료한 후 다시 시작해보면 favicon.ico에 대해서는 요청을 처리하지 않아 404라는 의미로 빨간색으로 표시되었고 인텔리제이 콘솔에는 의도한 것처럼 Hello World가 단 한번 출력됨을 알 수 있다.</p>
+<h4 id="언더토우-서블릿-컨테이너로-전환하기"><a href="#언더토우-서블릿-컨테이너로-전환하기" class="headerlink" title="언더토우 서블릿 컨테이너로 전환하기"></a>언더토우 서블릿 컨테이너로 전환하기</h4><p>앞선, Hello World 출력은 언더토우의 코어 모듈을 사용하여 처리하는 핸들러를 등록했을 뿐이다. 우리는 처음에 서블릿 모듈까지 추가했으므로 자바 서블릿을 사용하는 웹 애플리케이션으로 전환해보자. 언더토우 서블릿 모듈의 사용법도 <a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-servlet">공식 문서를 참고</a>하면 된다. 어느정도 눈치챈 사람들이 있다면 MVC 패턴을 들어봤거나 DispatcherServlet의 용도를 아는 것일 것이다. 현재는 본래 용도가 아닌 Hello World를 출력하기 위한 서블릿이기에 몰라도 되므로 궁금한 사람들만 찾아보자.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">Servlets</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentInfo</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentManager</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">DeploymentInfo</span> deployment <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">deployment</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setClassLoader</span><span class="token punctuation">(</span><span class="token class-name">Main</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setContextPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setDeploymentName</span><span class="token punctuation">(</span><span class="token string">"main.war"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addServlets</span><span class="token punctuation">(</span><span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">servlet</span><span class="token punctuation">(</span><span class="token string">"DispatcherServlet"</span><span class="token punctuation">,</span> <span class="token class-name">DispatcherServlet</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">DeploymentManager</span> manager <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">defaultContainer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addDeployment</span><span class="token punctuation">(</span>deployment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        manager<span class="token punctuation">.</span><span class="token function">deploy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> manager<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServlet</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletRequest</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletResponse</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DispatcherServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        resp<span class="token punctuation">.</span><span class="token function">addHeader</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>앞선 코드의 문제점은 디스패처서블릿이 본 용도가 아니므로 시간이 많다면 본인이 생각하는 방식대로 고쳐보는 것도 추천한다. 많은 신입 개발자들이 오해하는 것은 효율적인 관점에서 코드 작성에 대해 정답이 있다는 것이라고 생각한다는 것일지 모르겠다. 유용한 정보일지는 모르겠으나 누군가에게는 도움이 되는 글이었으면 한다.</p>
+]]></content>
   </entry>
   <entry>
     <title>유닉스 타임스탬프와 시간 정밀도</title>

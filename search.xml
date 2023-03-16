@@ -3828,6 +3828,78 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 ]]></content>
   </entry>
   <entry>
+    <title>스프링 부트 언더토우</title>
+    <url>/spring-boot-undertow/</url>
+    <content><![CDATA[<p>인텔리제이 또는 <a href="https://start.spring.io/">스프링 이니셜라이저</a>를 통해 스프링 부트 프로젝트를 간단하게 생성할 수 있다. 스프링 이니셜라이저를 통해 만들고자 하는 프로젝트에서 필요한 모듈을 쉽게 선택할 수 있게 지원하지만 세부적인 모듈의 선택은 지원하지 않기 때문에 만들어진 프로젝트를 수정해야할 필요성이 생길 수 있다. 아파치 톰캣은 기본적으로 지원하는 기본 컨테이너로써 충분히 입증된 기술이지만 현재 조직과 같이 일부 실무 프로젝트에서는 언더토우를 사용하는 편이다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">configurations<span class="token punctuation">.</span>configureEach <span class="token punctuation">&#123;</span>
+    exclude group<span class="token punctuation">:</span> <span class="token string">'org.springframework.boot'</span><span class="token punctuation">,</span> module<span class="token punctuation">:</span> <span class="token string">'spring-boot-starter-tomcat'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-web'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-websocket'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-undertow'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>위 예시에서 spring-boot-starter-websocket 모듈에 의해 spring-boot-starter-web은 명시할 필요가 없다.</p>
+</blockquote>
+<h4 id="WebSocketDeploymentInfo-경고-로그-없애기"><a href="#WebSocketDeploymentInfo-경고-로그-없애기" class="headerlink" title="WebSocketDeploymentInfo 경고 로그 없애기"></a>WebSocketDeploymentInfo 경고 로그 없애기</h4><p>spring-boot-starter-websocket 모듈을 추가하면 아래처럼 WebSocketDeploymentInfo가 설정되지 않아 기본 버퍼 풀이 사용된다는 경고 로그가 출력된다. 로그 레벨 조정을 통해 무시해도 되지만 WebServerFactoryCustomizer를 통해서 WebSocketDeploymentInfo가 등록되도록 구현할 수 있다.</p>
+<pre class="language-none"><code class="language-none">2023-03-16T21:49:43.249+09:00  WARN 35488 --- [main] io.undertow.websockets.jsr : UT026010: Buffer pool was not set on WebSocketDeploymentInfo, the default pool will be used</code></pre>
+
+<pre class="language-java" data-language="java"><div class="caption"><span>UndertowWebsocketCustomizer</span></div><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UndertowWebsocketCustomizer</span> <span class="token keyword">implements</span> <span class="token class-name">WebServerFactoryCustomizer</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">UndertowServletWebServerFactory</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">ServerProperties<span class="token punctuation">.</span>Undertow</span> undertow<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">UndertowWebsocketCustomizer</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">ServerProperties</span> serverProperties<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>undertow <span class="token operator">=</span> serverProperties<span class="token punctuation">.</span><span class="token function">getUndertow</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">customize</span><span class="token punctuation">(</span><span class="token class-name">UndertowServletWebServerFactory</span> factory<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        factory<span class="token punctuation">.</span><span class="token function">addDeploymentInfoCustomizers</span><span class="token punctuation">(</span>deploymentInfo <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">boolean</span> direct <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>undertow<span class="token punctuation">.</span><span class="token function">getDirectBuffers</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>undertow<span class="token punctuation">.</span><span class="token function">getDirectBuffers</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> bufferSize <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>undertow<span class="token punctuation">.</span><span class="token function">getBufferSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">?</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>undertow<span class="token punctuation">.</span><span class="token function">getBufferSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token number">1024</span><span class="token punctuation">;</span>
+            <span class="token class-name">WebSocketDeploymentInfo</span> webSocketDeploymentInfo <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">WebSocketDeploymentInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            webSocketDeploymentInfo<span class="token punctuation">.</span><span class="token function">setBuffers</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">DefaultByteBufferPool</span><span class="token punctuation">(</span>direct<span class="token punctuation">,</span> bufferSize<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            deploymentInfo<span class="token punctuation">.</span><span class="token function">addServletContextAttribute</span><span class="token punctuation">(</span><span class="token string">"io.undertow.websockets.jsr.WebSocketDeploymentInfo"</span><span class="token punctuation">,</span> webSocketDeploymentInfo<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="HTTPS-포트로-리다이렉트"><a href="#HTTPS-포트로-리다이렉트" class="headerlink" title="HTTPS 포트로 리다이렉트"></a>HTTPS 포트로 리다이렉트</h4><p>이제는 AWS ELB와 같은 로드밸런서 또는 엔진엑스와 같은 웹 서버들을 통해서 리버스 프록시를 구성하므로 애플리케이션이 HTTP&#x2F;2를 지원하도록 구동하지 않는 편이지만 TLS 오프로드가 필요하다면 아래와 같이 HTTP로 연결되었을때 HTTPS로 연결되도록 구성할 수 있다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>UndertowHttp2Customizer</span></div><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UndertowHttp2Customizer</span>
+    <span class="token keyword">implements</span> <span class="token class-name">WebServerFactoryCustomizer</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">UndertowServletWebServerFactory</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">ServerProperties</span> serverProperties<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> httpPort<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">UndertowHttp2Customizer</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">ServerProperties</span> serverProperties<span class="token punctuation">,</span>
+                                   <span class="token keyword">final</span> <span class="token class-name">Environment</span> environment<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>serverProperties <span class="token operator">=</span> serverProperties<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>httpPort <span class="token operator">=</span> environment<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"server.http-port"</span><span class="token punctuation">,</span> <span class="token class-name">Integer</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> <span class="token number">8080</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">customize</span><span class="token punctuation">(</span><span class="token class-name">UndertowServletWebServerFactory</span> factory<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        factory<span class="token punctuation">.</span><span class="token function">addBuilderCustomizers</span><span class="token punctuation">(</span>builder <span class="token operator">-></span> builder<span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>httpPort<span class="token punctuation">,</span> <span class="token string">"0.0.0.0"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        factory<span class="token punctuation">.</span><span class="token function">addDeploymentInfoCustomizers</span><span class="token punctuation">(</span>deploymentInfo <span class="token operator">-></span> deploymentInfo<span class="token punctuation">.</span><span class="token function">addSecurityConstraint</span><span class="token punctuation">(</span>
+                <span class="token keyword">new</span> <span class="token class-name">SecurityConstraint</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">addWebResourceCollection</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">WebResourceCollection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addUrlPattern</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">setTransportGuaranteeType</span><span class="token punctuation">(</span><span class="token class-name">TransportGuaranteeType</span><span class="token punctuation">.</span><span class="token constant">CONFIDENTIAL</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">setEmptyRoleSemantic</span><span class="token punctuation">(</span><span class="token class-name">SecurityInfo<span class="token punctuation">.</span>EmptyRoleSemantic</span><span class="token punctuation">.</span><span class="token constant">PERMIT</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">setConfidentialPortManager</span><span class="token punctuation">(</span>exchange <span class="token operator">-></span> serverProperties<span class="token punctuation">.</span><span class="token function">getPort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+]]></content>
+      <tags>
+        <tag>Spring Boot</tag>
+        <tag>Undertow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring JDBC</title>
     <url>/spring-jdbc/</url>
     <content><![CDATA[<p>Spring Security OAuth2 학습을 위한 샘플 프로젝트를 만들면서 사용하게될 각 모듈에서 필요한 데이터베이스 스키마를 적용하기 위해서 Spring JDBC를 사용한 부분에 대해서 정리해보고자 합니다. 일반적으로 데이터 액세스에 대해서는 Mybatis 또는 JPA 이라는 기술을 도입하는 경우가 많을텐데 스프링 JDBC 만으로도 충분히 데이터베이스 액세스가 가능하며 Spring Session 이나 Spring Security 에서도 JDBC 기반으로 관련 기능을 제공하고 있습니다.</p>

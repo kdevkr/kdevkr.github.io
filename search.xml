@@ -3597,6 +3597,59 @@ dependencies <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
+    <title>스프링 부트 빌드 정보</title>
+    <url>/spring-boot-build-info/</url>
+    <content><![CDATA[<blockquote>
+<p>본 글에 대한 관련 코드는 <a href="https://github.com/kdevkr/spring-demo">https://github.com/kdevkr/spring-demo</a> 에서 참고할 수 있습니다.</p>
+</blockquote>
+<p>스프링 부트 프로젝트에서 빌드 정보를 가져오기 위해서는 그래들이나 메이븐 플러그인에 따라 아래와 같이 buildInfo()가 동작하도록 구성해야한다. 이렇게 구성하면 빌드 단계에서 클래스패스에 META-INF&#x2F;build.properties라는 파일에 빌드 정보가 포함된다.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">springBoot <span class="token punctuation">&#123;</span>
+    <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>클래스패스에 추가된 build-info.properties의 내용은 ProjectInfoAutoConfiguration 클래스에 의해서 BuildProperties 클래스가 빈으로 등록되게 된다. 그래서 우리는 아래와 같이 BuildProperties를 기반으로 빌드 정보를 제공하는 API를 작성할 수 있다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>BuildController.java</span></div><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildController</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">BuildController</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>buildProperties <span class="token operator">=</span> buildProperties<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"build-info"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> buildProperties<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>하지만, 그래들 명령어에 의해 빌드된 애플리케이션 파일으로 실행된 것이 아니라 인텔리제이와 같은 IDE로 구동하는 경우라면 BuildProperties가 등록되지 않으므로 오류가 발생한다. 클래스패스에 있는 빌드 정보를 먼저 사용할 수 있도록 @AutoConfiguration을 통해 자동 구성 클래스를 만들고 ProjectInfoAutoConfiguration가 동작한 이후에 수행하도록 하면 된다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>BuildConfiguration.java</span></div><code class="language-java"><span class="token comment">//@Import(ProjectInfoAutoConfiguration.class)</span>
+<span class="token annotation punctuation">@AutoConfiguration</span><span class="token punctuation">(</span>after <span class="token operator">=</span> <span class="token class-name">ProjectInfoAutoConfiguration</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildConfiguration</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">BuildProperties</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Properties</span> properties <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Properties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"time"</span><span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token constant">ISO_INSTANT</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token class-name">Instant</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"artifact"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"group"</span><span class="token punctuation">,</span> <span class="token string">"kr.kdev"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"version"</span><span class="token punctuation">,</span> <span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">BuildProperties</span><span class="token punctuation">(</span>properties<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>위 코드에서 @AutoConfiguration는 스프링 부트 2.7 에서 추가된 어노테이션이므로 이전 버전이라면 @Import를 통해 수동으로 동작하도록 해야한다.</p>
+</blockquote>
+<p>그러면 이제 개발 환경에서는 ProjectInfoAutoConfiguration에 의해 BuildProperties가 등록되지 않더라도 코드로 정의된 BuildProperties가 등록되어 오류가 발생하지 않는다. 빌드된 애플리케이션에서는 빌드 정보 API가 등록되므로 아래와 같이 빌드 정보를 확인할 수 있다.</p>
+<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token comment"># java -jar '-Dspring.profiles.active=prod' .\demo-1.0.0.jar</span>
+<span class="token comment"># /build-info</span>
+<span class="token punctuation">&#123;</span><span class="token string">"name"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"version"</span>:<span class="token string">"local"</span><span class="token punctuation">,</span><span class="token string">"time"</span>:<span class="token string">"2023-03-22T13:13:58.186Z"</span><span class="token punctuation">,</span><span class="token string">"artifact"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"group"</span>:<span class="token string">"kr.kdev"</span><span class="token punctuation">&#125;</span></code></pre>]]></content>
+  </entry>
+  <entry>
     <title>스프링 부트 MQTT 클라이언트 메시지 채널 구성하기</title>
     <url>/spring-boot-integration-mqtt/</url>
     <content><![CDATA[<p>제주 전기차 실증 시스템을 개발하면서 전기차 OBD 데이터를 수집하기 위하여 MQTT(Message Queuing Telemetry Transfer) 클라이언트를 구성하고 토픽에 대한 메시지 페이로드를 수신하는 것을 처음 구성하였습니다.</p>

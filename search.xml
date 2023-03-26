@@ -3881,6 +3881,44 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 ]]></content>
   </entry>
   <entry>
+    <title>스프링 부트 프로젝트를 만들고나서</title>
+    <url>/spring-boot-project/</url>
+    <content><![CDATA[<p>스프링 이니셜라이저를 통해서 스프링 부트 기반의 프로젝트 폴더를 구성하더라도 회사마다 혹은 개발자마다 너무나도 당연하게 하는 것들이 조금씩 있기 마련이다. 스프링 부트 프로젝트를 만들고나서 너무나도 당연하게 습과적으로 매번 하는 것들에 대해서 정리해보고자 한다. </p>
+<h4 id="1-Properties가-아닌-YAML-방식으로-변경하기"><a href="#1-Properties가-아닌-YAML-방식으로-변경하기" class="headerlink" title="1. Properties가 아닌 YAML 방식으로 변경하기"></a>1. Properties가 아닌 YAML 방식으로 변경하기</h4><p>스프링 이니셜라이저를 통해서 만들어진 기본적인 프로젝트 폴더에는 application.properties 파일이 존재한다. 스프링 부트에서는 Java Properties, YAML 그리고 환경 변수를 통해서 애플리케이션 프로퍼티 속성 값을 적용하여 활용할 수 있게 지원한다. 하지만, ISO-8859-1 인코딩으로 강제되는 자바 프로퍼티 파일에는 한계가 있고 대부분의 애플리케이션에서 UTF-8을 사용하는 편이므로 YAML 방식으로 변경하는 것이 편리하다.</p>
+<blockquote>
+<p>It is recommended to stick with one format for your entire application. If you have configuration files with both .properties and .yml format in the same location, .properties takes precedence.</p>
+</blockquote>
+<p>위와 같이 공식 문서에 나와있는 것처럼 프로퍼티와 야믈 파일을 동시에 사용하는 경우 자바 프로퍼티 파일을 우선하여 적용하므로 주의하자.</p>
+<h4 id="2-스프링-부트-기본-배너-옵션-끄기"><a href="#2-스프링-부트-기본-배너-옵션-끄기" class="headerlink" title="2. 스프링 부트 기본 배너 옵션 끄기"></a>2. 스프링 부트 기본 배너 옵션 끄기</h4><p>두번째로 하는 일은 스프링 부트에서 제공하여 콘솔에 표시되는 기본 배너 로그를 비활성화하는 것이다. 대부분의 애플리케이션에서 스프링 배너를 통해서 버전을 확인할 필요성은 굉장히 적으며 중요시 해야하는 것은 빌드 정보일 뿐이기에 불필요하다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.main.banner-mode</span><span class="token punctuation">:</span> off</code></pre>
+
+<h4 id="3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기"><a href="#3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기" class="headerlink" title="3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기"></a>3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기</h4><p>그래들 기반으로 스프링 부트 프로젝트를 만드는 경우 그래들 롬복 플러그인이 아닌 직접 패키지를 디펜던시에 지정하는 방식으로 되어있다. <a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a>을 플러그인으로 등록하여 사용하는 것이 더 효율적이다.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle"><span class="token keyword">plugins</span> <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="4-기본-톰캣-컨테이너를-언더토우로-대체하기"><a href="#4-기본-톰캣-컨테이너를-언더토우로-대체하기" class="headerlink" title="4. 기본 톰캣 컨테이너를 언더토우로 대체하기"></a>4. 기본 톰캣 컨테이너를 언더토우로 대체하기</h4><p>스프링 부트 프로젝트에서 기본적으로 의존하는 임베디드 톰캣도 준수한 성능을 보여주지만 자바를 사용하여 NIO 기반으로 작성된 경량의 웹 서버 애플리케이션인 언더토우를 사용하고 있다. 웹 스타터 모듈에는 톰캣에 대한 의존성이 포함되어있으므로 아래와 같이 톰캣에 대한 모듈은 제외되도록 하자.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">configurations<span class="token punctuation">.</span>configureEach <span class="token punctuation">&#123;</span>
+    exclude group<span class="token punctuation">:</span> <span class="token string">'org.springframework.boot'</span><span class="token punctuation">,</span> module<span class="token punctuation">:</span> <span class="token string">'spring-boot-starter-tomcat'</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-web'</span>
+    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-undertow'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>스프링 프레임워크 6.1 에서는 JDK 21과 Virtual Threads를 우선적으로 톰캣에서 지원할 예정인 것 같아 언더토우가 아닌 톰캣을 선택해야할 경우가 될 가능성도 보인다. 관련 프로젝트: <a href="https://github.com/mp911de/spring-boot-virtual-threads-experiment">mp911de&#x2F;spring-boot-virtual-threads-experiment</a></p>
+</blockquote>
+<h4 id="5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기"><a href="#5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기" class="headerlink" title="5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기"></a>5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기</h4><p>마지막으로 인텔리제이 IDEA를 통해서 스프링 부트 프로젝트를 빌드하고 실행하는 경우 컴파일러와 그래들에 대한 옵션을 변경하는 것이 더 효율적으로 프로젝트를 개발하고 실행하는 환경이 되므로 적용하는 편이다.</p>
+<ul>
+<li>Build, Execution, Deployment &gt; Build Tools &gt; Gradle &gt; Build and run using Intellij IDEA</li>
+<li>Build, Execution, Deployment &gt; Build Tools &gt; Compiler &gt; Build project automatically</li>
+</ul>
+<p>기본 Gradle이 아닌 Intellij IDEA로 빌드 및 실행을 하도록 설정한다면 프로젝트 루트 폴더에 out 이라는 이름의 폴더에 현재 실행중인 애플리케이션에 대한 클래스 파일과 정적 리소스 파일들이 이동되어 어떠한 문제가 발생했을 때 곧바로 살펴볼 수 있다.</p>
+]]></content>
+  </entry>
+  <entry>
     <title>스프링 부트 언더토우</title>
     <url>/spring-boot-undertow/</url>
     <content><![CDATA[<p>인텔리제이 또는 <a href="https://start.spring.io/">스프링 이니셜라이저</a>를 통해 스프링 부트 프로젝트를 간단하게 생성할 수 있다. 스프링 이니셜라이저를 통해 만들고자 하는 프로젝트에서 필요한 모듈을 쉽게 선택할 수 있게 지원하지만 세부적인 모듈의 선택은 지원하지 않기 때문에 만들어진 프로젝트를 수정해야할 필요성이 생길 수 있다. 아파치 톰캣은 기본적으로 지원하는 기본 컨테이너로써 충분히 입증된 기술이지만 현재 조직과 같이 일부 실무 프로젝트에서는 언더토우를 사용하는 편이다.</p>

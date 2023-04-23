@@ -3,7 +3,6 @@ title: OPENSSH-RSA 개인키를 RSA 개인키로 변경하기
 date: 2023-04-23
 ---
 
-## 
 OpenSSL 라이브러리를 통해 SSH 접속을 위한 키 페어를 발급하는 경우에 기본적으로 RSA 형식의 키 페어가 생성되어도 실제로는 OPENSSH PRIVATE KEY로 저장되게 된다. RSA PRIVATE KEY로 저장되기 위해서는 -m 옵션으로 PEM을 지정해야 한다.
 
 ```shell

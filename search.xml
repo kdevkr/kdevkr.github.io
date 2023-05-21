@@ -511,6 +511,67 @@ puttygen openssh.pem <span class="token parameter variable">-O</span> private-op
       </tags>
   </entry>
   <entry>
+    <title>cURL</title>
+    <url>/curl/</url>
+    <content><![CDATA[<p><a href="https://curl.se/">cURL</a>은 리눅스와 맥 터미널에서 HTTP 요청을 수행해보기 위해서 많이 사용된다. 윈도우에서도 <a href="https://curl.se/windows/microsoft.html">마이크로소프트에서 제공하는 컬 프로그램</a>이 내장되어있다. 그래서 명령 프롬프트(cmd)로 curl 명령어를 수행해보면 아래와 같이 정상적으로 사용할 수 있음을 알 수 있다. 하지만, 윈도우 터미널에서는 명령 프롬프트가 아니라 파워쉘(Powershll)을 사용하고 있으므로 <strong>Invoke-WebRequest</strong> 으로 호출되어 기본적으로 알던 명령어가 수행되지 않는다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>명령 프롬프트</span></div><code class="language-bash">C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>Mambo<span class="token operator">></span>curl <span class="token parameter variable">-V</span>
+<span class="token function">curl</span> <span class="token number">8.0</span>.1 <span class="token punctuation">(</span>Windows<span class="token punctuation">)</span> libcurl/8.0.1 Schannel WinIDN
+Release-Date: <span class="token number">2023</span>-03-20
+Protocols: dict <span class="token function">file</span> <span class="token function">ftp</span> ftps http https imap imaps pop3 pop3s smtp smtps telnet tftp
+Features: AsynchDNS HSTS HTTPS-proxy IDN IPv6 Kerberos Largefile NTLM SPNEGO SSL SSPI threadsafe Unicode UnixSockets</code></pre>
+
+<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo> curl
+
+cmdlet <span class="token function">Invoke-WebRequest</span><span class="token punctuation">(</span>명령 파이프라인 위치 1<span class="token punctuation">)</span>
+다음 매개 변수에 대한 값을 제공하십시오<span class="token punctuation">.</span> 
+Uri: okky<span class="token punctuation">.</span>kr
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : &lt;<span class="token operator">!</span>DOCTYPE html>&lt;html lang=<span class="token string">"ko"</span> <span class="token keyword">class</span>=<span class="token string">"js-focus-visible h-full"</span>>&lt;head>&lt;meta charSet=<span class="token string">"utf-8"</span><span class="token operator">/</span>>&lt;title>
+                    OKKY <span class="token operator">-</span> All That Developer&lt;<span class="token operator">/</span>title>&lt;meta name=<span class="token string">"robots"</span> content=<span class="token string">"index,follow"</span><span class="token operator">/</span>>&lt;meta name=<span class="token string">"descriptio
+                    n"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+RawContent        : HTTP/1<span class="token punctuation">.</span>1 200 OK
+                    Transfer-Encoding: chunked
+                    Connection: keep-alive
+                    Vary: Accept-Encoding
+                    Cache-Control: private<span class="token punctuation">,</span> no-cache<span class="token punctuation">,</span> no-store<span class="token punctuation">,</span> max-age=0<span class="token punctuation">,</span> must-revalidate
+                    Content-<span class="token function">Type</span>: text/html<span class="token punctuation">;</span> charset=utf<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Forms             : <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+Headers           : <span class="token punctuation">&#123;</span><span class="token namespace">[Transfer-Encoding, chunked]</span><span class="token punctuation">,</span> <span class="token namespace">[Connection, keep-alive]</span><span class="token punctuation">,</span> <span class="token namespace">[Vary, Accept-Encoding]</span><span class="token punctuation">,</span> <span class="token namespace">[Cache-Control, p
+                    rivate, no-cache, no-store, max-age=0, must-revalidate]</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">&#125;</span>
+Images            : <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+InputFields       : <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+Links             : <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+ParsedHtml        : mshtml<span class="token punctuation">.</span>HTMLDocumentClass
+RawContentLength  : 22832</code></pre>
+
+<p>cURL의 <a href="https://curl.se/windows/microsoft.html">curl shipped by Microsoft</a> 문서를 참고해보면 Powershell Alias에 대한 문제로 인해 curl.exe 로 프로그램을 지정하여 명령어를 수행하도록 안내한다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">PS C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>Mambo<span class="token operator">></span> curl.exe <span class="token parameter variable">-V</span>
+<span class="token function">curl</span> <span class="token number">8.0</span>.1 <span class="token punctuation">(</span>Windows<span class="token punctuation">)</span> libcurl/8.0.1 Schannel WinIDN
+Release-Date: <span class="token number">2023</span>-03-20
+Protocols: dict <span class="token function">file</span> <span class="token function">ftp</span> ftps http https imap imaps pop3 pop3s smtp smtps telnet tftp
+Features: AsynchDNS HSTS HTTPS-proxy IDN IPv6 Kerberos Largefile NTLM SPNEGO SSL SSPI threadsafe Unicode UnixSockets</code></pre>
+
+<h4 id="파워쉘-Alias-제거하기"><a href="#파워쉘-Alias-제거하기" class="headerlink" title="파워쉘 Alias 제거하기"></a>파워쉘 Alias 제거하기</h4><p>Remove-Item 명령어로 Alias를 제거할 수 있으며 명령어를 실행하고나서 상태를 유지할 수 있도록 현재 프로파일을 메모장으로 열어 curl에 대한 Alias를 삭제할 수 있도록 코드를 작성하여 저장하도록 하자. 이제는 굳이 curl.exe 라는 프로그램을 지정해서 호출할 필요가 없어진다.</p>
+<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo> <span class="token function">remove-item</span> alias:\curl
+<span class="token function">PS</span> C:\Users\Mambo> curl <span class="token operator">-</span>V
+curl 8<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1 <span class="token punctuation">(</span>Windows<span class="token punctuation">)</span> libcurl/8<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1 Schannel WinIDN
+Release-Date: 2023-03-20
+Protocols: dict file ftp ftps http https imap imaps pop3 pop3s smtp smtps telnet tftp
+Features: AsynchDNS HSTS HTTPS-proxy IDN IPv6 Kerberos Largefile NTLM SPNEGO SSL SSPI threadsafe Unicode UnixSockets
+
+notepad <span class="token variable">$profile</span>
+
+<span class="token comment"># 메모장 상단에 입력</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Test-Path</span> <span class="token operator">-</span>Path alias:curl<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">Remove-Item</span> alias:curl <span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="팁-리눅스에서-cURL-명령어-출력이-개행되지-않을-경우"><a href="#팁-리눅스에서-cURL-명령어-출력이-개행되지-않을-경우" class="headerlink" title="[팁] 리눅스에서 cURL 명령어 출력이 개행되지 않을 경우"></a>[팁] 리눅스에서 cURL 명령어 출력이 개행되지 않을 경우</h4><p>간혹 리눅스에서 cURL 명령어를 수행하면 출력 결과가 개행되지 않아서 다음 명령어를 호출할 때 불편함을 느낄 수 있다. <a href="https://stackoverflow.com/questions/12849584/automatically-add-newline-at-end-of-curl-response-body/14614203#14614203">https://stackoverflow.com/a/14614203</a>에 나와있는 것처럼 사용자 디렉토리에 .curlrc 파일을 만들어서 개행이 동작하도록 작성해두면 된다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token function">vi</span> ~/.curlrc
+<span class="token parameter variable">-w</span> <span class="token string">"<span class="token entity" title="\n">\n</span>"</span></code></pre>
+]]></content>
+  </entry>
+  <entry>
     <title>X509 Certificate Signed by Unknown Authority</title>
     <url>/docker-registry-certificate/</url>
     <content><![CDATA[<blockquote>

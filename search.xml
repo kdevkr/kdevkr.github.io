@@ -616,6 +616,32 @@ Login Succeeded</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>서버 타임존을 바꾸지 말자 (Feat. 글로벌)</title>
+    <url>/don&#39;t-change-server-timezone/</url>
+    <content><![CDATA[<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash">ubuntu@ubuntu:~$ timedatectl
+               Local time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
+           Universal time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
+                 RTC time: Wed <span class="token number">2023</span>-05-24 02:16:41    
+                Time zone: Etc/UTC <span class="token punctuation">(</span>UTC, +0000<span class="token punctuation">)</span>       
+System clock synchronized: no                         
+              NTP service: active                     
+          RTC <span class="token keyword">in</span> <span class="token builtin class-name">local</span> TZ: no</code></pre>
+
+<p>기본적으로 서버와 데이터베이스의 타임존은 UTC를 사용한다. 그러다보니 국내 사용자들을 대상으로 하는 서비스를 제공하는 회사들의 경우 <a href="https://jojoldu.tistory.com/513">서버 타임존을 한국 시간(Asia&#x2F;Seoul, +09:00)로 변경해서 사용</a>하기도 한다. 서비스 도메인 그리고 환경을 이해하고 있어야만 올바른 행위로 생각해야하는데 간혹 애플리케이션의 타임존이 한국시간이라 데이터베이스의 타임존과의 차이로 인한 문제를 해결하려고 데이터베이스에 대한 타임존을 한국시간으로 변경하는 방법에 대해 배경 설명없이 블로그에 공유하는 분들이 꽤나 많다.</p>
+<p>결론적으로 이야기하자면 백엔드 개발자는 시간 정보에 타임존을 적용하는 것을 프레젠테이션 계층인 클라이언트 영역에 위임하는 것이 좋다. 그러니까 사용자는 서버에 저장된 데이터에 상관없이 본인의 시간대를 기준으로 정확한 시간이 표시되어야 하는게 요구하는 바이기 때문이다. 간혹 신입 개발자 뿐만 아니라 어느정도 경험이 있는 경력 개발자들도 국내에서만 일하다보니 고정된 관점을 가지게 되는게 아닌가 싶다. 아무튼 프론트엔드 개발자는 단순히 서버에서 제공하는 데이터를 그대로 표시하고자 하는 직무가 아니며 서버에서 정제되어 제공된 데이터를 사용자에게 적합한 데이터로 변환하여 표시하는 작업도 요구된다. 그리고 그 변환 작업 중 하나가 바로 시간 정보에 사용자의 타임존을 더해서 표시해주는 것이다.</p>
+<p>다음은 오키 커뮤니티 사이트에서 개발자 도구의 네트워크 기능으로 확인한 배너 정보이다. </p>
+<p><img data-src="/images/posts/don't-change-server-timezone/01.png"></p>
+<p>배너의 시작날짜(startDate)와 마감날짜(endDate)가 보이는데 2023-06-02T00:00:00는 아마도 한국 시간을 의미할 것이다. 그렇다면 한국 사람이 아닌 해외에서 접속한 사람이 오키 커뮤니티 사이트에 접속했다면 배너가 정상적으로 표시될 수 있을까? 일반적으로 시간에 대한 데이털르 주고받을 때는 타임존이 표현된 문자열이나 UTC Timestamp(밀리초)와 같은 숫자로 변환된 형태로 구성하는 편이다. 이와 비교해서 아래는 아마존 웹 서비스에서 내려주고 있는 시간값이고 <strong>UTC 타임존이라는 것을 알 수 있도록 +0000을 포함</strong>해주고 있다.</p>
+<p><img data-src="/images/posts/don't-change-server-timezone/02.png"></p>
+<p>오키 프로덕트팀의 개발자들이 잘못되었다고는 볼 수 없지만 (아마도 로컬 타임존이 전달되어 변환해주었을 것) 글로벌 서비스를 준비하는 회사에서 일하고자 하는 개발자나 글로벌 서비스로 전환하려는 회사에 있다면 시간과 타임존에 대해서는 생각보다 중요하게 생각해야한다. 웹 개발자로써 애플리케이션에서 사용되는 타임존은 UTC라는 관점을 가지도록 하자.</p>
+<p>비록 애플리케이션 서버나 데이터베이스에 저장된 시간을 보더라도 한국 시간으로 쉽게 변환하여 인지하지 못할지라도…</p>
+]]></content>
+      <tags>
+        <tag>Timezone</tag>
+        <tag>UTC</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>EC2 인스턴스에서 S3 버킷 액세스하기</title>
     <url>/ec2-instance-access-s3-bucket/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>

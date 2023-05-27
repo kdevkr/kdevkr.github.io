@@ -2116,26 +2116,6 @@ swap=0</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>리눅스 웹 콘솔</title>
-    <url>/linux-web-console/</url>
-    <content><![CDATA[<p>AWS에서는 웹 콘솔을 통해서 EC2에 연결할 수 있는 다양한 방법을 제공한다. 그러나, 개인적인 학습을 위해서 Oracle VM VirtualBox를 사용해서 우분투와 같은 리눅스에 대한 VM 머신을 실행하면 윈도우 터미널을 통해 SSH 접속을 수행해야한다. 알고보니 리눅스 서버에 웹 콘솔 기능을 제공하는 <a href="https://cockpit-project.org/">Cockpit</a> 패키지가 있었음을 이제야 확인했다.</p>
-<h4 id="Cockpit-패키지-추가"><a href="#Cockpit-패키지-추가" class="headerlink" title="Cockpit 패키지 추가"></a>Cockpit 패키지 추가</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Ubuntu</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> update <span class="token parameter variable">-y</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> cockpit
-
-<span class="token comment"># CentOS</span>
-<span class="token function">sudo</span> dnf update <span class="token parameter variable">-y</span>
-<span class="token function">sudo</span> dnf <span class="token function">install</span> <span class="token parameter variable">-y</span> cockpit</code></pre>
-
-<h4 id="Cockpit-서비스-실행"><a href="#Cockpit-서비스-실행" class="headerlink" title="Cockpit 서비스 실행"></a>Cockpit 서비스 실행</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> systemctl start cockpit
-<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> cockpit.socket</code></pre>
-
-<p>이제 https:&#x2F;&#x2F;사설IP:9090 으로 접속하면 리눅스 웹 콘솔이 표시된다.</p>
-<p><img data-src="https://file.okky.kr/images/1674996458378.png"></p>
-<p>SSH 접속 명령어를 학습해야할 상황이 아니라면 웹 콘솔을 통해서 리눅스 명령어를 수행해볼 수 있게 되었다.</p>
-]]></content>
-  </entry>
-  <entry>
     <title>HTTP/2를 사용하는 개발 환경</title>
     <url>/local-for-http2/</url>
     <content><![CDATA[<p>지난 <a href="/ssl-certificate">SSL 인증서</a>와 <a href="/tls-offload">TLS 오프로드</a>라는 글을 통해 HTTPS에 대해서 살펴본 적이 있습니다. 이처럼 HTTPS는 사용자의 요청이 안전하게 서버로 전달되는 것을 목적으로 도입하지만 <a href="https://developers.google.com/web/fundamentals/performance/http2?hl=ko">HTTP&#x2F;2</a>를 사용하기 위함도 있습니다. 일반 사용자의 컴퓨터나 모바일 디바이스에 대한 성능이 좋아지면서 TLS 핸드쉐이킹에 대한 비용은 그다지 크지 않습니다. 그러나 HTTP 1.1에서의 Keep Alive 도입은 이미 연결중인 TCP를 다시 사용하므로 어느정도의 TLS 핸드쉐이킹에 대한 비용을 줄일 수 있지만 수 많은 요청이 발생하는 애플리케이션에서는 이미 응답을 기다리는 요청이 끝나기를 현재 요청이 대기해야하는 문제를 가지고 있습니다.</p>

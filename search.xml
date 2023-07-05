@@ -4948,6 +4948,28 @@ sonar.exclusions=</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>프로덕션 코드에서의 자바 표준 출력</title>
+    <url>/system-out-in-prod/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://okky.kr/articles/1456477">https://okky.kr/articles/1456477</a> 에서 경험 많으신 개발자께서 사소하고 쓰잘데기 없다는 의견이 있어서 작성해본다.</p>
+</blockquote>
+<p>주관적인 관점에서 테스트 코드가 아닌 프로덕션 애플리케이션 코드에서 로깅 라이브러리를 활용할 수 있음에도 표준 출력을 사용하는 것은 탈락이라는 의견을 전달하였다고 했다. (실제로는 이력서가 많지 않아서 상세하게 보고 검토하는 기준 중에 하나일 뿐이다.) 그러자, 경험 많은 개발자께서 주관적인 관점은 이해하나 <code>쓰잘데기 없는 것</code>을 기준으로 잡느냐는 의견을 달으셨다. </p>
+<ul>
+<li><a href="https://stackoverflow.com/a/8601972">Do not use System.out.println in server side code</a></li>
+<li><a href="https://softwareengineering.stackexchange.com/a/161215">Why is using System.out.println() so bad?</a></li>
+<li><a href="https://hudi.blog/do-not-use-system-out-println-for-logging/">로깅을 System.out.println() 로 하면 안되는 이유</a></li>
+</ul>
+<p>위의 링크들은 내가 바라보는 기준이 정말 잘못되었는가를 되돌아보기 위해 찾아본 것들이다. 오래전부터 프로덕션 코드에 표준 출력을 사용하는 것은 <code>코드 스멜</code>에 해당되며 나와 동일하게 개발 또는 테스트를 위한 코드에서 표준 출력을 사용하는 것은 무방하다는 입장이다. 특히나, 요즘에 인텔리제이 같은 IDE에서 많이 설치하여 사용하는 SonarLint 플러그인에서도 <a href="https://rules.sonarsource.com/java/RSPEC-106/">java:s106</a>이라는 규칙으로 <code>Major 레벨의 코드 스멜</code>로 검출해준다.</p>
+<p><img data-src="/images/posts/system-out-in-prod/01.png"></p>
+<p>경험 많은 개발자분께서 이야기하는 어떠한 방식으로든 무언가를 확인하는 것은 상관없고 그 코드가 애플리케이션 배포에 포함되도 신경쓰지 않는다는 의견이다. 그렇다면 이 분께서 일하는 환경에서 만들어진 시스템에는 표준 출력으로 사용한 디버그 코드가 남아있을 수 있다는 이야기이며 그것으로 인해 발생하는 여러가지 문제들(표준 출력에 의한 성능이나 보안적인 정보 노출 등)에 대해서는 책임지지 않는다는 의미로 해석할 수 있다.</p>
+<blockquote>
+<p>만약, 실행중인 애플리케이션에 표준 출력에 의한 문제가 발생했다고 다시 빌드하여 배포가 필요하다고 무책임하게 말한다면 어떻게 받아들일까?<br>서비스 중인 애플리케이션을 중단하고 배포하는 것이 그렇게 쉬운일인가?</p>
+</blockquote>
+<p>아무래도 지금의 내 기준이 경험이 많이 쌓여도 <code>변할 가능성은 거의 없을 것</code> 같다. 현재 맡고 있는 개발팀의 개발자 한분은 국비지원 교육을 받고 채용이 되신 분이었으나 이전 회사에서의 팀장들과는 다르다고 오히려 특이하신 분이라 더 성장할 수 있는데 도움을 주시는 것 같다라고 좋은 의견을 주었다. 아무리 신입 개발자라고 하더라도 동료 개발자라는 입장을 고수하는게 내 스타일로 생각되며 신입 개발자는 아무것도 몰라도 되는 사람들이 아니라고 생각된다. <code>누구나 쉽게 개발자로 일할 수 있는</code> 시대가 되었기에 <code>사소한 것들도 오히려 중요하게 생각</code>해야한다.</p>
+<p><img data-src="/images/posts/system-out-in-prod/02.png" alt="개발 도구가 친절하게 알려주는 자바 네이밍 컨벤션도 무시할거야?"></p>
+]]></content>
+  </entry>
+  <entry>
     <title>ThreadLocal</title>
     <url>/threadlocal/</url>
     <content><![CDATA[<blockquote>

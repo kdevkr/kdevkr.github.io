@@ -4418,6 +4418,40 @@ $$ <span class="token keyword">LANGUAGE</span> plpgsql<span class="token punctua
       </tags>
   </entry>
   <entry>
+    <title>스프링 시큐리티 데이터 JDBC</title>
+    <url>/spring-security-data-jdbc-integration/</url>
+    <content><![CDATA[<blockquote>
+<p>전체 예제 코드는 <a href="https://github.com/kdevkr/spring-boot-security/">kdevkr&#x2F;spring-boot-security</a>에서 확인할 수 있다.</p>
+</blockquote>
+<p><a href="https://docs.spring.io/spring-security/reference/servlet/integrations/data.html">Spring Data Integration</a>를 참고하면 스프링 시큐리티와 스프링 데이터 모듈을 통합할 수 있다.<br>우선 아래와 같이 클래스패스에 <code>org.springframework.security:spring-security-data</code> 의존성을 추가하도록 하자.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-data-jdbc'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-jdbc'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-security'</span>
+    implementation <span class="token string">'org.springframework.security:spring-security-data'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">SecurityEvaluationContextExtension</span> <span class="token function">securityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">SecurityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>구성 클래스에서 <strong>SecurityEvaluationContextExtension</strong>를 빈으로 등록하면 @PreAuthorize와 같은 메소드 기반 표현식과 비슷하게 <strong>@Query</strong> 내에서 스프링 시큐리티에 대한 SpEL을 사용할 수 있다. 하지만, 스프링 시큐리티 공식 문서와 <a href="https://github.com/spring-projects/spring-security-samples/tree/main/servlet/java-configuration/data">Spring Data에 대한 예제 코드</a>와 같이 시도해보면 아래와 같은 <code>오류</code>가 발생한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>dao<span class="token punctuation">.</span></span>InvalidDataAccessApiUsageException</span><span class="token operator">:</span> <span class="token constant">SQL</span> <span class="token punctuation">[</span><span class="token constant">SELECT</span> u<span class="token punctuation">.</span>username <span class="token constant">FROM</span> users u where u<span class="token punctuation">.</span>username <span class="token operator">=</span> <span class="token operator">?</span>__$synthetic$__1<span class="token punctuation">]</span><span class="token operator">:</span> given <span class="token number">1</span> parameters but expected <span class="token number">0</span></code></pre>
+
+<p>위와 같은 오류가 발생하는 이유는 Spring Data JDBC는 내부적으로 <strong>N</strong>amedParameterJdbcTemplate**를 사용하기 때문에 <code>?</code>와 같은 JPQL 또는 Native 쿼리 방식과는 차이가 있으므로 <code>?</code>이 아닌 <code>:</code>로 표현해야한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserRepository</span> <span class="token keyword">extends</span> <span class="token class-name">CrudRepository</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Query</span><span class="token punctuation">(</span><span class="token string">"SELECT u.username FROM users u where u.username = :#&#123; principal?.username &#125;"</span><span class="token punctuation">)</span>
+    <span class="token class-name">String</span> <span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+]]></content>
+      <tags>
+        <tag>Spring Security</tag>
+        <tag>Spring Data JDBC</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring Session</title>
     <url>/spring-session/</url>
     <content><![CDATA[<blockquote>
@@ -8813,8 +8847,8 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
 </blockquote>
 ]]></content>
       <tags>
-        <tag>Spring</tag>
         <tag>Spring Security</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>

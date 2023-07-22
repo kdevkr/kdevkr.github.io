@@ -4305,6 +4305,94 @@ dependencies <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
+    <title>스프링 백엔드 개발자가 CORS를 테스트 하는 방법</title>
+    <url>/spring-cors/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/spring-cors/01.png"></p>
+<p>위와 같은 짤의 내용처럼 프론트엔드 개발자에게 고통을 주는 것은 CORS 이다. 그런데 CORS는 브라우저에서의 정책임에도 불구하고 프론트엔드 개발자가 대응할 수 있는 부분은 없으며 브라우저에서의 CORS 매커니즘을 이해하고 서버 백엔드 개발자가 처리해야할 부분이다. MDN의 <a href="https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request">Preflight Request</a> 문서에서 다루는 내용처럼 대부분의 CORS 문제는 프론트엔드 애플리케이션에서의 XHR 요청에 의해 프리플라이트 요청(Preflight Request)에 의한 CORS 위배 응답을 받고 브라우저에서 제한하기 때문에 발생한다.</p>
+<h4 id="프리플라이트-요청"><a href="#프리플라이트-요청" class="headerlink" title="프리플라이트 요청"></a>프리플라이트 요청</h4><p>프리플라이트 요청은 <code>Origin</code> 헤더와 <code>Access-Control-Request-Method</code> 헤더 그리고 <code>OPTIONS</code> 메소드를 사용하여 수행된다. </p>
+<pre class="language-text" data-language="text"><div class="caption"><span>HTTP</span></div><code class="language-text">OPTIONS /resource/foo
+Access-Control-Request-Method: DELETE 
+Access-Control-Request-Headers: origin, x-requested-with 
+Origin: https://foo.bar.org </code></pre>
+
+<p>참고로, 스프링 프레임워크에서 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-web/src/main/java/org/springframework/web/cors/CorsUtils.java">CorsUtils</a>에 의해 프리플라이트 요청을 구분하는 조건은 아래와 같이 구현되어있다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>Java</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">CorsUtils</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">boolean</span> <span class="token function">isPreFlightRequest</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token class-name">HttpMethod</span><span class="token punctuation">.</span><span class="token constant">OPTIONS</span><span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+				request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span><span class="token class-name">HttpHeaders</span><span class="token punctuation">.</span><span class="token constant">ORIGIN</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span>
+				request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span><span class="token class-name">HttpHeaders</span><span class="token punctuation">.</span><span class="token constant">ACCESS_CONTROL_REQUEST_METHOD</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="스프링-CORS-디버그"><a href="#스프링-CORS-디버그" class="headerlink" title="스프링 CORS 디버그"></a>스프링 CORS 디버그</h4><p>CORS 요청에 대한 검증은 CorsFilter에서 기본적으로 사용되도록 구현된 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-web/src/main/java/org/springframework/web/cors/DefaultCorsProcessor.java">DefaultCorsProcessor</a>에 의해 수행된다. CORS 요청에 의해 위배되는 상황에 대해서 원인을 로그로 출력해보려는 경우 DefaultCorsProcessor에 대한 로그 레벨을 TRACE 또는 DEBUG로 지정하면 된다. 개발 환경에서는 CorsFilter 또는 DefaultCorsProcessor의 코드 라인에 중단점을 걸어서 확인할 수 있겠지만 운영 환경에서는 로그 레벨로 체크할 수 있을 것이다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging.level</span><span class="token punctuation">:</span>
+  <span class="token key atrule">org.springframework.web.cors.DefaultCorsProcessor</span><span class="token punctuation">:</span> TRACE</code></pre>
+
+<p><img data-src="/images/posts/spring-cors/03.gif" alt="CORS의 프리플라이트 요청을 이해한 백엔드 개발자"></p>
+<h4 id="스프링-MockMvc로-CORS-테스트"><a href="#스프링-MockMvc로-CORS-테스트" class="headerlink" title="스프링 MockMvc로 CORS 테스트"></a>스프링 MockMvc로 CORS 테스트</h4><p>스프링 프레임워크를 사용중이며 <strong>CorsConfiguration</strong> 설정을 해두었다면 아래와 같이 <strong>MockMvc</strong>를 활용한 테스트 코드를 작성할 수 있다. </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Preflight request"</span><span class="token punctuation">)</span>
+<span class="token keyword">void</span> <span class="token class-name">TestPreflightRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> allowedOrigins <span class="token operator">=</span> corsConfiguration<span class="token punctuation">.</span><span class="token function">getAllowedOrigins</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>allowedOrigins <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            allowedOrigins <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> allowedMethods <span class="token operator">=</span> corsConfiguration<span class="token punctuation">.</span><span class="token function">getAllowedMethods</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>allowedMethods <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            allowedMethods <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        mockMvc<span class="token punctuation">.</span><span class="token function">perform</span><span class="token punctuation">(</span><span class="token function">options</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"Origin"</span><span class="token punctuation">,</span> allowedOrigins<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"Access-Control-Request-Method"</span><span class="token punctuation">,</span> <span class="token string">"GET"</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isOk</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">stringValues</span><span class="token punctuation">(</span><span class="token string">"Access-Control-Allow-Origin"</span><span class="token punctuation">,</span> allowedOrigins<span class="token punctuation">.</span><span class="token function">toArray</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">andExpect</span><span class="token punctuation">(</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token string">"Access-Control-Allow-Methods"</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">","</span><span class="token punctuation">,</span> allowedMethods<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">andDo</span><span class="token punctuation">(</span><span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="cURL로-테스트하는-방법"><a href="#cURL로-테스트하는-방법" class="headerlink" title="cURL로 테스트하는 방법"></a>cURL로 테스트하는 방법</h4><p>포스트맨 도구로 HTTP 요청을 수행한 것처럼 cURL로도 프리플라이트 요청을 수행해볼 수 있다. 포스트맨과는 다르게 OPTIONS를 직접적으로 사용해야한다. DefaultCorsProcessor에 의해 CORS에 위배된 상황이 있다면 <code>Invalid CORS request</code>이라는 응답과 함께 403 상태 코드가 확인 될 것이다.</p>
+<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo> curl <span class="token operator">-</span>X OPTIONS <span class="token string">'http://localhost:5000'</span> <span class="token operator">-</span>H <span class="token string">'Origin: http://localhost'</span> <span class="token operator">-</span>H <span class="token string">'Access-Control-Request-Method: GET'</span> <span class="token operator">-</span>v
+
+<span class="token operator">*</span>   Trying 127<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1:5000<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token operator">*</span> Connected to localhost <span class="token punctuation">(</span>127<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1<span class="token punctuation">)</span> port 5000 <span class="token punctuation">(</span><span class="token comment">#0)</span>
+> OPTIONS <span class="token operator">/</span> HTTP/1<span class="token punctuation">.</span>1
+> Host: localhost:5000
+> User-Agent: curl/8<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1
+> Accept: <span class="token operator">*</span><span class="token operator">/</span><span class="token operator">*</span>
+> Origin: http:<span class="token operator">/</span><span class="token operator">/</span>localhost
+> Access-Control-<span class="token function">Request-Method</span>: GET
+>
+&lt; HTTP/1<span class="token punctuation">.</span>1 403 Forbidden
+&lt; Expires: 0
+&lt; Cache-Control: no-cache<span class="token punctuation">,</span> no-store<span class="token punctuation">,</span> max-age=0<span class="token punctuation">,</span> must-revalidate
+&lt; X-XSS-Protection: 0
+&lt; Pragma: no-cache
+&lt; X-Frame-Options: DENY
+&lt; Date: Sat<span class="token punctuation">,</span> 22 Jul 2023 12:56:00 GMT
+&lt; Connection: keep-alive
+&lt; Vary: Origin
+&lt; Vary: Access-Control-<span class="token function">Request-Method</span>
+&lt; Vary: Access-Control-<span class="token function">Request-Headers</span>
+&lt; X-Content-<span class="token function">Type</span><span class="token operator">-</span>Options: nosniff
+&lt; Transfer-Encoding: chunked
+&lt;
+Invalid CORS request* Connection <span class="token comment">#0 to host localhost left intact</span></code></pre>
+
+<h4 id="Postman으로-테스트하는-방법"><a href="#Postman으로-테스트하는-방법" class="headerlink" title="Postman으로 테스트하는 방법"></a>Postman으로 테스트하는 방법</h4><p>HTTP 요청을 수행해볼 수 있는 포스트맨에서 프리플라이트 요청을 수행하기 위해서는 Origin 헤더를 포함하면 된다. 포스트맨에서 알아서 OPTIONS를 수행하므로 간단하게 테스트해볼 수 있다.</p>
+<p><img data-src="/images/posts/spring-cors/02.png"></p>
+<p>만약, CORS는 프론트엔드 영역에서 해결해야할 문제라고 생각하고 있는 개발자가 있다면 CORS에 대해서 다시 학습하길 바란다.<br>프론트엔드 개발자가 CORS의 고통에서 벗어날 수 있도록 백엔드 개발자는 책임을 다해야 할 것이다. </p>
+]]></content>
+      <tags>
+        <tag>CORS</tag>
+        <tag>Preflight Request</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring JDBC</title>
     <url>/spring-jdbc/</url>
     <content><![CDATA[<p>Spring Security OAuth2 학습을 위한 샘플 프로젝트를 만들면서 사용하게될 각 모듈에서 필요한 데이터베이스 스키마를 적용하기 위해서 Spring JDBC를 사용한 부분에 대해서 정리해보고자 합니다. 일반적으로 데이터 액세스에 대해서는 Mybatis 또는 JPA 이라는 기술을 도입하는 경우가 많을텐데 스프링 JDBC 만으로도 충분히 데이터베이스 액세스가 가능하며 Spring Session 이나 Spring Security 에서도 JDBC 기반으로 관련 기능을 제공하고 있습니다.</p>

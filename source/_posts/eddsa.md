@@ -9,8 +9,7 @@ tags:
 [EdDSA(Edwards-curve Digital Signature Algorithm)](https://datatracker.ietf.org/doc/html/rfc8032)는 `Edwards-Curve` 곡선에 의한 전자 서명 알고리즘을 의미한다. 과거에 [ED25519](/ed25519)에 대해서 정리한 것과 같이 ECDSA와 혼동이 될 수 있다. [RFC8410](https://datatracker.ietf.org/doc/html/rfc8410)에서는 Internet X.509 Public Key Infrastructure 에서 Ed25519과 같은 Algorithm Identifiers에 대한 표준을 설명하고 있다.
 
 #### Curve25519 and Curve448 Algorithm Identifiers
-
-BouncyCastle의 `ECNamedCurveTable.getNames()`에는 기본적인 EC 곡선이 포함되어있고 `curve25519`는 CustomNamedCurves에 포함되어 있고 CustomBamedCurvse로 제공받은 X9ECParameters를 아래와 같이 ECParameterSpec으로 변경할 수 있다.
+BC(Bouncy Castle)의 `ECNamedCurveTable.getNames()`에는 기본적인 EC 곡선이 포함되어있고 `curve25519`는 CustomNamedCurves에 포함되어 있어 Curve25519 곡선에 대한 X9ECParameters를 아래와 같이 ECParameterSpec으로 변경할 수 있다.
 
 ```java
 public static AlgorithmParameterSpec curve25519Spec() {
@@ -21,9 +20,17 @@ public static AlgorithmParameterSpec curve25519Spec() {
 ```
 
 #### Ed25519 키 페어 생성
-`Ed25519KeyPairGenerator`와 함께 `ECKeyGenerationParameters`를 사용하면 Ed25519 키 페어를 생성할 수 있다. 그런데 이미 Ed25519KeyGenerationParameters를 제공하고 있으므로 굳이 ECParameterSpec를 사용하는 코드를 작성할 필요가 없어진다.
+`Ed25519KeyPairGenerator`와 함께 `ECKeyGenerationParameters`를 사용하면 Ed25519 키 페어를 생성할 수 있다. 그런데 이미 Ed25519KeyGenerationParameters를 제공하고 있으므로 굳이 ECParameterSpec를 사용하는 코드를 작성할 필요가 없다. 만약, 굳이 ECParameterSpec으로 ECKeyGenerationParameters를 만들어서 사용하고 싶은 사람들을 위해 예제 코드를 첨부한다.
 
 ```java
+@Test
+void TestKeyPairUsingEd25519Generator() {
+    Ed25519KeyPairGenerator keyPairGenerator = new Ed25519KeyPairGenerator();
+    keyPairGenerator.init(new Ed25519KeyGenerationParameters(new SecureRandom()));
+
+    AsymmetricCipherKeyPair keyPair = keyPairGenerator.generateKeyPair();
+}
+
 @Test
 void TestKeyPairUsingECParams() {
     ECParameterSpec curve25519Spec = (ECParameterSpec) curve25519Spec();
@@ -34,16 +41,6 @@ void TestKeyPairUsingECParams() {
     keyPairGenerator.init(ecKeyGenerationParameters);
 
     AsymmetricCipherKeyPair keyPair = keyPairGenerator.generateKeyPair();
-    Assertions.assertNotNull(keyPair);
-}
-
-@Test
-void TestKeyPairUsingEd25519Generator() {
-    Ed25519KeyPairGenerator keyPairGenerator = new Ed25519KeyPairGenerator();
-    keyPairGenerator.init(new Ed25519KeyGenerationParameters(new SecureRandom()));
-
-    AsymmetricCipherKeyPair keyPair = keyPairGenerator.generateKeyPair();
-    Assertions.assertNotNull(keyPair);
 }
 ```
 
@@ -82,6 +79,14 @@ X509CertificateHolder certificateHolder = new JcaX509v3CertificateBuilder(issuer
 X509Certificate certificate = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(certificateHolder);
 
 certificate.checkValidity(new Date());
+```
+
+#### KeyPairGeneratorSpi로 Ed25519 키 페어 생성
+사실은 BC에서 KeyPairGeneratorSpi를 제공하고 있으므로 아래와 같이 `BCEdDSAPrivateKey`와 `BCEdDSAPublicKey`를 가지는 키 페어를 생성할 수 있다.
+
+```java
+KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider.PROVIDER_NAME);
+KeyPair keyPair = keyPairGenerator.generateKeyPair();
 ```
 
 더 자세한 코드는 [EdDSATest.java](https://github.com/kdevkr/spring-boot-security/blob/main/src/test/java/com/example/demo/x509/EdDSATest.java)에서 확인할 수 있다.

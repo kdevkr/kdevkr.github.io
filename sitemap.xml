@@ -2,24 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kdevkr.github.io/archive/improve-webpack5-build-speed.html</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/archive/load-testing.html</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/archive/no-emit-deprecation-warnings-of-dart-sass.html</loc>
     
     <lastmod>2023-08-06</lastmod>
@@ -146,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/archive/mqtt-connection-lost.html</loc>
+    <loc>https://kdevkr.github.io/archive/setup-kubernetes-cluster.html</loc>
     
     <lastmod>2023-08-06</lastmod>
     
@@ -155,7 +137,34 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/archive/setup-kubernetes-cluster.html</loc>
+    <loc>https://kdevkr.github.io/mapstruct/</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/modbus-tcp/</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/mutual-tls/</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/network/</loc>
     
     <lastmod>2023-08-06</lastmod>
     
@@ -551,6 +560,51 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/archive/improve-webpack5-build-speed.html</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/load-testing.html</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/archive/mqtt-connection-lost.html</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/add-jdk-installations-jenkins/</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/all-message-codes-in-spring-boot/</loc>
+    
+    <lastmod>2023-08-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/allow-ec2-instance-connect/</loc>
     
     <lastmod>2023-08-06</lastmod>
@@ -911,42 +965,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/mapstruct/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/modbus-tcp/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/mutual-tls/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/network/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/http-requests-from-client-to-response-from-spring/</loc>
     
     <lastmod>2023-08-06</lastmod>
@@ -975,24 +993,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-enviroment/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/add-jdk-installations-jenkins/</loc>
-    
-    <lastmod>2023-08-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/all-message-codes-in-spring-boot/</loc>
     
     <lastmod>2023-08-06</lastmod>
     

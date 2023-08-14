@@ -6,28 +6,28 @@
 reminder: true
 
 cache:
-    enable: false
+  enable: false
 
 minify: false
 
 # Custom Settings
 custom_file_path:
-    #head:                   source/_data/head.njk
-    #header:                 source/_data/header.njk
-    #sidebar:                source/_data/sidebar.njk
-    #postMeta:               source/_data/post-meta.njk
-    #postBodyEnd:            source/_data/post-body-end.njk
-    #footer:                 source/_data/footer.njk
-    #bodyEnd:                source/_data/body-end.njk
-    variable: source/_data/variables.styl
-    mixin: source/_data/mixins.styl
-    style: source/_data/styles.styl
+  #head:                   source/_data/head.njk
+  #header:                 source/_data/header.njk
+  #sidebar:                source/_data/sidebar.njk
+  #postMeta:               source/_data/post-meta.njk
+  #postBodyEnd:            source/_data/post-body-end.njk
+  #footer:                 source/_data/footer.njk
+  #bodyEnd:                source/_data/body-end.njk
+  variable: source/_data/variables.styl
+  mixin: source/_data/mixins.styl
+  style: source/_data/styles.styl
 
 creative_commons:
-    license: by-nc-sa
-    sidebar: true
-    post: false
-    language: deed.ko
+  license: by-nc-sa
+  sidebar: true
+  post: false
+  language: deed.ko
 
 # ---------------------------------------------------------------
 # Scheme Settings
@@ -37,76 +37,76 @@ scheme: Gemini
 darkmode: false
 
 favicon:
-    small: /images/favicon/favicon-16x16.png
-    medium: /images/favicon/favicon-32x32.png
-    apple_touch_icon: /images/favicon/apple-touch-icon.png
-    safari_pinned_tab: /images/favicon/favicon.ico
-    #android_manifest: /images/manifest.json
-    #ms_browserconfig: /images/browserconfig.xml
+  small: /images/favicon/favicon-16x16.png
+  medium: /images/favicon/favicon-32x32.png
+  apple_touch_icon: /images/favicon/apple-touch-icon.png
+  safari_pinned_tab: /images/favicon/favicon.ico
+  #android_manifest: /images/manifest.json
+  #ms_browserconfig: /images/browserconfig.xml
 
 custom_logo: #/images/favicon/android-chrome-192x192.png
 
 menu_settings:
-    icons: true
-    badges: true
+  icons: true
+  badges: true
 
 # ---------------------------------------------------------------
 # Font Settings
 # See: https://theme-next.js.org/docs/theme-settings/#Fonts-Customization
 # ---------------------------------------------------------------
 font:
-    # Use custom fonts families or not.
-    # Depended options:        `external` and `family`.
-    enable: true
+  # Use custom fonts families or not.
+  # Depended options:        `external` and `family`.
+  enable: true
 
-    # Uri of fonts host, e.g. //fonts.googleapis.com (Default).
-    host: //fonts.googleapis.com
+  # Uri of fonts host, e.g. //fonts.googleapis.com (Default).
+  host: //fonts.googleapis.com
 
-    # Font options:
-    # `external:               true` will load this font family from `host` above.
-    # `family:                 Times New Roman`. Without any quotes.
-    # `size: x.x`. Use `em` as unit. Default: 1 (16px)
+  # Font options:
+  # `external:               true` will load this font family from `host` above.
+  # `family:                 Times New Roman`. Without any quotes.
+  # `size: x.x`. Use `em` as unit. Default: 1 (16px)
 
-    # Global font settings used for all elements inside <body>.
-    global:
-        external: true
-        family: Noto Sans KR
+  # Global font settings used for all elements inside <body>.
+  global:
+    external: true
+    family: Noto Sans KR
 
-    # Font settings for site title (.site-title).
-    title:
-        external: true
-        family: Pretendard-Bold
+  # Font settings for site title (.site-title).
+  title:
+    external: true
+    family: Pretendard-Bold
 
-    # Font settings for headlines (<h1> to <h6>).
-    headings:
-        external: true
-        family: Pretendard-Medium
+  # Font settings for headlines (<h1> to <h6>).
+  headings:
+    external: true
+    family: Pretendard-Medium
 
-    # Font settings for posts (.post-body).
-    posts:
-        external: true
-        # family:                  Noto Sans KR
+  # Font settings for posts (.post-body).
+  posts:
+    external: true
+    # family:                  Noto Sans KR
 
-    # Font settings for <code> and code blocks.
-    codes:
-        external: true
-        family: Jetbrains Mono
+  # Font settings for <code> and code blocks.
+  codes:
+    external: true
+    family: Jetbrains Mono
 
 avatar:
-    url: https://avatars1.githubusercontent.com/u/17937604?s=460&v=4
-    rounded: true
-    rotated: false
+  url: https://avatars1.githubusercontent.com/u/17937604?s=460&v=4
+  rounded: true
+  rotated: false
 
 pace:
-    enable: true
-    color: blue
-    theme: loading-bar
+  enable: true
+  color: blue
+  theme: loading-bar
 
 excerpt:
-    depth: 10
-    excerpt_excludes: []
-    more_excludes: []
-    hideWholePostExcerpts: true
+  depth: 10
+  excerpt_excludes: []
+  more_excludes: []
+  hideWholePostExcerpts: true
 
 # ---------------------------------------------------------------
 # Third Party Plugins & Services Settings
@@ -127,90 +127,98 @@ custom_scrollbar: true
 site_state: true
 
 social:
-    GitHub: https://github.com/kdevkr || fab fa-github
-    E-Mail: mailto:kdevkr@gmail.com || fas fa-envelope
+  GitHub: https://github.com/kdevkr || fab fa-github
+  E-Mail: mailto:kdevkr@gmail.com || fas fa-envelope
 
 social_icons:
-    enable: true
-    icons_only: false
-    transition: false
+  enable: true
+  icons_only: false
+  transition: false
 
 motion:
-    enable: false
+  enable: false
 
 toc:
-    enable: true
-    # Automatically add list number to toc.
-    number: true
-    # If true, all words will placed on next lines if header width longer then sidebar width.
-    wrap: false
-    # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
-    expand_all: false
-    # Maximum heading depth of generated toc.
-    max_depth: 3
+  enable: true
+  # Automatically add list number to toc.
+  number: true
+  # If true, all words will placed on next lines if header width longer then sidebar width.
+  wrap: false
+  # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
+  expand_all: false
+  # Maximum heading depth of generated toc.
+  max_depth: 3
 
 sidebar:
-    position: left
-    width: 240
-    display: hide
-    scrollpercent: true
-    b2t: true
+  position: left
+  width: 240
+  display: hide
+  scrollpercent: true
+  b2t: true
 
 codeblock:
-    # Code Highlight theme
-    # See: https://github.com/highlightjs/highlight.js/tree/master/src/styles
-    # darcula | github-gist | atom-one-dark
-    theme:
-        light: default
-        dark: default
-    # See: https://github.com/PrismJS/prism/tree/master/themes
-    # prism-darcula prism-one-dark
-    prism:
-        light: prism-darcula
-        dark: prism-darcula
-    # Add copy button on codeblock
-    copy_button:
-        enable: true
-        # Available values: default | flat | mac
-        style: mac
+  # Code Highlight theme
+  # See: https://github.com/highlightjs/highlight.js/tree/master/src/styles
+  # darcula | github-gist | atom-one-dark
+  theme:
+    light: default
+    dark: default
+  # See: https://github.com/PrismJS/prism/tree/master/themes
+  # prism-darcula prism-one-dark
+  prism:
+    light: prism-darcula
+    dark: prism-darcula
+  # Add copy button on codeblock
+  copy_button:
+    enable: false
+    # Available values: default | flat | mac
+    style: mac
 
 back2top:
-    enable: true
-    sidebar: true
-    scrollpercent: true
+  enable: true
+  sidebar: true
+  scrollpercent: true
 
 post_copyright:
-    enable: true
+  enable: true
 
 # hexo-filter-emoji
 emoji:
-    enable: true
-    className: github-emoji
-    styles:
-    customEmojis:
+  enable: true
+  className: github-emoji
+  styles:
+  customEmojis:
 
 github_banner:
-    enable: false
-    permalink: https://github.com/kdevkr
-    title: Follow me on GitHub
+  enable: false
+  permalink: https://github.com/kdevkr
+  title: Follow me on GitHub
 
 reading_progress:
-    enable: true
-    position: top
-    height: 2px
+  enable: true
+  position: top
+  height: 2px
 
-# disqusjs:
-#   enable: false
-#   api: https://disqus.com/api/
-#   apikey: CDGCVo6KP89BegKLv9vN5e8tZGWVf6TeHLWtkIz4ueXChOlkwAlacaYR5YNrY3Wi
-#   shortname: kdevkr-github-io
-
-utteranc:
-    enable: true
-    repo: kdevkr/kdevkr.github.io
-    pathname: pathname
-    theme: github-light
-    cdn: https://utteranc.es/client.js
+giscus:
+  enable: true
+  repo: kdevkr/kdevkr.github.io
+  repo_id: MDEwOlJlcG9zaXRvcnkxNTQxNjA4OTA=
+  category: Announcements # Github discussion category
+  category_id: DIC_kwDOCTBO-s4CYmQM # Github discussion category id
+  # Available values: pathname | url | title | og:title
+  mapping: pathname
+  # Available values: 0 | 1
+  reactions_enabled: 1
+  # Available values: 0 | 1
+  emit_metadata: 1
+  # Available values: light | dark | dark_high_contrast | transparent_dark | preferred-color-scheme
+  theme: light
+  # Available values: en | zh-CN
+  lang: ko
+  # Place the comment box above the comments
+  input_position: bottom
+  # Load the comments lazily
+  loading: lazy
 
 fancybox: true
 
@@ -221,40 +229,40 @@ mediumzoom: true
 lazyload: true
 
 google_analytics:
-    tracking_id: G-V8LF04VMBF
-    only_pageview: false
+  tracking_id: G-V8LF04VMBF
+  only_pageview: false
 
 busuanzi_count:
-    enable: false
-    total_visitors: true
-    total_visitors_icon: fas fa-user
-    total_views: true
-    total_views_icon: fas fa-eye
-    post_views: true
-    post_views_icon: fas fa-eye
+  enable: false
+  total_visitors: true
+  total_visitors_icon: fas fa-user
+  total_views: true
+  total_views_icon: fas fa-eye
+  post_views: true
+  post_views_icon: fas fa-eye
 
 local_search:
-    enable: false
+  enable: false
 
 note:
-    # Note tag style values:
-    #  - simple    bs-callout old alert style. Default.
-    #  - modern    bs-callout new (v2-v3) alert style.
-    #  - flat      flat callout style with background, like on Mozilla or StackOverflow.
-    #  - disabled  disable all CSS styles import of note tag.
-    style: simple
-    icons: true
-    # Offset lighter of background in % for modern and flat styles (modern: -12 | 12; flat: -18 | 6).
-    # Offset also applied to label tag variables. This option can work with disabled note tag.
-    light_bg_offset: 0
+  # Note tag style values:
+  #  - simple    bs-callout old alert style. Default.
+  #  - modern    bs-callout new (v2-v3) alert style.
+  #  - flat      flat callout style with background, like on Mozilla or StackOverflow.
+  #  - disabled  disable all CSS styles import of note tag.
+  style: simple
+  icons: true
+  # Offset lighter of background in % for modern and flat styles (modern: -12 | 12; flat: -18 | 6).
+  # Offset also applied to label tag variables. This option can work with disabled note tag.
+  light_bg_offset: 0
 
 post_meta:
-    item_text: true
-    created_at: true
-    updated_at:
-        enable: false
-        another_day: true
-    categories: true
+  item_text: true
+  created_at: true
+  updated_at:
+    enable: false
+    another_day: true
+  categories: true
 
 disable_baidu_transformation: true
 canonical: true

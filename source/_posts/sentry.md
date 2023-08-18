@@ -104,6 +104,7 @@ public class AsyncMethodConfiguration implements AsyncConfigurer {
 
 ### 메모리 누수
 
+![](https://user-images.githubusercontent.com/17937604/234151792-235d3da4-87be-41b1-af36-be464883e895.png)
 ![](/images/posts/sentry/01.png)
 
 TransactionPerfomanceCollector에 의한 메모리 누수 문제가 있었으며 6.13.0 그리고 6.13.1 에서 OOM 문제가 해결되었다.

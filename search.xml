@@ -4568,6 +4568,64 @@ dependencies <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
+    <title>Spring Cloud Sleuth</title>
+    <url>/spring-cloud-sleuth/</url>
+    <content><![CDATA[<blockquote>
+<p>Spring Cloud Sleuth는 Spring Boot 3.x에 대해서 호환성을 지원하지 않습니다. 스프링 부트 3.1 기반의 프로젝트에서 Spring Cloud <a href="https://github.com/spring-cloud/spring-cloud-release/wiki/Spring-Cloud-2022.0-Release-Notes">2022.0.x aka Kilburn</a>를 추가하더라도 Spring Cloud Sleuth에 대한 의존성 버전을 관리해주지 않아 라이브러리를 가져올 수 없습니다.</p>
+</blockquote>
+<p>본 글은 Spring Boot 3.1 프로젝트에서 Spring Cloud Sleuth를 사용하여 애플리케이션 로그에 분산 추적을 위한 정보를 추가하고 Zipkin 서비스에 전달하는 구성을 알아보고자 한다. 먼저, 스프링 부트 버전에 대한 Spring Cloud Sleuth 버전을 관리하지 않으므로 특정 버전을 명시해야한다. 그리고 기본적으로 애플리케이션 실행 시 호환성으로 인한 제한 설정이 되어있으므로 제한 설정 옵션을 비활성화하고 <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>를 참고하여 Spring Cloud Sleuth 에서 제공하던 것을 Micrometer Tracing 기반의 설정으로 변경해야한다.</p>
+<h4 id="Micrometer-Tracing-gt-Brave-Tracer"><a href="#Micrometer-Tracing-gt-Brave-Tracer" class="headerlink" title="Micrometer Tracing &gt; Brave Tracer"></a>Micrometer Tracing &gt; Brave Tracer</h4><pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.cloud:spring-cloud-starter-sleuth:3.1.9'</span>
+    implementation <span class="token string">'org.springframework.cloud:spring-cloud-sleuth-zipkin:3.1.9'</span>
+    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
+    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>Micrometer Tracing Samples에서 제공하는 <a href="https://github.com/micrometer-metrics/micrometer-samples/blob/main/micrometer-samples-boot3-web">micrometer-samples-boot3-web</a>를 살펴보면 Brave + Zipkin 조합에 대한 코드가 있음을 확인할 수 있다. <code>spring-cloud-starter-sleuth</code> 와 <code>spring-cloud-sleuth-zipkin</code>를 통해 <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide#autoconfiguration">Sleuth와 Zipkin에 대한 자동 구성</a>을 추가할 수 있는데 <code>micrometer-tracing-bridge-brave</code>와 <code>zipkin-reporter-brave</code>를 별도로 의존성에 추가하는 이유는 Spring Cloud Sleuth 에서 포함하지 않는 Micrometer Tracing을 적용하기 위함이다.</p>
+<p>더 자세한 내용은 <a href="https://micrometer.io/docs/tracing">Micrometer Tracing Dcos</a>를 참고하도록 하자.</p>
+<h4 id="Disable-Compatibility-Verifier"><a href="#Disable-Compatibility-Verifier" class="headerlink" title="Disable Compatibility Verifier"></a>Disable Compatibility Verifier</h4><p>Spring Cloud Sleuth를 추가하면 Spring Boot 3.x에 대한 호환성을 지원하지 않는 부분에 대한 오류 리포트를 비활성화 해야한다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.cloud</span><span class="token punctuation">:</span>
+  <span class="token key atrule">compatibility-verifier</span><span class="token punctuation">:</span>
+    <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre>
+
+<h4 id="Context-Propagation"><a href="#Context-Propagation" class="headerlink" title="Context Propagation"></a>Context Propagation</h4><p>스프링 부트 3.0에서는 복수의 전파 유형을 지원하지 않고 기본값은 <code>w3c</code>라고 되어있지만 Spring Cloud Sleuth에서 제공하는 SleuthPropagationProperties에서는 <code>b3</code>를 기본값으로 지정되어있기 때문에 별도로 건드릴 옵션은 없을 것 같다. </p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.sleuth</span><span class="token punctuation">:</span>
+  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> w3c  <span class="token comment"># default: b3</span>
+  <span class="token key atrule">trace-id128</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">supports-join</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre>
+
+<h4 id="Logging-Pattern"><a href="#Logging-Pattern" class="headerlink" title="Logging Pattern"></a>Logging Pattern</h4><p>스프링 부트 3.0에서 Micrometer Tracing 구성을 위해서는 로그 패턴에 아래와 같이 설정해야한다. 위와 같이 Spring Cloud에 대한 Starter를 사용했기 때문에 스프링 부트의 자동 구성에 의해서 아래의 설정은 기본적으로 적용된다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
+
+<h4 id="Zipkin-Integration"><a href="#Zipkin-Integration" class="headerlink" title="Zipkin Integration"></a>Zipkin Integration</h4><p>spring-cloud-sleuth-zipkin 로 인하여 Zipkin 연동에 대한 자동 구성이 적용되고 아래와 같이 Zipkin에 대한 연결 주소 정보만 입력하면 된다. <code>spring.zipkin.sender.type</code> 이외에는 옵션에 대한 기본값과 같다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>applicaiton.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.zipkin</span><span class="token punctuation">:</span>
+  <span class="token key atrule">base-url</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span><span class="token number">9411</span>
+  <span class="token key atrule">sender.type</span><span class="token punctuation">:</span> web
+
+<span class="token key atrule">management.zipkin.tracing</span><span class="token punctuation">:</span>
+  <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//localhost<span class="token punctuation">:</span>9411/api/v2/spans</code></pre>
+
+<h4 id="Docker-Compose-Support"><a href="#Docker-Compose-Support" class="headerlink" title="Docker Compose Support"></a>Docker Compose Support</h4><p>Spring Cloud Sleuth와 연관된 정보는 아니지만 스프링 부트 3.1 부터는 Docker Compose Support를 제공하기 때문에 애플리케이션 실행 시 쉽게 Docker Compose로 컨테이너를 구성할 수 있다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>compose.yaml</span></div><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">'3'</span>
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">zipkin</span><span class="token punctuation">:</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> ghcr.io/openzipkin/zipkin<span class="token punctuation">-</span>slim<span class="token punctuation">:</span>$<span class="token punctuation">&#123;</span>TAG<span class="token punctuation">:</span><span class="token punctuation">-</span>latest<span class="token punctuation">&#125;</span>
+    <span class="token key atrule">container_name</span><span class="token punctuation">:</span> zipkin
+    <span class="token key atrule">environment</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> STORAGE_TYPE=mem
+      <span class="token punctuation">-</span> MYSQL_HOST=mysql
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"9411:9411"</span></code></pre>]]></content>
+      <tags>
+        <tag>Sleuth</tag>
+        <tag>Zipkin</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>스프링 백엔드 개발자가 CORS를 테스트 하는 방법</title>
     <url>/spring-cors/</url>
     <content><![CDATA[<p><img data-src="/images/posts/spring-cors/01.png"></p>

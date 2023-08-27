@@ -3937,6 +3937,45 @@ CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으�
       </tags>
   </entry>
   <entry>
+    <title>Spring Boot 3.x Micrometer Tracing</title>
+    <url>/spring-boot-3-tracing/</url>
+    <content><![CDATA[<blockquote>
+<p>Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>.</p>
+</blockquote>
+<p>Spring Cloud Sleuth 프로젝트는 더이상 Spring Boot 3.x 와의 호환성을 지원하지 않는다. 분산 추적 데이터 모델을 적용하기 위한 자동 구성이 Spring Cloud Sleuth 에서 Spring Boot로 이동되어있기 때문이다. Spring Boot 3.x 에서는 더이상 Spring Cloud Sleuth는 필요하지 않으며 <code>Micrometer Tracing</code>에 대한 설정을 수행하면 된다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'org.springframework.boot'</span> version <span class="token string">'3.1.3'</span>
+    id <span class="token string">'io.spring.dependency-management'</span> version <span class="token string">'1.1.3'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-actuator'</span>
+    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
+    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
+    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span> <span class="token comment">// Optional</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="AutoConfigure-Micrometer-Tracing"><a href="#AutoConfigure-Micrometer-Tracing" class="headerlink" title="AutoConfigure Micrometer Tracing"></a>AutoConfigure Micrometer Tracing</h4><p>스프링 부트 자동 구성에 포함되어 있는 BraveAutoConfiguration과 ZipkinAutoConfiguration가 자동으로 적용되므로 아래와 같이 TracingProperties 속성을 원하는대로 적용하면 된다. 본 글에서는 Zipkin과의 연동을 위해서 기본적으로 사용되는 B3 방식을 지정하였다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">management.tracing</span><span class="token punctuation">:</span>
+  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> b3
+  <span class="token key atrule">sampling.probability</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
+  
+<span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
+
+<h4 id="Automatic-Context-Propagation-for-WebFlux"><a href="#Automatic-Context-Propagation-for-WebFlux" class="headerlink" title="Automatic Context Propagation for WebFlux"></a>Automatic Context Propagation for WebFlux</h4><p>Spring Cloud Gateway와 같이 WebFlux 기반으로 동작하는 애플리케이션에서는 Project Reactor 3의 Context Propagation에 대한 자동 구성을 위해서 아래와 같이 Hooks.enableAutomaticContextPropagation을 메인 함수에서 호출해야한다. 더 자세한 내용은 <a href="https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive">Context Propagation with Project Reactor 3 - Unified Bridging between Reactive and Imperative</a>를 참고하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">reactor<span class="token punctuation">.</span>core<span class="token punctuation">.</span>publisher<span class="token punctuation">.</span></span><span class="token class-name">Hooks</span></span><span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Application</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Hooks</span><span class="token punctuation">.</span><span class="token function">enableAutomaticContextPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>]]></content>
+  </entry>
+  <entry>
     <title>스프링 부트 액세스 로그를 엘라스틱서치에 기록하기</title>
     <url>/spring-boot-accesslog-with-elasticsearch/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>

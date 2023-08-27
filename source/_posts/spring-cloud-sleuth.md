@@ -83,3 +83,20 @@ services:
     ports:
       - "9411:9411"
 ```
+
+#### Context Propagation with WebFlux
+Spring Cloud Gateway는 Spring WebFlux 기반으로 동작하므로 [Context Propagation with Project Reactor 3](https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive)에 나와있는대로 Project Reactor 3를 위한 Context Propagation 설정을 수행해야한다.
+
+```java
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+        Hooks.enableAutomaticContextPropagation();
+    }
+}
+```
+
+```yaml application.yml
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+```

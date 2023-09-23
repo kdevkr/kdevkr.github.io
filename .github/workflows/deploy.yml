@@ -39,7 +39,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.OS }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.OS }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }
+            ${{ runner.OS }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install Dependencies
         run: pnpm install

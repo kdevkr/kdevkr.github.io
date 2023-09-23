@@ -1,57 +1,58 @@
 {
-  "name": "kdevkr.github.io",
-  "version": "1.0.0",
-  "description": "",
-  "hexo": {
-    "version": "6.3.0"
-  },
-  "scripts": {
-    "l": "cross-env NODE_ENV=development hexo server",
-    "p": "hexo clean && hexo deploy -g",
-    "build": "hexo generate"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kdevkr/kdevkr.github.io.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/kdevkr/kdevkr.github.io/issues"
-  },
-  "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
-  "dependencies": {
-    "cross-env": "^7.0.3",
-    "hexo": "^6.3.0",
-    "hexo-all-minifier": "^0.5.7",
-    "hexo-browsersync": "^0.3.0",
-    "hexo-deployer-git": "^4.0.0",
-    "hexo-filter-emoji": "^2.2.2",
-    "hexo-front-matter": "^4.0.0",
-    "hexo-fs": "^4.1.1",
-    "hexo-generator-alias": "^1.0.0",
-    "hexo-generator-archive": "^2.0.0",
-    "hexo-generator-category": "^2.0.0",
-    "hexo-generator-feed": "^3.0.0",
-    "hexo-generator-indexed": "^1.2.1",
-    "hexo-generator-searchdb": "^1.4.0",
-    "hexo-generator-sitemap": "^3.0.1",
-    "hexo-generator-tag": "^2.0.0",
-    "hexo-next-darkmode": "^0.1.9",
-    "hexo-next-giscus": "^1.1.0",
-    "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
-    "hexo-renderer-markdown-it": "^6.1.0",
-    "hexo-renderer-marked": "^5.0.0",
-    "hexo-renderer-stylus": "^2.1.0",
-    "hexo-server": "^3.0.0",
-    "hexo-theme-next": "^8.13.2",
-    "hexo-util": "^2.6.1",
-    "highlight.js": "^11.7.0",
-    "markdown-it-named-headings": "^1.1.0",
-    "prism-themes": "^1.9.0",
-    "prismjs": "^1.29.0"
-  },
-  "devDependencies": {
-    "shelljs": "^0.8.5"
-  }
+    "name": "kdevkr.github.io",
+    "version": "1.0.0",
+    "description": "",
+    "hexo": {
+        "version": "6.3.0"
+    },
+    "scripts": {
+        "l": "cross-env NODE_ENV=development hexo server",
+        "p": "hexo clean && hexo deploy -g",
+        "build": "hexo generate",
+        "preinstall": "npx only-allow pnpm"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kdevkr/kdevkr.github.io.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kdevkr/kdevkr.github.io/issues"
+    },
+    "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
+    "dependencies": {
+        "cross-env": "^7.0.3",
+        "hexo": "^6.3.0",
+        "hexo-all-minifier": "^0.5.7",
+        "hexo-browsersync": "^0.3.0",
+        "hexo-deployer-git": "^4.0.0",
+        "hexo-filter-emoji": "^2.2.2",
+        "hexo-front-matter": "^4.0.0",
+        "hexo-fs": "^4.1.1",
+        "hexo-generator-alias": "^1.0.0",
+        "hexo-generator-archive": "^2.0.0",
+        "hexo-generator-category": "^2.0.0",
+        "hexo-generator-feed": "^3.0.0",
+        "hexo-generator-indexed": "^1.2.1",
+        "hexo-generator-searchdb": "^1.4.0",
+        "hexo-generator-sitemap": "^3.0.1",
+        "hexo-generator-tag": "^2.0.0",
+        "hexo-next-darkmode": "^0.1.9",
+        "hexo-next-giscus": "^1.1.0",
+        "hexo-next-utteranc": "github:theme-next/hexo-next-utteranc",
+        "hexo-renderer-markdown-it": "^6.1.0",
+        "hexo-renderer-marked": "^5.0.0",
+        "hexo-renderer-stylus": "^2.1.0",
+        "hexo-server": "^3.0.0",
+        "hexo-theme-next": "^8.13.2",
+        "hexo-util": "^2.6.1",
+        "highlight.js": "^11.7.0",
+        "markdown-it-named-headings": "^1.1.0",
+        "prism-themes": "^1.9.0",
+        "prismjs": "^1.29.0"
+    },
+    "devDependencies": {
+        "shelljs": "^0.8.5"
+    }
 }

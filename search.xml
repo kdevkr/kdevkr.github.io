@@ -4291,6 +4291,35 @@ dependencies <span class="token punctuation">&#123;</span>
 ]]></content>
   </entry>
   <entry>
+    <title>MariaDB Timestamp Y2K38</title>
+    <url>/mariadb-timestamp-y2k38/</url>
+    <content><![CDATA[<h4 id="What’s-Y2K38"><a href="#What’s-Y2K38" class="headerlink" title="What’s Y2K38 ???"></a>What’s Y2K38 ???</h4><blockquote>
+<p>Timestamps in MariaDB have a maximum value of 2147483647, equivalent to 2038-01-19 05:14:07. This is due to the underlying 32-bit limitation. Using the function on a date beyond this will result in NULL being returned. Use DATETIME as a storage type if you require dates beyond this.</p>
+</blockquote>
+<p>2038년 문제는 시간을 32비트 정수형으로 표현하는 시스템에서 발생하는 문제이다. MariaDB(MySQL)은 시간을 표현하는 경우  문자열로 저장되는 DATETIME과 UTC로 저장되는 TIMESTAMP를 사용할 수 있는데 TIMESTAMP 형식은 4바이트로 저장된다. 따라서, DATETIME을 사용하는 것을 권고하는 편이며 DATETIME은 문자열로 저장되므로 DATETIME을 저장하는 시점에 UTC로 저장될 수 있도록 타임존을 UTC로 설정하는 게 좋다.</p>
+<blockquote>
+<p>MariaDB 타임존을 UTC가 아닌 Aisa&#x2F;Seoul로 설정하는 경우에는 SQL 조회 시 CONVERT_TZ 함수를 매번 사용해야할 필요가 있다.</p>
+</blockquote>
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">SHOW</span> VARIABLES <span class="token operator">LIKE</span> <span class="token string">'%time_zone%'</span><span class="token punctuation">;</span>
+<span class="token comment">-- timezone: Asia/Seoul</span>
+
+<span class="token keyword">CREATE</span> <span class="token operator">OR</span> <span class="token keyword">REPLACE</span> <span class="token keyword">TABLE</span> test
+<span class="token punctuation">(</span>
+    id         <span class="token keyword">BIGINT</span> <span class="token keyword">AUTO_INCREMENT</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token keyword">COMMENT</span> <span class="token string">'ID'</span><span class="token punctuation">,</span>
+    name       <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span>           <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'Name'</span><span class="token punctuation">,</span>
+    created_at <span class="token keyword">DATETIME</span>              <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">DEFAULT</span> <span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">INSERT</span> <span class="token keyword">INTO</span> test <span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token keyword">VALUES</span> <span class="token punctuation">(</span><span class="token string">'mambo'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">SELECT</span> convert_tz<span class="token punctuation">(</span>created_at<span class="token punctuation">,</span> <span class="token string">'+09:00'</span><span class="token punctuation">,</span> <span class="token string">'+00:00'</span><span class="token punctuation">)</span> <span class="token keyword">AS</span> created_at <span class="token keyword">FROM</span> test<span class="token punctuation">;</span>
+<span class="token comment">-- created_at,created_at_utc</span>
+<span class="token comment">-- 2023-09-24 16:36:30,2023-09-24 07:36:30</span></code></pre>
+]]></content>
+      <tags>
+        <tag>MariaDB</tag>
+        <tag>Y2K38</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>모드버스 TCP</title>
     <url>/modbus-tcp/</url>
     <content><![CDATA[<p>모드버스(Modbus) 프로토콜은 PLC와 같은 자동화 제어 설비가 포함되는 산업에서 공식적인 표준은 아니지만 거의 표준처럼 사용되고 있는 통신 프로토콜이다. 모드버스 프로토콜에 대한 스펙은 <a href="https://modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf">Modbus_Messaging_Implementation_Guide_V1_0b.pdf</a>로 공개되어있다. 본인은 에너지 분야 도메인에서 일하고 있는 개발자로 각종 에너지 관련 설비에서도 모드버스 프로토콜을 지원하는 제품을 사용하기 때문에 설비들에서 발생하는 다양한 시계열 데이터들을 수집하기 위하여 모드버스 프로토콜을 사용하고 있다. 자동화 제어의 목적이 아니므로 시리얼 통신이 아닌 SCADA, RTU, PLC와 같은 설비와 TCP&#x2F;IP 방식으로 통신한다.</p>

@@ -1720,6 +1720,67 @@ certificate<span class="token punctuation">.</span><span class="token function">
       </tags>
   </entry>
   <entry>
+    <title>Float32MLE (Byte Order)</title>
+    <url>/float32mle/</url>
+    <content><![CDATA[<p>오래전 컴퓨터공학과에서 배웠던 개념이지만 실제로 고려할 필요가 없던 부분은 컴퓨터에서 데이터를 메모리에 저장할 때 <a href="http://www.tcpschool.com/c/c_refer_endian">바이트 순서(Byte Order)</a>이다. 빅 엔디안과 리틀 엔디안 방식으로 나누어지는데 TCP 네트워크 상 패킷의 바이트 순서는 빅 엔디안이며 웹 애플리케이션에서 자주 활용되는 자바도 빅 엔디안을 기본적으로 사용하고 있다. 그러나, SCADA 또는 PLC 장비와 같은 일부 시스템에서는 빅 엔디안 방식이 아닌 리틀 엔디안 또는 미드 리틀 엔디안으로 바이트 순서를 구성하고 있다.</p>
+<h4 id="Mid-Little-Endian-MLE"><a href="#Mid-Little-Endian-MLE" class="headerlink" title="Mid Little Endian, MLE"></a>Mid Little Endian, MLE</h4><p>미드 리틀 엔디안은 <code>AB CD</code>의 바이트 순서가 있을때 <code>CD AB</code>로 표현하는 것을 의미한다. 32비트로 구성되는 Float 형식을 미드 리틀 엔디안 방식으로 구성한 것을 <code>Float32MLE</code> 이라고 표기할 수 있다. 또한, IEEE 754로 부동소수점을 표기하는 것을 의미한다.</p>
+<p><a href="https://baseconvert.com/ieee-754-floating-point">Base Convert: IEEE 754 Floating Point</a></p>
+<h4 id="Float32MLE-Example"><a href="#Float32MLE-Example" class="headerlink" title="Float32MLE Example"></a>Float32MLE Example</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Endian Test"</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">EndianTest</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Float32 Mid Little Endian"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token class-name">TestFloat32MLE</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">String</span> hexadecimal <span class="token operator">=</span> <span class="token string">"00004260"</span><span class="token punctuation">;</span> <span class="token comment">// 00 00 42 60</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes <span class="token operator">=</span> <span class="token class-name">HexFormat</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">parseHex</span><span class="token punctuation">(</span>hexadecimal<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">float</span> originValue <span class="token operator">=</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// CD (42 60)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// AB (00 00)</span>
+                <span class="token punctuation">.</span><span class="token function">readFloat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">float</span> value <span class="token operator">=</span> <span class="token class-name">BigDecimal</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>originValue<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setScale</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token class-name">RoundingMode</span><span class="token punctuation">.</span><span class="token constant">HALF_UP</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">floatValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">56.0f</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-java" data-language="java"><div class="caption"><span>ByteBufUtil.java</span></div><code class="language-java"><span class="token annotation punctuation">@Slf4j</span>
+<span class="token annotation punctuation">@UtilityClass</span>
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">class</span> <span class="token class-name">ByteBufUtil</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">toBytes</span><span class="token punctuation">(</span><span class="token keyword">float</span> value<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ByteBuf</span> byteBuf <span class="token operator">=</span> <span class="token class-name">Unpooled</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">writeFloat</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token class-name"><span class="token namespace">io<span class="token punctuation">.</span>netty<span class="token punctuation">.</span>buffer<span class="token punctuation">.</span></span>ByteBufUtil</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span>byteBuf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">float</span> <span class="token function">toFloat32</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">readFloat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">float</span> <span class="token function">toFloat32LE</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">readFloatLE</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">float</span> <span class="token function">toFloat32MLE</span><span class="token punctuation">(</span><span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">readFloat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+]]></content>
+      <tags>
+        <tag>Float32</tag>
+        <tag>IEEE 754</tag>
+        <tag>Byte Order</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>프리마커 템플릿</title>
     <url>/freemarker-template/</url>
     <content><![CDATA[<p>스프링 부트 프로젝트에 대한 예제를 살펴보면 대부분 템플릿 엔진으로 타임리프를 선택하여 사용함을 알 수 있다. 대부분 타임리프에 대해서 설명하므로 프리마커 템플릿 엔진에 대해서 정리한 글은 생각보다 많지 않다. 나는 타임리프라는 템플릿 엔진 보다는 프리마커의 문법이 더 간단하고 느끼기에 더 선호하는 편이다. <a href="https://github.com/jreijn/spring-comparing-template-engines">여러가지 템플릿 엔진과 비교</a>해서도 준수한 렌더링 성능을 보여주고 있다.</p>
@@ -1900,204 +1961,6 @@ configuration<span class="token punctuation">.</span><span class="token function
       <tags>
         <tag>Gmail</tag>
         <tag>SMTP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>그래들 빌드 라이프사이클</title>
-    <url>/gradle-build-lifecycle/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘 알아볼 내용은 그래들 빌드의 라이프사이클입니다. </p>
-<p>얼마전에 단일 애플리케이션 프로젝트에서 다양한 배포 환경에 대한 기능을 별도로 지원해야하는 요구사항으로 인하여 그래들 멀티 모듈 프로젝트로 전환하게 되면서 배포 과정에서 문제가 발생하였었는데요. 그 문제는 크리티컬한 이슈는 아니지만 태스크 수행 후 만들어진 압축 파일에 프로젝트 버전이 포함되지 않는 상황이었습니다. 이러한 문제가 발생한 이유는 그래들 태스크를 정의할 때 <strong>그래들 빌드 라이프사이클</strong>을 고려하지 않았기 때문입니다.</p>
-<h2 id="그래들-태스크"><a href="#그래들-태스크" class="headerlink" title="그래들 태스크"></a>그래들 태스크</h2><p>먼저 기존에 정의된 태스크는 <a href="https://github.com/kdevkr/beanstalk-deploy-sample/blob/main/build.gradle">beanstalk-deploy-sample의 build.gradle에 정의된 zipBeanstalk 태스크</a>와 같이 Zip 유형의 태스크로 작성되어있습니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    from <span class="token punctuation">(</span><span class="token string">'.ebextensions'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.ebextensions'</span> <span class="token punctuation">&#125;</span>
-    from <span class="token punctuation">(</span><span class="token string">'.platform'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.platform'</span> <span class="token punctuation">&#125;</span>
-
-    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        println bootWar<span class="token punctuation">.</span>archiveName
-        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
-        <span class="token function">include</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">"Procfile"</span></span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span>
-    baseName <span class="token operator">=</span> <span class="token string">'beanstalk'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 샘플 태스크처럼 단일 애플리케이션 프로젝트에서 정의된 태스크는 문제가 발생할 가능성이 적습니다. 그 이유는 배포를 위해서 여러가지 태스크를 정의하지 않기 때문인데요. 그러면 위 태스크를 수행하면 어떤 결과를 제공하는지 한번 확인해볼까요?</p>
-<h3 id="태스크-결과"><a href="#태스크-결과" class="headerlink" title="태스크 결과"></a>태스크 결과</h3><p>프로젝트 폴더에 있는 Gradle Wrapper를 사용하여 zipBeanstalk 태스크를 수행하면서 프로젝트 버전을 명시해보겠습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipBeanstalk <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11</code></pre>
-
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-01.png"></p>
-<p>패키징된 WAR 파일과 zipBeanstalk 태스크에 의해 만들어지는 아카이브 파일에 프로젝트 버전이 포함됨을 확인할 수 있습니다.</p>
-<h3 id="수동-배포-환경을-위한-태스크"><a href="#수동-배포-환경을-위한-태스크" class="headerlink" title="수동 배포 환경을 위한 태스크"></a>수동 배포 환경을 위한 태스크</h3><p>사실 zipBeanstalk 태스크는 아마존 웹 서비스의 빈스톡 환경으로 배포하기 위한 애플리케이션 번들 파일을 만드는 태스크입니다. 만약, 수동으로 배포하여야하는 환경이 추가된다면 빈스톡 환경에서 사용하는 Procfile과 환경 구성 파일들은 포함할 필요가 없으며 특정 환경을 위한 프로퍼티 파일만 별도로 추가하면 됩니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    println <span class="token string">'Build Version: '</span> <span class="token operator">+</span> project<span class="token punctuation">.</span>version
-
-    from <span class="token punctuation">(</span><span class="token string">'.conf'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'application-prod.yml'</span><span class="token punctuation">&#125;</span>
-    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span>
-
-    baseName <span class="token operator">=</span> <span class="token string">'app-bundle'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>zipManually 태스크에는 application-prod.yml을 패키징된 애플리케이션 WAR 파일과 함께 포함시키도록 정의했습니다. 아시는 분들도 있겠지만 스프링 부트 애플리케이션은 <strong>WAR 파일과 동일한 위치에 있는 애플리케이션 프로퍼티 파일</strong>을 읽을 수 있습니다. 만약, 모르시는 분들이라면 프로퍼티 구성 우선 순위에 대한 문서를 확인하시기 바랍니다.</p>
-<p>동일하게 zipManually 태스크를 실행해보도록 하겠습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipManually <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11
-
-<span class="token operator">></span> Configure project <span class="token builtin class-name">:</span>
-JDK info: <span class="token number">11</span>
-Build Version: <span class="token number">1.0</span>.0-hotfix.11
-Build Version: <span class="token number">1.0</span>.0-hotfix.11
-
-<span class="token operator">></span> Task :bootBuildInfo
-<span class="token operator">></span> Task :compileJava UP-TO-DATE
-<span class="token operator">></span> Task :processResources UP-TO-DATE
-<span class="token operator">></span> Task :classes
-<span class="token operator">></span> Task :bootWarMainClassName
-<span class="token operator">></span> Task :bootWar
-<span class="token operator">></span> Task :procfile
-<span class="token operator">></span> Task :zipManually</code></pre>
-
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-02.png"></p>
-<p>zipManually 태스크 결과는 정상으로 보입니다만… 이상한 부분을 눈치채신분들이 있으시겠죠? <strong>바로 Build Version이 두번 출력되었다는 점</strong>인데요. 우리는 분명히 별도의 태스크로 정의하고 태스크 블록 내에서 현재 Build Version을 출력하도록 작성했습니다. 이렇게 Build Version 버전이 두번 출력되는 이유는 이 글의 주요 내용인 그래들 빌드 라이프사이클에 대한 개념과 관련이 있습니다.</p>
-<h2 id="그래들-빌드-라이프사이클"><a href="#그래들-빌드-라이프사이클" class="headerlink" title="그래들 빌드 라이프사이클"></a>그래들 빌드 라이프사이클</h2><p>사실 상 이러한 문제를 경험하는 이유는 그래들의 빌드 라이프사이클에 대한 개념을 모르기 때문인데요. 20년차이신 팀장님 조차도 잘 모르는 부분이었다고 할 수 있습니다. 빌드 라이프사이클 존재를 모르는 상황이었기에 이렇게 되는 이유를 검색하고 팀장님께서 <a href="https://stackoverflow.com/a/23485085">Gradle executes all tasks?</a>이라는 스택오버플로우 질문을 공유해주셨습니다.</p>
-<p>이 질문에 대한 답변에서는 그래들에는 configuration 단계와 execution 단계가 있고 이것은 중요한 개념이라고 설명하고 있었습니다. 그러면 그래들 공식 문서에 있는 <a href="https://docs.gradle.org/current/userguide/build_lifecycle.html">Build Lifecycle</a>를 살펴보도록 하겠습니다.</p>
-<blockquote>
-<p>Gradle builds the complete dependency graph before any task is executed.<br>… Your build scripts configure this dependency graph.</p>
-</blockquote>
-<p>그래들은 태스크를 수행하기 전에 의존성 그래프를 빌드하고 빌드 스크립트는 의존성 그래프를 구성한다고 설명하며 빌드 단계에 대해서 설명합니다.</p>
-<h3 id="빌드-단계"><a href="#빌드-단계" class="headerlink" title="빌드 단계"></a>빌드 단계</h3><p>그래들의 빌드 단계는 3가지로 구분된다고 하며 초기화(Initialization), 구성(Configuration), 수행(Execution)입니다. </p>
-<blockquote>
-<p><strong>Initialization</strong><br>Gradle supports single and multi-project builds. During the initialization phase, Gradle determines which projects are going to take part in the build, and creates a Project instance for each of these projects.</p>
-<p><strong>Configuration</strong><br>During this phase the project objects are configured. The build scripts of all projects which are part of the build are executed.</p>
-<p><strong>Execution</strong><br>Gradle determines the subset of the tasks, created and configured during the configuration phase, to be executed. The subset is determined by the task name arguments passed to the gradle command and the current directory. Gradle then executes each of the selected tasks.</p>
-</blockquote>
-<p>세가지의 단계 중 구성 단계에서는 모든 프로젝트의 빌드 스크립트가 실행된다는 설명이 있습니다. 이 부분이 제가 경험한 문제의 원인이라고 할 수 있는데 태스크 내에서 작성하는 코드는 구성 단계에 포함되며 doFirst와 doLast 블록이 수행 단계에 포함되기 때문입니다.</p>
-<p>저도 모르는 부분이었고 생각보다 많은 블로그에서는 그래들 태스크 정의를 설명할 때 구성 단계에 해당되는 곳에 println을 작성하는 예시를 보여주는데요. 생각보다 많은 분들이 이 개념에 대해서 모른다고 할 수 있습니다. 물론 단일 애플리케이션 프로젝트에서는 몰라도 상관없다고 할 수 있겠네요.</p>
-<h3 id="테스트를-위한-태스크"><a href="#테스트를-위한-태스크" class="headerlink" title="테스트를 위한 태스크"></a>테스트를 위한 태스크</h3><p>그러면 어떻게 하였기에 프로젝트 버전이 포함되지 않았을 지 다음의 태스크를 살펴보도록 하겠습니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-
-task <span class="token function">k8sbuild</span><span class="token punctuation">(</span>dependsOn<span class="token punctuation">:</span> bootWar<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    project<span class="token punctuation">.</span>version <span class="token string">''</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>추가한 k8sbuild 태스크는 쿠버네티스 배포 환경 테스트를 위해 패키징된 애플리케이션 WAR 파일에 포함되는 프로젝트 버전을 생략하기 위해서 project.version을 빈 값으로 설정하도록 작성한게 화근이었습니다. 이 상태로 zipManually 태스크를 다시 한번 수행하면 어떻게 되는지 확인해봅시다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipManually <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11</code></pre>
-
-<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-03.png"></p>
-<p>k8sbuild 태스크에 작성된 project.version을 설정하는 행위는 구성 단계에 해당하기 때문에 모든 태스크를 수행하기 이전에 적용되어 zipManually 태스크를 수행했음에도 불구하고 프로젝트 버전이 포함되지 않았음을 보여줍니다.</p>
-<h3 id="해결방안"><a href="#해결방안" class="headerlink" title="해결방안"></a>해결방안</h3><p>그러면 어떻게 해결하는게 좋을지 방안을 찾아보도록 하겠습니다. </p>
-<h4 id="프로젝트-버전-재정의하는-경우"><a href="#프로젝트-버전-재정의하는-경우" class="headerlink" title="프로젝트 버전 재정의하는 경우"></a>프로젝트 버전 재정의하는 경우</h4><p>k8sbuild 태스크처럼 특정 태스크에서 프로젝트 버전을 재정의 하고싶은 경우에는 doFirst와 같은 클로저를 활용해야합니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">k8sbuild</span><span class="token punctuation">(</span>dependsOn<span class="token punctuation">:</span> bootWar<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    doFirst <span class="token punctuation">&#123;</span>
-        project<span class="token punctuation">.</span>version <span class="token string">''</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="프로젝트-버전을-확인하고-싶은-경우"><a href="#프로젝트-버전을-확인하고-싶은-경우" class="headerlink" title="프로젝트 버전을 확인하고 싶은 경우"></a>프로젝트 버전을 확인하고 싶은 경우</h4><p>zipBeanstalk와 zipManually 태스크처럼 애플리케이션을 WAR로 패키징하는 경우 현재 프로젝트 버전을 출력하고 싶은 경우 gradle.taskGraph.whenReady를 활용함으로써 해결할 수 있습니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    from <span class="token punctuation">(</span><span class="token string">'.ebextensions'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.ebextensions'</span> <span class="token punctuation">&#125;</span>
-    from <span class="token punctuation">(</span><span class="token string">'.platform'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.platform'</span> <span class="token punctuation">&#125;</span>
-
-    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
-        <span class="token function">include</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">"Procfile"</span></span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span>
-    baseName <span class="token operator">=</span> <span class="token string">'beanstalk'</span>
-<span class="token punctuation">&#125;</span>
-
-task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    from <span class="token punctuation">(</span><span class="token string">'.conf'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'application-prod.yml'</span><span class="token punctuation">&#125;</span>
-    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span>
-
-    baseName <span class="token operator">=</span> <span class="token string">'app-bundle'</span>
-<span class="token punctuation">&#125;</span>
-
-gradle<span class="token punctuation">.</span>taskGraph<span class="token punctuation">.</span>whenReady <span class="token punctuation">&#123;</span> graph <span class="token operator">-></span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>graph<span class="token punctuation">.</span><span class="token function">hasTask</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        println <span class="token string">'Build Version: '</span> <span class="token operator">+</span> project<span class="token punctuation">.</span>version
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="불필요한-파일을-제거해야하는-경우"><a href="#불필요한-파일을-제거해야하는-경우" class="headerlink" title="불필요한 파일을 제거해야하는 경우"></a>불필요한 파일을 제거해야하는 경우</h4><p>경우에 따라서는 프로젝트 빌드 시 패키징된 애플리케이션 WAR 파일에 포함되지 않도록 해야할 수 있습니다. 예를 들어, 로컬 환경에서 사용하는 애플리케이션 프로퍼티 파일이나 특정 도메인에 대한 인증서 또는 인증키를 포함하지않도록 제외해야할 수 있습니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">gradle<span class="token punctuation">.</span>taskGraph<span class="token punctuation">.</span>whenReady <span class="token punctuation">&#123;</span> graph <span class="token operator">-></span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>graph<span class="token punctuation">.</span><span class="token function">hasTask</span><span class="token punctuation">(</span>build_for_customer<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        processResources <span class="token punctuation">&#123;</span>
-            <span class="token function">exclude</span><span class="token punctuation">(</span><span class="token string">'**/config/**.yml'</span><span class="token punctuation">)</span>
-            <span class="token function">exclude</span><span class="token punctuation">(</span><span class="token string">'**/certs/**'</span><span class="token punctuation">)</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 예시는 구성 단계에서 의존성 그래프 구성이 완료된 이후에 build_for_customer 태스크가 수행되는 경우에 고객 환경으로 배포하는 애플리케이션 WAR 파일에 자체적으로 사용하는 애플리케이션 프로퍼티 파일들과 인증서를 포함하지 않도록 processResources를 재정의함을 보여줍니다.</p>
-<p>그래들 빌드 라이프사이클 개념과 함께 경험하였던 문제에 대하여 어떻게 해결할 수 있는지 알아보았습니다. 어떤 기술을 사용함에 있어서 주요 개념을 이해하고 있는 것이 중요함을 다시한번 깨닫게 되는 좋은 경험이었습니다. 여러분의 그래들 빌드 스크립트에서도 수행 단계에서 수행되어야할 코드를 구성 단계에서 동작하도록 작성되지 않았는지 검토해보시기를 바랍니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Gradle</tag>
-        <tag>Lifecycle</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>그래들 멀티 모듈 프로젝트</title>
-    <url>/gradle-multi-module-project/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 그래들 멀티 모듈 프로젝트의 디펜던시 공유에 대하여 이야기 해보려고 합니다. </p>
-<h2 id="그래들-멀티-모듈"><a href="#그래들-멀티-모듈" class="headerlink" title="그래들 멀티 모듈"></a>그래들 멀티 모듈</h2><p>서비스의 규모가 어느정도 커지게되면 모놀리식 아키텍처로써 서비스에 대한 모든 기능이 하나의 애플리케이션에 구현하는 것을 마이크로서비스 아키텍처를 참고하여 일부 기능을 수행하는 별도의 애플리케이션로 독립시키기도 합니다. 현재 다니고 있는 회사에서는 모놀리식 아키텍처로 개발하고 있는 애플리케이션을 여러 고객들의 환경에 맞는 배포 또는 별도의 커스텀 기능을 지원하기 위하여 <strong>그래들 멀티 모듈 프로젝트</strong>로 전환하였습니다.</p>
-<h3 id="Java-라이브러리-플러그인"><a href="#Java-라이브러리-플러그인" class="headerlink" title="Java 라이브러리 플러그인"></a>Java 라이브러리 플러그인</h3><p>공용 모듈에서 사용하는 디펜던시를 상위 모듈에서도 사용하기 위해서는 자바 플러그인 대신 자바 라이브러리 플러그인을 적용하고 <code>api</code>를 사용하여 지정된 디펜던시를 외부 모듈의 컴파일 클래스패스에 노출시켜야합니다. Gradle 7 부터는 <code>compile</code>을 지원하지 않으며 <code>implementation</code>은 지정한 디펜던시를 외부 모듈에 노출시키지 않습니다.</p>
-<blockquote>
-<p>The compile and runtime configurations have been removed with Gradle 7.0. Please refer to the upgrade guide how to migrate to implementation and api configurations&#96;.</p>
-</blockquote>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy"><span class="token comment">// module-common/build.gradle</span>
-plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'java-library'</span>
-    id <span class="token string">'io.spring.dependency-management'</span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    api <span class="token string">'com.google.code.gson:gson'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>common 모듈의 gson 라이브러리는 api를 통해 상위 모듈의 클래스패스에 노출되어 상위 모듈에서도 사용이 가능해집니다. 기본적으로 implementation을 사용하는 경우 외부 모듈 클래스패스에 노출시키지 않는 이유는 빠른 컴파일과 클래스패스 사이즈를 줄이기 위함이며 api 보다는 implementation을 선호해야한다고 합니다.</p>
-<h3 id="Common-Module"><a href="#Common-Module" class="headerlink" title="Common Module"></a>Common Module</h3><p><a href="https://github.com/kdevkr/gradle-multi-module">gradle-multi-module</a> 처럼 그래들 멀티 모듈 프로젝트에 공용으로 적용되는 코드를 가지는 Common 모듈이 있을때 다음과 같이 공통으로 적용되어야하는 설정을 수행할 수 있습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span><span class="token punctuation">(</span>proxyBeanMethods <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JsonConfig</span> <span class="token punctuation">&#123;</span>
-
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> <span class="token class-name">Jackson2ObjectMapperBuilderCustomizer</span> <span class="token function">objectMapperBuilderCustomizer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> builder <span class="token operator">-></span> builder
-                <span class="token punctuation">.</span><span class="token function">featuresToEnable</span><span class="token punctuation">(</span><span class="token class-name">SerializationFeature</span><span class="token punctuation">.</span><span class="token constant">WRITE_DATES_AS_TIMESTAMPS</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">featuresToDisable</span><span class="token punctuation">(</span><span class="token class-name">SerializationFeature</span><span class="token punctuation">.</span><span class="token constant">WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">modules</span><span class="token punctuation">(</span><span class="token class-name">List</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Jdk8Module</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">JavaTimeModule</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 코드에서는 Date 또는 Timestamp와 같은 클래스에 대하여 Long 값으로 변환하는 기능을 활성화하기 위하여 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS를 적용하였습니다. </p>
-<h4 id="Common-Dependencies"><a href="#Common-Dependencies" class="headerlink" title="Common Dependencies"></a>Common Dependencies</h4><pre class="language-groovy" data-language="groovy"><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'java-library'</span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    api <span class="token string">'org.springframework.boot:spring-boot-starter-security'</span>
-    api <span class="token string">'com.google.code.gson:gson'</span>
-    api <span class="token string">'com.fasterxml.jackson.core:jackson-databind'</span>
-    api <span class="token string">'org.hibernate.validator:hibernate-validator'</span>
-    api <span class="token string">'org.apache.commons:commons-lang3'</span>
-    api <span class="token string">'org.apache.commons:commons-collections4:4.4'</span>
-    api <span class="token string">'com.google.guava:guava:31.0.1-jre'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>위 설정처럼 implementation 대신에 api를 사용하면 동일한 버전의 디펜던시를 다른 외부 모듈에서도 사용할 수 있도록 클래스패스에 노출할 수 있습니다. 이를 통해 각 모듈에서 사용되는 디펜던시 버전이 달라서 발생할 수 있는 문제를 방지할 수 있게 됩니다.</p>
-<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a href="https://docs.gradle.org/current/userguide/dependency_management_for_java_projects.html">Managing Dependencies of JVM Projects</a>  </li>
-<li><a href="https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph">The Java Library Plugin</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Gradle</tag>
       </tags>
   </entry>
   <entry>
@@ -3437,6 +3300,204 @@ R<span class="token verb operator">:</span><span class="token punctuation">(</sp
       <tags>
         <tag>KDB+/q</tag>
         <tag>TP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>그래들 빌드 라이프사이클</title>
+    <url>/gradle-build-lifecycle/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘 알아볼 내용은 그래들 빌드의 라이프사이클입니다. </p>
+<p>얼마전에 단일 애플리케이션 프로젝트에서 다양한 배포 환경에 대한 기능을 별도로 지원해야하는 요구사항으로 인하여 그래들 멀티 모듈 프로젝트로 전환하게 되면서 배포 과정에서 문제가 발생하였었는데요. 그 문제는 크리티컬한 이슈는 아니지만 태스크 수행 후 만들어진 압축 파일에 프로젝트 버전이 포함되지 않는 상황이었습니다. 이러한 문제가 발생한 이유는 그래들 태스크를 정의할 때 <strong>그래들 빌드 라이프사이클</strong>을 고려하지 않았기 때문입니다.</p>
+<h2 id="그래들-태스크"><a href="#그래들-태스크" class="headerlink" title="그래들 태스크"></a>그래들 태스크</h2><p>먼저 기존에 정의된 태스크는 <a href="https://github.com/kdevkr/beanstalk-deploy-sample/blob/main/build.gradle">beanstalk-deploy-sample의 build.gradle에 정의된 zipBeanstalk 태스크</a>와 같이 Zip 유형의 태스크로 작성되어있습니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    from <span class="token punctuation">(</span><span class="token string">'.ebextensions'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.ebextensions'</span> <span class="token punctuation">&#125;</span>
+    from <span class="token punctuation">(</span><span class="token string">'.platform'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.platform'</span> <span class="token punctuation">&#125;</span>
+
+    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        println bootWar<span class="token punctuation">.</span>archiveName
+        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
+        <span class="token function">include</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">"Procfile"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    baseName <span class="token operator">=</span> <span class="token string">'beanstalk'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 샘플 태스크처럼 단일 애플리케이션 프로젝트에서 정의된 태스크는 문제가 발생할 가능성이 적습니다. 그 이유는 배포를 위해서 여러가지 태스크를 정의하지 않기 때문인데요. 그러면 위 태스크를 수행하면 어떤 결과를 제공하는지 한번 확인해볼까요?</p>
+<h3 id="태스크-결과"><a href="#태스크-결과" class="headerlink" title="태스크 결과"></a>태스크 결과</h3><p>프로젝트 폴더에 있는 Gradle Wrapper를 사용하여 zipBeanstalk 태스크를 수행하면서 프로젝트 버전을 명시해보겠습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipBeanstalk <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11</code></pre>
+
+<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-01.png"></p>
+<p>패키징된 WAR 파일과 zipBeanstalk 태스크에 의해 만들어지는 아카이브 파일에 프로젝트 버전이 포함됨을 확인할 수 있습니다.</p>
+<h3 id="수동-배포-환경을-위한-태스크"><a href="#수동-배포-환경을-위한-태스크" class="headerlink" title="수동 배포 환경을 위한 태스크"></a>수동 배포 환경을 위한 태스크</h3><p>사실 zipBeanstalk 태스크는 아마존 웹 서비스의 빈스톡 환경으로 배포하기 위한 애플리케이션 번들 파일을 만드는 태스크입니다. 만약, 수동으로 배포하여야하는 환경이 추가된다면 빈스톡 환경에서 사용하는 Procfile과 환경 구성 파일들은 포함할 필요가 없으며 특정 환경을 위한 프로퍼티 파일만 별도로 추가하면 됩니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    println <span class="token string">'Build Version: '</span> <span class="token operator">+</span> project<span class="token punctuation">.</span>version
+
+    from <span class="token punctuation">(</span><span class="token string">'.conf'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'application-prod.yml'</span><span class="token punctuation">&#125;</span>
+    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    baseName <span class="token operator">=</span> <span class="token string">'app-bundle'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>zipManually 태스크에는 application-prod.yml을 패키징된 애플리케이션 WAR 파일과 함께 포함시키도록 정의했습니다. 아시는 분들도 있겠지만 스프링 부트 애플리케이션은 <strong>WAR 파일과 동일한 위치에 있는 애플리케이션 프로퍼티 파일</strong>을 읽을 수 있습니다. 만약, 모르시는 분들이라면 프로퍼티 구성 우선 순위에 대한 문서를 확인하시기 바랍니다.</p>
+<p>동일하게 zipManually 태스크를 실행해보도록 하겠습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipManually <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11
+
+<span class="token operator">></span> Configure project <span class="token builtin class-name">:</span>
+JDK info: <span class="token number">11</span>
+Build Version: <span class="token number">1.0</span>.0-hotfix.11
+Build Version: <span class="token number">1.0</span>.0-hotfix.11
+
+<span class="token operator">></span> Task :bootBuildInfo
+<span class="token operator">></span> Task :compileJava UP-TO-DATE
+<span class="token operator">></span> Task :processResources UP-TO-DATE
+<span class="token operator">></span> Task :classes
+<span class="token operator">></span> Task :bootWarMainClassName
+<span class="token operator">></span> Task :bootWar
+<span class="token operator">></span> Task :procfile
+<span class="token operator">></span> Task :zipManually</code></pre>
+
+<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-02.png"></p>
+<p>zipManually 태스크 결과는 정상으로 보입니다만… 이상한 부분을 눈치채신분들이 있으시겠죠? <strong>바로 Build Version이 두번 출력되었다는 점</strong>인데요. 우리는 분명히 별도의 태스크로 정의하고 태스크 블록 내에서 현재 Build Version을 출력하도록 작성했습니다. 이렇게 Build Version 버전이 두번 출력되는 이유는 이 글의 주요 내용인 그래들 빌드 라이프사이클에 대한 개념과 관련이 있습니다.</p>
+<h2 id="그래들-빌드-라이프사이클"><a href="#그래들-빌드-라이프사이클" class="headerlink" title="그래들 빌드 라이프사이클"></a>그래들 빌드 라이프사이클</h2><p>사실 상 이러한 문제를 경험하는 이유는 그래들의 빌드 라이프사이클에 대한 개념을 모르기 때문인데요. 20년차이신 팀장님 조차도 잘 모르는 부분이었다고 할 수 있습니다. 빌드 라이프사이클 존재를 모르는 상황이었기에 이렇게 되는 이유를 검색하고 팀장님께서 <a href="https://stackoverflow.com/a/23485085">Gradle executes all tasks?</a>이라는 스택오버플로우 질문을 공유해주셨습니다.</p>
+<p>이 질문에 대한 답변에서는 그래들에는 configuration 단계와 execution 단계가 있고 이것은 중요한 개념이라고 설명하고 있었습니다. 그러면 그래들 공식 문서에 있는 <a href="https://docs.gradle.org/current/userguide/build_lifecycle.html">Build Lifecycle</a>를 살펴보도록 하겠습니다.</p>
+<blockquote>
+<p>Gradle builds the complete dependency graph before any task is executed.<br>… Your build scripts configure this dependency graph.</p>
+</blockquote>
+<p>그래들은 태스크를 수행하기 전에 의존성 그래프를 빌드하고 빌드 스크립트는 의존성 그래프를 구성한다고 설명하며 빌드 단계에 대해서 설명합니다.</p>
+<h3 id="빌드-단계"><a href="#빌드-단계" class="headerlink" title="빌드 단계"></a>빌드 단계</h3><p>그래들의 빌드 단계는 3가지로 구분된다고 하며 초기화(Initialization), 구성(Configuration), 수행(Execution)입니다. </p>
+<blockquote>
+<p><strong>Initialization</strong><br>Gradle supports single and multi-project builds. During the initialization phase, Gradle determines which projects are going to take part in the build, and creates a Project instance for each of these projects.</p>
+<p><strong>Configuration</strong><br>During this phase the project objects are configured. The build scripts of all projects which are part of the build are executed.</p>
+<p><strong>Execution</strong><br>Gradle determines the subset of the tasks, created and configured during the configuration phase, to be executed. The subset is determined by the task name arguments passed to the gradle command and the current directory. Gradle then executes each of the selected tasks.</p>
+</blockquote>
+<p>세가지의 단계 중 구성 단계에서는 모든 프로젝트의 빌드 스크립트가 실행된다는 설명이 있습니다. 이 부분이 제가 경험한 문제의 원인이라고 할 수 있는데 태스크 내에서 작성하는 코드는 구성 단계에 포함되며 doFirst와 doLast 블록이 수행 단계에 포함되기 때문입니다.</p>
+<p>저도 모르는 부분이었고 생각보다 많은 블로그에서는 그래들 태스크 정의를 설명할 때 구성 단계에 해당되는 곳에 println을 작성하는 예시를 보여주는데요. 생각보다 많은 분들이 이 개념에 대해서 모른다고 할 수 있습니다. 물론 단일 애플리케이션 프로젝트에서는 몰라도 상관없다고 할 수 있겠네요.</p>
+<h3 id="테스트를-위한-태스크"><a href="#테스트를-위한-태스크" class="headerlink" title="테스트를 위한 태스크"></a>테스트를 위한 태스크</h3><p>그러면 어떻게 하였기에 프로젝트 버전이 포함되지 않았을 지 다음의 태스크를 살펴보도록 하겠습니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+task <span class="token function">k8sbuild</span><span class="token punctuation">(</span>dependsOn<span class="token punctuation">:</span> bootWar<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    project<span class="token punctuation">.</span>version <span class="token string">''</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>추가한 k8sbuild 태스크는 쿠버네티스 배포 환경 테스트를 위해 패키징된 애플리케이션 WAR 파일에 포함되는 프로젝트 버전을 생략하기 위해서 project.version을 빈 값으로 설정하도록 작성한게 화근이었습니다. 이 상태로 zipManually 태스크를 다시 한번 수행하면 어떻게 되는지 확인해봅시다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">./gradlew clean zipManually <span class="token parameter variable">-x</span> <span class="token builtin class-name">test</span> <span class="token parameter variable">-Pversion</span><span class="token operator">=</span><span class="token number">1.0</span>.0-hotfix.11</code></pre>
+
+<p><img data-src="/images/posts/gradle-build-lifecycle/gradle-03.png"></p>
+<p>k8sbuild 태스크에 작성된 project.version을 설정하는 행위는 구성 단계에 해당하기 때문에 모든 태스크를 수행하기 이전에 적용되어 zipManually 태스크를 수행했음에도 불구하고 프로젝트 버전이 포함되지 않았음을 보여줍니다.</p>
+<h3 id="해결방안"><a href="#해결방안" class="headerlink" title="해결방안"></a>해결방안</h3><p>그러면 어떻게 해결하는게 좋을지 방안을 찾아보도록 하겠습니다. </p>
+<h4 id="프로젝트-버전-재정의하는-경우"><a href="#프로젝트-버전-재정의하는-경우" class="headerlink" title="프로젝트 버전 재정의하는 경우"></a>프로젝트 버전 재정의하는 경우</h4><p>k8sbuild 태스크처럼 특정 태스크에서 프로젝트 버전을 재정의 하고싶은 경우에는 doFirst와 같은 클로저를 활용해야합니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">k8sbuild</span><span class="token punctuation">(</span>dependsOn<span class="token punctuation">:</span> bootWar<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    doFirst <span class="token punctuation">&#123;</span>
+        project<span class="token punctuation">.</span>version <span class="token string">''</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="프로젝트-버전을-확인하고-싶은-경우"><a href="#프로젝트-버전을-확인하고-싶은-경우" class="headerlink" title="프로젝트 버전을 확인하고 싶은 경우"></a>프로젝트 버전을 확인하고 싶은 경우</h4><p>zipBeanstalk와 zipManually 태스크처럼 애플리케이션을 WAR로 패키징하는 경우 현재 프로젝트 버전을 출력하고 싶은 경우 gradle.taskGraph.whenReady를 활용함으로써 해결할 수 있습니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">task <span class="token function">zipBeanstalk</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'procfile'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    from <span class="token punctuation">(</span><span class="token string">'.ebextensions'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.ebextensions'</span> <span class="token punctuation">&#125;</span>
+    from <span class="token punctuation">(</span><span class="token string">'.platform'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'.platform'</span> <span class="token punctuation">&#125;</span>
+
+    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
+        <span class="token function">include</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">"Procfile"</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    baseName <span class="token operator">=</span> <span class="token string">'beanstalk'</span>
+<span class="token punctuation">&#125;</span>
+
+task <span class="token function">zipManually</span><span class="token punctuation">(</span>type<span class="token punctuation">:</span> Zip<span class="token punctuation">,</span> dependsOn<span class="token punctuation">:</span> <span class="token string">'bootWar'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    from <span class="token punctuation">(</span><span class="token string">'.conf'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> into <span class="token string">'application-prod.yml'</span><span class="token punctuation">&#125;</span>
+    from <span class="token punctuation">(</span><span class="token string">'build/libs'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">include</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">.</span>archiveName<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    baseName <span class="token operator">=</span> <span class="token string">'app-bundle'</span>
+<span class="token punctuation">&#125;</span>
+
+gradle<span class="token punctuation">.</span>taskGraph<span class="token punctuation">.</span>whenReady <span class="token punctuation">&#123;</span> graph <span class="token operator">-></span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>graph<span class="token punctuation">.</span><span class="token function">hasTask</span><span class="token punctuation">(</span>bootWar<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        println <span class="token string">'Build Version: '</span> <span class="token operator">+</span> project<span class="token punctuation">.</span>version
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="불필요한-파일을-제거해야하는-경우"><a href="#불필요한-파일을-제거해야하는-경우" class="headerlink" title="불필요한 파일을 제거해야하는 경우"></a>불필요한 파일을 제거해야하는 경우</h4><p>경우에 따라서는 프로젝트 빌드 시 패키징된 애플리케이션 WAR 파일에 포함되지 않도록 해야할 수 있습니다. 예를 들어, 로컬 환경에서 사용하는 애플리케이션 프로퍼티 파일이나 특정 도메인에 대한 인증서 또는 인증키를 포함하지않도록 제외해야할 수 있습니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">gradle<span class="token punctuation">.</span>taskGraph<span class="token punctuation">.</span>whenReady <span class="token punctuation">&#123;</span> graph <span class="token operator">-></span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>graph<span class="token punctuation">.</span><span class="token function">hasTask</span><span class="token punctuation">(</span>build_for_customer<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        processResources <span class="token punctuation">&#123;</span>
+            <span class="token function">exclude</span><span class="token punctuation">(</span><span class="token string">'**/config/**.yml'</span><span class="token punctuation">)</span>
+            <span class="token function">exclude</span><span class="token punctuation">(</span><span class="token string">'**/certs/**'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 예시는 구성 단계에서 의존성 그래프 구성이 완료된 이후에 build_for_customer 태스크가 수행되는 경우에 고객 환경으로 배포하는 애플리케이션 WAR 파일에 자체적으로 사용하는 애플리케이션 프로퍼티 파일들과 인증서를 포함하지 않도록 processResources를 재정의함을 보여줍니다.</p>
+<p>그래들 빌드 라이프사이클 개념과 함께 경험하였던 문제에 대하여 어떻게 해결할 수 있는지 알아보았습니다. 어떤 기술을 사용함에 있어서 주요 개념을 이해하고 있는 것이 중요함을 다시한번 깨닫게 되는 좋은 경험이었습니다. 여러분의 그래들 빌드 스크립트에서도 수행 단계에서 수행되어야할 코드를 구성 단계에서 동작하도록 작성되지 않았는지 검토해보시기를 바랍니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Gradle</tag>
+        <tag>Lifecycle</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>그래들 멀티 모듈 프로젝트</title>
+    <url>/gradle-multi-module-project/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 그래들 멀티 모듈 프로젝트의 디펜던시 공유에 대하여 이야기 해보려고 합니다. </p>
+<h2 id="그래들-멀티-모듈"><a href="#그래들-멀티-모듈" class="headerlink" title="그래들 멀티 모듈"></a>그래들 멀티 모듈</h2><p>서비스의 규모가 어느정도 커지게되면 모놀리식 아키텍처로써 서비스에 대한 모든 기능이 하나의 애플리케이션에 구현하는 것을 마이크로서비스 아키텍처를 참고하여 일부 기능을 수행하는 별도의 애플리케이션로 독립시키기도 합니다. 현재 다니고 있는 회사에서는 모놀리식 아키텍처로 개발하고 있는 애플리케이션을 여러 고객들의 환경에 맞는 배포 또는 별도의 커스텀 기능을 지원하기 위하여 <strong>그래들 멀티 모듈 프로젝트</strong>로 전환하였습니다.</p>
+<h3 id="Java-라이브러리-플러그인"><a href="#Java-라이브러리-플러그인" class="headerlink" title="Java 라이브러리 플러그인"></a>Java 라이브러리 플러그인</h3><p>공용 모듈에서 사용하는 디펜던시를 상위 모듈에서도 사용하기 위해서는 자바 플러그인 대신 자바 라이브러리 플러그인을 적용하고 <code>api</code>를 사용하여 지정된 디펜던시를 외부 모듈의 컴파일 클래스패스에 노출시켜야합니다. Gradle 7 부터는 <code>compile</code>을 지원하지 않으며 <code>implementation</code>은 지정한 디펜던시를 외부 모듈에 노출시키지 않습니다.</p>
+<blockquote>
+<p>The compile and runtime configurations have been removed with Gradle 7.0. Please refer to the upgrade guide how to migrate to implementation and api configurations&#96;.</p>
+</blockquote>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy"><span class="token comment">// module-common/build.gradle</span>
+plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'java-library'</span>
+    id <span class="token string">'io.spring.dependency-management'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    api <span class="token string">'com.google.code.gson:gson'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>common 모듈의 gson 라이브러리는 api를 통해 상위 모듈의 클래스패스에 노출되어 상위 모듈에서도 사용이 가능해집니다. 기본적으로 implementation을 사용하는 경우 외부 모듈 클래스패스에 노출시키지 않는 이유는 빠른 컴파일과 클래스패스 사이즈를 줄이기 위함이며 api 보다는 implementation을 선호해야한다고 합니다.</p>
+<h3 id="Common-Module"><a href="#Common-Module" class="headerlink" title="Common Module"></a>Common Module</h3><p><a href="https://github.com/kdevkr/gradle-multi-module">gradle-multi-module</a> 처럼 그래들 멀티 모듈 프로젝트에 공용으로 적용되는 코드를 가지는 Common 모듈이 있을때 다음과 같이 공통으로 적용되어야하는 설정을 수행할 수 있습니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span><span class="token punctuation">(</span>proxyBeanMethods <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JsonConfig</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">Jackson2ObjectMapperBuilderCustomizer</span> <span class="token function">objectMapperBuilderCustomizer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> builder <span class="token operator">-></span> builder
+                <span class="token punctuation">.</span><span class="token function">featuresToEnable</span><span class="token punctuation">(</span><span class="token class-name">SerializationFeature</span><span class="token punctuation">.</span><span class="token constant">WRITE_DATES_AS_TIMESTAMPS</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">featuresToDisable</span><span class="token punctuation">(</span><span class="token class-name">SerializationFeature</span><span class="token punctuation">.</span><span class="token constant">WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">modules</span><span class="token punctuation">(</span><span class="token class-name">List</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Jdk8Module</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">JavaTimeModule</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 코드에서는 Date 또는 Timestamp와 같은 클래스에 대하여 Long 값으로 변환하는 기능을 활성화하기 위하여 SerializationFeature.WRITE_DATES_AS_TIMESTAMPS를 적용하였습니다. </p>
+<h4 id="Common-Dependencies"><a href="#Common-Dependencies" class="headerlink" title="Common Dependencies"></a>Common Dependencies</h4><pre class="language-groovy" data-language="groovy"><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'java-library'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    api <span class="token string">'org.springframework.boot:spring-boot-starter-security'</span>
+    api <span class="token string">'com.google.code.gson:gson'</span>
+    api <span class="token string">'com.fasterxml.jackson.core:jackson-databind'</span>
+    api <span class="token string">'org.hibernate.validator:hibernate-validator'</span>
+    api <span class="token string">'org.apache.commons:commons-lang3'</span>
+    api <span class="token string">'org.apache.commons:commons-collections4:4.4'</span>
+    api <span class="token string">'com.google.guava:guava:31.0.1-jre'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위 설정처럼 implementation 대신에 api를 사용하면 동일한 버전의 디펜던시를 다른 외부 모듈에서도 사용할 수 있도록 클래스패스에 노출할 수 있습니다. 이를 통해 각 모듈에서 사용되는 디펜던시 버전이 달라서 발생할 수 있는 문제를 방지할 수 있게 됩니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a href="https://docs.gradle.org/current/userguide/dependency_management_for_java_projects.html">Managing Dependencies of JVM Projects</a>  </li>
+<li><a href="https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_configurations_graph">The Java Library Plugin</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Gradle</tag>
       </tags>
   </entry>
   <entry>

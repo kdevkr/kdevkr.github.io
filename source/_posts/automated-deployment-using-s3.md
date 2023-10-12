@@ -55,7 +55,7 @@ cd /home/ec2-user/
 OLD_FILENAME=$(ls /home/ec2-user/ | grep .war | grep -v .old)
 FILENAME=$(ls /home/ec2-user/prepare/ | grep .war)
 UPD_OLD=$(stat -c %Y $OLD_FILENAME)
-UPD_NEW=$(stat -c %Y $FILENAME)
+UPD_NEW=$(stat -c %Y /home/ec2-user/prepare/$FILENAME)
 
 echo "[`date --rfc-3339=seconds`] [INFO] old file : $OLD_FILENAME($UPD_OLD)"
 echo "[`date --rfc-3339=seconds`] [INFO] new file : $FILENAME($UPD_NEW)"

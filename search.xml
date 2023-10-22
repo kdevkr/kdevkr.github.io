@@ -436,6 +436,35 @@ ubuntu@ubuntu:~$ <span class="token function">ps</span> <span class="token param
       </tags>
   </entry>
   <entry>
+    <title>AWS SDK for Java BOM</title>
+    <url>/aws-sdk-for-java-bom/</url>
+    <content><![CDATA[<p>AWS 경험이 많지 않은 개발자 혹은 신규 프로젝트를 위한 구성 시 종종 신경쓰지 않아 발생하는 문제는 AWS 서비스와의 연동을 위한 자바 라이브러리를 사용하기 위해 AWS Java SDK 를 추가하는 것으로 인한 과도하된 애플리케이션 용량이다. 처음부터 공식 문서를 제대로 참고한다면 Java SDK 를 위한 Maven BOM 을 추가하는 방식으로 구성했을 것이다. 그렇지 않은 경우라면 아래와 같이 AWS Java SDK 전체를 추가했을 것이다.</p>
+<h4 id="애플리케이션-빌드-용량-문제"><a href="#애플리케이션-빌드-용량-문제" class="headerlink" title="애플리케이션 빌드 용량 문제"></a>애플리케이션 빌드 용량 문제</h4><pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'software.amazon.awssdk:aws-sdk-java:2.21.4'</span>
+    implementation <span class="token string">'com.amazonaws:aws-java-sdk:1.12.570'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위의 경우는 연동하려는 서비스마다 참고한 코드가 다름으로 인해 V1과 V2 라이브러리를 혼재한 경우를 의미할지도 모른다. 만약, 정말로 프로젝트에서 추가하는 방식이 위와 같다면 여러분이 인텔리제이와 같은 IDE 도구로 프로젝트를 열었을때 수 많은 라이브러리들을 다운받기 위해서 열일하는 프로그램을 볼 수 있게 될 것이다.</p>
+<p>사실 오랫동안 기다려서 한번 다운로드 받게되면 캐시하여 사용하게 되므로 딱히 문제점을 인지하지 못할지도 모른다. 메이븐이나 그래들로 다운받는 라이브러리들은 프로젝트 폴더에 위치하는게 아니기 때문이다. 내재된 문제에 대해서는 빌드 과정에서 인지하게 된다. 빌드된 애플리케이션 실행 파일을 살펴보면 무려 800 메가를 넘는 용량을 가진다.</p>
+<p><img data-src="/images/posts/aws-sdk-for-java-bom/01.png">  </p>
+<h4 id="애플리케이션에-최적화된-빌드-용량"><a href="#애플리케이션에-최적화된-빌드-용량" class="headerlink" title="애플리케이션에 최적화된 빌드 용량"></a>애플리케이션에 최적화된 빌드 용량</h4><p>애플리케이션 빌드 시 정상적인 결과를 가질 수 있도록 Java SDK for Java 를 위한 Maven BOM 으로 버전을 관리하고 애플리케이션에서 사용하는 라이브러리만을 추가하도록 하자. </p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token function">platform</span><span class="token punctuation">(</span><span class="token string">'software.amazon.awssdk:bom:2.21.4'</span><span class="token punctuation">)</span>
+    implementation <span class="token function">platform</span><span class="token punctuation">(</span><span class="token string">'com.amazonaws:aws-java-sdk-bom:1.12.570'</span><span class="token punctuation">)</span>
+    implementation <span class="token string">'software.amazon.awssdk:ec2'</span>
+    implementation <span class="token string">'com.amazonaws:aws-java-sdk-s3'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><img data-src="/images/posts/aws-sdk-for-java-bom/02.png">  </p>
+<p>오래전에 발생하여 공유했던 트러블슈팅인데 시간이 지나면서 신규 프로젝트에서도 동일한 상황이 발생해서 정리하여 공유해본다.</p>
+]]></content>
+      <tags>
+        <tag>Maven BOM</tag>
+        <tag>aws-java-sdk</tag>
+        <tag>aws-sdk-java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Base64</title>
     <url>/base64/</url>
     <content><![CDATA[<p><img data-src="/images/posts/base64/base64-01.png"></p>
@@ -3624,6 +3653,106 @@ openssl pkcs8 <span class="token parameter variable">-topk8</span> <span class="
 ]]></content>
   </entry>
   <entry>
+    <title>KDB Connection Pool</title>
+    <url>/kdb-connection-pool/</url>
+    <content><![CDATA[<blockquote>
+<p>TCP 소켓이 연결된 상태로 남아있는 <a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2022-12-08.md">TCP 커넥션 누수 문제</a>를 경험하고나서 커넥션 풀 기능 구현에 대해서 다시한번 학습해보고 정리하는 글입니다.</p>
+</blockquote>
+<p>아마도 관계형 데이터베이스와 자주 사용되는 일부 데이터베이스들에 대한 커넥션 풀 기능은 직접 구현하지 않아도 되는 경우가 많습니다. 시스템에서 사용중인 시계열 데이터베이스는 <a href="https://github.com/KxSystems/javakdb/blob/master/javakdb/src/main/java/com/kx/c.java">자바 클라이언트 라이브러리</a>를 제공하고 있지만 시계열 데이터베이스가 단일 요청을 순차적으로 처리하는 싱글 스레드 방식임에 따라서 커넥션 풀 기능은 자체적으로 내장하고 있지 않습니다. 커넥션 풀 기능이 반드시 필요한 것은 아니지만 TCP 연결에 대한 부하를 생각한다면 자주 TCP 소켓을 연결하므로 발생할 수 있는 레이턴시를 및 자원 낭비를 무시할 수 없습니다.</p>
+<h4 id="자바-커넥션-풀-라이브러리"><a href="#자바-커넥션-풀-라이브러리" class="headerlink" title="자바 커넥션 풀 라이브러리"></a>자바 커넥션 풀 라이브러리</h4><p>자바 애플리케이션은 대부분 <a href="https://commons.apache.org/proper/commons-pool/">Apache Commons Pool2</a> 라이브러리를 활용해서 커넥션 풀 기능을 구현하는 경우가 많습니다. 대표적으로 레디스 클라이언트로 많이 사용중인 <a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java">Lettuce의 커넥션 풀 지원</a>을 확인할 수 있으며 <a href="https://commons.apache.org/proper/commons-dbcp/">Apache Commons DBCP2</a>라고 하는 관계형 데이터베이스에 대한 대표적인 커넥션 풀 라이브러리도 Commons Pool로 구현되어있음을 확인할 수 있습니다.</p>
+<blockquote>
+<p>Apache Commons Pool2에서는 <a href="https://commons.apache.org/proper/commons-pool/examples.html">간단한 PooledObjectFactory 예제</a>를 제공하고 있지만 자세한 설명이 없습니다.</p>
+</blockquote>
+<p>커넥션 풀 구현 예제를 검색해보면 생각보다 관련된 글이 없었기에 직접적으로 커넥션 풀 기능을 구현하는 개발자는 많지 않을 것이라 생각됩니다. 커넥션 오브젝트에 대한 라이프 사이클을 관리하는 것은 PooledObjectFactory 인터페이스가 담당하므로 원하는 커넥션 풀 동작을 BasePooledObjectFactory를 상속하여 구현하면 됩니다. 다만, 커네션 풀 구현 시 중요하게 생각해야할 부분은 BasePooledObjectFactory에서 기본적으로 구현해두어서 구현을 강제하지 않는 함수 중 커넥션 풀에서 관리하는 오브젝트가 삭제되는 대상이 되는 경우 호출되는 destoryObject 함수 동작을 생략해버릴 수 있다는 점 입니다.</p>
+<h4 id="CPooledObjectFactory"><a href="#CPooledObjectFactory" class="headerlink" title="CPooledObjectFactory"></a>CPooledObjectFactory</h4><p>커넥션 풀 기능을 처음 구현했을 당시에 고려하지 못한 미흡한 점을 인지하고 KDB 프로세스에 대한 커넥션의 라이프 사이클을 관리하는 CPooledObjectFactory를 다시 작성해보았습니다. </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CPooledObjectFactory</span> <span class="token keyword">extends</span> <span class="token class-name">BasePooledObjectFactory</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> host<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> port<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">CPooledObjectFactory</span><span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token keyword">int</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>host <span class="token operator">=</span> host<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> c <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token function">c</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token function">wrap</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DefaultPooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validateObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            c c <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>s <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>s<span class="token punctuation">.</span><span class="token function">isConnected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            c<span class="token punctuation">.</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">c<span class="token punctuation">.</span></span>KException</span> <span class="token operator">|</span> <span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroyObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// ignored</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>더 자세하게 PooledObjectFactory 구현에 대해서 고민하고 싶은 분들이라면 아래의 오픈소스들을 참고해보시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java#L201">RedisPooledObjectFactory</a></li>
+<li><a href="https://github.com/apache/commons-dbcp/blob/master/src/main/java/org/apache/commons/dbcp2/PoolableConnectionFactory.java">PoolableConnectionFactory</a></li>
+</ul>
+<h4 id="CObjectPool"><a href="#CObjectPool" class="headerlink" title="CObjectPool"></a>CObjectPool</h4><p>이제는 커넥션 오브젝트를 관리할 방식에 대해서 설정하는 것을 고민해보아야 합니다. Apache Commons Pool에서 커넥션 오브젝트 라이프사이클에 따라 어떻게 관리할지 결정하기 위해서는 GenericObjectPoolConfig를 사용해야 합니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CObjectPoolConfig</span> <span class="token keyword">extends</span> <span class="token class-name">GenericObjectPoolConfig</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">CObjectPoolConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxTotal</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxIdle</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMinIdle</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxWait</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTimeBetweenEvictionRuns</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTestWhileIdle</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setJmxEnabled</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>커넥션 풀 라이브러리에서 제공하는 기본값 중에서 JMX 모니터링 기능을 사용하지 않으므로 비활성화 해두었으며 유휴 상태로 관리중인 커넥션에 대해서도 미리 커넥션 상태를 확인할 수 있도록 TestWhileIdle 옵션을 활성화하였습니다. MaxWait의 경우 사용중인 각 커넥션이 최대로 소요할 수 있는 임계치에 따라 3분 까지 기다릴 수 있도록 해두었습니다. </p>
+<blockquote>
+<p>By default, kdb+ is single-threaded, and processes incoming queries sequentially.</p>
+</blockquote>
+<p>커넥션 라이프 사이클에 따라서 커넥션 풀에서 커넥션 오브젝트가 삭제되는 사유에는 대표적으로 두가지가 있는데요. 하나는 유휴 상태에 있는 커넥션이 벨리데이션 쿼리를 수행하는 과정에서 소켓 통신 오류가 발생하거나 너무 오랬동안 커넥션이 사용되지 않아서 버려지고 새로운 커넥션을 만들어서 풀을 유지하는 상황입니다. 위 문구 내용처럼 시계열 데이터베이스는 빠르게 요청을 처리하기 위해서 싱글 스레드 방식을 통해서 단일 요청을 순차적으로 처리하는게 기본적인 기술 관점입니다. 이는 레디스에서 동시성을 구현하기 위해서 채택한 방법이기도 하므로 단순히 싱글 스레드여서 문제가 있다고 바라보면 안됩니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">exec</span> <span class="token number">0</span> ms <span class="token punctuation">(</span><span class="token number">481900</span> ns<span class="token punctuation">)</span></code></pre>
+
+<p>시계열 데이터베이스가 아무리 빠르다고 해도 긴 범위의 시계열 데이터를 조회하고 연산을 한다거나 TCP 소켓을 통해 전달해야할 데이터가 상당히 많은 경우라면 싱글 스레드의 단점으로 인하여 선행 요청에 의해 후행 요청이 기다리는 시간으로 인해 병목 현상이 발생할 수 있다는 점을 고려해야합니다. 만약, 그러한 상황이 자주 발생한다면 빠른 성능을 위해 싱글 스레드를 채택한 시계열 데이터베이스를 활용하는 방법이 잘못된 것일 수 있습니다.</p>
+<p>KDB 시계열 데이터베이스와 커넥션 풀 동작에 대해서 확인하고 싶다면 아래의 링크들을 참고하시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/kdevkr/kdb">Learning KDB+</a></li>
+<li><a href="https://github.com/kdevkr/spring-demo-kdb">Spring Demo KDB</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>TCP</tag>
+        <tag>Connection Pool</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>KDB Tick</title>
     <url>/kdb-tick/</url>
     <content><![CDATA[<p>에너지 분야는 나노초 또는 밀리초 단위의 시계열 데이터가 빠르게 생성되는 특수한 시장입니다. 시계열 데이터는 금융(Financial) 시장에서부터 중요성이 부각되었으나 이제는 다양한 분야에서 발생하고 이를 활용한 많은 서비스가 만들어지고 있습니다. 최소한 초 단위로 만들어지는 시계열 데이터를 빠르게 등록하고 조회할 수 있는 것을 목적으로하는 시계열 데이터베이스의 입지도 중요해지고 있고 많은 오픈소스 시계열 데이터베이스 솔루션도 만들어지고 있습니다. 현재 조직에서는 해외 금융 분야에서 어느정도 입지를 보이고 있는 시계열 데이터베이스인 KDB+를 도입하여 서비스에 사용중입니다. 라이센스 비용이 생각보다 비싸기는 하지만 고객들이 보유하는 데이터를 빠르게 수집하고 등록하기 위해서는 어쩔수 없는 선택이기도 합니다. </p>
@@ -3969,106 +4098,6 @@ It will expire on 22 May 2024 🗓</code></pre>
         <tag>TLS</tag>
         <tag>HTTP2</tag>
         <tag>mkcert</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>KDB Connection Pool</title>
-    <url>/kdb-connection-pool/</url>
-    <content><![CDATA[<blockquote>
-<p>TCP 소켓이 연결된 상태로 남아있는 <a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2022-12-08.md">TCP 커넥션 누수 문제</a>를 경험하고나서 커넥션 풀 기능 구현에 대해서 다시한번 학습해보고 정리하는 글입니다.</p>
-</blockquote>
-<p>아마도 관계형 데이터베이스와 자주 사용되는 일부 데이터베이스들에 대한 커넥션 풀 기능은 직접 구현하지 않아도 되는 경우가 많습니다. 시스템에서 사용중인 시계열 데이터베이스는 <a href="https://github.com/KxSystems/javakdb/blob/master/javakdb/src/main/java/com/kx/c.java">자바 클라이언트 라이브러리</a>를 제공하고 있지만 시계열 데이터베이스가 단일 요청을 순차적으로 처리하는 싱글 스레드 방식임에 따라서 커넥션 풀 기능은 자체적으로 내장하고 있지 않습니다. 커넥션 풀 기능이 반드시 필요한 것은 아니지만 TCP 연결에 대한 부하를 생각한다면 자주 TCP 소켓을 연결하므로 발생할 수 있는 레이턴시를 및 자원 낭비를 무시할 수 없습니다.</p>
-<h4 id="자바-커넥션-풀-라이브러리"><a href="#자바-커넥션-풀-라이브러리" class="headerlink" title="자바 커넥션 풀 라이브러리"></a>자바 커넥션 풀 라이브러리</h4><p>자바 애플리케이션은 대부분 <a href="https://commons.apache.org/proper/commons-pool/">Apache Commons Pool2</a> 라이브러리를 활용해서 커넥션 풀 기능을 구현하는 경우가 많습니다. 대표적으로 레디스 클라이언트로 많이 사용중인 <a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java">Lettuce의 커넥션 풀 지원</a>을 확인할 수 있으며 <a href="https://commons.apache.org/proper/commons-dbcp/">Apache Commons DBCP2</a>라고 하는 관계형 데이터베이스에 대한 대표적인 커넥션 풀 라이브러리도 Commons Pool로 구현되어있음을 확인할 수 있습니다.</p>
-<blockquote>
-<p>Apache Commons Pool2에서는 <a href="https://commons.apache.org/proper/commons-pool/examples.html">간단한 PooledObjectFactory 예제</a>를 제공하고 있지만 자세한 설명이 없습니다.</p>
-</blockquote>
-<p>커넥션 풀 구현 예제를 검색해보면 생각보다 관련된 글이 없었기에 직접적으로 커넥션 풀 기능을 구현하는 개발자는 많지 않을 것이라 생각됩니다. 커넥션 오브젝트에 대한 라이프 사이클을 관리하는 것은 PooledObjectFactory 인터페이스가 담당하므로 원하는 커넥션 풀 동작을 BasePooledObjectFactory를 상속하여 구현하면 됩니다. 다만, 커네션 풀 구현 시 중요하게 생각해야할 부분은 BasePooledObjectFactory에서 기본적으로 구현해두어서 구현을 강제하지 않는 함수 중 커넥션 풀에서 관리하는 오브젝트가 삭제되는 대상이 되는 경우 호출되는 destoryObject 함수 동작을 생략해버릴 수 있다는 점 입니다.</p>
-<h4 id="CPooledObjectFactory"><a href="#CPooledObjectFactory" class="headerlink" title="CPooledObjectFactory"></a>CPooledObjectFactory</h4><p>커넥션 풀 기능을 처음 구현했을 당시에 고려하지 못한 미흡한 점을 인지하고 KDB 프로세스에 대한 커넥션의 라이프 사이클을 관리하는 CPooledObjectFactory를 다시 작성해보았습니다. </p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CPooledObjectFactory</span> <span class="token keyword">extends</span> <span class="token class-name">BasePooledObjectFactory</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
-
-    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> host<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> port<span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token class-name">CPooledObjectFactory</span><span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token keyword">int</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>host <span class="token operator">=</span> host<span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> c <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token function">c</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token function">wrap</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DefaultPooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validateObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            c c <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>s <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>s<span class="token punctuation">.</span><span class="token function">isConnected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            c<span class="token punctuation">.</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">c<span class="token punctuation">.</span></span>KException</span> <span class="token operator">|</span> <span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroyObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">close</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-                c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token comment">// ignored</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>더 자세하게 PooledObjectFactory 구현에 대해서 고민하고 싶은 분들이라면 아래의 오픈소스들을 참고해보시기 바랍니다.</p>
-<ul>
-<li><a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java#L201">RedisPooledObjectFactory</a></li>
-<li><a href="https://github.com/apache/commons-dbcp/blob/master/src/main/java/org/apache/commons/dbcp2/PoolableConnectionFactory.java">PoolableConnectionFactory</a></li>
-</ul>
-<h4 id="CObjectPool"><a href="#CObjectPool" class="headerlink" title="CObjectPool"></a>CObjectPool</h4><p>이제는 커넥션 오브젝트를 관리할 방식에 대해서 설정하는 것을 고민해보아야 합니다. Apache Commons Pool에서 커넥션 오브젝트 라이프사이클에 따라 어떻게 관리할지 결정하기 위해서는 GenericObjectPoolConfig를 사용해야 합니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CObjectPoolConfig</span> <span class="token keyword">extends</span> <span class="token class-name">GenericObjectPoolConfig</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token class-name">CObjectPoolConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxTotal</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxIdle</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMinIdle</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxWait</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTimeBetweenEvictionRuns</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTestWhileIdle</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setJmxEnabled</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>커넥션 풀 라이브러리에서 제공하는 기본값 중에서 JMX 모니터링 기능을 사용하지 않으므로 비활성화 해두었으며 유휴 상태로 관리중인 커넥션에 대해서도 미리 커넥션 상태를 확인할 수 있도록 TestWhileIdle 옵션을 활성화하였습니다. MaxWait의 경우 사용중인 각 커넥션이 최대로 소요할 수 있는 임계치에 따라 3분 까지 기다릴 수 있도록 해두었습니다. </p>
-<blockquote>
-<p>By default, kdb+ is single-threaded, and processes incoming queries sequentially.</p>
-</blockquote>
-<p>커넥션 라이프 사이클에 따라서 커넥션 풀에서 커넥션 오브젝트가 삭제되는 사유에는 대표적으로 두가지가 있는데요. 하나는 유휴 상태에 있는 커넥션이 벨리데이션 쿼리를 수행하는 과정에서 소켓 통신 오류가 발생하거나 너무 오랬동안 커넥션이 사용되지 않아서 버려지고 새로운 커넥션을 만들어서 풀을 유지하는 상황입니다. 위 문구 내용처럼 시계열 데이터베이스는 빠르게 요청을 처리하기 위해서 싱글 스레드 방식을 통해서 단일 요청을 순차적으로 처리하는게 기본적인 기술 관점입니다. 이는 레디스에서 동시성을 구현하기 위해서 채택한 방법이기도 하므로 단순히 싱글 스레드여서 문제가 있다고 바라보면 안됩니다. </p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">exec</span> <span class="token number">0</span> ms <span class="token punctuation">(</span><span class="token number">481900</span> ns<span class="token punctuation">)</span></code></pre>
-
-<p>시계열 데이터베이스가 아무리 빠르다고 해도 긴 범위의 시계열 데이터를 조회하고 연산을 한다거나 TCP 소켓을 통해 전달해야할 데이터가 상당히 많은 경우라면 싱글 스레드의 단점으로 인하여 선행 요청에 의해 후행 요청이 기다리는 시간으로 인해 병목 현상이 발생할 수 있다는 점을 고려해야합니다. 만약, 그러한 상황이 자주 발생한다면 빠른 성능을 위해 싱글 스레드를 채택한 시계열 데이터베이스를 활용하는 방법이 잘못된 것일 수 있습니다.</p>
-<p>KDB 시계열 데이터베이스와 커넥션 풀 동작에 대해서 확인하고 싶다면 아래의 링크들을 참고하시기 바랍니다.</p>
-<ul>
-<li><a href="https://github.com/kdevkr/kdb">Learning KDB+</a></li>
-<li><a href="https://github.com/kdevkr/spring-demo-kdb">Spring Demo KDB</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>TCP</tag>
-        <tag>Connection Pool</tag>
       </tags>
   </entry>
   <entry>
@@ -5899,6 +5928,22 @@ docker compose exec nginx nginx -s reload
       </tags>
   </entry>
   <entry>
+    <title>스스로 리뷰하는 습관을 가지자</title>
+    <url>/review-yourself/</url>
+    <content><![CDATA[<p>신입 웹 개발자들의 이력서나 인터뷰 과정에서 회사 내에 코드 리뷰 문화가 있는지 물어보는 사람이 많은 것 같다. 어떤 사람은 자신이 작성한 코드가 효율적인지 평가받고 싶은 니즈이고 어떤 사람은 팀 프로젝트를 진행하면서 처음의 목표와는 다르게 짧은 기간에 결과물을 만들어내기 위해 리뷰 과정을 생략할 수 밖에 없었던 경험을 코드 리뷰 문화가 정착된 조직에서 경험하고자 하는 것 같다. 솔직하게 이야기하자면 회사 내에 코드 리뷰 문화는 없으며 내가 속한 팀에 한해서만 주니어 개발자들의 요청에 의해서 코드 리뷰 과정을 도입하여 프로젝트 업무를 수행하고 있다. 아무래도 팀장이라는 직무를 수행하고 있기에 내심 원했던 것을 팀에서 요청했을 지 모를 일이다. 아무튼 코드 리뷰 과정을 수행한다고 해서 현실적으로 빠르게 업무를 수행하고 생각보다 많은 것들을 처리해야하므로 모두가 만족할만한 상세한 코드 리뷰는 없다고 말할 수 있다.</p>
+<p>인터넷에서 코드 리뷰에 대한 글들을 살펴보니 생각보다 많은 조직에서 개발자들이 코드 리뷰에 대한 오해를 했었고 현재의 팀에서도 코드 리뷰에 대한 작은 오해들을 조금씩 해소에 나가고 있다고 생각한다. 코드 리뷰 과정에서 가장 큰 오해는 경험이 많은 개발자의 의견이 정답이라고 가정하는 것이며 작은 오해는 코드 리뷰를 통해 모든 것을 체크해야한다고 생각한다는 것이다. 앞서 이야기했듯이 빠르게 많은 업무를 처리해야하므로 코드 리뷰에 많은 시간을 소비하기엔 어려운게 현실이다. 그렇다면 최소한 대부분의 개발자들이 기본으로 생각하는 사소한 관점에 대해서 스스로 리뷰하는 과정과 습관이 필요해진다는 의미로 생각할 수 있다.</p>
+<p>그렇다면, 개발자가 스스로 리뷰할 수 있는 방법은 무엇이 있을지 같이 생각해보자.</p>
+<h4 id="깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기"><a href="#깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기" class="headerlink" title="깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기"></a>깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기</h4><p>사소한 실수로 인해 깃 커밋 과정에서 풀 리퀘스트에 대한 내용과 상관없는 변경사항이 나도 모르게 포함될 수 있다. 코드 리뷰를 수행하는 리뷰어 입장에서는 요구사항과 상관없는 변경사항으로 인해 그로 인해 발생할 수 있는 영향도 체크까지 해야하는 불필요한 상황이 발생할 수 있다. 코드 리뷰 과정의 목적 중에 하나는 작업자가 고려하거나 체크하지 못한 부분을 크로스 체크하기 위함이 있지만 그러한 과정을 줄이려는 노력은 반드시 필요하다.</p>
+<h4 id="코딩-컨벤션에-맞는-포맷팅을-수행하기"><a href="#코딩-컨벤션에-맞는-포맷팅을-수행하기" class="headerlink" title="코딩 컨벤션에 맞는 포맷팅을 수행하기"></a>코딩 컨벤션에 맞는 포맷팅을 수행하기</h4><p>인텔리제이와 이클립스를 포함한 많은 개발도구에서는 문서에 대한 포맷팅 기능을 포함하고 있다. CheckStyle, Prettier, ESLint와 같은 플러그인과 통합하여 프로젝트마다 정해진 방식으로 포맷팅을 유지할 수 있고 코드 가독성을 유지하여 리뷰어가 더 쉽게 코드 변경사항을 체크할 수 있도록 제공할 수 있다. 어떤 개발자들은 포맷팅에 대해서 관심이 없어 무시하는 경향이 있는데 굳이 클린 코드라는 관점이 아니라도 사소한 포맷팅 습관으로도 코드 가독성은 엄청나게 높아진다.</p>
+<h4 id="SonarLint로-코드-품질을-리뷰하기"><a href="#SonarLint로-코드-품질을-리뷰하기" class="headerlink" title="SonarLint로 코드 품질을 리뷰하기"></a>SonarLint로 코드 품질을 리뷰하기</h4><p>SonarLint와 같은 정적 품질을 수행할 수 있는 도구를 통해 스스로 작성한 코드 품질에 대해서 살펴보고 리뷰할 수 있다. 클린 아키텍처와 클린 코드가 개발자 관점에서 도움이 되는 지식은 맞으나 사소한 것들도 체크하지 못하는 상황에서 좋은 코드를 작성하는 것에만 관심이 있다면 그것이 정말로 옳은 방향인지 다시 생각해보자. 스스로 <code>Standard outputs should not be used directly to log anything</code> 이라는 <a href="https://refactoring.guru/refactoring/smells">코드 스멜</a>을 아는가?</p>
+<p>신입 또는 주니어 개발자에게 기본적으로 요구되는 필수 역량에서 기본이라는 의미는 어쩌면 어떤 지식의 깊은 이해로 인해 잊어버리는 사소한 것들을 말하는게 아닐까 싶다. 스스로 리뷰하는 습관을 가져서 생각보다 잊어버리기 쉬운 사소한 것들을 체크해보도록 하자. </p>
+]]></content>
+      <tags>
+        <tag>Code Review</tag>
+        <tag>PR</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>프리마커 템플릿으로 이메일 발송하기</title>
     <url>/sending-mail-with-freemarker-template/</url>
     <content><![CDATA[<blockquote>
@@ -5995,22 +6040,6 @@ Caused by: javax.mail.AuthenticationFailedException: <span class="token number">
 <li><a href="https://www.baeldung.com/freemarker-in-spring-mvc-tutorial">Introduction to Using FreeMarker in Spring MVC</a></li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>스스로 리뷰하는 습관을 가지자</title>
-    <url>/review-yourself/</url>
-    <content><![CDATA[<p>신입 웹 개발자들의 이력서나 인터뷰 과정에서 회사 내에 코드 리뷰 문화가 있는지 물어보는 사람이 많은 것 같다. 어떤 사람은 자신이 작성한 코드가 효율적인지 평가받고 싶은 니즈이고 어떤 사람은 팀 프로젝트를 진행하면서 처음의 목표와는 다르게 짧은 기간에 결과물을 만들어내기 위해 리뷰 과정을 생략할 수 밖에 없었던 경험을 코드 리뷰 문화가 정착된 조직에서 경험하고자 하는 것 같다. 솔직하게 이야기하자면 회사 내에 코드 리뷰 문화는 없으며 내가 속한 팀에 한해서만 주니어 개발자들의 요청에 의해서 코드 리뷰 과정을 도입하여 프로젝트 업무를 수행하고 있다. 아무래도 팀장이라는 직무를 수행하고 있기에 내심 원했던 것을 팀에서 요청했을 지 모를 일이다. 아무튼 코드 리뷰 과정을 수행한다고 해서 현실적으로 빠르게 업무를 수행하고 생각보다 많은 것들을 처리해야하므로 모두가 만족할만한 상세한 코드 리뷰는 없다고 말할 수 있다.</p>
-<p>인터넷에서 코드 리뷰에 대한 글들을 살펴보니 생각보다 많은 조직에서 개발자들이 코드 리뷰에 대한 오해를 했었고 현재의 팀에서도 코드 리뷰에 대한 작은 오해들을 조금씩 해소에 나가고 있다고 생각한다. 코드 리뷰 과정에서 가장 큰 오해는 경험이 많은 개발자의 의견이 정답이라고 가정하는 것이며 작은 오해는 코드 리뷰를 통해 모든 것을 체크해야한다고 생각한다는 것이다. 앞서 이야기했듯이 빠르게 많은 업무를 처리해야하므로 코드 리뷰에 많은 시간을 소비하기엔 어려운게 현실이다. 그렇다면 최소한 대부분의 개발자들이 기본으로 생각하는 사소한 관점에 대해서 스스로 리뷰하는 과정과 습관이 필요해진다는 의미로 생각할 수 있다.</p>
-<p>그렇다면, 개발자가 스스로 리뷰할 수 있는 방법은 무엇이 있을지 같이 생각해보자.</p>
-<h4 id="깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기"><a href="#깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기" class="headerlink" title="깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기"></a>깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기</h4><p>사소한 실수로 인해 깃 커밋 과정에서 풀 리퀘스트에 대한 내용과 상관없는 변경사항이 나도 모르게 포함될 수 있다. 코드 리뷰를 수행하는 리뷰어 입장에서는 요구사항과 상관없는 변경사항으로 인해 그로 인해 발생할 수 있는 영향도 체크까지 해야하는 불필요한 상황이 발생할 수 있다. 코드 리뷰 과정의 목적 중에 하나는 작업자가 고려하거나 체크하지 못한 부분을 크로스 체크하기 위함이 있지만 그러한 과정을 줄이려는 노력은 반드시 필요하다.</p>
-<h4 id="코딩-컨벤션에-맞는-포맷팅을-수행하기"><a href="#코딩-컨벤션에-맞는-포맷팅을-수행하기" class="headerlink" title="코딩 컨벤션에 맞는 포맷팅을 수행하기"></a>코딩 컨벤션에 맞는 포맷팅을 수행하기</h4><p>인텔리제이와 이클립스를 포함한 많은 개발도구에서는 문서에 대한 포맷팅 기능을 포함하고 있다. CheckStyle, Prettier, ESLint와 같은 플러그인과 통합하여 프로젝트마다 정해진 방식으로 포맷팅을 유지할 수 있고 코드 가독성을 유지하여 리뷰어가 더 쉽게 코드 변경사항을 체크할 수 있도록 제공할 수 있다. 어떤 개발자들은 포맷팅에 대해서 관심이 없어 무시하는 경향이 있는데 굳이 클린 코드라는 관점이 아니라도 사소한 포맷팅 습관으로도 코드 가독성은 엄청나게 높아진다.</p>
-<h4 id="SonarLint로-코드-품질을-리뷰하기"><a href="#SonarLint로-코드-품질을-리뷰하기" class="headerlink" title="SonarLint로 코드 품질을 리뷰하기"></a>SonarLint로 코드 품질을 리뷰하기</h4><p>SonarLint와 같은 정적 품질을 수행할 수 있는 도구를 통해 스스로 작성한 코드 품질에 대해서 살펴보고 리뷰할 수 있다. 클린 아키텍처와 클린 코드가 개발자 관점에서 도움이 되는 지식은 맞으나 사소한 것들도 체크하지 못하는 상황에서 좋은 코드를 작성하는 것에만 관심이 있다면 그것이 정말로 옳은 방향인지 다시 생각해보자. 스스로 <code>Standard outputs should not be used directly to log anything</code> 이라는 <a href="https://refactoring.guru/refactoring/smells">코드 스멜</a>을 아는가?</p>
-<p>신입 또는 주니어 개발자에게 기본적으로 요구되는 필수 역량에서 기본이라는 의미는 어쩌면 어떤 지식의 깊은 이해로 인해 잊어버리는 사소한 것들을 말하는게 아닐까 싶다. 스스로 리뷰하는 습관을 가져서 생각보다 잊어버리기 쉬운 사소한 것들을 체크해보도록 하자. </p>
-]]></content>
-      <tags>
-        <tag>Code Review</tag>
-        <tag>PR</tag>
-      </tags>
   </entry>
   <entry>
     <title>Sentry</title>
@@ -8604,111 +8633,6 @@ task <span class="token function">awsbuild</span><span class="token punctuation"
       </tags>
   </entry>
   <entry>
-    <title>원격 호스트로 파일 전송하기</title>
-    <url>/transfer-files-to-remote/</url>
-    <content><![CDATA[<p>웹 개발자가 백엔드 또는 프론트엔드 코드를 작성하고 서버를 실행할 수 있는 애플리케이션 빌드 파일과 프론트엔드 코드를 실행할 수 있도록 빌드된 에셋 파일들을 하나의 시스템으로써 배포하기 위해서 백엔드 개발자 또는 서버 엔지니어가 구성해놓은 인프라 환경에 있는 리눅스 서버에 파일을 전송해야 합니다. 조직 또는 시스템에 대한 인프라 구성에 따라서 여러가지 방식으로 빌드 파일을 전송할 수 있는데 개인적인 경험을 토대로 원격 호스트에 빌드 파일을 전달하는 방법에 대해서 정리하려고 합니다.</p>
-<h4 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h4><p>웹 개발자 또는 서버 엔지니어가 원격 호스트에 파일을 전송하기 위해서는 SCP 또는 SFTP 명령어를 사용할 수 있으며 클라우드 서비스에서 제공하는 S3와 같은 서비스를 통해서도 외부 인터넷으로 접속이 불가능한 환경에서도 파일을 가져올 수 있습니다.</p>
-<h4 id="SCP"><a href="#SCP" class="headerlink" title="SCP"></a>SCP</h4><p>SCP 명령어는 SSH 프로토콜을 사용하여 파일을 전송하는 방법으로써 SSH 접속이 가능한 리눅스 서버로 파일을 복사하기 위해서 사용됩니다.</p>
-<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> <span class="token function">ls</span>
-
-    디렉터리: C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf
-
-Mode                 LastWriteTime         Length Name
-<span class="token operator">--</span><span class="token operator">--</span>                 <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>         <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span> <span class="token operator">--</span><span class="token operator">--</span>
-d-<span class="token operator">--</span><span class="token operator">--</span>    2022-02-22  오전 6:49:27                static
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27       19245297 demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:45            473 docker-compose-local<span class="token punctuation">.</span>yaml
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:05:42            573 docker-compose<span class="token punctuation">.</span>yaml
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:28            241 localhost+3-key<span class="token punctuation">.</span>pem
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:28           1318 localhost+3<span class="token punctuation">.</span>pem
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-05-21  오전 8:13:15           3017 nginx-local<span class="token punctuation">.</span>conf
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:05:40           2896 nginx<span class="token punctuation">.</span>conf
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27           2036 README<span class="token punctuation">.</span>md
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27           1436 server<span class="token punctuation">.</span>crt
-<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27            246 server<span class="token punctuation">.</span>key
-
-<span class="token comment"># SCP 명령어를 사용해서 로컬 컴퓨터에 있는 파일을 원격 호스트로 전송합니다.</span>
-<span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> scp <span class="token punctuation">.</span><span class="token operator">/</span>demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18:<span class="token operator">/</span>home/ubuntu/java/
-ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18's password:
-demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar                                                                                                                        100%   18MB  44<span class="token punctuation">.</span>0MB/s   00:00</code></pre>
-
-<blockquote>
-<p>제 로컬 컴퓨터에는 가상 환경 머신을 통해서 실행해놓은 우분투 리눅스(192.168.0.18)이 준비되어있으며 위와 같이 demo-0.0.1-SNAPSHOT.jar 라는 빌드 파일이 존재하여 이것을 SCP 명령어를 사용해서 원격 호스트의 사용자 홈 경로 하위의 java라는 폴더에 복사하였습니다.</p>
-</blockquote>
-<h4 id="SFTP"><a href="#SFTP" class="headerlink" title="SFTP"></a>SFTP</h4><p>일반적으로 FTP 프로토콜을 사용하여 서버와 클라이언트 간의 파일 전송을 수행하는데요. 실무에서는 SFTP를 사용하며 터미널 명령어보다는 <a href="https://filezilla-project.org/">파일질라(FileZilla)</a>와 같은 GUI를 제공하는 FTP 클라이언트를 사용하는 편입니다. SFTP는 서버와 클라이언트 방식이므로 SCP의 단일 명령어로 파일을 전송했던 것과 다르게 대화형 명령어를 사용하여 파일을 전송할 수 있습니다. </p>
-<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> sftp ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18
-ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18 password:
-Connected to ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18<span class="token punctuation">.</span>
-sftp> lls
-
- C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf 디렉터리
-
-2022-02-27  오전 10:59    &lt;<span class="token function">DIR</span>>          <span class="token punctuation">.</span>
-2022-02-27  오전 10:59    &lt;<span class="token function">DIR</span>>          <span class="token punctuation">.</span><span class="token punctuation">.</span>
-2022-02-22  오전 06:49        19<span class="token punctuation">,</span>245<span class="token punctuation">,</span>297 demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
-2022-02-22  오후 11:26               473 docker-compose-local<span class="token punctuation">.</span>yaml
-2022-02-22  오후 11:05               573 docker-compose<span class="token punctuation">.</span>yaml
-2022-02-22  오후 11:26               241 localhost+3-key<span class="token punctuation">.</span>pem
-2022-02-22  오후 11:26             1<span class="token punctuation">,</span>318 localhost+3<span class="token punctuation">.</span>pem
-2022-05-21  오전 08:13             3<span class="token punctuation">,</span>017 nginx-local<span class="token punctuation">.</span>conf
-2022-02-22  오후 11:05             2<span class="token punctuation">,</span>896 nginx<span class="token punctuation">.</span>conf
-2022-02-22  오전 06:49             2<span class="token punctuation">,</span>036 README<span class="token punctuation">.</span>md
-2022-02-22  오전 06:49             1<span class="token punctuation">,</span>436 server<span class="token punctuation">.</span>crt
-2022-02-22  오전 06:49               246 server<span class="token punctuation">.</span>key
-2022-02-22  오전 06:49    &lt;<span class="token function">DIR</span>>          static
-              10개 파일          19<span class="token punctuation">,</span>257<span class="token punctuation">,</span>533 바이트
-               3개 디렉터리  51<span class="token punctuation">,</span>521<span class="token punctuation">,</span>728<span class="token punctuation">,</span>512 바이트 남음
-
-<span class="token comment"># java 폴더로 이동한 후 파일을 복사합니다.</span>
-sftp> cd java
-sftp> put demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
-Uploading demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar to <span class="token operator">/</span>home/ubuntu/java/demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
-demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar                                                                                                                        100%   18MB  68<span class="token punctuation">.</span>8MB/s   00:00</code></pre>
-
-<blockquote>
-<p>로컬 컴퓨터에서 명령어를 수행하기 위해서 로컬(l)이 붙은 lls를 먼저 실행하여 로컬 컴퓨터에서 바라보는 경로를 확인하고 원격 호스트에 대한 명령어를 수행해서 파일을 복사했습니다. 그러면 SCP 명령어가 있는데도 불구하고 SFTP 프로토콜을 별도로 사용하는 이유는 무엇일까요?</p>
-</blockquote>
-<p>SFTP 프로토콜을 별도로 사용하는 이유에 대해서는 자세히 모릅니다. 다만, 개인적인 실무 경험을 토대로 이야기해보자면 배스천 호스트에 대한 SSH 접속 시 OTP로 2FA 인증을 요구하며 <a href="https://aws.amazon.com/ko/blogs/security/how-to-record-ssh-sessions-established-through-a-bastion-host/">배스천 호스트</a>에 대한 명령어 수행을 기록하기 위해서 SCP 명령어와 같이 인터랙션 세션이 아닌 직접 명령어를 수행하는 것은 제한되어 있을 수 있습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">    <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
-<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
-
- /<span class="token comment">#######                        /##     /##</span>
-<span class="token operator">|</span> <span class="token comment">##__  ##                      | ##    |__/</span>
-<span class="token operator">|</span> <span class="token comment">##  \ ##  /######   /####### /######   /##  /######  /#######</span>
-<span class="token operator">|</span> <span class="token comment">#######  |____  ## /##_____/|_  ##_/  | ## /##__  ##| ##__  ##</span>
-<span class="token operator">|</span> <span class="token comment">##__  ##  /#######|  ######   | ##    | ##| ##  \ ##| ##  \ ##</span>
-<span class="token operator">|</span> <span class="token comment">##  \ ## /##__  ## \____  ##  | ## /##| ##| ##  | ##| ##  | ##</span>
-<span class="token operator">|</span> <span class="token comment">#######/|  ####### /#######/  |  ####/| ##|  ######/| ##  | ##</span>
-<span class="token operator">|</span>_______/  <span class="token punctuation">\</span>_______/<span class="token operator">|</span>_______/    <span class="token punctuation">\</span>___/  <span class="token operator">|</span>__/ <span class="token punctuation">\</span>______/ <span class="token operator">|</span>__/  <span class="token operator">|</span>__/
-
-
-<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
-    <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
-Verification code: ******
-This bastion supports interactive sessions only. Do not supply a <span class="token builtin class-name">command</span></code></pre>
-
-<p>이와 같은 인프라 환경에서는 SFTP 서버에 업로드되는 파일들은 배스천 호스트의 특정 경로에 마운트되어 SSH 접속을 수행한 후 SCP 명령어를 사용해서 실제 리눅스 서버로 파일을 전달할 수 있습니다. SFTP 명령어에 대한 더 자세한 내용을 알고싶은 경우 <a href="https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server">How To Use SFTP to Securely Transfer Files with a Remote Server</a>를 참고하면 좋습니다.</p>
-<h4 id="S3"><a href="#S3" class="headerlink" title="S3"></a>S3</h4><p>요즘에는 IDC와 같은 온프레미스 환경보다는 AWS와 같은 클라우드 서비스 환경에 인프라를 구성하는 경우가 많습니다. AWS 에서는 S3라는 스토리지 서비스를 제공하는데 S3 버킷에 대한 권한을 가지는 IAM의 자격증명을 사용해서 쉽게 파일을 업로드할 수 있고 EC2 인스턴스 역할에 S3 버킷에 대한 접근 권한을 부여해놓으면 EC2 인스턴스 내에서도 S3 명령어를 사용해서 파일을 가져올 수 있습니다. </p>
-<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 로컬 컴퓨터에 있는 파일을 S3 버킷에 복사합니다.</span>
-aws s3 <span class="token function">cp</span> demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar s3:<span class="token operator">/</span><span class="token operator">/</span>mambo<span class="token punctuation">.</span>kr/java/ <span class="token operator">--</span>profile mambo
-
-<span class="token comment"># EC 인스턴스 내에서 S3 버킷에 있는 파일을 복사합니다.</span>
-aws s3 <span class="token function">cp</span> s3:<span class="token operator">/</span><span class="token operator">/</span>mambo<span class="token punctuation">.</span>kr/java/demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar <span class="token punctuation">.</span><span class="token operator">/</span></code></pre>
-
-<blockquote>
-<p>현재 조직에서는 퍼블릭 액세스가 불가능한 버킷에 도메인 인증서 또는 일부 데이터베이스에 대한 패치 스크립트 등을 업로드하고 리눅스 서버에 접속하여 해당 파일들을 복사하여 사용하고 있습니다. 퍼블릭 액세스가 가능하도록 설정된 버킷에 파일을 업로드해두면 조직의 외부로 파일을 공유해야할 때 HTTP 엔드포인트를 전달할 수 있으므로 다양하게 활용할 수도 있습니다.</p>
-</blockquote>
-<p>이처럼 원격 호스트에 파일을 전송하는 방법은 인프라 구성에 따라서 다양하게 사용해야할 수 있습니다. IT 분야가 어려운 이유는 생각보다 다양한 부분에 대해서 정답이라는 방식이 없기 때문에 개발자마다 조직에서 어떠한 방식을 취하느냐에 따라 다양한 경험을 할 수 있다는 것에 있습니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>S3</tag>
-        <tag>SSH</tag>
-        <tag>SCP</tag>
-        <tag>SFTP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Trace OAuth Requests</title>
     <url>/trace-oauth-requests/</url>
     <content><![CDATA[<blockquote>
@@ -8982,6 +8906,111 @@ aws s3 <span class="token function">cp</span> s3:<span class="token operator">/<
       <tags>
         <tag>HttpTrace</tag>
         <tag>ContentCaching</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>원격 호스트로 파일 전송하기</title>
+    <url>/transfer-files-to-remote/</url>
+    <content><![CDATA[<p>웹 개발자가 백엔드 또는 프론트엔드 코드를 작성하고 서버를 실행할 수 있는 애플리케이션 빌드 파일과 프론트엔드 코드를 실행할 수 있도록 빌드된 에셋 파일들을 하나의 시스템으로써 배포하기 위해서 백엔드 개발자 또는 서버 엔지니어가 구성해놓은 인프라 환경에 있는 리눅스 서버에 파일을 전송해야 합니다. 조직 또는 시스템에 대한 인프라 구성에 따라서 여러가지 방식으로 빌드 파일을 전송할 수 있는데 개인적인 경험을 토대로 원격 호스트에 빌드 파일을 전달하는 방법에 대해서 정리하려고 합니다.</p>
+<h4 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h4><p>웹 개발자 또는 서버 엔지니어가 원격 호스트에 파일을 전송하기 위해서는 SCP 또는 SFTP 명령어를 사용할 수 있으며 클라우드 서비스에서 제공하는 S3와 같은 서비스를 통해서도 외부 인터넷으로 접속이 불가능한 환경에서도 파일을 가져올 수 있습니다.</p>
+<h4 id="SCP"><a href="#SCP" class="headerlink" title="SCP"></a>SCP</h4><p>SCP 명령어는 SSH 프로토콜을 사용하여 파일을 전송하는 방법으로써 SSH 접속이 가능한 리눅스 서버로 파일을 복사하기 위해서 사용됩니다.</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> <span class="token function">ls</span>
+
+    디렉터리: C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf
+
+Mode                 LastWriteTime         Length Name
+<span class="token operator">--</span><span class="token operator">--</span>                 <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>         <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span> <span class="token operator">--</span><span class="token operator">--</span>
+d-<span class="token operator">--</span><span class="token operator">--</span>    2022-02-22  오전 6:49:27                static
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27       19245297 demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:45            473 docker-compose-local<span class="token punctuation">.</span>yaml
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:05:42            573 docker-compose<span class="token punctuation">.</span>yaml
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:28            241 localhost+3-key<span class="token punctuation">.</span>pem
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:26:28           1318 localhost+3<span class="token punctuation">.</span>pem
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-05-21  오전 8:13:15           3017 nginx-local<span class="token punctuation">.</span>conf
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>   2022-02-22  오후 11:05:40           2896 nginx<span class="token punctuation">.</span>conf
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27           2036 README<span class="token punctuation">.</span>md
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27           1436 server<span class="token punctuation">.</span>crt
+<span class="token operator">-</span>a-<span class="token operator">--</span><span class="token operator">-</span>    2022-02-22  오전 6:49:27            246 server<span class="token punctuation">.</span>key
+
+<span class="token comment"># SCP 명령어를 사용해서 로컬 컴퓨터에 있는 파일을 원격 호스트로 전송합니다.</span>
+<span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> scp <span class="token punctuation">.</span><span class="token operator">/</span>demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18:<span class="token operator">/</span>home/ubuntu/java/
+ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18's password:
+demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar                                                                                                                        100%   18MB  44<span class="token punctuation">.</span>0MB/s   00:00</code></pre>
+
+<blockquote>
+<p>제 로컬 컴퓨터에는 가상 환경 머신을 통해서 실행해놓은 우분투 리눅스(192.168.0.18)이 준비되어있으며 위와 같이 demo-0.0.1-SNAPSHOT.jar 라는 빌드 파일이 존재하여 이것을 SCP 명령어를 사용해서 원격 호스트의 사용자 홈 경로 하위의 java라는 폴더에 복사하였습니다.</p>
+</blockquote>
+<h4 id="SFTP"><a href="#SFTP" class="headerlink" title="SFTP"></a>SFTP</h4><p>일반적으로 FTP 프로토콜을 사용하여 서버와 클라이언트 간의 파일 전송을 수행하는데요. 실무에서는 SFTP를 사용하며 터미널 명령어보다는 <a href="https://filezilla-project.org/">파일질라(FileZilla)</a>와 같은 GUI를 제공하는 FTP 클라이언트를 사용하는 편입니다. SFTP는 서버와 클라이언트 방식이므로 SCP의 단일 명령어로 파일을 전송했던 것과 다르게 대화형 명령어를 사용하여 파일을 전송할 수 있습니다. </p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf> sftp ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18
+ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18 password:
+Connected to ubuntu@192<span class="token punctuation">.</span>168<span class="token punctuation">.</span>0<span class="token punctuation">.</span>18<span class="token punctuation">.</span>
+sftp> lls
+
+ C:\Users\Mambo\docker\nginx<span class="token punctuation">.</span>conf 디렉터리
+
+2022-02-27  오전 10:59    &lt;<span class="token function">DIR</span>>          <span class="token punctuation">.</span>
+2022-02-27  오전 10:59    &lt;<span class="token function">DIR</span>>          <span class="token punctuation">.</span><span class="token punctuation">.</span>
+2022-02-22  오전 06:49        19<span class="token punctuation">,</span>245<span class="token punctuation">,</span>297 demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
+2022-02-22  오후 11:26               473 docker-compose-local<span class="token punctuation">.</span>yaml
+2022-02-22  오후 11:05               573 docker-compose<span class="token punctuation">.</span>yaml
+2022-02-22  오후 11:26               241 localhost+3-key<span class="token punctuation">.</span>pem
+2022-02-22  오후 11:26             1<span class="token punctuation">,</span>318 localhost+3<span class="token punctuation">.</span>pem
+2022-05-21  오전 08:13             3<span class="token punctuation">,</span>017 nginx-local<span class="token punctuation">.</span>conf
+2022-02-22  오후 11:05             2<span class="token punctuation">,</span>896 nginx<span class="token punctuation">.</span>conf
+2022-02-22  오전 06:49             2<span class="token punctuation">,</span>036 README<span class="token punctuation">.</span>md
+2022-02-22  오전 06:49             1<span class="token punctuation">,</span>436 server<span class="token punctuation">.</span>crt
+2022-02-22  오전 06:49               246 server<span class="token punctuation">.</span>key
+2022-02-22  오전 06:49    &lt;<span class="token function">DIR</span>>          static
+              10개 파일          19<span class="token punctuation">,</span>257<span class="token punctuation">,</span>533 바이트
+               3개 디렉터리  51<span class="token punctuation">,</span>521<span class="token punctuation">,</span>728<span class="token punctuation">,</span>512 바이트 남음
+
+<span class="token comment"># java 폴더로 이동한 후 파일을 복사합니다.</span>
+sftp> cd java
+sftp> put demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
+Uploading demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar to <span class="token operator">/</span>home/ubuntu/java/demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar
+demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar                                                                                                                        100%   18MB  68<span class="token punctuation">.</span>8MB/s   00:00</code></pre>
+
+<blockquote>
+<p>로컬 컴퓨터에서 명령어를 수행하기 위해서 로컬(l)이 붙은 lls를 먼저 실행하여 로컬 컴퓨터에서 바라보는 경로를 확인하고 원격 호스트에 대한 명령어를 수행해서 파일을 복사했습니다. 그러면 SCP 명령어가 있는데도 불구하고 SFTP 프로토콜을 별도로 사용하는 이유는 무엇일까요?</p>
+</blockquote>
+<p>SFTP 프로토콜을 별도로 사용하는 이유에 대해서는 자세히 모릅니다. 다만, 개인적인 실무 경험을 토대로 이야기해보자면 배스천 호스트에 대한 SSH 접속 시 OTP로 2FA 인증을 요구하며 <a href="https://aws.amazon.com/ko/blogs/security/how-to-record-ssh-sessions-established-through-a-bastion-host/">배스천 호스트</a>에 대한 명령어 수행을 기록하기 위해서 SCP 명령어와 같이 인터랙션 세션이 아닌 직접 명령어를 수행하는 것은 제한되어 있을 수 있습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">    <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+
+ /<span class="token comment">#######                        /##     /##</span>
+<span class="token operator">|</span> <span class="token comment">##__  ##                      | ##    |__/</span>
+<span class="token operator">|</span> <span class="token comment">##  \ ##  /######   /####### /######   /##  /######  /#######</span>
+<span class="token operator">|</span> <span class="token comment">#######  |____  ## /##_____/|_  ##_/  | ## /##__  ##| ##__  ##</span>
+<span class="token operator">|</span> <span class="token comment">##__  ##  /#######|  ######   | ##    | ##| ##  \ ##| ##  \ ##</span>
+<span class="token operator">|</span> <span class="token comment">##  \ ## /##__  ## \____  ##  | ## /##| ##| ##  | ##| ##  | ##</span>
+<span class="token operator">|</span> <span class="token comment">#######/|  ####### /#######/  |  ####/| ##|  ######/| ##  | ##</span>
+<span class="token operator">|</span>_______/  <span class="token punctuation">\</span>_______/<span class="token operator">|</span>_______/    <span class="token punctuation">\</span>___/  <span class="token operator">|</span>__/ <span class="token punctuation">\</span>______/ <span class="token operator">|</span>__/  <span class="token operator">|</span>__/
+
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+    <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+Verification code: ******
+This bastion supports interactive sessions only. Do not supply a <span class="token builtin class-name">command</span></code></pre>
+
+<p>이와 같은 인프라 환경에서는 SFTP 서버에 업로드되는 파일들은 배스천 호스트의 특정 경로에 마운트되어 SSH 접속을 수행한 후 SCP 명령어를 사용해서 실제 리눅스 서버로 파일을 전달할 수 있습니다. SFTP 명령어에 대한 더 자세한 내용을 알고싶은 경우 <a href="https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server">How To Use SFTP to Securely Transfer Files with a Remote Server</a>를 참고하면 좋습니다.</p>
+<h4 id="S3"><a href="#S3" class="headerlink" title="S3"></a>S3</h4><p>요즘에는 IDC와 같은 온프레미스 환경보다는 AWS와 같은 클라우드 서비스 환경에 인프라를 구성하는 경우가 많습니다. AWS 에서는 S3라는 스토리지 서비스를 제공하는데 S3 버킷에 대한 권한을 가지는 IAM의 자격증명을 사용해서 쉽게 파일을 업로드할 수 있고 EC2 인스턴스 역할에 S3 버킷에 대한 접근 권한을 부여해놓으면 EC2 인스턴스 내에서도 S3 명령어를 사용해서 파일을 가져올 수 있습니다. </p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 로컬 컴퓨터에 있는 파일을 S3 버킷에 복사합니다.</span>
+aws s3 <span class="token function">cp</span> demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar s3:<span class="token operator">/</span><span class="token operator">/</span>mambo<span class="token punctuation">.</span>kr/java/ <span class="token operator">--</span>profile mambo
+
+<span class="token comment"># EC 인스턴스 내에서 S3 버킷에 있는 파일을 복사합니다.</span>
+aws s3 <span class="token function">cp</span> s3:<span class="token operator">/</span><span class="token operator">/</span>mambo<span class="token punctuation">.</span>kr/java/demo-0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>1-SNAPSHOT<span class="token punctuation">.</span>jar <span class="token punctuation">.</span><span class="token operator">/</span></code></pre>
+
+<blockquote>
+<p>현재 조직에서는 퍼블릭 액세스가 불가능한 버킷에 도메인 인증서 또는 일부 데이터베이스에 대한 패치 스크립트 등을 업로드하고 리눅스 서버에 접속하여 해당 파일들을 복사하여 사용하고 있습니다. 퍼블릭 액세스가 가능하도록 설정된 버킷에 파일을 업로드해두면 조직의 외부로 파일을 공유해야할 때 HTTP 엔드포인트를 전달할 수 있으므로 다양하게 활용할 수도 있습니다.</p>
+</blockquote>
+<p>이처럼 원격 호스트에 파일을 전송하는 방법은 인프라 구성에 따라서 다양하게 사용해야할 수 있습니다. IT 분야가 어려운 이유는 생각보다 다양한 부분에 대해서 정답이라는 방식이 없기 때문에 개발자마다 조직에서 어떠한 방식을 취하느냐에 따라 다양한 경험을 할 수 있다는 것에 있습니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>S3</tag>
+        <tag>SSH</tag>
+        <tag>SCP</tag>
+        <tag>SFTP</tag>
       </tags>
   </entry>
   <entry>

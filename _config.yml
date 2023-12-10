@@ -71,11 +71,13 @@ markdown: "default"
 # https://hexo.io/docs/syntax-highlight#Configuration
 syntax_highlighter: prismjs # v7.0.0+
 highlight:
+  enable: false
   line_number: false
   wrap: true
   hljs: false
 
 prismjs:
+  enable: true
   preprocess: true
   line_number: false
   tab_replace: ""

@@ -28,12 +28,11 @@ docker compose version
 
 #### Compose 플러그인을 docker-compose 명령어로 사용하기
 
-Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 alias로 등록하면 된다.
+Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 심볼릭 링크 또는 alias로 등록하면 된다.
 
 ```sh Terminal
+# sudo ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
 alias docker-compose='docker compose --compatibility "$@"'
 
 docker-compose version
 ```
-
-> 다들 $HOME/.bashrc 에 alias 를 추가하는 센스는 있겠지?...

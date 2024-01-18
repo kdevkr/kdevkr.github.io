@@ -63,3 +63,57 @@ ResponseEntity\<Resource\>도 가능하지만 더 명확한 표현을 위해서 
 ---
 
 > 어떤가요? 여러분이 작성한 코드보다 간결해졌나요? [Downloading a file from spring controllers](https://stackoverflow.com/questions/5673260/downloading-a-file-from-spring-controllers) 에서 더 많은 예제 코드를 확인할 수 있습니다.
+
+---
+
+#### 대용량 파일 다운로드
+
+일반적인 파일 다운로드는 위와 같이 바이트 배열을 응답하여 처리할 수 있지만 용량이 큰 파일을 다운로드해야하는 경우라면 애플리케이션 메모리에 부담이 있을 수 있다. 이 경우 StreamingResponseBody를 활용하여 아래와 같이 파일을 스트리밍할 수 있다.
+
+```java
+@RestController
+public class FileController {
+    @GetMapping("/files/sample.mp4")
+    public ResponseEntity<StreamingResponseBody> download() {
+        Resource resource = new ClassPathResource("sample/sample.mp4");
+        StreamingResponseBody responseBody = output ->
+                StreamUtils.copy(resource.getInputStream(), new BufferedOutputStream(output)); // NOTE: 8192 bytes.
+        ContentDisposition contentDisposition = ContentDisposition.attachment()
+                .filename("동영상.mp4", StandardCharsets.UTF_8)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(responseBody);
+    }
+}
+```
+
+#### 동영상 스트리밍
+
+간단한 동영상 스트리밍을 제공하고 싶은 경우 `ResourceRegion` 을 사용하여 동영상 플레이어에서 전체 파일을 다운로드 받지 않아도 원하는 위치부터 다운로드 받을 수 있도록 처리할 수 있다. 하지만, 대부분의 스트리밍 사이트의 경우 동영상 파일을 잘게 쪼개해두고 CDN으로 처리하는 것 같다.
+
+```java
+@RestController
+public class FileController {
+    @GetMapping("/sample.mp4")
+    public ResponseEntity<List<ResourceRegion>> streamingVideo(@RequestHeader HttpHeaders headers) throws MalformedURLException {
+        Resource resource = new UrlResource("https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_30mb.mp4");
+        List<ResourceRegion> resourceRegions = HttpRange.toResourceRegions(headers.getRange(), resource);
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                .contentType(MediaType.parseMediaType("video/mp4"))
+                .body(resourceRegions);
+    }
+
+    @GetMapping("/files/sample.stream")
+    public ResponseEntity<Resource> streamingVideo() throws MalformedURLException {
+        Resource resource = new UrlResource("https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_30mb.mp4");
+        return ResponseEntity.ok().body(resource);
+    }
+}
+```
+
+> 동영상 스트리밍에 대해서는 [AbstractMessageConverterMethodProcessor](https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/java/org/springframework/web/servlet/mvc/method/annotation/AbstractMessageConverterMethodProcessor.java#L192-L209)에 구현되어 있어서 InputStreamResource가 아니라면 HttpRange를 직접 사용하지 않아도 알아서 처리된다고 한다.
+
+

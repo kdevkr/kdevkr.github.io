@@ -1,6 +1,6 @@
 ---
 title: 스프링 동적 이메일 템플릿
-date: 2024-01-20T08:00+0900
+date: 2024-01-20T15:00+0900
 tags:
 - Email Template
 - Thymeleaf

@@ -6,7 +6,7 @@ tags:
 - AL2023
 ---
 
-[Amazon Linux 2를 VirtualBox에서 실행하기](/amazonlinux2-virtualbox/)처럼 Amazon Linux 2023을 VM 가상머신으로 실행해보자. 
+[Amazon Linux 2를 VirtualBox에서 실행하기](/amazonlinux2-virtualbox/)처럼 Amazon Linux 2023을 VM 가상머신으로 실행해보자.
 
 #### Amazon Linux 2023 가상 머신 이미지 다운로드
 
@@ -28,3 +28,5 @@ tags:
 ![4. ec2-user 로그인](/images/posts/amazonlinux2023-virtualbox/04.png)
 
 ec2-user 및 amazon 을 입력하면 Amazon Linux 2 와는 다르게 초기 비밀번호 변경을 요구한다. 위 스크린샷처럼 신규 비밀번호를 입력하고 로그인을 완료하자. 또한, 사용자 계정 구성이 올바르지 않게 될 수 있어 부팅 디스크로 사용한 seed.iso를 해제하지 않는 것을 권장한다.
+
+![](/images/posts/amazonlinux2023-virtualbox/05.png)

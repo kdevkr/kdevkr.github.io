@@ -1641,6 +1641,77 @@ total 12K
       </tags>
   </entry>
   <entry>
+    <title>Nginx로 Vite 프로젝트 배포하기</title>
+    <url>/deploy-vite/</url>
+    <content><![CDATA[<blockquote>
+<p>Q. 프론트엔드 애플리케이션은 어떻게 배포를 해야할까?</p>
+</blockquote>
+<p>오래전부터 기본적으로는 백엔드 애플리케이션에서 프론트 UI 구성을 위한 에셋들을 관리하고 함께 빌드되어 배포되는 방식을 취해왔다. 그러나, 백엔드 개발자와 프론트엔드 개발자로 나누어지더니 하나의 서비스를 구성하는 프론트엔드 애플리케이션과 백엔드 애플리케이션이 나누어지고 각 애플리케이션을 개발할 수 있는 환경이 만들어지고 있다. 보통 백엔드 애플리케이션을 빌드하면서 UI 에셋 파일들을 포함하므로 배포 과정은 백엔드 개발자가 담당했던 조직이 많았을 것 같다.</p>
+<p>만약, 조직 구성으로 인해 프론트엔드 애플리케이션 개발을 위한 프론트엔드 팀이 있는 곳이라면 프론트엔드 개발자가 배포를 직접 수행할 수도 있어보인다. 회사마다 일하는 방식은 다를 수 있기 때문에 릴리즈에 대한 부분은 QA 엔지니어가 담당하기도 한다. 아무튼 Vite 기반 프로젝트를 배포하는 방안에 대해서 정리해보자.</p>
+<blockquote>
+<p><a href="https://vitejs.dev/guide/static-deploy.html#deploying-a-static-site">Deploying a Static Site</a><br>It is important to note that vite preview is intended for previewing the build locally and not meant as a production server.</p>
+</blockquote>
+<p>로컬 환경에서 정적 페이지를 배포할 수 있는 웹 서버를 실행하는 preview 명령어를 제공하지만 위와 같이 프로덕션 환경을 위한 배포 서버는 아님에 주의해야한다. 기본적인 개념은 정적 배포를 위한 빌드 파일을 만들고나서 백엔드 서버 또는 웹 서버를 통해 정적 파일에 대한 응답을 처리하는 것이다.</p>
+<ul>
+<li><a href="https://ko.vitejs.dev/guide/build.html">Vite 프로덕션 버전으로 빌드하기</a></li>
+<li><a href="https://ko.vitejs.dev/guide/backend-integration.html">Vite 백엔드 프레임워크와 함께 사용하기</a></li>
+</ul>
+<p>두번째 방식은 일반적으로 많이 사용되는 편으로 백엔드 서버가 스프링 부트 프로젝트라면 <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/static-resources.html">정적 리소스 경로에 포함</a>될 수 있도록 하면 된다. 백엔드 애플리케이션 빌드 시 클래스패스에 포함되어도 되고 애플리케이션 프로퍼티를 통해 특정 파일 경로를 지정해도 된다. 본 글에서 정리하고자 하는 건 첫번째 방식으로 프로덕션 배포를 위한 정적 파일을 빌드하고나서 Nginx와 같은 웹서버를 통해 정적 파일을 배포하는 것이다.</p>
+<blockquote>
+<p>Nginx 웹서버에서 정적 파일을 배포하고 백엔드 API 요청에 대해서는 리버스 프록시 구성을 하면 된다. 리버스 프록시 구성의 장점은 백엔드 애플리케이션의 포트를 감출 수 있게 되어 조금은 보안적인 인프라 구성이 될 수 있다는 것이다. 참고로 Vite 개발 서버에서도 <a href="https://ko.vitejs.dev/config/server-options.html#server-proxy">프록시 구성</a>을 할 수 있게 제공한다.</p>
+</blockquote>
+<h4 id="Nginx-웹서버로-Vite-정적-파일-배포"><a href="#Nginx-웹서버로-Vite-정적-파일-배포" class="headerlink" title="Nginx 웹서버로 Vite 정적 파일 배포"></a>Nginx 웹서버로 Vite 정적 파일 배포</h4><pre class="language-javascript" data-language="javascript"><div class="caption"><span>vite.config.js</span></div><code class="language-javascript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> defineConfig <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"vite"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> vue <span class="token keyword">from</span> <span class="token string">"@vitejs/plugin-vue"</span><span class="token punctuation">;</span>
+
+<span class="token comment">// https://vitejs.dev/config/</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">build</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">manifest</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">"esnext"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token function">vue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Windows Terminal</span></div><code class="language-bash">$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> <span class="token function">install</span>
+$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> run build <span class="token parameter variable">--mode</span> production
+vite v4.4.11 building <span class="token keyword">for</span> production<span class="token punctuation">..</span>.</code></pre>
+
+<p>빌드 명령어를 수행하면 아래와 같이 dist 폴더 아래에 정적 파일들이 생성된다.</p>
+<ul>
+<li>dist&#x2F;assets : 정적 에셋 모음</li>
+<li>dist&#x2F;index.html : 진입점(EntryPoint) 파일</li>
+<li>manifest.json : 매니페스트 파일</li>
+</ul>
+<p>생성된 정적 빌드 파일들을 <a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a> 의 static 폴더로 대체하여 테스트를 해보자. 제대로 동작하지 않을텐데 Nginx의 설정 파일의 구성이 백엔드 애플리케이션으로 기본적인 요청을 전달하도록 되어있기 때문이다. <code>/</code> 경로에 대해서는 index.html을 응답하도록 변경해야하고 백엔드에 대한 요청이 나중에 전달되도록 수정해야한다.</p>
+<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx-vite.conf</span></div><code class="language-conf">server &#123;
+  index index.html;
+  root &#x2F;etc&#x2F;nginx&#x2F;static;
+  try_files $uri &#x2F;index.html &#x3D;404;
+
+  # 리버스 프록시
+  location ~ ^&#x2F;(api|version) &#123;
+      proxy_pass http:&#x2F;&#x2F;backend;
+      proxy_redirect off;
+      proxy_buffering off;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+      access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log;
+  &#125;
+&#125;</code></pre>
+
+<p><img data-src="/images/posts/deploy-vite/01.png">  </p>
+<p>기본적인 요청에 대해서는 static 폴더 기준으로 정적 파일을 사용해 응답하며 &#x2F;api 및 &#x2F;version 에 대해서만 백엔드 애플리케이션 요청으로 처리되도록 수정했다. 이제 아래와 같이 데모 애플리케이션이 정상적으로 보이며 &#x2F;version에 대한 요청을 전달하면 백엔드 애플리케이션에서 해당 경로가 매핑되지 않아서 스프링 부트의 화이트라벨 페이지로 404 응답을 볼 수 있다. 프론트 요청과 백엔드 요청을 효율적으로 구분할 수 있는 방안은 더 연구하고 찾아보고 학습해야할 부분이다.  </p>
+<p>사실 상 백엔드 애플리케이션에 프론트엔드에 대한 정적 파일을 포함시키는 게 간단하지만 정적 파일을 배포하는 경량의 웹 서버를 두는 게 백엔드 애플리케이션의 부하를 줄일 수 있는 방안이다. 정적 파일에 대한 요청을 처리하기 위해서 스레드 풀에서 스레드를 사용하는 것은 생각보다 영향이 클 수도 있다. <code>선택은 여러분의 몫이다.</code></p>
+]]></content>
+      <tags>
+        <tag>Deployment</tag>
+        <tag>Nginx</tag>
+        <tag>Vite</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Elastic Beanstalk Java SE 플랫폼으로 스프링 부트 배포하기</title>
     <url>/deploy-spring-boot-with-beanstalk-java-se-platform/</url>
     <content><![CDATA[<blockquote>
@@ -1814,77 +1885,6 @@ tasks<span class="token punctuation">.</span><span class="token function">regist
       <tags>
         <tag>Spring Boot</tag>
         <tag>Elastic Beanstalk</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nginx로 Vite 프로젝트 배포하기</title>
-    <url>/deploy-vite/</url>
-    <content><![CDATA[<blockquote>
-<p>Q. 프론트엔드 애플리케이션은 어떻게 배포를 해야할까?</p>
-</blockquote>
-<p>오래전부터 기본적으로는 백엔드 애플리케이션에서 프론트 UI 구성을 위한 에셋들을 관리하고 함께 빌드되어 배포되는 방식을 취해왔다. 그러나, 백엔드 개발자와 프론트엔드 개발자로 나누어지더니 하나의 서비스를 구성하는 프론트엔드 애플리케이션과 백엔드 애플리케이션이 나누어지고 각 애플리케이션을 개발할 수 있는 환경이 만들어지고 있다. 보통 백엔드 애플리케이션을 빌드하면서 UI 에셋 파일들을 포함하므로 배포 과정은 백엔드 개발자가 담당했던 조직이 많았을 것 같다.</p>
-<p>만약, 조직 구성으로 인해 프론트엔드 애플리케이션 개발을 위한 프론트엔드 팀이 있는 곳이라면 프론트엔드 개발자가 배포를 직접 수행할 수도 있어보인다. 회사마다 일하는 방식은 다를 수 있기 때문에 릴리즈에 대한 부분은 QA 엔지니어가 담당하기도 한다. 아무튼 Vite 기반 프로젝트를 배포하는 방안에 대해서 정리해보자.</p>
-<blockquote>
-<p><a href="https://vitejs.dev/guide/static-deploy.html#deploying-a-static-site">Deploying a Static Site</a><br>It is important to note that vite preview is intended for previewing the build locally and not meant as a production server.</p>
-</blockquote>
-<p>로컬 환경에서 정적 페이지를 배포할 수 있는 웹 서버를 실행하는 preview 명령어를 제공하지만 위와 같이 프로덕션 환경을 위한 배포 서버는 아님에 주의해야한다. 기본적인 개념은 정적 배포를 위한 빌드 파일을 만들고나서 백엔드 서버 또는 웹 서버를 통해 정적 파일에 대한 응답을 처리하는 것이다.</p>
-<ul>
-<li><a href="https://ko.vitejs.dev/guide/build.html">Vite 프로덕션 버전으로 빌드하기</a></li>
-<li><a href="https://ko.vitejs.dev/guide/backend-integration.html">Vite 백엔드 프레임워크와 함께 사용하기</a></li>
-</ul>
-<p>두번째 방식은 일반적으로 많이 사용되는 편으로 백엔드 서버가 스프링 부트 프로젝트라면 <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/static-resources.html">정적 리소스 경로에 포함</a>될 수 있도록 하면 된다. 백엔드 애플리케이션 빌드 시 클래스패스에 포함되어도 되고 애플리케이션 프로퍼티를 통해 특정 파일 경로를 지정해도 된다. 본 글에서 정리하고자 하는 건 첫번째 방식으로 프로덕션 배포를 위한 정적 파일을 빌드하고나서 Nginx와 같은 웹서버를 통해 정적 파일을 배포하는 것이다.</p>
-<blockquote>
-<p>Nginx 웹서버에서 정적 파일을 배포하고 백엔드 API 요청에 대해서는 리버스 프록시 구성을 하면 된다. 리버스 프록시 구성의 장점은 백엔드 애플리케이션의 포트를 감출 수 있게 되어 조금은 보안적인 인프라 구성이 될 수 있다는 것이다. 참고로 Vite 개발 서버에서도 <a href="https://ko.vitejs.dev/config/server-options.html#server-proxy">프록시 구성</a>을 할 수 있게 제공한다.</p>
-</blockquote>
-<h4 id="Nginx-웹서버로-Vite-정적-파일-배포"><a href="#Nginx-웹서버로-Vite-정적-파일-배포" class="headerlink" title="Nginx 웹서버로 Vite 정적 파일 배포"></a>Nginx 웹서버로 Vite 정적 파일 배포</h4><pre class="language-javascript" data-language="javascript"><div class="caption"><span>vite.config.js</span></div><code class="language-javascript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> defineConfig <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"vite"</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> vue <span class="token keyword">from</span> <span class="token string">"@vitejs/plugin-vue"</span><span class="token punctuation">;</span>
-
-<span class="token comment">// https://vitejs.dev/config/</span>
-<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-  <span class="token literal-property property">build</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-    <span class="token literal-property property">manifest</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">"esnext"</span><span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token function">vue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Windows Terminal</span></div><code class="language-bash">$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> <span class="token function">install</span>
-$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> run build <span class="token parameter variable">--mode</span> production
-vite v4.4.11 building <span class="token keyword">for</span> production<span class="token punctuation">..</span>.</code></pre>
-
-<p>빌드 명령어를 수행하면 아래와 같이 dist 폴더 아래에 정적 파일들이 생성된다.</p>
-<ul>
-<li>dist&#x2F;assets : 정적 에셋 모음</li>
-<li>dist&#x2F;index.html : 진입점(EntryPoint) 파일</li>
-<li>manifest.json : 매니페스트 파일</li>
-</ul>
-<p>생성된 정적 빌드 파일들을 <a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a> 의 static 폴더로 대체하여 테스트를 해보자. 제대로 동작하지 않을텐데 Nginx의 설정 파일의 구성이 백엔드 애플리케이션으로 기본적인 요청을 전달하도록 되어있기 때문이다. <code>/</code> 경로에 대해서는 index.html을 응답하도록 변경해야하고 백엔드에 대한 요청이 나중에 전달되도록 수정해야한다.</p>
-<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx-vite.conf</span></div><code class="language-conf">server &#123;
-  index index.html;
-  root &#x2F;etc&#x2F;nginx&#x2F;static;
-  try_files $uri &#x2F;index.html &#x3D;404;
-
-  # 리버스 프록시
-  location ~ ^&#x2F;(api|version) &#123;
-      proxy_pass http:&#x2F;&#x2F;backend;
-      proxy_redirect off;
-      proxy_buffering off;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-      access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log;
-  &#125;
-&#125;</code></pre>
-
-<p><img data-src="/images/posts/deploy-vite/01.png">  </p>
-<p>기본적인 요청에 대해서는 static 폴더 기준으로 정적 파일을 사용해 응답하며 &#x2F;api 및 &#x2F;version 에 대해서만 백엔드 애플리케이션 요청으로 처리되도록 수정했다. 이제 아래와 같이 데모 애플리케이션이 정상적으로 보이며 &#x2F;version에 대한 요청을 전달하면 백엔드 애플리케이션에서 해당 경로가 매핑되지 않아서 스프링 부트의 화이트라벨 페이지로 404 응답을 볼 수 있다. 프론트 요청과 백엔드 요청을 효율적으로 구분할 수 있는 방안은 더 연구하고 찾아보고 학습해야할 부분이다.  </p>
-<p>사실 상 백엔드 애플리케이션에 프론트엔드에 대한 정적 파일을 포함시키는 게 간단하지만 정적 파일을 배포하는 경량의 웹 서버를 두는 게 백엔드 애플리케이션의 부하를 줄일 수 있는 방안이다. 정적 파일에 대한 요청을 처리하기 위해서 스레드 풀에서 스레드를 사용하는 것은 생각보다 영향이 클 수도 있다. <code>선택은 여러분의 몫이다.</code></p>
-]]></content>
-      <tags>
-        <tag>Deployment</tag>
-        <tag>Nginx</tag>
-        <tag>Vite</tag>
       </tags>
   </entry>
   <entry>
@@ -5307,6 +5307,47 @@ WantedBy=multi-user.target</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>Mapstruct (Feat. Gradle)</title>
+    <url>/mapstruct/</url>
+    <content><![CDATA[<p>자바 진영에서 오브젝트 간 변환을 위해서 사용할 수 있는 오브젝트 매핑 라이브러리에는 ModelMapper와 MapStruct가 있다. 현재 시스템에서는 일반적으로 사용하는 ModelMapper로도 충분했기 때문에 MapStruct를 굳이 도입하여 사용하지는 않았다. 오브젝트 변환이 반복적으로 많이 이루어지는 케이스가 있을때 리플렉션으로 인한 단점을 보완하기 위해서 직접적으로 오브젝트 변환을 수행하도록 하는 코드를 작성하거나 빌드 과정에서 매퍼에 대한 인터페이스 구현체를 만드는 <a href="https://mapstruct.org/">Mapstruct</a>가 요구되기 때문에 도입하게 된다. 현재 시스템에서 특정 데이터를 조회하는 과정에서 꽤나 많은 변환이 이루어질 수 있는 가능성이 발생했기 때문에 (예를 들어 약 2~300명의 개별 통계 데이터를 한번에 조회) 도입을 고려하게 되었다.</p>
+<h4 id="Mapstruct에-대해-알아보기"><a href="#Mapstruct에-대해-알아보기" class="headerlink" title="Mapstruct에 대해 알아보기"></a>Mapstruct에 대해 알아보기</h4><ul>
+<li><a href="https://meetup.nhncloud.com/posts/213">Object Mapping 어디까지 해봤니?</a></li>
+<li><a href="https://medium.com/naver-cloud-platform/%EA%B8%B0%EC%88%A0-%EC%BB%A8%ED%85%90%EC%B8%A0-%EB%AC%B8%EC%9E%90-%EC%95%8C%EB%A6%BC-%EB%B0%9C%EC%86%A1-%EC%84%9C%EB%B9%84%EC%8A%A4-sens%EC%9D%98-mapstruct-%EC%A0%81%EC%9A%A9%EA%B8%B0-8fd2bc2bc33b">편리한 객체 간 매핑을 위한 MapStruct 적용기 (feat. SENS)</a></li>
+<li><a href="https://www.baeldung.com/java-performance-mapping-frameworks">Performance of Java Mapping Frameworks</a></li>
+</ul>
+<blockquote>
+<p>※ MapStruct에 대한 예제는 <a href="https://github.com/mapstruct/mapstruct-examples">github.com&#x2F;mapstruct&#x2F;mapsturct-examples</a>에서 확인할 수 있다.</p>
+</blockquote>
+<h4 id="개별-디펜던시-추가"><a href="#개별-디펜던시-추가" class="headerlink" title="개별 디펜던시 추가"></a>개별 디펜던시 추가</h4><p>Mapstruct를 적용하는 방법에 대한 글에서 살펴보면 디펜던시 순서를 중요하게 정의해야한다고 되어있지만 상관없어진지 오래되었다. 아무튼 Lombok 그래들 플러그인을 사용하고 있을 경우에도 <code>lombok-mapstruct-binding</code>를 아래와 같이 나열하면 된다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+<span class="token punctuation">&#125;</span>
+
+ext <span class="token punctuation">&#123;</span>
+    mapstructVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.5.5.Final"</span></span>
+    lombokVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.18.26"</span></span>
+    lombokMapstructBindingVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"0.2.0"</span></span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
+    annotationProcessor <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct-processor:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> <span class="token interpolation-string"><span class="token string">"org.projectlombok:lombok-mapstruct-binding:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">lombokMapstructBindingVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Gradle-플러그인을-이용하는-방법-Recommanded"><a href="#Gradle-플러그인을-이용하는-방법-Recommanded" class="headerlink" title="Gradle 플러그인을 이용하는 방법 (Recommanded)"></a>Gradle 플러그인을 이용하는 방법 (Recommanded)</h4><p><a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a> 그래들 플러그인을 사용하고 있는 경우라면 위의 개별적으로 디펜던시를 나열하기보다는 <a href="https://github.com/AkaZver/mapstruct-plugin">Gradle Mapstruct Plugin</a>을 사용하는 게 더 간단하기 때문에 롬복과 동일하게 그래들 플러그인 방식을 추천한다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+    id <span class="token string">'com.github.akazver.mapstruct'</span> version <span class="token string">'1.0.5'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<blockquote>
+<p>Plugin will add mapstruct with mapstruct-processor by default<br>If you are using lombok it will add lombok-mapstruct-binding, if spring - mapstruct-spring-extensions</p>
+</blockquote>
+<h4 id="깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA"><a href="#깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA" class="headerlink" title="깃에서 src/main/generated 디렉토리 무시하기 (Intellij IDEA)"></a>깃에서 <code>src/main/generated</code> 디렉토리 무시하기 (Intellij IDEA)</h4><p>기본적으로 그래들 빌드 과정에서 <code>build/generated/sources/annotationProcessor</code> 경로에 인터페이스 구현체가 만들어지고 <code>build/classes</code> 경로로 복사된다. 하지만, 인텔리제이에서 Gradle이 아닌 <code>Intellij IDEA</code>로 선택하여 구동되도록 변경하는 경우에는 <code>src/main/generated</code> 경로에 만들어지게 되므로 <code>.gitignore</code> 파일에 빌드 과정에서 MapStruct에 의해 만들어지는 인터페이스 구현체를 제외하는 것이 필요하다.</p>
+<pre class="language-ignore" data-language="ignore"><div class="caption"><span>.gitignore</span></div><code class="language-ignore"><span class="token entry string">src<span class="token punctuation">/</span>main<span class="token punctuation">/</span>generated<span class="token punctuation">/</span></span></code></pre>
+
+]]></content>
+  </entry>
+  <entry>
     <title>XML로 다국어 메시지 관리하기</title>
     <url>/managing-i18n-messages-with-xml/</url>
     <content><![CDATA[<blockquote>
@@ -5623,47 +5664,6 @@ WantedBy=multi-user.target</code></pre>
 <li><a href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a></li>
 <li><a href="http://www.fun25.co.kr/blog/java-xml-parser-example-documentbuilder">[자바] XML 파싱 예제 - DocumentBuilder</a></li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Mapstruct (Feat. Gradle)</title>
-    <url>/mapstruct/</url>
-    <content><![CDATA[<p>자바 진영에서 오브젝트 간 변환을 위해서 사용할 수 있는 오브젝트 매핑 라이브러리에는 ModelMapper와 MapStruct가 있다. 현재 시스템에서는 일반적으로 사용하는 ModelMapper로도 충분했기 때문에 MapStruct를 굳이 도입하여 사용하지는 않았다. 오브젝트 변환이 반복적으로 많이 이루어지는 케이스가 있을때 리플렉션으로 인한 단점을 보완하기 위해서 직접적으로 오브젝트 변환을 수행하도록 하는 코드를 작성하거나 빌드 과정에서 매퍼에 대한 인터페이스 구현체를 만드는 <a href="https://mapstruct.org/">Mapstruct</a>가 요구되기 때문에 도입하게 된다. 현재 시스템에서 특정 데이터를 조회하는 과정에서 꽤나 많은 변환이 이루어질 수 있는 가능성이 발생했기 때문에 (예를 들어 약 2~300명의 개별 통계 데이터를 한번에 조회) 도입을 고려하게 되었다.</p>
-<h4 id="Mapstruct에-대해-알아보기"><a href="#Mapstruct에-대해-알아보기" class="headerlink" title="Mapstruct에 대해 알아보기"></a>Mapstruct에 대해 알아보기</h4><ul>
-<li><a href="https://meetup.nhncloud.com/posts/213">Object Mapping 어디까지 해봤니?</a></li>
-<li><a href="https://medium.com/naver-cloud-platform/%EA%B8%B0%EC%88%A0-%EC%BB%A8%ED%85%90%EC%B8%A0-%EB%AC%B8%EC%9E%90-%EC%95%8C%EB%A6%BC-%EB%B0%9C%EC%86%A1-%EC%84%9C%EB%B9%84%EC%8A%A4-sens%EC%9D%98-mapstruct-%EC%A0%81%EC%9A%A9%EA%B8%B0-8fd2bc2bc33b">편리한 객체 간 매핑을 위한 MapStruct 적용기 (feat. SENS)</a></li>
-<li><a href="https://www.baeldung.com/java-performance-mapping-frameworks">Performance of Java Mapping Frameworks</a></li>
-</ul>
-<blockquote>
-<p>※ MapStruct에 대한 예제는 <a href="https://github.com/mapstruct/mapstruct-examples">github.com&#x2F;mapstruct&#x2F;mapsturct-examples</a>에서 확인할 수 있다.</p>
-</blockquote>
-<h4 id="개별-디펜던시-추가"><a href="#개별-디펜던시-추가" class="headerlink" title="개별 디펜던시 추가"></a>개별 디펜던시 추가</h4><p>Mapstruct를 적용하는 방법에 대한 글에서 살펴보면 디펜던시 순서를 중요하게 정의해야한다고 되어있지만 상관없어진지 오래되었다. 아무튼 Lombok 그래들 플러그인을 사용하고 있을 경우에도 <code>lombok-mapstruct-binding</code>를 아래와 같이 나열하면 된다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
-<span class="token punctuation">&#125;</span>
-
-ext <span class="token punctuation">&#123;</span>
-    mapstructVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.5.5.Final"</span></span>
-    lombokVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.18.26"</span></span>
-    lombokMapstructBindingVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"0.2.0"</span></span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
-    annotationProcessor <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct-processor:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> <span class="token interpolation-string"><span class="token string">"org.projectlombok:lombok-mapstruct-binding:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">lombokMapstructBindingVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Gradle-플러그인을-이용하는-방법-Recommanded"><a href="#Gradle-플러그인을-이용하는-방법-Recommanded" class="headerlink" title="Gradle 플러그인을 이용하는 방법 (Recommanded)"></a>Gradle 플러그인을 이용하는 방법 (Recommanded)</h4><p><a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a> 그래들 플러그인을 사용하고 있는 경우라면 위의 개별적으로 디펜던시를 나열하기보다는 <a href="https://github.com/AkaZver/mapstruct-plugin">Gradle Mapstruct Plugin</a>을 사용하는 게 더 간단하기 때문에 롬복과 동일하게 그래들 플러그인 방식을 추천한다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
-    id <span class="token string">'com.github.akazver.mapstruct'</span> version <span class="token string">'1.0.5'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-<blockquote>
-<p>Plugin will add mapstruct with mapstruct-processor by default<br>If you are using lombok it will add lombok-mapstruct-binding, if spring - mapstruct-spring-extensions</p>
-</blockquote>
-<h4 id="깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA"><a href="#깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA" class="headerlink" title="깃에서 src/main/generated 디렉토리 무시하기 (Intellij IDEA)"></a>깃에서 <code>src/main/generated</code> 디렉토리 무시하기 (Intellij IDEA)</h4><p>기본적으로 그래들 빌드 과정에서 <code>build/generated/sources/annotationProcessor</code> 경로에 인터페이스 구현체가 만들어지고 <code>build/classes</code> 경로로 복사된다. 하지만, 인텔리제이에서 Gradle이 아닌 <code>Intellij IDEA</code>로 선택하여 구동되도록 변경하는 경우에는 <code>src/main/generated</code> 경로에 만들어지게 되므로 <code>.gitignore</code> 파일에 빌드 과정에서 MapStruct에 의해 만들어지는 인터페이스 구현체를 제외하는 것이 필요하다.</p>
-<pre class="language-ignore" data-language="ignore"><div class="caption"><span>.gitignore</span></div><code class="language-ignore"><span class="token entry string">src<span class="token punctuation">/</span>main<span class="token punctuation">/</span>generated<span class="token punctuation">/</span></span></code></pre>
-
 ]]></content>
   </entry>
   <entry>
@@ -6520,6 +6520,39 @@ maxmemory-policy allkeys-lfu</code></pre>
         <tag>레디스</tag>
         <tag>스프링 세션 레디스</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Request Header Is Too Large</title>
+    <url>/request-header-is-too-large/</url>
+    <content><![CDATA[<blockquote>
+<p>java.lang.IllegalArgumentException: Request header is too large</p>
+</blockquote>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/by-ids"</span><span class="token punctuation">)</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> <span class="token function">getUsers</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"ids"</span><span class="token punctuation">)</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ids<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token class-name">List</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>위와 같은 GET API는 ids 파라미터에 대한 길이 제한을 두지 않았으므로 Request header is too large 에 대한 취약점이 내재되어있는 상태로 볼 수 있다. 그렇다면 이에 대한 문제는 어떻게 처리하는 것이 좋을까?</p>
+<h4 id="첫번째-서버에서-처리하는-헤더-크기-사이즈를-늘리자"><a href="#첫번째-서버에서-처리하는-헤더-크기-사이즈를-늘리자" class="headerlink" title="첫번째, 서버에서 처리하는 헤더 크기 사이즈를 늘리자"></a>첫번째, 서버에서 처리하는 헤더 크기 사이즈를 늘리자</h4><p>기본적인 해결방법은 생각보다 작게 설정되어있는 헤더 크기를 어느정도 늘리는 것이다. 다만, 여전히 예상할 수 없는 헤더 크기를 커버할 수 없으며 이에 대한 대응으로는 GET 요청이 아닌 POST 요청을 활용해야한다. 요청 헤더 크기에 대한 제한을 늘리는 방안은 임시 조치임을 잊지 말자.</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">server.max-http-request-header-size</span><span class="token punctuation">:</span> 10MB</code></pre>
+
+<h4 id="두번째-URL-인코딩-방식의-폼-데이터를-전달하자"><a href="#두번째-URL-인코딩-방식의-폼-데이터를-전달하자" class="headerlink" title="두번째, URL 인코딩 방식의 폼 데이터를 전달하자"></a>두번째, URL 인코딩 방식의 폼 데이터를 전달하자</h4><p>GET 요청 시 쿼리 파라미터가 너무 길어질 수 있다면 폼 데이터 형식으로 보낼 수 있도록 <strong>POST 요청에 대해서도 지원</strong>하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span>path <span class="token operator">=</span> <span class="token string">"/by-ids"</span><span class="token punctuation">)</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> <span class="token function">getUsers</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"ids"</span><span class="token punctuation">)</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ids<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token class-name">List</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span>path <span class="token operator">=</span> <span class="token string">"/by-ids"</span><span class="token punctuation">,</span> consumes <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token class-name">MediaType</span><span class="token punctuation">.</span><span class="token constant">APPLICATION_FORM_URLENCODED_VALUE</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">></span></span> <span class="token function">getUsersUsingFormData</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"ids"</span><span class="token punctuation">)</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ids<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">getUsers</span><span class="token punctuation">(</span>ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="참고할만한-링크"><a href="#참고할만한-링크" class="headerlink" title="참고할만한 링크"></a>참고할만한 링크</h4><ul>
+<li><a href="https://www.baeldung.com/spring-boot-max-http-header-size">Max-Http-Request-Header-Size in Spring Boot</a></li>
+<li><a href="https://www.baeldung.com/postman-form-data-raw-x-www-form-urlencoded">Difference Between form-data, x-www-form-urlencoded and raw in Postman</a></li>
+<li><a href="https://www.baeldung.com/spring-url-encoded-form-data">Handling URL Encoded Form Data in Spring REST</a></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>비밀번호 재설정 절차</title>
@@ -9193,40 +9226,6 @@ Invalid CORS request* Connection <span class="token comment">#0 to host localhos
       </tags>
   </entry>
   <entry>
-    <title>스프링 시큐리티 데이터 JDBC</title>
-    <url>/spring-security-data-jdbc-integration/</url>
-    <content><![CDATA[<blockquote>
-<p>전체 예제 코드는 <a href="https://github.com/kdevkr/spring-boot-security/">kdevkr&#x2F;spring-boot-security</a>에서 확인할 수 있다.</p>
-</blockquote>
-<p><a href="https://docs.spring.io/spring-security/reference/servlet/integrations/data.html">Spring Data Integration</a>를 참고하면 스프링 시큐리티와 스프링 데이터 모듈을 통합할 수 있다.<br>우선 아래와 같이 클래스패스에 <code>org.springframework.security:spring-security-data</code> 의존성을 추가하도록 하자.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-data-jdbc'</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-jdbc'</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-security'</span>
-    implementation <span class="token string">'org.springframework.security:spring-security-data'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token keyword">public</span> <span class="token class-name">SecurityEvaluationContextExtension</span> <span class="token function">securityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">SecurityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>구성 클래스에서 <strong>SecurityEvaluationContextExtension</strong>를 빈으로 등록하면 @PreAuthorize와 같은 메소드 기반 표현식과 비슷하게 <strong>@Query</strong> 내에서 스프링 시큐리티에 대한 SpEL을 사용할 수 있다. 하지만, 스프링 시큐리티 공식 문서와 <a href="https://github.com/spring-projects/spring-security-samples/tree/main/servlet/java-configuration/data">Spring Data에 대한 예제 코드</a>와 같이 시도해보면 아래와 같은 <code>오류</code>가 발생한다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>dao<span class="token punctuation">.</span></span>InvalidDataAccessApiUsageException</span><span class="token operator">:</span> <span class="token constant">SQL</span> <span class="token punctuation">[</span><span class="token constant">SELECT</span> u<span class="token punctuation">.</span>username <span class="token constant">FROM</span> users u where u<span class="token punctuation">.</span>username <span class="token operator">=</span> <span class="token operator">?</span>__$synthetic$__1<span class="token punctuation">]</span><span class="token operator">:</span> given <span class="token number">1</span> parameters but expected <span class="token number">0</span></code></pre>
-
-<p>위와 같은 오류가 발생하는 이유는 Spring Data JDBC는 내부적으로 <strong>N</strong>amedParameterJdbcTemplate**를 사용하기 때문에 <code>?</code>와 같은 JPQL 또는 Native 쿼리 방식과는 차이가 있으므로 <code>?</code>이 아닌 <code>:</code>로 표현해야한다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
-<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserRepository</span> <span class="token keyword">extends</span> <span class="token class-name">CrudRepository</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Query</span><span class="token punctuation">(</span><span class="token string">"SELECT u.username FROM users u where u.username = :#&#123; principal?.username &#125;"</span><span class="token punctuation">)</span>
-    <span class="token class-name">String</span> <span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-]]></content>
-      <tags>
-        <tag>Spring Security</tag>
-        <tag>Spring Data JDBC</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring JDBC</title>
     <url>/spring-jdbc/</url>
     <content><![CDATA[<p>Spring Security OAuth2 학습을 위한 샘플 프로젝트를 만들면서 사용하게될 각 모듈에서 필요한 데이터베이스 스키마를 적용하기 위해서 Spring JDBC를 사용한 부분에 대해서 정리해보고자 합니다. 일반적으로 데이터 액세스에 대해서는 Mybatis 또는 JPA 이라는 기술을 도입하는 경우가 많을텐데 스프링 JDBC 만으로도 충분히 데이터베이스 액세스가 가능하며 Spring Session 이나 Spring Security 에서도 JDBC 기반으로 관련 기능을 제공하고 있습니다.</p>
@@ -9337,6 +9336,40 @@ $$ <span class="token keyword">LANGUAGE</span> plpgsql<span class="token punctua
       <tags>
         <tag>JDBC</tag>
         <tag>RowMapper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>스프링 시큐리티 데이터 JDBC</title>
+    <url>/spring-security-data-jdbc-integration/</url>
+    <content><![CDATA[<blockquote>
+<p>전체 예제 코드는 <a href="https://github.com/kdevkr/spring-boot-security/">kdevkr&#x2F;spring-boot-security</a>에서 확인할 수 있다.</p>
+</blockquote>
+<p><a href="https://docs.spring.io/spring-security/reference/servlet/integrations/data.html">Spring Data Integration</a>를 참고하면 스프링 시큐리티와 스프링 데이터 모듈을 통합할 수 있다.<br>우선 아래와 같이 클래스패스에 <code>org.springframework.security:spring-security-data</code> 의존성을 추가하도록 하자.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-data-jdbc'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-jdbc'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-security'</span>
+    implementation <span class="token string">'org.springframework.security:spring-security-data'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token keyword">public</span> <span class="token class-name">SecurityEvaluationContextExtension</span> <span class="token function">securityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">SecurityEvaluationContextExtension</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>구성 클래스에서 <strong>SecurityEvaluationContextExtension</strong>를 빈으로 등록하면 @PreAuthorize와 같은 메소드 기반 표현식과 비슷하게 <strong>@Query</strong> 내에서 스프링 시큐리티에 대한 SpEL을 사용할 수 있다. 하지만, 스프링 시큐리티 공식 문서와 <a href="https://github.com/spring-projects/spring-security-samples/tree/main/servlet/java-configuration/data">Spring Data에 대한 예제 코드</a>와 같이 시도해보면 아래와 같은 <code>오류</code>가 발생한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>dao<span class="token punctuation">.</span></span>InvalidDataAccessApiUsageException</span><span class="token operator">:</span> <span class="token constant">SQL</span> <span class="token punctuation">[</span><span class="token constant">SELECT</span> u<span class="token punctuation">.</span>username <span class="token constant">FROM</span> users u where u<span class="token punctuation">.</span>username <span class="token operator">=</span> <span class="token operator">?</span>__$synthetic$__1<span class="token punctuation">]</span><span class="token operator">:</span> given <span class="token number">1</span> parameters but expected <span class="token number">0</span></code></pre>
+
+<p>위와 같은 오류가 발생하는 이유는 Spring Data JDBC는 내부적으로 <strong>N</strong>amedParameterJdbcTemplate**를 사용하기 때문에 <code>?</code>와 같은 JPQL 또는 Native 쿼리 방식과는 차이가 있으므로 <code>?</code>이 아닌 <code>:</code>로 표현해야한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserRepository</span> <span class="token keyword">extends</span> <span class="token class-name">CrudRepository</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">User</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Query</span><span class="token punctuation">(</span><span class="token string">"SELECT u.username FROM users u where u.username = :#&#123; principal?.username &#125;"</span><span class="token punctuation">)</span>
+    <span class="token class-name">String</span> <span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+]]></content>
+      <tags>
+        <tag>Spring Security</tag>
+        <tag>Spring Data JDBC</tag>
       </tags>
   </entry>
   <entry>

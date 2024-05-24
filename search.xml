@@ -2490,6 +2490,46 @@ certificate<span class="token punctuation">.</span><span class="token function">
       </tags>
   </entry>
   <entry>
+    <title>Float32MLE (Byte Order)</title>
+    <url>/float32mle/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="http://www.tcpschool.com/c/c_refer_endian">바이트 순서(Byte Order)</a>는 오래 전 컴퓨터공학과에서 배웠던 개념이지만 실무에서는 실제로 고려할 필요가 없었다.</p>
+</blockquote>
+<p>컴퓨터에서 데이터를 메모리에 저장할 때의 바이트 순서는 빅 엔디안과 리틀 엔디방 식으로 나누어지는데 이것은 CPU 아키텍처에 따라 나누어진다고 한다. TCP 네트워크 스펙 상에는 패킷의 바이트 순서는 빅 엔디안으로 구성되며 웹 애플리케이션에서 자주 활용되는 언어인 자바도 이를 감안하여 빅 엔디안을 기본적으로 사용한다. CPU 아키텍처와 다르게 빅 엔디안으로 사용되는 이유는 JVM 이라는 별도의 스택을 기반으로 구동되기 때문이라고 한다. 그러나, SCADA 또는 PLC 장비와 같은 일부 시스템에서는 빅 엔디안 방식이 아닌 리틀 엔디안 또는 미드 리틀 엔디안으로 바이트 순서를 구성하고 있는데 이러한 시스템은 C 언어를 기반으로 만들어지기 때문이다.</p>
+<blockquote>
+<p>일반적인 자바 웹 개발자들이 바이트 순서를 고려하여 비트 연산 또는 시프트 연산을 수행할 경우는 많지 않을 것 같다.</p>
+</blockquote>
+<h4 id="Mid-Little-Endian-MLE"><a href="#Mid-Little-Endian-MLE" class="headerlink" title="Mid Little Endian, MLE"></a>Mid Little Endian, MLE</h4><p>빅 엔디안와 리틀 엔디안 뿐만 아니라 바이트 순서를 스왑하는 미드 리틀 엔디안은 <code>AB CD</code>의 바이트 순서가 있을때 <code>CD AB</code>로 표현하는 것을 의미한다. 32비트로 구성되는 Float 형식을 미드 리틀 엔디안 방식으로 구성한 것을 <code>Float32MLE</code> 이라고 표기할 수 있다.</p>
+<p><a href="https://baseconvert.com/ieee-754-floating-point">Base Convert: IEEE 754 Floating Point</a></p>
+<h4 id="Float32MLE-Example"><a href="#Float32MLE-Example" class="headerlink" title="Float32MLE Example"></a>Float32MLE Example</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Endian Test"</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">EndianTest</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Float32 Mid Little Endian"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token class-name">TestFloat32MLE</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">String</span> hexadecimal <span class="token operator">=</span> <span class="token string">"00004260"</span><span class="token punctuation">;</span> <span class="token comment">// 00 00 42 60</span>
+        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes <span class="token operator">=</span> <span class="token class-name">HexFormat</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">parseHex</span><span class="token punctuation">(</span>hexadecimal<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">float</span> originValue <span class="token operator">=</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// CD (42 60)</span>
+                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// AB (00 00)</span>
+                <span class="token punctuation">.</span><span class="token function">readFloat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">float</span> value <span class="token operator">=</span> <span class="token class-name">BigDecimal</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>originValue<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setScale</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token class-name">RoundingMode</span><span class="token punctuation">.</span><span class="token constant">HALF_UP</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">floatValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">56.0f</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>Netty의 ByteBuf 클래스에서는 빅 엔디안 방식의 <code>readFloat</code> 함수와 리틀 엔디안 방식의 <code>readFloatLE</code> 함수를 제공하고 있다. 그러나, 미드 리틀 엔디안 방식의 경우에는 별도로 제공하지 않으므로 위와 같이 버퍼에 <code>CD AB</code> 순으로 쓰고나서 빅 엔디안 방식으로 읽어야한다.</p>
+]]></content>
+      <tags>
+        <tag>Float32</tag>
+        <tag>IEEE 754</tag>
+        <tag>Byte Order</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>프리마커 템플릿</title>
     <url>/freemarker-template/</url>
     <content><![CDATA[<p>스프링 부트 프로젝트에 대한 예제를 살펴보면 대부분 템플릿 엔진으로 타임리프를 선택하여 사용함을 알 수 있다. 대부분 타임리프에 대해서 설명하므로 프리마커 템플릿 엔진에 대해서 정리한 글은 생각보다 많지 않다. 나는 타임리프라는 템플릿 엔진 보다는 프리마커의 문법이 더 간단하고 느끼기에 더 선호하는 편이다. <a href="https://github.com/jreijn/spring-comparing-template-engines">여러가지 템플릿 엔진과 비교</a>해서도 준수한 렌더링 성능을 보여주고 있다.</p>
@@ -2539,46 +2579,6 @@ configuration<span class="token punctuation">.</span><span class="token function
 <p>MultiTemplateLoader의 생성자에 전달되는 템플릿 로더의 순서대로 템플릿을 찾도록 위임한다는 것에 주의해야한다.</p>
 </blockquote>
 ]]></content>
-  </entry>
-  <entry>
-    <title>Float32MLE (Byte Order)</title>
-    <url>/float32mle/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="http://www.tcpschool.com/c/c_refer_endian">바이트 순서(Byte Order)</a>는 오래 전 컴퓨터공학과에서 배웠던 개념이지만 실무에서는 실제로 고려할 필요가 없었다.</p>
-</blockquote>
-<p>컴퓨터에서 데이터를 메모리에 저장할 때의 바이트 순서는 빅 엔디안과 리틀 엔디방 식으로 나누어지는데 이것은 CPU 아키텍처에 따라 나누어진다고 한다. TCP 네트워크 스펙 상에는 패킷의 바이트 순서는 빅 엔디안으로 구성되며 웹 애플리케이션에서 자주 활용되는 언어인 자바도 이를 감안하여 빅 엔디안을 기본적으로 사용한다. CPU 아키텍처와 다르게 빅 엔디안으로 사용되는 이유는 JVM 이라는 별도의 스택을 기반으로 구동되기 때문이라고 한다. 그러나, SCADA 또는 PLC 장비와 같은 일부 시스템에서는 빅 엔디안 방식이 아닌 리틀 엔디안 또는 미드 리틀 엔디안으로 바이트 순서를 구성하고 있는데 이러한 시스템은 C 언어를 기반으로 만들어지기 때문이다.</p>
-<blockquote>
-<p>일반적인 자바 웹 개발자들이 바이트 순서를 고려하여 비트 연산 또는 시프트 연산을 수행할 경우는 많지 않을 것 같다.</p>
-</blockquote>
-<h4 id="Mid-Little-Endian-MLE"><a href="#Mid-Little-Endian-MLE" class="headerlink" title="Mid Little Endian, MLE"></a>Mid Little Endian, MLE</h4><p>빅 엔디안와 리틀 엔디안 뿐만 아니라 바이트 순서를 스왑하는 미드 리틀 엔디안은 <code>AB CD</code>의 바이트 순서가 있을때 <code>CD AB</code>로 표현하는 것을 의미한다. 32비트로 구성되는 Float 형식을 미드 리틀 엔디안 방식으로 구성한 것을 <code>Float32MLE</code> 이라고 표기할 수 있다.</p>
-<p><a href="https://baseconvert.com/ieee-754-floating-point">Base Convert: IEEE 754 Floating Point</a></p>
-<h4 id="Float32MLE-Example"><a href="#Float32MLE-Example" class="headerlink" title="Float32MLE Example"></a>Float32MLE Example</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Endian Test"</span><span class="token punctuation">)</span>
-<span class="token keyword">class</span> <span class="token class-name">EndianTest</span> <span class="token punctuation">&#123;</span>
-
-    <span class="token annotation punctuation">@DisplayName</span><span class="token punctuation">(</span><span class="token string">"Float32 Mid Little Endian"</span><span class="token punctuation">)</span>
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">void</span> <span class="token class-name">TestFloat32MLE</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">String</span> hexadecimal <span class="token operator">=</span> <span class="token string">"00004260"</span><span class="token punctuation">;</span> <span class="token comment">// 00 00 42 60</span>
-        <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> bytes <span class="token operator">=</span> <span class="token class-name">HexFormat</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">parseHex</span><span class="token punctuation">(</span>hexadecimal<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">float</span> originValue <span class="token operator">=</span> <span class="token class-name">PooledByteBufAllocator</span><span class="token punctuation">.</span><span class="token constant">DEFAULT</span><span class="token punctuation">.</span><span class="token function">buffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// CD (42 60)</span>
-                <span class="token punctuation">.</span><span class="token function">writeBytes</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>bytes<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> bytes<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// AB (00 00)</span>
-                <span class="token punctuation">.</span><span class="token function">readFloat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">float</span> value <span class="token operator">=</span> <span class="token class-name">BigDecimal</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>originValue<span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setScale</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token class-name">RoundingMode</span><span class="token punctuation">.</span><span class="token constant">HALF_UP</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">floatValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span><span class="token number">56.0f</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>Netty의 ByteBuf 클래스에서는 빅 엔디안 방식의 <code>readFloat</code> 함수와 리틀 엔디안 방식의 <code>readFloatLE</code> 함수를 제공하고 있다. 그러나, 미드 리틀 엔디안 방식의 경우에는 별도로 제공하지 않으므로 위와 같이 버퍼에 <code>CD AB</code> 순으로 쓰고나서 빅 엔디안 방식으로 읽어야한다.</p>
-]]></content>
-      <tags>
-        <tag>Float32</tag>
-        <tag>IEEE 754</tag>
-        <tag>Byte Order</tag>
-      </tags>
   </entry>
   <entry>
     <title>풀스택 개발자 관점에서 학습하기</title>
@@ -4135,6 +4135,99 @@ ubuntu@ubuntu:~$ <span class="token function">sudo</span> <span class="token fun
       <tags>
         <tag>Node</tag>
         <tag>Cloud</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>젠킨스 도커 멀티 플랫폼 빌드</title>
+    <url>/jenkins-docker-buildx/</url>
+    <content><![CDATA[<p>젠킨스에서 Docker Plugin 을 사용해서 Dockerfile을 통해 쉽게 도커 이미지를 빌드할 수 있다. 아마존 웹 서비스와 같은 클라우드 서비스에서는 x86_64(AMD64) 아키텍처 뿐만 아니라 ARM64 아키텍처 기반의 더 저렴하고 성능이 좋은 서버를 활용할 수 있다. 기본적인 도커 이미지 빌드 명령어는 빌드를 시도하는 서버와 동일한 아키텍처에 대한 이미지만 만들 수 있으므로 <a href="https://docs.docker.com/build/building/multi-platform/">멀티 플랫폼 이미지</a>를 만들기 위해서는 <a href="https://docs.docker.com/reference/cli/docker/buildx/">Buildkit</a>을 이용해야한다.</p>
+<h4 id="Jenkins-사용자-도커-그룹에-추가"><a href="#Jenkins-사용자-도커-그룹에-추가" class="headerlink" title="Jenkins 사용자 도커 그룹에 추가"></a>Jenkins 사용자 도커 그룹에 추가</h4><p>젠킨스가 설치된 서버에 실행되어있는 도커 엔진으로 빌드할 수 있도록 도커 그룹에 젠킨스 사용자를 포함시켜야한다. 젠킨스 사용자를 도커 그룹에 추가하고나서는 도커와 젠킨스 모두 재실행을 수행하여야 한다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> jenkins
+<span class="token function">sudo</span> systemctl restart jenkins
+<span class="token function">sudo</span> systemctl restart <span class="token function">docker</span></code></pre>
+
+<h4 id="QEMU-설치"><a href="#QEMU-설치" class="headerlink" title="QEMU 설치"></a>QEMU 설치</h4><p>윈도우와 맥 환경에서 사용하는 도커 데스크탑에는 QEMU 을 포함하고 있어 쉽게 멀티 플랫폼 이미지를 빌드할 수 있다. 하지만, 일반적으로 젠킨스를 설치하는 리눅스 서버에서는 <a href="https://docs.docker.com/build/building/multi-platform/#qemu-without-docker-desktop">QEMU</a>의 도움을 받기 위해서 직접 설치해야한다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> run <span class="token parameter variable">--privileged</span> <span class="token parameter variable">--rm</span> tonistiigi/binfmt <span class="token parameter variable">--install</span> all</code></pre>
+
+<h4 id="Docker-Build-Cloud-를-빌더로-이용하기"><a href="#Docker-Build-Cloud-를-빌더로-이용하기" class="headerlink" title="Docker Build Cloud 를 빌더로 이용하기"></a>Docker Build Cloud 를 빌더로 이용하기</h4><p><a href="https://docs.docker.com/build/cloud/">Docker Build Cloud</a>를 이용하여 빌드하기 위해서는 cloud 드라이버를 지원하는 buildx 버전을 설치해야한다. <a href="https://github.com/docker/buildx-desktop">buildx-desktop</a> 에서 리눅스 서버에 맞는 바이너리 파일을 다운받아서 젠킨스 계정에서 바라보는 도커 경로에 docker-buildx 플러그인으로 추가하자.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 젠킨스 사용자로 전환</span>
+<span class="token function">sudo</span> <span class="token function">su</span> jenkins <span class="token parameter variable">-s</span> /bin/bash
+
+<span class="token comment"># cloud 드라이버를 지원하는 Buildx 설치</span>
+<span class="token function">wget</span> https://github.com/docker/buildx-desktop/releases/download/v0.14.0-desktop.1/buildx-v0.14.0-desktop.1.linux-amd64
+<span class="token function">mv</span> buildx-v0.14.0-desktop.1.linux-amd64 ~/docker/cli-plugins/docker-buildx
+<span class="token function">chmod</span> a+x ~/.docker/cli-plugins/docker-buildx
+
+<span class="token comment"># Buildx 버전 확인</span>
+<span class="token function">docker</span> buildx version
+github.com/docker/buildx v0.14.0-desktop.1 7b0470cffd54ccbf42976d2f75febc4532c85073
+
+<span class="token comment"># Docker Build Cloud 빌더 추가</span>
+<span class="token function">docker</span> buildx create <span class="token parameter variable">--driver</span> xxxinc/builder <span class="token parameter variable">--use</span>
+<span class="token function">docker</span> buildx <span class="token function">ls</span>
+NAME/NODE               DRIVER/ENDPOINT                          STATUS    BUILDKIT       PLATFORMS
+cloud-eipgridinc-ddd*   cloud
+ <span class="token punctuation">\</span>_ linux-amd64          <span class="token punctuation">\</span>_ cloud://xxxinc/builder_linux-amd64   running   v0.13.1        linux/amd64*, linux/amd64/v2, linux/amd64/v3, linux/amd64/v4, linux/386
+ <span class="token punctuation">\</span>_ linux-arm64          <span class="token punctuation">\</span>_ cloud://xxxinc/builder_linux-arm64   running   v0.13.1        linux/arm64*, linux/arm64/v6, linux/arm64/v7
+default                 <span class="token function">docker</span>
+ <span class="token punctuation">\</span>_ default              <span class="token punctuation">\</span>_ default                              running   v0.8+unknown   linux/amd64, linux/arm64, linux/riscv64, linux/ppc64le, linux/s390x, linux/386, linux/arm/v7, linux/arm/v6</code></pre>
+
+<blockquote>
+<p>Docker Build Cloud 환경에서 빌드하므로 –bootstrap 옵션으로 빌더 초기화를 수행할 필요가 없습니다.</p>
+</blockquote>
+<h4 id="Jenkins-에서-빌드하기"><a href="#Jenkins-에서-빌드하기" class="headerlink" title="Jenkins 에서 빌드하기"></a>Jenkins 에서 빌드하기</h4><p>Docker Plugin 에서는 buildx 명령어를 선택할 수 없기 때문에 Execute Shell 을 선택해서 직접 buildx 명령어를 사용하는 스크립트를 작성해야한다. 아래의 스크립트에서 도커 계정에 로그인하기 위해서 젠킨스 사용자의 config.json 을 이용하게 했다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Log in to Docker Hub</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"Logging into Docker Hub..."</span>
+<span class="token function">docker</span> login
+
+<span class="token assign-left variable">BUILDER_NAME</span><span class="token operator">=</span><span class="token string">"cloud-xxxinc-builder"</span>
+
+<span class="token comment"># Check if the builder already exists</span>
+<span class="token assign-left variable">BUILDER_EXISTS</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">docker</span> buildx <span class="token function">ls</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"<span class="token variable">$BUILDER_NAME</span>"</span> <span class="token operator">||</span> <span class="token boolean">true</span><span class="token variable">)</span></span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$BUILDER_EXISTS</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"Creating new builder instance..."</span>
+  <span class="token function">docker</span> buildx create <span class="token parameter variable">--name</span> <span class="token string">"<span class="token variable">$BUILDER_NAME</span>"</span> <span class="token parameter variable">--driver</span> cloud xxxinc/builder <span class="token parameter variable">--use</span>
+<span class="token keyword">else</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"Using existing builder instance..."</span>
+  <span class="token function">docker</span> buildx use <span class="token string">"<span class="token variable">$BUILDER_NAME</span>"</span>
+<span class="token keyword">fi</span>
+
+<span class="token comment"># List the builder instances</span>
+<span class="token function">docker</span> buildx <span class="token function">ls</span>
+
+<span class="token comment"># Install QEMU emulators for building multi-architecture images</span>
+<span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">--privileged</span> tonistiigi/binfmt <span class="token parameter variable">--install</span> all
+
+<span class="token comment"># build</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"Building Docker image using Buildx with Docker Build Cloud..."</span>
+<span class="token function">docker</span> buildx build <span class="token parameter variable">--platform</span> linux/amd64,linux/arm64 <span class="token parameter variable">-t</span> xxxinc/testapp:<span class="token variable">$&#123;version&#125;</span>-buildx <span class="token parameter variable">--push</span> <span class="token builtin class-name">.</span></code></pre>
+
+<h4 id="Optional-HDF5-for-ARM64"><a href="#Optional-HDF5-for-ARM64" class="headerlink" title="(Optional) HDF5 for ARM64"></a>(Optional) HDF5 for ARM64</h4><p>ARM64 아키텍처로 빌드하는 경우에만 <code>ValueError: did not find HDF5 headers</code> 가 발생하는 것을 경험했다. 검색 결과 아래의 세개의 패키지를 설치하는 것으로 해결이 되었다.</p>
+<ul>
+<li>libhdf5-serial-dev</li>
+<li>netcdf-bin</li>
+<li>libnetcdf-dev</li>
+</ul>
+<pre class="language-docker" data-language="docker"><div class="caption"><span>Dockerfile</span></div><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> python:3.8-slim-buster</span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update &amp;&amp; apt-get install -y <span class="token operator">\</span>
+    gcc  <span class="token operator">\</span>
+    libpq-dev <span class="token operator">\</span>
+    libhdf5-serial-dev <span class="token operator">\</span>
+    netcdf-bin \ </span>
+    libnetcdf-dev</code></pre>
+
+<h4 id="문제-해결에-도움이-된-글"><a href="#문제-해결에-도움이-된-글" class="headerlink" title="문제 해결에 도움이 된 글"></a>문제 해결에 도움이 된 글</h4><ul>
+<li><a href="https://hotfoxy.tistory.com/114">jenkins(image) 에서 docker buildx를 사용하고 싶어요!</a></li>
+<li><a href="https://forums.docker.com/t/docker-buildx-failed-to-find-driver-cloud/141238/4">Docker buildx “failed to find driver”</a></li>
+<li><a href="https://stackoverflow.com/a/36165209">https://stackoverflow.com/a/36165209</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Jenkins</tag>
+        <tag>Docker</tag>
+        <tag>Buildx</tag>
       </tags>
   </entry>
   <entry>

@@ -2,51 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://kdevkr.github.io/tls-offload/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/trace-oauth-requests/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/transfer-files-to-remote/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/ubuntu-linux/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/understanding-asynchronos-javascript-and-xml-with-spring/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/understanding-spring-security/</loc>
     
     <lastmod>2024-05-25</lastmod>
@@ -65,7 +20,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/undertow-websocket-tracing/</loc>
+    <loc>https://kdevkr.github.io/undertow/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -74,7 +29,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/undertow/</loc>
+    <loc>https://kdevkr.github.io/undertow-websocket-tracing/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -138,78 +93,6 @@
   
   <url>
     <loc>https://kdevkr.github.io/archive/setup-kubernetes-cluster.html</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/logback-spring/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/lombok-annotation-processor/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/maintaining-process-execution-in-linux/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/managing-i18n-messages-with-xml/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/mapstruct/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/mariadb-timestamp-y2k38/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/modbus-tcp/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/more-important-than-blogging/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -398,7 +281,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-boot-integration-mqtt/</loc>
+    <loc>https://kdevkr.github.io/spring-boot-immutable-configuration-properties/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -407,7 +290,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-boot-immutable-configuration-properties/</loc>
+    <loc>https://kdevkr.github.io/spring-boot-integration-mqtt/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -524,7 +407,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-file-download/</loc>
+    <loc>https://kdevkr.github.io/spring-dynamic-email-template/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -533,7 +416,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-dynamic-email-template/</loc>
+    <loc>https://kdevkr.github.io/spring-file-download/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -551,7 +434,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-security-data-jdbc-integration/</loc>
+    <loc>https://kdevkr.github.io/spring-security-gh-14370/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -560,7 +443,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/spring-security-gh-14370/</loc>
+    <loc>https://kdevkr.github.io/spring-security-data-jdbc-integration/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -632,7 +515,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/ssl-certificate/</loc>
+    <loc>https://kdevkr.github.io/static-analysis-performed-by-sonarqube-and-github-action/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -641,7 +524,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/static-analysis-performed-by-sonarqube-and-github-action/</loc>
+    <loc>https://kdevkr.github.io/ssl-certificate/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -677,7 +560,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/autorun-process-using-crontab-on-reboot/</loc>
+    <loc>https://kdevkr.github.io/tls-offload/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -686,7 +569,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/autorun-script/</loc>
+    <loc>https://kdevkr.github.io/trace-oauth-requests/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -695,7 +578,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/aws-alb-mtls-passthrough/</loc>
+    <loc>https://kdevkr.github.io/transfer-files-to-remote/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -704,7 +587,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/aws-nlb-tls-ecc-cert/</loc>
+    <loc>https://kdevkr.github.io/ubuntu-linux/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -713,34 +596,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/aws-sdk-for-java-bom/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/base64/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/beanstalk-logs/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/beanstalk-platforms-linux-extend/</loc>
+    <loc>https://kdevkr.github.io/understanding-asynchronos-javascript-and-xml-with-spring/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -812,15 +668,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/deploy-spring-boot-with-beanstalk-java-se-platform/</loc>
-    
-    <lastmod>2024-05-25</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/deploy-vite/</loc>
     
     <lastmod>2024-05-25</lastmod>
@@ -831,6 +678,15 @@
   
   <url>
     <loc>https://kdevkr.github.io/docker-registry-certificate/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/deploy-spring-boot-with-beanstalk-java-se-platform/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -893,7 +749,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/elasticsearch-indices/</loc>
+    <loc>https://kdevkr.github.io/email-spf-dkim-dmarc/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -902,7 +758,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/email-spf-dkim-dmarc/</loc>
+    <loc>https://kdevkr.github.io/elasticsearch-indices/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -1136,7 +992,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/kdb-connection-pool/</loc>
+    <loc>https://kdevkr.github.io/jwt/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -1145,7 +1001,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/jwt/</loc>
+    <loc>https://kdevkr.github.io/kdb-connection-pool/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -1208,6 +1064,78 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/logback-spring/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/lombok-annotation-processor/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/maintaining-process-execution-in-linux/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/managing-i18n-messages-with-xml/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/mapstruct/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/mariadb-timestamp-y2k38/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/modbus-tcp/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/more-important-than-blogging/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/add-jdk-installations-jenkins/</loc>
     
     <lastmod>2024-05-25</lastmod>
@@ -1254,6 +1182,78 @@
   
   <url>
     <loc>https://kdevkr.github.io/automated-deployment-using-s3/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/autorun-process-using-crontab-on-reboot/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/autorun-script/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/aws-alb-mtls-passthrough/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/aws-nlb-tls-ecdsa/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/aws-sdk-for-java-bom/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/base64/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/beanstalk-logs/</loc>
+    
+    <lastmod>2024-05-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/beanstalk-platforms-linux-extend/</loc>
     
     <lastmod>2024-05-25</lastmod>
     
@@ -1392,7 +1392,7 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/ECC/</loc>
+    <loc>https://kdevkr.github.io/tags/ECDSA/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1490,13 +1490,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/Elastic-Beanstalk/</loc>
-    <lastmod>2024-05-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/tags/Nginx/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
@@ -1532,6 +1525,13 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/tags/Elastic-Beanstalk/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/tags/Timezone/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
@@ -1547,6 +1547,13 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/node-exporter/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/tags/ECC/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -2463,27 +2470,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/File/</loc>
-    <lastmod>2024-05-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/Content-Disposition/</loc>
-    <lastmod>2024-05-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://kdevkr.github.io/tags/application-octet-stream/</loc>
-    <lastmod>2024-05-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/tags/Email-Template/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
@@ -2512,6 +2498,27 @@
   </url>
   
   <url>
+    <loc>https://kdevkr.github.io/tags/File/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/tags/Content-Disposition/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/tags/application-octet-stream/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://kdevkr.github.io/tags/JDBC/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
@@ -2526,14 +2533,14 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/Spring-Data-JDBC/</loc>
+    <loc>https://kdevkr.github.io/tags/issue-14370/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/issue-14370/</loc>
+    <loc>https://kdevkr.github.io/tags/Spring-Data-JDBC/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -2610,13 +2617,6 @@
   </url>
   
   <url>
-    <loc>https://kdevkr.github.io/tags/HTTPS/</loc>
-    <lastmod>2024-05-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://kdevkr.github.io/tags/SonarQube/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
@@ -2625,6 +2625,13 @@
   
   <url>
     <loc>https://kdevkr.github.io/tags/Github-Action/</loc>
+    <lastmod>2024-05-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://kdevkr.github.io/tags/HTTPS/</loc>
     <lastmod>2024-05-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

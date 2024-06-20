@@ -542,6 +542,25 @@ ubuntu@ubuntu:~$ <span class="token function">ps</span> <span class="token param
       </tags>
   </entry>
   <entry>
+    <title>AWS RDS 슬로우 쿼리 로그의 커서 이름 이슈</title>
+    <url>/aws-rds-slow-query-with-cursor-name./</url>
+    <content><![CDATA[<p><img data-src="/images/posts/aws-rds-slow-query-with-cursor-name/01.png"></p>
+<p>위 스크린샷의 14시와 15시 사이에 RDS 의 DB 인스턴스의 CPU 부하가 90% 이상을 초과했다. 이러한 상황의 경우 어떤 호스트에서 수행한 쿼리가 문제가 되고 있는지 알기 위해서 AWS Aurora PostgreSQL의 클러스터 또는 인스턴스 파라미터를 변경하여 <a href="https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/AuroraUserGuide/USER_LogAccess.Concepts.PostgreSQL.html#USER_LogAccess.Concepts.PostgreSQL.Query_Logging">쿼리 로깅을 활성화</a>하고 <a href="https://docs.aws.amazon.com/ko_kr/prescriptive-guidance/latest/tuning-postgresql-parameters/log-min-duration-statement.html">log_min_duration_statement</a>에 대한 값을 지정하면 해당 밀리초를 초과하여 수행한 쿼리에 대한 duration 로그를 기록하고 CloudWatch의 로그 인사이트에서 확인할 수 있다.</p>
+<h4 id="FETCH-ALL-IN-rcursor-🤔"><a href="#FETCH-ALL-IN-rcursor-🤔" class="headerlink" title="FETCH ALL IN &quot;rcursor&quot; 🤔"></a>FETCH ALL IN &quot;rcursor&quot; 🤔</h4><p><img data-src="/images/posts/aws-rds-slow-query-with-cursor-name/02.png"></p>
+<p>RDS 콘솔의 성능 개선 도우미에서 데이터베이스 로드와 상위 SQL 정보를 확인할 수 있는데 위와 같이 FETCH ALL IN &quot;rcursor&quot; 가 대부분의 로드로 기록되어있는 걸 볼 수 있다. 실제 SQL를 확인할 수 있는 것들 이외에 <code>rcursor</code> 란 것은 도대체 무엇을 의미하는 것인지 알아야할 것 같다. PL&#x2F;pgSQL 함수를 작성할 때 <a href="https://www.postgresql.org/docs/current/plpgsql-cursors.html">Cursor</a>를 선언하고 조회한 결과를 반환할 수 있다. 일반적으로 이야기하는 프로시저 함수를 의미하며 애플리케이션에서 사용중인 대부분의 함수의 커서 이름을 동일하게 지정하여 선언했다는 것을 의미한다.</p>
+<p>기본적으로 커서 이름을 지정하지 않으면 자동으로 <code>&lt;unnamed cursor 1&gt;</code>와 같은 랜덤한 커서가 만들어지고 JDBC 에서 SQL 함수를 호출한 결과에서 커서 이름을 굳이 동일하게 지정할 필요는 없다. 따라서, 애플리케이션은 함수 정의 시 어떤 이름의 커서를 사용하는지에 대해서는 상관하지 않으며 SQL 함수를 관리하는 개발자 혹은 DBA가 관리하기 위한 이름일 뿐이다. 그래서 쉽게 관리하여 사용하기 위해 통일했던 것으로 생각된다.</p>
+<h4 id="RDS-모니터링을-위한-커서-이름을-사용하세요"><a href="#RDS-모니터링을-위한-커서-이름을-사용하세요" class="headerlink" title="RDS 모니터링을 위한 커서 이름을 사용하세요."></a>RDS 모니터링을 위한 커서 이름을 사용하세요.</h4><p><img data-src="/images/posts/aws-rds-slow-query-with-cursor-name/03.png"></p>
+<p>RDS 모니터링 및 슬로우 쿼리를 확인할 수 있도록 동일한 커서 이름이 아닌 SQL 함수별 별도의 커서 이름을 정의하여 구분하는게 필요하다. SQL 함수 작성 시 커서 이름은 함수 이름과 동일하게 하여 명확히 구분하기로 협의했고 위와 같이 오래 수행되는 슬로우 쿼리를 쉽게 확인할 수 있다. 기존에는 개발자가 슬로우 쿼리를 확인할 수 있도록 애플리케이션 서버에 로그가 출력되도록 했지만 이제는 개발자 뿐만 아니라 DB 혹은 인프라 엔지니어도 RDS 모니터링으로 슬로우 쿼리 구분이 가능하도록 변경하고 있다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 여러분은 어떤 쿼리가 2초나 소요됬는지 파악할 수 있나요?</span>
+LOG:  duration: <span class="token number">2217.321</span> ms  execute <span class="token operator">&lt;</span>unnamed<span class="token operator">></span>: FETCH ALL IN <span class="token string">"rcursor"</span></code></pre>
+]]></content>
+      <tags>
+        <tag>AWS RDS</tag>
+        <tag>PostgreSQL</tag>
+        <tag>Cursor</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>AWS SDK for Java BOM</title>
     <url>/aws-sdk-for-java-bom/</url>
     <content><![CDATA[<p>AWS 경험이 많지 않은 개발자 혹은 신규 프로젝트를 위한 구성 시 종종 신경쓰지 않아 발생하는 문제는 AWS 서비스와의 연동을 위한 자바 라이브러리를 사용하기 위해 AWS Java SDK 를 추가하는 것으로 인한 과도하된 애플리케이션 용량이다. 처음부터 공식 문서를 제대로 참고한다면 Java SDK 를 위한 Maven BOM 을 추가하는 방식으로 구성했을 것이다. 그렇지 않은 경우라면 아래와 같이 AWS Java SDK 전체를 추가했을 것이다.</p>
@@ -1856,6 +1875,76 @@ tasks<span class="token punctuation">.</span><span class="token function">regist
       </tags>
   </entry>
   <entry>
+    <title>X509 Certificate Signed by Unknown Authority</title>
+    <url>/docker-registry-certificate/</url>
+    <content><![CDATA[<blockquote>
+<p>Error response from daemon: Get https://registry.domain.com&#x2F;v2&#x2F;: x509: certificate signed by unknown authority</p>
+</blockquote>
+<p>생각보다 많은 조직에서 사내 정책이나 도커 허브의 <a href="https://docs.docker.com/docker-hub/download-rate-limit/">다운로드 제한량</a>을 경험하고 도커에서 제공하는 <a href="https://hub.docker.com/_/registry">레지스트리 이미지</a>로 사설 도커 레지스트리 서버를 구축하는 것 같습니다. 위 오류는 도커 레지스트리 서버에 로그인을 시도할 때 나타날 수 있습니다. 우리가 사용하는 도커 엔진이라고하는 클라이언트가 도커 레지스트리 서버가 전달해준 인증서를 신뢰할 수 없다는 의미입니다. 그러면 위와 같이 내 컴퓨터에 설치된 도커 엔진에서 사설로 구축한 도커 레지스트리 서버의 인증서를 신뢰할 수 없는 문제가 발생하면 어떻게 해결하는지를 알아보도록 하죠.</p>
+<h2 id="도커-레지스트리-인증서"><a href="#도커-레지스트리-인증서" class="headerlink" title="도커 레지스트리 인증서"></a>도커 레지스트리 인증서</h2><p>도커 엔진에서 참조하는 레지스트리 서버에 대한 인증서 폴더는 <strong>certs.d</strong> 입니다.</p>
+<ul>
+<li>Windows: C:&#x2F;ProgramData&#x2F;Docker&#x2F;certs.d&#x2F;</li>
+<li>Linux: &#x2F;etc&#x2F;docker&#x2F;certs.d&#x2F;</li>
+<li>Mac: ~&#x2F;.docker&#x2F;certs.d&#x2F;</li>
+</ul>
+<pre class="language-bash" data-language="bash"><code class="language-bash">/etc/docker/certs.d/         <span class="token operator">&lt;</span>-- Certificate directory
+└── registry.domain.com:5000 <span class="token operator">&lt;</span>-- Hostname:port
+   ├── client.cert           <span class="token operator">&lt;</span>-- Client certificate
+   ├── client.key            <span class="token operator">&lt;</span>-- Client key
+   └── ca.crt                <span class="token operator">&lt;</span>-- Certificate authority that signed the registry certificate</code></pre>
+
+<h3 id="안전하지-않은-레지스트리"><a href="#안전하지-않은-레지스트리" class="headerlink" title="안전하지 않은 레지스트리"></a>안전하지 않은 레지스트리</h3><p>HTTPS로 실행된 도커 레지스트리 서버에 대해서 도커 엔진이 신뢰할 수 없는 인증서를 무시하도록 <a href="https://docs.docker.com/registry/insecure/">insecure-registries</a>옵션을 지정할 수 있습니다. 다만, 이 방법은 해당 도메인 주소의 레지스트리 서버가 올바른 인증서를 사용하는지 검증하지 않기 때문에 보안적인 부분을 생각한다면 일반적으로 사용해서는 안되는 방법입니다.</p>
+<h3 id="신뢰할-수-있는-인증-기관"><a href="#신뢰할-수-있는-인증-기관" class="headerlink" title="신뢰할 수 있는 인증 기관"></a>신뢰할 수 있는 인증 기관</h3><p>도커 엔진은 기본적으로 시스템에 등록된 신뢰할 수 있는 인증 기관의 인증서 목록으로 도커 레지스트리 서버의 클라이언트 인증서를 검증합니다. 이는 크롬과 같은 브라우저에서 HTTPS 통신 시 서버에서 전달하는 인증서가 유효한지를 확인하는 것과 다르지 않습니다. 저는 <strong>신뢰할 수 있는 인증 기관으로부터 발급받은 도메인 인증서를 사용</strong>하여 도커 레지스트리 서버를 구축하였는데도 불구하고 도커 엔진에서는 회사 도메인 주소로된 도커 레지스트리 서버에서 전달된 인증서가 올바르지 않다며 동일하게 <code>x509: certificate signed by unknown authority</code> 오류를 알려주었습니다.</p>
+<h3 id="CA-인증서-체인"><a href="#CA-인증서-체인" class="headerlink" title="CA 인증서 체인"></a>CA 인증서 체인</h3><p>도커 엔진에서 레지스트리 서버의 인증서를 신뢰할 수 없다는 것은 몇가지 사항에 대한 의미를 가질 수 있습니다. 첫번째로, 도커 레지스트리 서버 구축 시 사용한 CA 인증서가 클라이언트 인증서와 인증 기관들에 대한 인증서가 연결된 CA 인증서 체인이 아닐 수 있다는 것입니다. 실제로 지금은 UI 기반의 사용자 및 이미지 관리를 위해 <a href="https://goharbor.io/">Harbor</a>로 도커 레지스트리 서버를 재구축하였으나 기존 도커 레지스트리 서버에 사용된 CA 인증서 파일에는 클라이언트 인증서만 존재했던 문제가 있었습니다. 그래서 조직 내 개발자들에게 레지스트리 서버에서 사용된 CA 인증서 파일과 클라이언트 인증서 및 키를 전달하고 도커 레지스트리 인증서 폴더에 저장하여 사용해달라고 안내했었습니다. 결국은 도커 엔진이 도커 레지스트리 서버를 신뢰할 수 없으므로 CA 인증서 체인을 신뢰할 수 있는 인증서 목록에 포함시키면 됩니다.</p>
+<p>예를 들어, <a href="https://support.apple.com/ko-kr/guide/keychain-access/kyca2431/mac">Mac용 키체인 접근을 사용하여 키체인에 인증서 추가하기</a>에 따라 CA 인증서를 추가하면 다음과 같이 유효한 인증서임이 표시됨을 확인할 수 있었습니다.</p>
+<p><img data-src="/images/posts/docker-registry-certificate/trust-certificate.png"></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> login registry.domain.com <span class="token parameter variable">-u</span> <span class="token string">'username'</span> <span class="token parameter variable">-p</span> <span class="token string">'password'</span>
+WARNING<span class="token operator">!</span> Using <span class="token parameter variable">--password</span> via the CLI is insecure. Use --password-stdin.
+Login Succeeded</code></pre>
+
+<blockquote>
+<p>도커 레지스트리 서버의 CA 인증서 체인을 시스템 인증서로 등록하고나서는 도커 엔진이 신뢰할 수 있는 인증서 목록에 따라 인증서가 유효함을 확인함으로 정상적으로 HTTPS 통신이 이루어지고 로그인에 성공하였습니다. 레지스트리 서버에 대한 로그인 예시이므로 CLI 경고 문구는 무시해주세요.</p>
+</blockquote>
+<h4 id="시스템-및-사용자-정의-CA-인증서-병합"><a href="#시스템-및-사용자-정의-CA-인증서-병합" class="headerlink" title="시스템 및 사용자 정의 CA 인증서 병합"></a>시스템 및 사용자 정의 CA 인증서 병합</h4><p><em>On Linux any root certificates authorities are merged with the system defaults, including the host’s root CA set. If you are running Docker on Windows Server, or Docker Desktop for Windows with Windows containers, the system default certificates are only used when no custom root certificates are configured.</em></p>
+<p><a href="https://docs.docker.com/engine/security/certificates/#understand-the-configuration">공식문서</a>에 따르면 위와 같이 사용자 정의 인증서(certs.d)는 시스템 인증서와 CA 인증서가 합쳐져서 등록된다는 내용이 있습니다. 따라서, 도커 레지스트리 서버의 CA 인증서 체인을 <strong>시스템 인증서 목록</strong>이나 <strong>certs.d</strong> 폴더에 두면 된다는 이야기입니다. 실제로 시스템 인증서로 등록하지 않아도 certs.d 폴더에 ca.crt라는 이름으로 CA 인증서 체인을 두게되면 동일하게 동작함을 확인할 수 있었습니다.</p>
+<blockquote>
+<p>한가지 흥미로운 점은 이 글을 작성하기 위해 Docker Desktop for Windows 에서도 테스트를 해본 결과 도커 레지스트리 서버의 CA 인증서 체인을 굳이 등록하지 않아도 정상적으로 로그인이 되었다는 점입니다. 이점으로 보았을때 모든 운영체제에서 동일하게 동작하지는 않는 것 같아보입니다. 따라서, 도커 엔진에서 레지스트리 서버를 신뢰할 수 없다고 한다면 레지스트리 서버 관리자에게 인증서 체인을 전달받아서 등록하는게 좋을 것 같습니다.</p>
+</blockquote>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Docker Registry</tag>
+        <tag>Harbor</tag>
+        <tag>Certificate</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>서버 타임존을 바꾸지 말자 (Feat. 글로벌)</title>
+    <url>/don&#39;t-change-server-timezone/</url>
+    <content><![CDATA[<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash">ubuntu@ubuntu:~$ timedatectl
+               Local time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
+           Universal time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
+                 RTC time: Wed <span class="token number">2023</span>-05-24 02:16:41    
+                Time zone: Etc/UTC <span class="token punctuation">(</span>UTC, +0000<span class="token punctuation">)</span>       
+System clock synchronized: no                         
+              NTP service: active                     
+          RTC <span class="token keyword">in</span> <span class="token builtin class-name">local</span> TZ: no</code></pre>
+
+<p>기본적으로 서버와 데이터베이스의 타임존은 UTC를 사용한다. 그러다보니 국내 사용자들을 대상으로 하는 서비스를 제공하는 회사들의 경우 <a href="https://jojoldu.tistory.com/513">서버 타임존을 한국 시간(Asia&#x2F;Seoul, +09:00)로 변경해서 사용</a>하기도 한다. 서비스 도메인 그리고 환경을 이해하고 있어야만 올바른 행위로 생각해야하는데 간혹 애플리케이션의 타임존이 한국시간이라 데이터베이스의 타임존과의 차이로 인한 문제를 해결하려고 데이터베이스에 대한 타임존을 한국시간으로 변경하는 방법에 대해 배경 설명없이 블로그에 공유하는 분들이 꽤나 많다.</p>
+<p>결론적으로 이야기하자면 백엔드 개발자는 시간 정보에 타임존을 적용하는 것을 프레젠테이션 계층인 클라이언트 영역에 위임하는 것이 좋다. 그러니까 사용자는 서버에 저장된 데이터에 상관없이 본인의 시간대를 기준으로 정확한 시간이 표시되어야 하는게 요구하는 바이기 때문이다. 간혹 신입 개발자 뿐만 아니라 어느정도 경험이 있는 경력 개발자들도 국내에서만 일하다보니 고정된 관점을 가지게 되는게 아닌가 싶다. 아무튼 프론트엔드 개발자는 단순히 서버에서 제공하는 데이터를 그대로 표시하고자 하는 직무가 아니며 서버에서 정제되어 제공된 데이터를 사용자에게 적합한 데이터로 변환하여 표시하는 작업도 요구된다. 그리고 그 변환 작업 중 하나가 바로 시간 정보에 사용자의 타임존을 더해서 표시해주는 것이다.</p>
+<p>다음은 오키 커뮤니티 사이트에서 개발자 도구의 네트워크 기능으로 확인한 배너 정보이다. </p>
+<p><img data-src="/images/posts/don't-change-server-timezone/01.png"></p>
+<p>배너의 시작날짜(startDate)와 마감날짜(endDate)가 보이는데 2023-06-02T00:00:00는 아마도 한국 시간을 의미할 것이다. 그렇다면 한국 사람이 아닌 해외에서 접속한 사람이 오키 커뮤니티 사이트에 접속했다면 배너가 정상적으로 표시될 수 있을까? 일반적으로 시간에 대한 데이털르 주고받을 때는 타임존이 표현된 문자열이나 UTC Timestamp(밀리초)와 같은 숫자로 변환된 형태로 구성하는 편이다. 이와 비교해서 아래는 아마존 웹 서비스에서 내려주고 있는 시간값이고 <strong>UTC 타임존이라는 것을 알 수 있도록 +0000을 포함</strong>해주고 있다.</p>
+<p><img data-src="/images/posts/don't-change-server-timezone/02.png"></p>
+<p>오키 프로덕트팀의 개발자들이 잘못되었다고는 볼 수 없지만 (아마도 로컬 타임존이 전달되어 변환해주었을 것) 글로벌 서비스를 준비하는 회사에서 일하고자 하는 개발자나 글로벌 서비스로 전환하려는 회사에 있다면 시간과 타임존에 대해서는 생각보다 중요하게 생각해야한다. 웹 개발자로써 애플리케이션에서 사용되는 타임존은 UTC라는 관점을 가지도록 하자.</p>
+<p>비록 애플리케이션 서버나 데이터베이스에 저장된 시간을 보더라도 한국 시간으로 쉽게 변환하여 인지하지 못할지라도…</p>
+]]></content>
+      <tags>
+        <tag>Timezone</tag>
+        <tag>UTC</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nginx로 Vite 프로젝트 배포하기</title>
     <url>/deploy-vite/</url>
     <content><![CDATA[<blockquote>
@@ -1924,76 +2013,6 @@ vite v4.4.11 building <span class="token keyword">for</span> production<span cla
         <tag>Deployment</tag>
         <tag>Nginx</tag>
         <tag>Vite</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>X509 Certificate Signed by Unknown Authority</title>
-    <url>/docker-registry-certificate/</url>
-    <content><![CDATA[<blockquote>
-<p>Error response from daemon: Get https://registry.domain.com&#x2F;v2&#x2F;: x509: certificate signed by unknown authority</p>
-</blockquote>
-<p>생각보다 많은 조직에서 사내 정책이나 도커 허브의 <a href="https://docs.docker.com/docker-hub/download-rate-limit/">다운로드 제한량</a>을 경험하고 도커에서 제공하는 <a href="https://hub.docker.com/_/registry">레지스트리 이미지</a>로 사설 도커 레지스트리 서버를 구축하는 것 같습니다. 위 오류는 도커 레지스트리 서버에 로그인을 시도할 때 나타날 수 있습니다. 우리가 사용하는 도커 엔진이라고하는 클라이언트가 도커 레지스트리 서버가 전달해준 인증서를 신뢰할 수 없다는 의미입니다. 그러면 위와 같이 내 컴퓨터에 설치된 도커 엔진에서 사설로 구축한 도커 레지스트리 서버의 인증서를 신뢰할 수 없는 문제가 발생하면 어떻게 해결하는지를 알아보도록 하죠.</p>
-<h2 id="도커-레지스트리-인증서"><a href="#도커-레지스트리-인증서" class="headerlink" title="도커 레지스트리 인증서"></a>도커 레지스트리 인증서</h2><p>도커 엔진에서 참조하는 레지스트리 서버에 대한 인증서 폴더는 <strong>certs.d</strong> 입니다.</p>
-<ul>
-<li>Windows: C:&#x2F;ProgramData&#x2F;Docker&#x2F;certs.d&#x2F;</li>
-<li>Linux: &#x2F;etc&#x2F;docker&#x2F;certs.d&#x2F;</li>
-<li>Mac: ~&#x2F;.docker&#x2F;certs.d&#x2F;</li>
-</ul>
-<pre class="language-bash" data-language="bash"><code class="language-bash">/etc/docker/certs.d/         <span class="token operator">&lt;</span>-- Certificate directory
-└── registry.domain.com:5000 <span class="token operator">&lt;</span>-- Hostname:port
-   ├── client.cert           <span class="token operator">&lt;</span>-- Client certificate
-   ├── client.key            <span class="token operator">&lt;</span>-- Client key
-   └── ca.crt                <span class="token operator">&lt;</span>-- Certificate authority that signed the registry certificate</code></pre>
-
-<h3 id="안전하지-않은-레지스트리"><a href="#안전하지-않은-레지스트리" class="headerlink" title="안전하지 않은 레지스트리"></a>안전하지 않은 레지스트리</h3><p>HTTPS로 실행된 도커 레지스트리 서버에 대해서 도커 엔진이 신뢰할 수 없는 인증서를 무시하도록 <a href="https://docs.docker.com/registry/insecure/">insecure-registries</a>옵션을 지정할 수 있습니다. 다만, 이 방법은 해당 도메인 주소의 레지스트리 서버가 올바른 인증서를 사용하는지 검증하지 않기 때문에 보안적인 부분을 생각한다면 일반적으로 사용해서는 안되는 방법입니다.</p>
-<h3 id="신뢰할-수-있는-인증-기관"><a href="#신뢰할-수-있는-인증-기관" class="headerlink" title="신뢰할 수 있는 인증 기관"></a>신뢰할 수 있는 인증 기관</h3><p>도커 엔진은 기본적으로 시스템에 등록된 신뢰할 수 있는 인증 기관의 인증서 목록으로 도커 레지스트리 서버의 클라이언트 인증서를 검증합니다. 이는 크롬과 같은 브라우저에서 HTTPS 통신 시 서버에서 전달하는 인증서가 유효한지를 확인하는 것과 다르지 않습니다. 저는 <strong>신뢰할 수 있는 인증 기관으로부터 발급받은 도메인 인증서를 사용</strong>하여 도커 레지스트리 서버를 구축하였는데도 불구하고 도커 엔진에서는 회사 도메인 주소로된 도커 레지스트리 서버에서 전달된 인증서가 올바르지 않다며 동일하게 <code>x509: certificate signed by unknown authority</code> 오류를 알려주었습니다.</p>
-<h3 id="CA-인증서-체인"><a href="#CA-인증서-체인" class="headerlink" title="CA 인증서 체인"></a>CA 인증서 체인</h3><p>도커 엔진에서 레지스트리 서버의 인증서를 신뢰할 수 없다는 것은 몇가지 사항에 대한 의미를 가질 수 있습니다. 첫번째로, 도커 레지스트리 서버 구축 시 사용한 CA 인증서가 클라이언트 인증서와 인증 기관들에 대한 인증서가 연결된 CA 인증서 체인이 아닐 수 있다는 것입니다. 실제로 지금은 UI 기반의 사용자 및 이미지 관리를 위해 <a href="https://goharbor.io/">Harbor</a>로 도커 레지스트리 서버를 재구축하였으나 기존 도커 레지스트리 서버에 사용된 CA 인증서 파일에는 클라이언트 인증서만 존재했던 문제가 있었습니다. 그래서 조직 내 개발자들에게 레지스트리 서버에서 사용된 CA 인증서 파일과 클라이언트 인증서 및 키를 전달하고 도커 레지스트리 인증서 폴더에 저장하여 사용해달라고 안내했었습니다. 결국은 도커 엔진이 도커 레지스트리 서버를 신뢰할 수 없으므로 CA 인증서 체인을 신뢰할 수 있는 인증서 목록에 포함시키면 됩니다.</p>
-<p>예를 들어, <a href="https://support.apple.com/ko-kr/guide/keychain-access/kyca2431/mac">Mac용 키체인 접근을 사용하여 키체인에 인증서 추가하기</a>에 따라 CA 인증서를 추가하면 다음과 같이 유효한 인증서임이 표시됨을 확인할 수 있었습니다.</p>
-<p><img data-src="/images/posts/docker-registry-certificate/trust-certificate.png"></p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> login registry.domain.com <span class="token parameter variable">-u</span> <span class="token string">'username'</span> <span class="token parameter variable">-p</span> <span class="token string">'password'</span>
-WARNING<span class="token operator">!</span> Using <span class="token parameter variable">--password</span> via the CLI is insecure. Use --password-stdin.
-Login Succeeded</code></pre>
-
-<blockquote>
-<p>도커 레지스트리 서버의 CA 인증서 체인을 시스템 인증서로 등록하고나서는 도커 엔진이 신뢰할 수 있는 인증서 목록에 따라 인증서가 유효함을 확인함으로 정상적으로 HTTPS 통신이 이루어지고 로그인에 성공하였습니다. 레지스트리 서버에 대한 로그인 예시이므로 CLI 경고 문구는 무시해주세요.</p>
-</blockquote>
-<h4 id="시스템-및-사용자-정의-CA-인증서-병합"><a href="#시스템-및-사용자-정의-CA-인증서-병합" class="headerlink" title="시스템 및 사용자 정의 CA 인증서 병합"></a>시스템 및 사용자 정의 CA 인증서 병합</h4><p><em>On Linux any root certificates authorities are merged with the system defaults, including the host’s root CA set. If you are running Docker on Windows Server, or Docker Desktop for Windows with Windows containers, the system default certificates are only used when no custom root certificates are configured.</em></p>
-<p><a href="https://docs.docker.com/engine/security/certificates/#understand-the-configuration">공식문서</a>에 따르면 위와 같이 사용자 정의 인증서(certs.d)는 시스템 인증서와 CA 인증서가 합쳐져서 등록된다는 내용이 있습니다. 따라서, 도커 레지스트리 서버의 CA 인증서 체인을 <strong>시스템 인증서 목록</strong>이나 <strong>certs.d</strong> 폴더에 두면 된다는 이야기입니다. 실제로 시스템 인증서로 등록하지 않아도 certs.d 폴더에 ca.crt라는 이름으로 CA 인증서 체인을 두게되면 동일하게 동작함을 확인할 수 있었습니다.</p>
-<blockquote>
-<p>한가지 흥미로운 점은 이 글을 작성하기 위해 Docker Desktop for Windows 에서도 테스트를 해본 결과 도커 레지스트리 서버의 CA 인증서 체인을 굳이 등록하지 않아도 정상적으로 로그인이 되었다는 점입니다. 이점으로 보았을때 모든 운영체제에서 동일하게 동작하지는 않는 것 같아보입니다. 따라서, 도커 엔진에서 레지스트리 서버를 신뢰할 수 없다고 한다면 레지스트리 서버 관리자에게 인증서 체인을 전달받아서 등록하는게 좋을 것 같습니다.</p>
-</blockquote>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Docker Registry</tag>
-        <tag>Harbor</tag>
-        <tag>Certificate</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>서버 타임존을 바꾸지 말자 (Feat. 글로벌)</title>
-    <url>/don&#39;t-change-server-timezone/</url>
-    <content><![CDATA[<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash">ubuntu@ubuntu:~$ timedatectl
-               Local time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
-           Universal time: Wed <span class="token number">2023</span>-05-24 <span class="token number">17</span>:21:45 UTC
-                 RTC time: Wed <span class="token number">2023</span>-05-24 02:16:41    
-                Time zone: Etc/UTC <span class="token punctuation">(</span>UTC, +0000<span class="token punctuation">)</span>       
-System clock synchronized: no                         
-              NTP service: active                     
-          RTC <span class="token keyword">in</span> <span class="token builtin class-name">local</span> TZ: no</code></pre>
-
-<p>기본적으로 서버와 데이터베이스의 타임존은 UTC를 사용한다. 그러다보니 국내 사용자들을 대상으로 하는 서비스를 제공하는 회사들의 경우 <a href="https://jojoldu.tistory.com/513">서버 타임존을 한국 시간(Asia&#x2F;Seoul, +09:00)로 변경해서 사용</a>하기도 한다. 서비스 도메인 그리고 환경을 이해하고 있어야만 올바른 행위로 생각해야하는데 간혹 애플리케이션의 타임존이 한국시간이라 데이터베이스의 타임존과의 차이로 인한 문제를 해결하려고 데이터베이스에 대한 타임존을 한국시간으로 변경하는 방법에 대해 배경 설명없이 블로그에 공유하는 분들이 꽤나 많다.</p>
-<p>결론적으로 이야기하자면 백엔드 개발자는 시간 정보에 타임존을 적용하는 것을 프레젠테이션 계층인 클라이언트 영역에 위임하는 것이 좋다. 그러니까 사용자는 서버에 저장된 데이터에 상관없이 본인의 시간대를 기준으로 정확한 시간이 표시되어야 하는게 요구하는 바이기 때문이다. 간혹 신입 개발자 뿐만 아니라 어느정도 경험이 있는 경력 개발자들도 국내에서만 일하다보니 고정된 관점을 가지게 되는게 아닌가 싶다. 아무튼 프론트엔드 개발자는 단순히 서버에서 제공하는 데이터를 그대로 표시하고자 하는 직무가 아니며 서버에서 정제되어 제공된 데이터를 사용자에게 적합한 데이터로 변환하여 표시하는 작업도 요구된다. 그리고 그 변환 작업 중 하나가 바로 시간 정보에 사용자의 타임존을 더해서 표시해주는 것이다.</p>
-<p>다음은 오키 커뮤니티 사이트에서 개발자 도구의 네트워크 기능으로 확인한 배너 정보이다. </p>
-<p><img data-src="/images/posts/don't-change-server-timezone/01.png"></p>
-<p>배너의 시작날짜(startDate)와 마감날짜(endDate)가 보이는데 2023-06-02T00:00:00는 아마도 한국 시간을 의미할 것이다. 그렇다면 한국 사람이 아닌 해외에서 접속한 사람이 오키 커뮤니티 사이트에 접속했다면 배너가 정상적으로 표시될 수 있을까? 일반적으로 시간에 대한 데이털르 주고받을 때는 타임존이 표현된 문자열이나 UTC Timestamp(밀리초)와 같은 숫자로 변환된 형태로 구성하는 편이다. 이와 비교해서 아래는 아마존 웹 서비스에서 내려주고 있는 시간값이고 <strong>UTC 타임존이라는 것을 알 수 있도록 +0000을 포함</strong>해주고 있다.</p>
-<p><img data-src="/images/posts/don't-change-server-timezone/02.png"></p>
-<p>오키 프로덕트팀의 개발자들이 잘못되었다고는 볼 수 없지만 (아마도 로컬 타임존이 전달되어 변환해주었을 것) 글로벌 서비스를 준비하는 회사에서 일하고자 하는 개발자나 글로벌 서비스로 전환하려는 회사에 있다면 시간과 타임존에 대해서는 생각보다 중요하게 생각해야한다. 웹 개발자로써 애플리케이션에서 사용되는 타임존은 UTC라는 관점을 가지도록 하자.</p>
-<p>비록 애플리케이션 서버나 데이터베이스에 저장된 시간을 보더라도 한국 시간으로 쉽게 변환하여 인지하지 못할지라도…</p>
-]]></content>
-      <tags>
-        <tag>Timezone</tag>
-        <tag>UTC</tag>
       </tags>
   </entry>
   <entry>
@@ -2188,6 +2207,74 @@ EOF</span>
       </tags>
   </entry>
   <entry>
+    <title>EdDSA</title>
+    <url>/eddsa/</url>
+    <content><![CDATA[<p><a href="https://datatracker.ietf.org/doc/html/rfc8032">EdDSA(Edwards-curve Digital Signature Algorithm)</a>는 <code>Edwards-Curve</code> 곡선에 의한 전자 서명 알고리즘을 의미한다. 과거에 <a href="/ed25519">ED25519</a>에 대해서 정리한 것과 같이 ECDSA와 혼동이 될 수 있다. <a href="https://datatracker.ietf.org/doc/html/rfc8410">RFC8410</a>에서는 Internet X.509 Public Key Infrastructure 에서 Ed25519과 같은 Algorithm Identifiers에 대한 표준을 설명하고 있다.</p>
+<h4 id="Curve25519-and-Curve448-Algorithm-Identifiers"><a href="#Curve25519-and-Curve448-Algorithm-Identifiers" class="headerlink" title="Curve25519 and Curve448 Algorithm Identifiers"></a>Curve25519 and Curve448 Algorithm Identifiers</h4><p>BC(Bouncy Castle)의 <code>ECNamedCurveTable.getNames()</code>에는 기본적인 EC 곡선이 포함되어있고 <code>curve25519</code>는 CustomNamedCurves에 포함되어 있어 Curve25519 곡선에 대한 X9ECParameters를 아래와 같이 ECParameterSpec으로 변경할 수 있다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">AlgorithmParameterSpec</span> <span class="token function">curve25519Spec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// NOTE: Ed25519 not contains in ECNamedCurveTable.getNames()</span>
+    <span class="token class-name">X9ECParameters</span> ecP <span class="token operator">=</span> <span class="token class-name">CustomNamedCurves</span><span class="token punctuation">.</span><span class="token function">getByName</span><span class="token punctuation">(</span><span class="token string">"curve25519"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ECParameterSpec</span><span class="token punctuation">(</span>ecP<span class="token punctuation">.</span><span class="token function">getCurve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getG</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getN</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getSeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Ed25519-키-페어-생성"><a href="#Ed25519-키-페어-생성" class="headerlink" title="Ed25519 키 페어 생성"></a>Ed25519 키 페어 생성</h4><p><code>Ed25519KeyPairGenerator</code>와 함께 <code>ECKeyGenerationParameters</code>를 사용하면 Ed25519 키 페어를 생성할 수 있다. 그런데 이미 Ed25519KeyGenerationParameters를 제공하고 있으므로 굳이 ECParameterSpec를 사용하는 코드를 작성할 필요가 없다. 만약, 굳이 ECParameterSpec으로 ECKeyGenerationParameters를 만들어서 사용하고 싶은 사람들을 위해 예제 코드를 첨부한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token class-name">TestKeyPairUsingEd25519Generator</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Ed25519KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ed25519KeyPairGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    keyPairGenerator<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Ed25519KeyGenerationParameters</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">AsymmetricCipherKeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token class-name">TestKeyPairUsingECParams</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">ECParameterSpec</span> curve25519Spec <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ECParameterSpec</span><span class="token punctuation">)</span> <span class="token function">curve25519Spec</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">ECDomainParameters</span> ecParams <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ECDomainParameters</span><span class="token punctuation">(</span>curve25519Spec<span class="token punctuation">.</span><span class="token function">getCurve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getG</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getN</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">ECKeyGenerationParameters</span> ecKeyGenerationParameters <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ECKeyGenerationParameters</span><span class="token punctuation">(</span>ecParams<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">Ed25519KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ed25519KeyPairGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    keyPairGenerator<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span>ecKeyGenerationParameters<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">AsymmetricCipherKeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Ed25519PrivateKeyParameters를-PrivateKey로-변환"><a href="#Ed25519PrivateKeyParameters를-PrivateKey로-변환" class="headerlink" title="Ed25519PrivateKeyParameters를 PrivateKey로 변환"></a>Ed25519PrivateKeyParameters를 PrivateKey로 변환</h4><p>클라이언트의 X.509 인증서를 만드는 경우 서명을 위한 PrivateKey가 필요한데 직접적으로 변환할 수가 없으므로 <code>KeyFactorySpi.Ed25519</code>와 <code>PrivateKeyInfoFactory</code>를 사용해서 Ed25519PrivateKeyParameters로 되어있는 비밀키를 PrivateKey 클래스로 변경해야 한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">// NOTE: AsymmetricCipherKeyPair keyPair</span>
+<span class="token class-name">Ed25519PrivateKeyParameters</span> privateKeyP <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Ed25519PrivateKeyParameters</span><span class="token punctuation">)</span> keyPair<span class="token punctuation">.</span><span class="token function">getPrivate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">KeyFactorySpi<span class="token punctuation">.</span>Ed25519</span> keyFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">KeyFactorySpi<span class="token punctuation">.</span>Ed25519</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">PrivateKey</span> privateKey <span class="token operator">=</span> keyFactory<span class="token punctuation">.</span><span class="token function">generatePrivate</span><span class="token punctuation">(</span><span class="token class-name">PrivateKeyInfoFactory</span><span class="token punctuation">.</span><span class="token function">createPrivateKeyInfo</span><span class="token punctuation">(</span>privateKeyP<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h4 id="공개키를-SubjectPublicKeyInfoFactory로-변환"><a href="#공개키를-SubjectPublicKeyInfoFactory로-변환" class="headerlink" title="공개키를 SubjectPublicKeyInfoFactory로 변환"></a>공개키를 SubjectPublicKeyInfoFactory로 변환</h4><p>Ed25519PublicKeyParameters로 되어있는 공개키를 SubjectPublicKeyInfo로 변환하는 것은 <code>SubjectPublicKeyInfoFactory</code> 클래스에서 제공하고 있다. 앞서 비밀키처럼 KeyFactorySpi.Ed25519를 사용해서 PublicKey로 변환할 필요는 없을 것 같다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">// NOTE: AsymmetricCipherKeyPair keyPair</span>
+<span class="token class-name">Ed25519PublicKeyParameters</span> publicKeyP <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Ed25519PublicKeyParameters</span><span class="token punctuation">)</span> keyPair<span class="token punctuation">.</span><span class="token function">getPublic</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">SubjectPublicKeyInfo</span> publicKeyInfo <span class="token operator">=</span> <span class="token class-name">SubjectPublicKeyInfoFactory</span><span class="token punctuation">.</span><span class="token function">createSubjectPublicKeyInfo</span><span class="token punctuation">(</span>publicKeyP<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h4 id="EdDSA-Signatures"><a href="#EdDSA-Signatures" class="headerlink" title="EdDSA Signatures"></a>EdDSA Signatures</h4><p>Curve25519와 Curve448를 사용한 EdDSA는 각각 <code>Ed25519</code>와 <code>Ed448</code> 이라는 서명 알고리즘으로 표현한다. 앞서, PrivateKey와 SubjectPublickKeyInfo로 변환한 상태이므로 X.509 인증서를 만드는 것은 어렵지 않을 것이다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">X500Name</span> issuer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">X500Name</span><span class="token punctuation">(</span><span class="token string">"CN=Mambo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">BigInteger</span> serialNumber <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BigInteger</span><span class="token punctuation">(</span><span class="token number">128</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">ZonedDateTime</span> now <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Date</span> notBefore <span class="token operator">=</span> <span class="token class-name">Date</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>now<span class="token punctuation">.</span><span class="token function">toInstant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Date</span> notAfter <span class="token operator">=</span> <span class="token class-name">Date</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>now<span class="token punctuation">.</span><span class="token function">plus</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token class-name">ChronoUnit</span><span class="token punctuation">.</span><span class="token constant">YEARS</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInstant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">ContentSigner</span> contentSigner <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaContentSignerBuilder</span><span class="token punctuation">(</span><span class="token string">"Ed25519"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setProvider</span><span class="token punctuation">(</span><span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span>privateKey<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">X509CertificateHolder</span> certificateHolder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaX509v3CertificateBuilder</span><span class="token punctuation">(</span>issuer<span class="token punctuation">,</span> serialNumber<span class="token punctuation">,</span> notBefore<span class="token punctuation">,</span> notAfter<span class="token punctuation">,</span> issuer<span class="token punctuation">,</span> publicKeyInfo<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span>contentSigner<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">X509Certificate</span> certificate <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaX509CertificateConverter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setProvider</span><span class="token punctuation">(</span><span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getCertificate</span><span class="token punctuation">(</span>certificateHolder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+certificate<span class="token punctuation">.</span><span class="token function">checkValidity</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h4 id="KeyPairGeneratorSpi로-Ed25519-키-페어-생성"><a href="#KeyPairGeneratorSpi로-Ed25519-키-페어-생성" class="headerlink" title="KeyPairGeneratorSpi로 Ed25519 키 페어 생성"></a>KeyPairGeneratorSpi로 Ed25519 키 페어 생성</h4><p>사실은 BC에서 KeyPairGeneratorSpi를 제공하고 있으므로 아래와 같이 <code>BCEdDSAPrivateKey</code>와 <code>BCEdDSAPublicKey</code>를 가지는 키 페어를 생성할 수 있다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token class-name">KeyPairGenerator</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token string">"Ed25519"</span><span class="token punctuation">,</span> <span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">KeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>더 자세한 코드는 <a href="https://github.com/kdevkr/spring-boot-security/blob/main/src/test/java/com/example/demo/x509/EdDSATest.java">EdDSATest.java</a>에서 확인할 수 있다.</p>
+]]></content>
+      <tags>
+        <tag>Ed25519</tag>
+        <tag>RFC8410</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ED25519</title>
     <url>/ed25519/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
@@ -2278,76 +2365,8 @@ ec2-user@ec2-3-36-96-111.ap-northeast-2.compute.amazonaws.com: Permission denied
 </ul>
 ]]></content>
       <tags>
+        <tag>Ed25519</tag>
         <tag>ECC</tag>
-        <tag>Ed25519</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>EdDSA</title>
-    <url>/eddsa/</url>
-    <content><![CDATA[<p><a href="https://datatracker.ietf.org/doc/html/rfc8032">EdDSA(Edwards-curve Digital Signature Algorithm)</a>는 <code>Edwards-Curve</code> 곡선에 의한 전자 서명 알고리즘을 의미한다. 과거에 <a href="/ed25519">ED25519</a>에 대해서 정리한 것과 같이 ECDSA와 혼동이 될 수 있다. <a href="https://datatracker.ietf.org/doc/html/rfc8410">RFC8410</a>에서는 Internet X.509 Public Key Infrastructure 에서 Ed25519과 같은 Algorithm Identifiers에 대한 표준을 설명하고 있다.</p>
-<h4 id="Curve25519-and-Curve448-Algorithm-Identifiers"><a href="#Curve25519-and-Curve448-Algorithm-Identifiers" class="headerlink" title="Curve25519 and Curve448 Algorithm Identifiers"></a>Curve25519 and Curve448 Algorithm Identifiers</h4><p>BC(Bouncy Castle)의 <code>ECNamedCurveTable.getNames()</code>에는 기본적인 EC 곡선이 포함되어있고 <code>curve25519</code>는 CustomNamedCurves에 포함되어 있어 Curve25519 곡선에 대한 X9ECParameters를 아래와 같이 ECParameterSpec으로 변경할 수 있다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">AlgorithmParameterSpec</span> <span class="token function">curve25519Spec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// NOTE: Ed25519 not contains in ECNamedCurveTable.getNames()</span>
-    <span class="token class-name">X9ECParameters</span> ecP <span class="token operator">=</span> <span class="token class-name">CustomNamedCurves</span><span class="token punctuation">.</span><span class="token function">getByName</span><span class="token punctuation">(</span><span class="token string">"curve25519"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">ECParameterSpec</span><span class="token punctuation">(</span>ecP<span class="token punctuation">.</span><span class="token function">getCurve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getG</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getN</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ecP<span class="token punctuation">.</span><span class="token function">getSeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Ed25519-키-페어-생성"><a href="#Ed25519-키-페어-생성" class="headerlink" title="Ed25519 키 페어 생성"></a>Ed25519 키 페어 생성</h4><p><code>Ed25519KeyPairGenerator</code>와 함께 <code>ECKeyGenerationParameters</code>를 사용하면 Ed25519 키 페어를 생성할 수 있다. 그런데 이미 Ed25519KeyGenerationParameters를 제공하고 있으므로 굳이 ECParameterSpec를 사용하는 코드를 작성할 필요가 없다. 만약, 굳이 ECParameterSpec으로 ECKeyGenerationParameters를 만들어서 사용하고 싶은 사람들을 위해 예제 코드를 첨부한다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
-<span class="token keyword">void</span> <span class="token class-name">TestKeyPairUsingEd25519Generator</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">Ed25519KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ed25519KeyPairGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    keyPairGenerator<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Ed25519KeyGenerationParameters</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token class-name">AsymmetricCipherKeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token annotation punctuation">@Test</span>
-<span class="token keyword">void</span> <span class="token class-name">TestKeyPairUsingECParams</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">ECParameterSpec</span> curve25519Spec <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">ECParameterSpec</span><span class="token punctuation">)</span> <span class="token function">curve25519Spec</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">ECDomainParameters</span> ecParams <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ECDomainParameters</span><span class="token punctuation">(</span>curve25519Spec<span class="token punctuation">.</span><span class="token function">getCurve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getG</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getN</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> curve25519Spec<span class="token punctuation">.</span><span class="token function">getH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">ECKeyGenerationParameters</span> ecKeyGenerationParameters <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ECKeyGenerationParameters</span><span class="token punctuation">(</span>ecParams<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token class-name">Ed25519KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ed25519KeyPairGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    keyPairGenerator<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span>ecKeyGenerationParameters<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token class-name">AsymmetricCipherKeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Ed25519PrivateKeyParameters를-PrivateKey로-변환"><a href="#Ed25519PrivateKeyParameters를-PrivateKey로-변환" class="headerlink" title="Ed25519PrivateKeyParameters를 PrivateKey로 변환"></a>Ed25519PrivateKeyParameters를 PrivateKey로 변환</h4><p>클라이언트의 X.509 인증서를 만드는 경우 서명을 위한 PrivateKey가 필요한데 직접적으로 변환할 수가 없으므로 <code>KeyFactorySpi.Ed25519</code>와 <code>PrivateKeyInfoFactory</code>를 사용해서 Ed25519PrivateKeyParameters로 되어있는 비밀키를 PrivateKey 클래스로 변경해야 한다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">// NOTE: AsymmetricCipherKeyPair keyPair</span>
-<span class="token class-name">Ed25519PrivateKeyParameters</span> privateKeyP <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Ed25519PrivateKeyParameters</span><span class="token punctuation">)</span> keyPair<span class="token punctuation">.</span><span class="token function">getPrivate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">KeyFactorySpi<span class="token punctuation">.</span>Ed25519</span> keyFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">KeyFactorySpi<span class="token punctuation">.</span>Ed25519</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">PrivateKey</span> privateKey <span class="token operator">=</span> keyFactory<span class="token punctuation">.</span><span class="token function">generatePrivate</span><span class="token punctuation">(</span><span class="token class-name">PrivateKeyInfoFactory</span><span class="token punctuation">.</span><span class="token function">createPrivateKeyInfo</span><span class="token punctuation">(</span>privateKeyP<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<h4 id="공개키를-SubjectPublicKeyInfoFactory로-변환"><a href="#공개키를-SubjectPublicKeyInfoFactory로-변환" class="headerlink" title="공개키를 SubjectPublicKeyInfoFactory로 변환"></a>공개키를 SubjectPublicKeyInfoFactory로 변환</h4><p>Ed25519PublicKeyParameters로 되어있는 공개키를 SubjectPublicKeyInfo로 변환하는 것은 <code>SubjectPublicKeyInfoFactory</code> 클래스에서 제공하고 있다. 앞서 비밀키처럼 KeyFactorySpi.Ed25519를 사용해서 PublicKey로 변환할 필요는 없을 것 같다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">// NOTE: AsymmetricCipherKeyPair keyPair</span>
-<span class="token class-name">Ed25519PublicKeyParameters</span> publicKeyP <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Ed25519PublicKeyParameters</span><span class="token punctuation">)</span> keyPair<span class="token punctuation">.</span><span class="token function">getPublic</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">SubjectPublicKeyInfo</span> publicKeyInfo <span class="token operator">=</span> <span class="token class-name">SubjectPublicKeyInfoFactory</span><span class="token punctuation">.</span><span class="token function">createSubjectPublicKeyInfo</span><span class="token punctuation">(</span>publicKeyP<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<h4 id="EdDSA-Signatures"><a href="#EdDSA-Signatures" class="headerlink" title="EdDSA Signatures"></a>EdDSA Signatures</h4><p>Curve25519와 Curve448를 사용한 EdDSA는 각각 <code>Ed25519</code>와 <code>Ed448</code> 이라는 서명 알고리즘으로 표현한다. 앞서, PrivateKey와 SubjectPublickKeyInfo로 변환한 상태이므로 X.509 인증서를 만드는 것은 어렵지 않을 것이다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">X500Name</span> issuer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">X500Name</span><span class="token punctuation">(</span><span class="token string">"CN=Mambo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">BigInteger</span> serialNumber <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">BigInteger</span><span class="token punctuation">(</span><span class="token number">128</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">SecureRandom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">ZonedDateTime</span> now <span class="token operator">=</span> <span class="token class-name">ZonedDateTime</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Date</span> notBefore <span class="token operator">=</span> <span class="token class-name">Date</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>now<span class="token punctuation">.</span><span class="token function">toInstant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Date</span> notAfter <span class="token operator">=</span> <span class="token class-name">Date</span><span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span>now<span class="token punctuation">.</span><span class="token function">plus</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token class-name">ChronoUnit</span><span class="token punctuation">.</span><span class="token constant">YEARS</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toInstant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">ContentSigner</span> contentSigner <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaContentSignerBuilder</span><span class="token punctuation">(</span><span class="token string">"Ed25519"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setProvider</span><span class="token punctuation">(</span><span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span>privateKey<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">X509CertificateHolder</span> certificateHolder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaX509v3CertificateBuilder</span><span class="token punctuation">(</span>issuer<span class="token punctuation">,</span> serialNumber<span class="token punctuation">,</span> notBefore<span class="token punctuation">,</span> notAfter<span class="token punctuation">,</span> issuer<span class="token punctuation">,</span> publicKeyInfo<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span>contentSigner<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">X509Certificate</span> certificate <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JcaX509CertificateConverter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setProvider</span><span class="token punctuation">(</span><span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getCertificate</span><span class="token punctuation">(</span>certificateHolder<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-certificate<span class="token punctuation">.</span><span class="token function">checkValidity</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<h4 id="KeyPairGeneratorSpi로-Ed25519-키-페어-생성"><a href="#KeyPairGeneratorSpi로-Ed25519-키-페어-생성" class="headerlink" title="KeyPairGeneratorSpi로 Ed25519 키 페어 생성"></a>KeyPairGeneratorSpi로 Ed25519 키 페어 생성</h4><p>사실은 BC에서 KeyPairGeneratorSpi를 제공하고 있으므로 아래와 같이 <code>BCEdDSAPrivateKey</code>와 <code>BCEdDSAPublicKey</code>를 가지는 키 페어를 생성할 수 있다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">KeyPairGenerator</span> keyPairGenerator <span class="token operator">=</span> <span class="token class-name">KeyPairGenerator</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token string">"Ed25519"</span><span class="token punctuation">,</span> <span class="token class-name">BouncyCastleProvider</span><span class="token punctuation">.</span><span class="token constant">PROVIDER_NAME</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">KeyPair</span> keyPair <span class="token operator">=</span> keyPairGenerator<span class="token punctuation">.</span><span class="token function">generateKeyPair</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>더 자세한 코드는 <a href="https://github.com/kdevkr/spring-boot-security/blob/main/src/test/java/com/example/demo/x509/EdDSATest.java">EdDSATest.java</a>에서 확인할 수 있다.</p>
-]]></content>
-      <tags>
-        <tag>Ed25519</tag>
-        <tag>RFC8410</tag>
       </tags>
   </entry>
   <entry>
@@ -8437,96 +8456,6 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
-    <title>PathVariable 값을 RequestBody 오브젝트에 주입하기</title>
-    <url>/spring-boot-path-variable-with-request-body/</url>
-    <content><![CDATA[<p>오늘 정리하고 공유하고자 하는 내용은 @PathVariable로 지정된 파라미터가 있을 경우 @RequestBody가 지정된 오브젝트 필드에 데이터를 주입할 수 있도록 하는 구현 방안이다. @PathVariable로 지정된 파라미터가 있을 경우 @ModelAttribute에 주입되도록 ServletModelAttributeMethodProcessor가 구현되어있는 반면에 @RequestBody에 대해서 변환을 담당하는 MappingJackson2HttpMessageConverter 에서는 ObjectMapper 에 의해 변환만 수행하도록 되어있다.</p>
-<blockquote>
-<p>따라서, 기본적으로는 @PathVariable 파라미터 값이 @RequestBody 오브젝트에 주입되지 않는다.</p>
-</blockquote>
-<h4 id="RequestBodyAdviceAdapter"><a href="#RequestBodyAdviceAdapter" class="headerlink" title="RequestBodyAdviceAdapter"></a>RequestBodyAdviceAdapter</h4><p>ChatGPT 에게 힌트를 얻어 <code>RequestBodyAdvice</code> 인터페이스를 구현하여 <strong>RequestBody를 전후처리를 수행할 수 있다</strong>는 것을 알아냈다. 대부분 @RestControllerAdvice와 함께 공통 오류처리를 위한 핸들러를 작성해왔을텐데 RequestBodyAdviceAdapter를 확장하여 ServletModelAttributeMethodProcessor 에서의 구현처럼 @PathVariable로 지정된 파라미터의 값을 RequestBody 오브젝트에 주입할 수 있지 않을까 시도해보았다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>PathVariableRequestBodyBinder</span></div><code class="language-java"><span class="token annotation punctuation">@RestControllerAdvice</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PathVariableRequestBodyBinder</span> <span class="token keyword">extends</span> <span class="token class-name">RequestBodyAdviceAdapter</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">ParameterNameDiscoverer</span> parameterNameDiscoverer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token string">"unchecked"</span><span class="token punctuation">)</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">afterBodyRead</span><span class="token punctuation">(</span><span class="token class-name">Object</span> body<span class="token punctuation">,</span> <span class="token class-name">HttpInputMessage</span> inputMessage<span class="token punctuation">,</span> <span class="token class-name">MethodParameter</span> methodParameter<span class="token punctuation">,</span>
-                                <span class="token class-name">Type</span> targetType<span class="token punctuation">,</span> <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">HttpMessageConverter</span><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span><span class="token punctuation">></span></span> converterType<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Object</span> object <span class="token operator">=</span> <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">afterBodyRead</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> inputMessage<span class="token punctuation">,</span> methodParameter<span class="token punctuation">,</span> targetType<span class="token punctuation">,</span> converterType<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Method</span> method <span class="token operator">=</span> methodParameter<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">RequestAttributes</span> requestAttributes <span class="token operator">=</span> <span class="token class-name">RequestContextHolder</span><span class="token punctuation">.</span><span class="token function">currentRequestAttributes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span> pathVariables <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span><span class="token punctuation">)</span> requestAttributes<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span>
-            <span class="token class-name">HandlerMapping</span><span class="token punctuation">.</span><span class="token constant">URI_TEMPLATE_VARIABLES_ATTRIBUTE</span><span class="token punctuation">,</span> <span class="token class-name">RequestAttributes</span><span class="token punctuation">.</span><span class="token constant">SCOPE_REQUEST</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>method <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> pathVariables <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> pathVariables<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> object<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> clazz <span class="token operator">=</span> object<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameterNames <span class="token operator">=</span> parameterNameDiscoverer<span class="token punctuation">.</span><span class="token function">getParameterNames</span><span class="token punctuation">(</span>method<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>parameterNames <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> parameterNames<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">Parameter</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameters <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">getParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> index <span class="token operator">&lt;</span> parameterNames<span class="token punctuation">.</span>length<span class="token punctuation">;</span> index<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token class-name">String</span> parameterName <span class="token operator">=</span> parameterNames<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
-                <span class="token class-name">Parameter</span> parameter <span class="token operator">=</span> parameters<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
-
-                <span class="token comment">// NOTE: Set PathVariable into RequestBody.</span>
-                <span class="token keyword">if</span> <span class="token punctuation">(</span>parameter<span class="token punctuation">.</span><span class="token function">isAnnotationPresent</span><span class="token punctuation">(</span><span class="token class-name">PathVariable</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> pathVariables<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-                        <span class="token class-name">Field</span> field <span class="token operator">=</span> clazz<span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">makeAccessible</span><span class="token punctuation">(</span>field<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        <span class="token class-name">Object</span> o <span class="token operator">=</span> <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">getField</span><span class="token punctuation">(</span>field<span class="token punctuation">,</span> object<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        <span class="token keyword">if</span> <span class="token punctuation">(</span>o <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                            <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">setField</span><span class="token punctuation">(</span>field<span class="token punctuation">,</span> object<span class="token punctuation">,</span> pathVariables<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        <span class="token punctuation">&#125;</span>
-                    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchFieldException</span> ignored<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                        <span class="token comment">// ignored</span>
-                    <span class="token punctuation">&#125;</span>
-                <span class="token punctuation">&#125;</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token keyword">return</span> object<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">supports</span><span class="token punctuation">(</span><span class="token class-name">MethodParameter</span> methodParameter<span class="token punctuation">,</span> <span class="token class-name">Type</span> targetType<span class="token punctuation">,</span>
-                            <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">HttpMessageConverter</span><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span><span class="token punctuation">></span></span> converterType<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Method</span> method <span class="token operator">=</span> methodParameter<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>method <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">Parameter</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameters <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">getParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Parameter</span> parameter <span class="token operator">:</span> parameters<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token keyword">if</span> <span class="token punctuation">(</span>parameter<span class="token punctuation">.</span><span class="token function">isAnnotationPresent</span><span class="token punctuation">(</span><span class="token class-name">PathVariable</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>컨트롤러 핸들러 함수의 파라미터에 @PathVariable 이 존재한다면 처리하도록 <code>supports</code> 결과를 구현하였다. RequestBodyAdviceAdapter 자체가 RequestBody를 처리함으로 @PathVariable 파라미터가 존재하는지만 체크해도 무방해보인다. RequestBody가 오브젝트로 변환되고나서 주입을 시도하기 위해서 <code>afterBodyRead</code> 함수를 오버라이딩하여 구현하였는데 <code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>로 PathVariable 값을 가져오고 파라미터 이름을 추론하기 위하여 <code>DefaultParameterNameDiscoverer</code>를 사용했는데 그 이유에는 <code>@PathVariable</code> 처럼 이름을 별도로 지정하지 않는 경우 <code>arg0</code> 과 같이 이름이 부여되기 때문에 기본적으로는 가져올 수 없다.</p>
-<p>@RequestBody로 변환되어야하는 오브젝트 파라미터에 실제로 필드가 존재하는지에 대해서는 <strong>리플렉션 API에 대해서 깊은 이해가 없는 관계로</strong> 스프링 프레임워크에 포함되어있는 <code>ReflectionUtils</code> 클래스를 이용하였다. 자바에서 대부분의 오브젝트 필드에는 private 접근 제어자를 선언하므로 접근할 수 있도록 한 이후에 필드에 값이 없는 경우에 한해서만 PathVariable에 대한 값을 바인딩하였다. 결과적으로 아래의 이미지와 같이 요청 데이터에 아이디가 포함되지 않아도 PathVariable에 해당되는 <strong>111</strong> 값이 포함됨을 알 수 있다.</p>
-<p><img data-src="/images/posts/spring-boot-path-variable-with-request-body/01.png"></p>
-<h4 id="DefaultParameterNameDiscoverer"><a href="#DefaultParameterNameDiscoverer" class="headerlink" title="DefaultParameterNameDiscoverer"></a>DefaultParameterNameDiscoverer</h4><p>스프링 부트 3.2 부터는 <code>LocalVariableTableParameterNameDiscoverer</code>가 아닌 <code>StandardReflectionParameterNameDiscoverer</code>가 사용되므로 <code>-parameters</code> 컴파일 옵션을 활성해야한다. 스프링 부트 2.7.18 버전 기준의 <code>DefaultParameterNameDiscoverer</code>를 보면 아래와 같이 되어있음을 확인할 수 있다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>DefaultParameterNameDiscoverer</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DefaultParameterNameDiscoverer</span> <span class="token keyword">extends</span> <span class="token class-name">PrioritizedParameterNameDiscoverer</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token class-name">DefaultParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">KotlinDetector</span><span class="token punctuation">.</span><span class="token function">isKotlinReflectPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token class-name">NativeDetector</span><span class="token punctuation">.</span><span class="token function">inNativeImage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">KotlinReflectionParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StandardReflectionParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LocalVariableTableParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-]]></content>
-      <tags>
-        <tag>RequestBodyAdviceAdapter</tag>
-        <tag>LocalVariableTableParameterNameDiscoverer</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>메소드 보안에 의한 트랜잭션 이슈</title>
     <url>/spring-boot-method-security-transaction-issue/</url>
     <content><![CDATA[<p>메소드 보안을 잘 활용하고 있었으나 메소드 보안에 의해 트랜잭션이 적용되지 않게 된 문제가 발생했던 시스템은 스프링 부트 기반의 프로젝트로 아래와 같이 구성되어 있음을 공유하고자 한다. 시스템을 이용하는 사용자가 클라이언트 크레덴셜을 발급하고 OAuth 토큰을 발급하여 OpenAPI를 이용할 수 있으며 OpenAPI 에 대한 권한을 처리하기 위해서 스프링 시큐리티의 <a href="https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html">메소드 보안</a>과 함께 PermissionEvaluator를 구현하여 커스텀 표현식을 사용하고 있었다.</p>
@@ -8687,6 +8616,96 @@ module<span class="token punctuation">.</span>exports <span class="token operato
         <tag>EnableGlobalMethodSecurity</tag>
         <tag>PermissionEvaluator</tag>
         <tag>TransactionInterceptor</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PathVariable 값을 RequestBody 오브젝트에 주입하기</title>
+    <url>/spring-boot-path-variable-with-request-body/</url>
+    <content><![CDATA[<p>오늘 정리하고 공유하고자 하는 내용은 @PathVariable로 지정된 파라미터가 있을 경우 @RequestBody가 지정된 오브젝트 필드에 데이터를 주입할 수 있도록 하는 구현 방안이다. @PathVariable로 지정된 파라미터가 있을 경우 @ModelAttribute에 주입되도록 ServletModelAttributeMethodProcessor가 구현되어있는 반면에 @RequestBody에 대해서 변환을 담당하는 MappingJackson2HttpMessageConverter 에서는 ObjectMapper 에 의해 변환만 수행하도록 되어있다.</p>
+<blockquote>
+<p>따라서, 기본적으로는 @PathVariable 파라미터 값이 @RequestBody 오브젝트에 주입되지 않는다.</p>
+</blockquote>
+<h4 id="RequestBodyAdviceAdapter"><a href="#RequestBodyAdviceAdapter" class="headerlink" title="RequestBodyAdviceAdapter"></a>RequestBodyAdviceAdapter</h4><p>ChatGPT 에게 힌트를 얻어 <code>RequestBodyAdvice</code> 인터페이스를 구현하여 <strong>RequestBody를 전후처리를 수행할 수 있다</strong>는 것을 알아냈다. 대부분 @RestControllerAdvice와 함께 공통 오류처리를 위한 핸들러를 작성해왔을텐데 RequestBodyAdviceAdapter를 확장하여 ServletModelAttributeMethodProcessor 에서의 구현처럼 @PathVariable로 지정된 파라미터의 값을 RequestBody 오브젝트에 주입할 수 있지 않을까 시도해보았다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>PathVariableRequestBodyBinder</span></div><code class="language-java"><span class="token annotation punctuation">@RestControllerAdvice</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PathVariableRequestBodyBinder</span> <span class="token keyword">extends</span> <span class="token class-name">RequestBodyAdviceAdapter</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">ParameterNameDiscoverer</span> parameterNameDiscoverer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token string">"unchecked"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">afterBodyRead</span><span class="token punctuation">(</span><span class="token class-name">Object</span> body<span class="token punctuation">,</span> <span class="token class-name">HttpInputMessage</span> inputMessage<span class="token punctuation">,</span> <span class="token class-name">MethodParameter</span> methodParameter<span class="token punctuation">,</span>
+                                <span class="token class-name">Type</span> targetType<span class="token punctuation">,</span> <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">HttpMessageConverter</span><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span><span class="token punctuation">></span></span> converterType<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Object</span> object <span class="token operator">=</span> <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">afterBodyRead</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> inputMessage<span class="token punctuation">,</span> methodParameter<span class="token punctuation">,</span> targetType<span class="token punctuation">,</span> converterType<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Method</span> method <span class="token operator">=</span> methodParameter<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">RequestAttributes</span> requestAttributes <span class="token operator">=</span> <span class="token class-name">RequestContextHolder</span><span class="token punctuation">.</span><span class="token function">currentRequestAttributes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span> pathVariables <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span><span class="token punctuation">)</span> requestAttributes<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span>
+            <span class="token class-name">HandlerMapping</span><span class="token punctuation">.</span><span class="token constant">URI_TEMPLATE_VARIABLES_ATTRIBUTE</span><span class="token punctuation">,</span> <span class="token class-name">RequestAttributes</span><span class="token punctuation">.</span><span class="token constant">SCOPE_REQUEST</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>method <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> pathVariables <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> pathVariables<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> object<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> clazz <span class="token operator">=</span> object<span class="token punctuation">.</span><span class="token function">getClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameterNames <span class="token operator">=</span> parameterNameDiscoverer<span class="token punctuation">.</span><span class="token function">getParameterNames</span><span class="token punctuation">(</span>method<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>parameterNames <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> parameterNames<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">Parameter</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameters <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">getParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> index <span class="token operator">&lt;</span> parameterNames<span class="token punctuation">.</span>length<span class="token punctuation">;</span> index<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token class-name">String</span> parameterName <span class="token operator">=</span> parameterNames<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                <span class="token class-name">Parameter</span> parameter <span class="token operator">=</span> parameters<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+                <span class="token comment">// NOTE: Set PathVariable into RequestBody.</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>parameter<span class="token punctuation">.</span><span class="token function">isAnnotationPresent</span><span class="token punctuation">(</span><span class="token class-name">PathVariable</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> pathVariables<span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                        <span class="token class-name">Field</span> field <span class="token operator">=</span> clazz<span class="token punctuation">.</span><span class="token function">getDeclaredField</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">makeAccessible</span><span class="token punctuation">(</span>field<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token class-name">Object</span> o <span class="token operator">=</span> <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">getField</span><span class="token punctuation">(</span>field<span class="token punctuation">,</span> object<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>o <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                            <span class="token class-name">ReflectionUtils</span><span class="token punctuation">.</span><span class="token function">setField</span><span class="token punctuation">(</span>field<span class="token punctuation">,</span> object<span class="token punctuation">,</span> pathVariables<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>parameterName<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span>
+                    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NoSuchFieldException</span> ignored<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        <span class="token comment">// ignored</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">return</span> object<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">supports</span><span class="token punctuation">(</span><span class="token class-name">MethodParameter</span> methodParameter<span class="token punctuation">,</span> <span class="token class-name">Type</span> targetType<span class="token punctuation">,</span>
+                            <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">HttpMessageConverter</span><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span><span class="token punctuation">></span></span> converterType<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Method</span> method <span class="token operator">=</span> methodParameter<span class="token punctuation">.</span><span class="token function">getMethod</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>method <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">Parameter</span><span class="token punctuation">[</span><span class="token punctuation">]</span> parameters <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">getParameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">Parameter</span> parameter <span class="token operator">:</span> parameters<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>parameter<span class="token punctuation">.</span><span class="token function">isAnnotationPresent</span><span class="token punctuation">(</span><span class="token class-name">PathVariable</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>컨트롤러 핸들러 함수의 파라미터에 @PathVariable 이 존재한다면 처리하도록 <code>supports</code> 결과를 구현하였다. RequestBodyAdviceAdapter 자체가 RequestBody를 처리함으로 @PathVariable 파라미터가 존재하는지만 체크해도 무방해보인다. RequestBody가 오브젝트로 변환되고나서 주입을 시도하기 위해서 <code>afterBodyRead</code> 함수를 오버라이딩하여 구현하였는데 <code>HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE</code>로 PathVariable 값을 가져오고 파라미터 이름을 추론하기 위하여 <code>DefaultParameterNameDiscoverer</code>를 사용했는데 그 이유에는 <code>@PathVariable</code> 처럼 이름을 별도로 지정하지 않는 경우 <code>arg0</code> 과 같이 이름이 부여되기 때문에 기본적으로는 가져올 수 없다.</p>
+<p>@RequestBody로 변환되어야하는 오브젝트 파라미터에 실제로 필드가 존재하는지에 대해서는 <strong>리플렉션 API에 대해서 깊은 이해가 없는 관계로</strong> 스프링 프레임워크에 포함되어있는 <code>ReflectionUtils</code> 클래스를 이용하였다. 자바에서 대부분의 오브젝트 필드에는 private 접근 제어자를 선언하므로 접근할 수 있도록 한 이후에 필드에 값이 없는 경우에 한해서만 PathVariable에 대한 값을 바인딩하였다. 결과적으로 아래의 이미지와 같이 요청 데이터에 아이디가 포함되지 않아도 PathVariable에 해당되는 <strong>111</strong> 값이 포함됨을 알 수 있다.</p>
+<p><img data-src="/images/posts/spring-boot-path-variable-with-request-body/01.png"></p>
+<h4 id="DefaultParameterNameDiscoverer"><a href="#DefaultParameterNameDiscoverer" class="headerlink" title="DefaultParameterNameDiscoverer"></a>DefaultParameterNameDiscoverer</h4><p>스프링 부트 3.2 부터는 <code>LocalVariableTableParameterNameDiscoverer</code>가 아닌 <code>StandardReflectionParameterNameDiscoverer</code>가 사용되므로 <code>-parameters</code> 컴파일 옵션을 활성해야한다. 스프링 부트 2.7.18 버전 기준의 <code>DefaultParameterNameDiscoverer</code>를 보면 아래와 같이 되어있음을 확인할 수 있다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>DefaultParameterNameDiscoverer</span></div><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DefaultParameterNameDiscoverer</span> <span class="token keyword">extends</span> <span class="token class-name">PrioritizedParameterNameDiscoverer</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">DefaultParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">KotlinDetector</span><span class="token punctuation">.</span><span class="token function">isKotlinReflectPresent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token class-name">NativeDetector</span><span class="token punctuation">.</span><span class="token function">inNativeImage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">KotlinReflectionParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StandardReflectionParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addDiscoverer</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LocalVariableTableParameterNameDiscoverer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+]]></content>
+      <tags>
+        <tag>RequestBodyAdviceAdapter</tag>
+        <tag>LocalVariableTableParameterNameDiscoverer</tag>
       </tags>
   </entry>
   <entry>
@@ -11782,28 +11801,6 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
       </tags>
   </entry>
   <entry>
-    <title>언더토우 임시 디렉토리 삭제 방지</title>
-    <url>/undertow-temp-dir/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="https://github.com/spring-projects/spring-boot/issues/9616">Tomcat does not create temporary directory used to store file uploads when it does not exist</a><br><a href="https://adunhansa.tistory.com/209">스프링 부트 파일 업로드 에러 The temporary upload location []  is not valid</a></p>
-</blockquote>
-<p>일반적으로 자주 발생하는 상황은 아니지만 아래와 같이 파일 업로드 시 임시 디렉토리에 대한 삭제 문제로 멀티파트 요청에 대해 임시적으로 저장하는 과정에서 <code>NoSuchFileException</code>이 발생할 수 있습니다. 리눅스 시스템에서 임시 디렉토리 경로에 존재하는 파일이나 디렉토리를 일정 기간 사용하지 않았을 경우 삭제하도록 되어있는 부분으로 인하여 애플리케이션 서버로 파일 업로드가 주기적으로 요청되지 않는 한 멀티파트에 대한 임시 파일이 만들어지지 않으므로 위 현상이 나타나게 됩니다.</p>
-<p>언더토우에서는 MultiPartParserDefinition$MultiPartUploadHandler의 beginPart라는 함수에서 멀티파트 폼 데이터에 대해 임시 파일을 만들고 읽어들이도록 되어있습니다. 스프링 부트 기반의 애플리케이션 서버에서 멀티파트에 대한 로케이션 속성을 지정하지 않으면 언더토우는 서블릿 배포 시 시스템의 임시 디렉토리 경로에 멀티파트 업로드를 위한 폴더를 생성합니다.</p>
-<p><a href="https://github.com/kdevkr/spring-demo-undertow">Spring Demo Undertow</a> 리파지토리를 클론하여 애플리케이션을 실행하면 다음과 같이 현재 실행중인 애플리케이션 서버에서 바라보는 파일 업로드 경로가 로그로 출력됩니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Current</span> temp dir<span class="token operator">:</span> <span class="token class-name">C</span><span class="token operator">:</span>\<span class="token class-name">Users</span>\<span class="token class-name">Mambo</span>\<span class="token class-name">AppData</span>\<span class="token class-name">Local</span>\<span class="token class-name">Temp</span>\undertow<span class="token punctuation">.</span><span class="token number">8080.5583604686546214060</span></code></pre>
-
-<p>위 로그를 출력하는 MultipartCustomizer는 UndertowDeploymentInfoCustomizer 인터페이스를 구현한 클래스로 시스템 기본 임시 디렉토리를 사용하는 경우에 주기적인 스케줄로 파일 업로드 경로가 삭제되었는지를 확인하고 복구합니다. 멀티파트 요청에 대한 파일 업로드 경로를 별도로 지정하지 않은 리눅스 환경에서는 파일 업로드를 시도하는 경우에 따라 리눅스 시스템에서 파일 업로드를 위한 폴더를 삭제할 가능성을 내재하고 있으므로 애플리케이션을 재실행하지 않아도 자동적으로 처리하거나 삭제를 방지하는 것을 도와주는 트릭을 구현할 수 있습니다.</p>
-<blockquote>
-<p>멀티파트 요청이 정상적으로 수행하는 경우 만들어진 임시 파일이 자동적으로 삭제되므로 시스템 기본 임시 디렉토리를 사용하는 것보다는 별도의 파일 업로드 경로를 지정하고 주기적으로 삭제되지 않고 남아있는 파일들이 있는지 관리하는 것이 더 좋은 대안입니다.</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>MultiPartParserDefinition</tag>
-        <tag>MultipartConfigElement</tag>
-        <tag>UndertowDeploymentInfoCustomizer</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>초보가 이해하는 스프링 시큐리티</title>
     <url>/understanding-spring-security/</url>
     <content><![CDATA[<blockquote>
@@ -12365,6 +12362,136 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
       </tags>
   </entry>
   <entry>
+    <title>언더토우 임시 디렉토리 삭제 방지</title>
+    <url>/undertow-temp-dir/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://github.com/spring-projects/spring-boot/issues/9616">Tomcat does not create temporary directory used to store file uploads when it does not exist</a><br><a href="https://adunhansa.tistory.com/209">스프링 부트 파일 업로드 에러 The temporary upload location []  is not valid</a></p>
+</blockquote>
+<p>일반적으로 자주 발생하는 상황은 아니지만 아래와 같이 파일 업로드 시 임시 디렉토리에 대한 삭제 문제로 멀티파트 요청에 대해 임시적으로 저장하는 과정에서 <code>NoSuchFileException</code>이 발생할 수 있습니다. 리눅스 시스템에서 임시 디렉토리 경로에 존재하는 파일이나 디렉토리를 일정 기간 사용하지 않았을 경우 삭제하도록 되어있는 부분으로 인하여 애플리케이션 서버로 파일 업로드가 주기적으로 요청되지 않는 한 멀티파트에 대한 임시 파일이 만들어지지 않으므로 위 현상이 나타나게 됩니다.</p>
+<p>언더토우에서는 MultiPartParserDefinition$MultiPartUploadHandler의 beginPart라는 함수에서 멀티파트 폼 데이터에 대해 임시 파일을 만들고 읽어들이도록 되어있습니다. 스프링 부트 기반의 애플리케이션 서버에서 멀티파트에 대한 로케이션 속성을 지정하지 않으면 언더토우는 서블릿 배포 시 시스템의 임시 디렉토리 경로에 멀티파트 업로드를 위한 폴더를 생성합니다.</p>
+<p><a href="https://github.com/kdevkr/spring-demo-undertow">Spring Demo Undertow</a> 리파지토리를 클론하여 애플리케이션을 실행하면 다음과 같이 현재 실행중인 애플리케이션 서버에서 바라보는 파일 업로드 경로가 로그로 출력됩니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Current</span> temp dir<span class="token operator">:</span> <span class="token class-name">C</span><span class="token operator">:</span>\<span class="token class-name">Users</span>\<span class="token class-name">Mambo</span>\<span class="token class-name">AppData</span>\<span class="token class-name">Local</span>\<span class="token class-name">Temp</span>\undertow<span class="token punctuation">.</span><span class="token number">8080.5583604686546214060</span></code></pre>
+
+<p>위 로그를 출력하는 MultipartCustomizer는 UndertowDeploymentInfoCustomizer 인터페이스를 구현한 클래스로 시스템 기본 임시 디렉토리를 사용하는 경우에 주기적인 스케줄로 파일 업로드 경로가 삭제되었는지를 확인하고 복구합니다. 멀티파트 요청에 대한 파일 업로드 경로를 별도로 지정하지 않은 리눅스 환경에서는 파일 업로드를 시도하는 경우에 따라 리눅스 시스템에서 파일 업로드를 위한 폴더를 삭제할 가능성을 내재하고 있으므로 애플리케이션을 재실행하지 않아도 자동적으로 처리하거나 삭제를 방지하는 것을 도와주는 트릭을 구현할 수 있습니다.</p>
+<blockquote>
+<p>멀티파트 요청이 정상적으로 수행하는 경우 만들어진 임시 파일이 자동적으로 삭제되므로 시스템 기본 임시 디렉토리를 사용하는 것보다는 별도의 파일 업로드 경로를 지정하고 주기적으로 삭제되지 않고 남아있는 파일들이 있는지 관리하는 것이 더 좋은 대안입니다.</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>MultiPartParserDefinition</tag>
+        <tag>MultipartConfigElement</tag>
+        <tag>UndertowDeploymentInfoCustomizer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>언더토우</title>
+    <url>/undertow/</url>
+    <content><![CDATA[<p>자바 언어로 웹 애플리케이션을 개발하는 경우에 대부분 스프링 프레임워크 또는 스프링 부트 프로젝트를 기반으로 시작하기 때문에 직접 자바 서블릿을 작성하여 아파치 톰캣이나 언더토우와 같은 웹 애플리케이션 서버를 실행하여 배포해보는 경험을 하는 신입 개발자가 많지 않을 것 같다. 그래서 초보 개발자들을 위해 그래들 프로젝트로 언더토우 라이브러리를 추가하고 간단하게 Hello World를 찍어보는 것을 공유하고자 한다.</p>
+<h4 id="인텔리제이-커뮤니티-에디션-설치하기"><a href="#인텔리제이-커뮤니티-에디션-설치하기" class="headerlink" title="인텔리제이 커뮤니티 에디션 설치하기"></a>인텔리제이 커뮤니티 에디션 설치하기</h4><p>인텔리제이 커뮤니티 에디션은 스프링에 대한 유용한 기능을 지원하지는 않지만 메이븐이나 그래들 프로젝트에 대해서는 지원하고 있다. 빌드 시스템은 Gradle로 선택하고 Download JDK를 통해서 Temurin 17을 선택하여 다운로드 하자. 그러면 JUnit이 기본적으로 포함된 그래들 프로젝트가 생성된다. </p>
+<p><img data-src="/images/posts/undertow/01.png"><br><img data-src="/images/posts/undertow/02.png"></p>
+<h4 id="언더토우-패키지-추가하기"><a href="#언더토우-패키지-추가하기" class="headerlink" title="언더토우 패키지 추가하기"></a>언더토우 패키지 추가하기</h4><p><a href="https://central.sonatype.com/search?smo=true&q=io.undertow&namespace=io.undertow">메이븐 중앙 저장소</a>에 등록되어 있는 패키지 중에서 undertow-core와 undertow-servlet 모듈을 추가하자. </p>
+<pre class="language-gradle" data-language="gradle"><code class="language-gradle"><span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-core:2.3.4.Final'</span>
+    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-servlet:2.3.4.Final'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Hello-World-핸들러-작성하기"><a href="#Hello-World-핸들러-작성하기" class="headerlink" title="Hello World 핸들러 작성하기"></a>Hello World 핸들러 작성하기</h4><p><a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-core">언더토우 공식 문서</a>에 따라 기본적으로 생성되어있는 Main 클래스를 수정해서 Hello World를 출력하는 웹 애플리케이션을 작성해보자. 그리고 Main 클래스 좌측에 표시된 화살표를 눌러서 디버그 모드로 애플리케이션을 실행하자. 특히 백엔드 개발자라면 무조건 디버그 모드로 실행하는 습관을 들여야한다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span>exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                    exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="언더토우-HTTP-핸들러-교체하기"><a href="#언더토우-HTTP-핸들러-교체하기" class="headerlink" title="언더토우 HTTP 핸들러 교체하기"></a>언더토우 HTTP 핸들러 교체하기</h4><p>크롬 브라우저를 실행해서 localhost:8080을 입력하면 Hello World가 출력된다. 그러나, 인텔리제이 콘솔에 표시된 것을 살펴보면 Hello World가 두번 출력될 것이다. 우리는 브라우저로 한번 접근했을 뿐인데 왜 두번 출력되는지 의아한 것을 인지해야한다. 이러한 접근은 문제 파악의 시작점이다. (아직은 익숙치 않겠지만) F12를 눌러 개발자 도구를 표시한 후 Network 탭을 누른 뒤 F5를 눌러서 페이지를 새로고침 해보면 localhost 이외에 favicon.ico라는 것이 있음을 확인할 수 있다. 이 파비콘이라는 것은 웹 사이트 탭 왼쪽에 표시되는 작은 로고를 의미한다. 그러니까, 브라우저는 파비콘 표시를 위해 자동으로 추가 요청하고 있는 것이다. 더 자세하게 살펴보면 우리가 작성한 코드대로 text&#x2F;plain 타입에 Hello World가 전달되었음을 확인할 수 있을 것이다.</p>
+<p><img data-src="/images/posts/undertow/03.png"></p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                            exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>결국, 기존 코드의 핸들러는 모든 요청에 대해 Hello World를 출력하는 애플리케이션이 된 것을 의미한다. 이것을 메인 요청에 대해서만 Hello World를 출력할 수 있도록 핸들러를 교체해보자. 위와 같이 PathHandler를 사용하면 특정 경로를 처리할 핸들러를 별도로 등록할 수 있게 제공한다. 실행중인 애플리케이션을 종료한 후 다시 시작해보면 favicon.ico에 대해서는 요청을 처리하지 않아 404라는 의미로 빨간색으로 표시되었고 인텔리제이 콘솔에는 의도한 것처럼 Hello World가 단 한번 출력됨을 알 수 있다.</p>
+<h4 id="언더토우-서블릿-컨테이너로-전환하기"><a href="#언더토우-서블릿-컨테이너로-전환하기" class="headerlink" title="언더토우 서블릿 컨테이너로 전환하기"></a>언더토우 서블릿 컨테이너로 전환하기</h4><p>앞선, Hello World 출력은 언더토우의 코어 모듈을 사용하여 처리하는 핸들러를 등록했을 뿐이다. 우리는 처음에 서블릿 모듈까지 추가했으므로 자바 서블릿을 사용하는 웹 애플리케이션으로 전환해보자. 언더토우 서블릿 모듈의 사용법도 <a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-servlet">공식 문서를 참고</a>하면 된다. 어느정도 눈치챈 사람들이 있다면 MVC 패턴을 들어봤거나 DispatcherServlet의 용도를 아는 것일 것이다. 현재는 본래 용도가 아닌 Hello World를 출력하기 위한 서블릿이기에 몰라도 되므로 궁금한 사람들만 찾아보자.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">Servlets</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentInfo</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentManager</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">DeploymentInfo</span> deployment <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">deployment</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setClassLoader</span><span class="token punctuation">(</span><span class="token class-name">Main</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setContextPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setDeploymentName</span><span class="token punctuation">(</span><span class="token string">"main.war"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addServlets</span><span class="token punctuation">(</span><span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">servlet</span><span class="token punctuation">(</span><span class="token string">"DispatcherServlet"</span><span class="token punctuation">,</span> <span class="token class-name">DispatcherServlet</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">DeploymentManager</span> manager <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">defaultContainer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addDeployment</span><span class="token punctuation">(</span>deployment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        manager<span class="token punctuation">.</span><span class="token function">deploy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> manager<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServlet</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletRequest</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletResponse</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DispatcherServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
+        resp<span class="token punctuation">.</span><span class="token function">addHeader</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>앞선 코드의 문제점은 디스패처서블릿이 본 용도가 아니므로 시간이 많다면 본인이 생각하는 방식대로 고쳐보는 것도 추천한다. 많은 신입 개발자들이 오해하는 것은 효율적인 관점에서 코드 작성에 대해 정답이 있다는 것이라고 생각한다는 것일지 모르겠다. 유용한 정보일지는 모르겠으나 누군가에게는 도움이 되는 글이었으면 한다.</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Tracing Handshake Websocket With Undertow</title>
     <url>/undertow-websocket-tracing/</url>
     <content><![CDATA[<blockquote>
@@ -12530,112 +12657,47 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
       </tags>
   </entry>
   <entry>
-    <title>언더토우</title>
-    <url>/undertow/</url>
-    <content><![CDATA[<p>자바 언어로 웹 애플리케이션을 개발하는 경우에 대부분 스프링 프레임워크 또는 스프링 부트 프로젝트를 기반으로 시작하기 때문에 직접 자바 서블릿을 작성하여 아파치 톰캣이나 언더토우와 같은 웹 애플리케이션 서버를 실행하여 배포해보는 경험을 하는 신입 개발자가 많지 않을 것 같다. 그래서 초보 개발자들을 위해 그래들 프로젝트로 언더토우 라이브러리를 추가하고 간단하게 Hello World를 찍어보는 것을 공유하고자 한다.</p>
-<h4 id="인텔리제이-커뮤니티-에디션-설치하기"><a href="#인텔리제이-커뮤니티-에디션-설치하기" class="headerlink" title="인텔리제이 커뮤니티 에디션 설치하기"></a>인텔리제이 커뮤니티 에디션 설치하기</h4><p>인텔리제이 커뮤니티 에디션은 스프링에 대한 유용한 기능을 지원하지는 않지만 메이븐이나 그래들 프로젝트에 대해서는 지원하고 있다. 빌드 시스템은 Gradle로 선택하고 Download JDK를 통해서 Temurin 17을 선택하여 다운로드 하자. 그러면 JUnit이 기본적으로 포함된 그래들 프로젝트가 생성된다. </p>
-<p><img data-src="/images/posts/undertow/01.png"><br><img data-src="/images/posts/undertow/02.png"></p>
-<h4 id="언더토우-패키지-추가하기"><a href="#언더토우-패키지-추가하기" class="headerlink" title="언더토우 패키지 추가하기"></a>언더토우 패키지 추가하기</h4><p><a href="https://central.sonatype.com/search?smo=true&q=io.undertow&namespace=io.undertow">메이븐 중앙 저장소</a>에 등록되어 있는 패키지 중에서 undertow-core와 undertow-servlet 모듈을 추가하자. </p>
-<pre class="language-gradle" data-language="gradle"><code class="language-gradle"><span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-core:2.3.4.Final'</span>
-    <span class="token keyword">implementation</span> <span class="token string">'io.undertow:undertow-servlet:2.3.4.Final'</span>
-<span class="token punctuation">&#125;</span></code></pre>
+    <title>Webpack 5 기반의 Vue 개발 환경</title>
+    <url>/webpack5-for-vue/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 <strong>Webpack 5 기반의 Vue 개발 환경</strong>에 대해서 알아보는 시간을 가져보도록 하겠습니다.<br>본 글에서 설명한 내용에 대한 코드는 <a href="https://github.com/kdevkr/webpack5">kdevkr&#x2F;webpack5</a>에서 제공합니다.</p>
+<h2 id="Webpack"><a href="#Webpack" class="headerlink" title="Webpack"></a>Webpack</h2><p>반드시 그런 것은 아니지만 많은 분들이 <a href="https://create-react-app.dev/">Create React App</a> 또는 <a href="https://cli.vuejs.org/">Vue CLI</a>라는 도구를 통해서 프론트엔드 개발 환경에 대한 기본 프리셋을 기반으로 학습을 시작하거나 개발 환경을 구축합니다. 이 도구들은 여러가지 사항에 대한 웹팩 구성을 기본적으로 제공함으로써 웹팩에 대한 내용을 알지 못하더라도 쉽게 리액트 또는 뷰에 대한 학습을 진행할 수 있게 도와주는 유용한 도구입니다. </p>
+<p>그럼에도 불구하고, 실무 환경에서는 이 도구들을 사용하지 않고 직접 웹팩 설정에 대해 구성하여 사용합니다. 또한, Vue CLI는 안타깝게도 웹팩 4에 대한 구성을 제공하므로 이 도구로 만들어지는 환경은 무조건 웹팩 4로 제한되는 문제점을 가지고 있습니다. <a href="https://webpack.js.org/blog/2020-10-10-webpack-5-release/">2020년 10월에 릴리즈된 웹팩 5</a> 기반의 개발 환경을 만들기 위해서는 직접 웹팩 구성을 수행할 수 있어야만 합니다.</p>
+<h3 id="요구사항"><a href="#요구사항" class="headerlink" title="요구사항"></a>요구사항</h3><p>시작하기에 앞서, 웹팩 5는 노드 10.13.0 이상의 버전을 요구하며 함께 개발 프록시 서버로 활용할 수 있는 webpack-dev-server@4 에서는 노드 12.13.0 이상을 요구합니다. </p>
+<ul>
+<li>Webpack5 required v10.13.0+</li>
+<li>webpack-dev-server@4 v12.13.0+</li>
+</ul>
+<h4 id="프로젝트-노드-버전-제한"><a href="#프로젝트-노드-버전-제한" class="headerlink" title="프로젝트 노드 버전 제한"></a>프로젝트 노드 버전 제한</h4><p>위 요구사항에 따라 프로젝트에서 사용할 수 있는 노드 버전을 제한하는 것이 좋습니다. 제가 이전에 공유한 <a href="https://kdevkr.github.io/strict-nodejs-version-for-project/">프로젝트의 노드 버전 제한하기</a>를 참고하여 노드 엔진 버전을 12.13.0 이상으로 설정해두는 것을 추천하는 바입니다.</p>
+<h3 id="커밋별로-확인하는-구성"><a href="#커밋별로-확인하는-구성" class="headerlink" title="커밋별로 확인하는 구성"></a>커밋별로 확인하는 구성</h3><p>각 커밋 단위의 Browser Files를 통해 어떻게 구성이 변화하는지를 참고하시면 좋습니다.</p>
+<h4 id="Add-webpack-config-js-for-default-configuration"><a href="#Add-webpack-config-js-for-default-configuration" class="headerlink" title="Add webpack.config.js for default configuration"></a><a href="https://github.com/kdevkr/webpack5/commit/3f858c2702720088b8647bdb55a9f830d54a8d91">Add webpack.config.js for default configuration</a></h4><p>기본 구성을 위한 webpack.config.js 파일을 만들고 node-env 값에 따라 번들 파일명을 다르게 지정할 수 있음을 보여줍니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">npx webpack --node-env production <span class="token comment"># 모드를 지정하지 않았지만 node-env 값에 의해 처리됩니다.</span></code></pre>
 
-<h4 id="Hello-World-핸들러-작성하기"><a href="#Hello-World-핸들러-작성하기" class="headerlink" title="Hello World 핸들러 작성하기"></a>Hello World 핸들러 작성하기</h4><p><a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-core">언더토우 공식 문서</a>에 따라 기본적으로 생성되어있는 Main 클래스를 수정해서 Hello World를 출력하는 웹 애플리케이션을 작성해보자. 그리고 Main 클래스 좌측에 표시된 화살표를 눌러서 디버그 모드로 애플리케이션을 실행하자. 특히 백엔드 개발자라면 무조건 디버그 모드로 실행하는 습관을 들여야한다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
+<h4 id="Add-vue-loader"><a href="#Add-vue-loader" class="headerlink" title="Add vue-loader"></a><a href="https://github.com/kdevkr/webpack5/commit/3ca2fc1de5573ae339b0271ea482a73bf3dac397">Add vue-loader</a></h4><p>Vue SFC 파일을 처리하기 위한 vue-loader를 추가하고 Vue 개발 환경을 준비하고 간단한 샘플 HTML 파일을 만들어서 Vue 코드가 정상적으로 변환되었음을 확인합니다.</p>
+<h4 id="Add-sass-postcss"><a href="#Add-sass-postcss" class="headerlink" title="Add sass, postcss"></a><a href="https://github.com/kdevkr/webpack5/commit/68ffce2b18c64e67b944a383b216c2e6fe784396">Add sass, postcss</a></h4><p>Vue SFC의 스타일 블록의 언어를 SCSS로 사용하기 위해서 sass 및 postcss에 대한 설정을 추가합니다. </p>
+<h4 id="Add-stylelint"><a href="#Add-stylelint" class="headerlink" title="Add stylelint"></a><a href="https://github.com/kdevkr/webpack5/commit/7e1e00735738e9106033c6df675977846b159552">Add stylelint</a></h4><p>반드시 필요한 설정은 아니지만 CSS에 대한 린트를 적용하기 위해 stylelint를 postcss 플러그인으로 추가합니다.</p>
+<h4 id="Add-eslint"><a href="#Add-eslint" class="headerlink" title="Add eslint"></a><a href="https://github.com/kdevkr/webpack5/commit/f7f566314fd675e18d3f7b3dd35283317c5891ae">Add eslint</a></h4><p>자바스크립트에 대한 린트를 적용하기 위해 eslint를 추가합니다.</p>
+<h4 id="Add-babel"><a href="#Add-babel" class="headerlink" title="Add babel"></a><a href="https://github.com/kdevkr/webpack5/commit/c5211b28ab8176e8c5c9fb39c755083679cb24df">Add babel</a></h4><p>ES6+ 문법을 지원하지 않는 브라우저를 위해 ES5 문법으로 변환하기 위한 babel을 추가합니다. babel 7 부터는 폴리필 적용 방식이 변경되었음을 주의해야합니다. 바벨 폴리필에 대해서는 다음의 두 링크를 참고하시면 좋습니다.</p>
+<ul>
+<li><a href="https://poiemaweb.com/babel-polyfill">폐지된 @babel&#x2F;polyfill 대신 @babel&#x2F;plugin-transform-runtime을 사용해 폴리필 추가하기</a></li>
+<li><a href="https://tech.kakao.com/2020/12/01/frontend-growth-02/">Babel7과 corejs3 설정으로 전역 오염 없는 폴리필 사용하기</a></li>
+</ul>
+<h4 id="Add-browserslist"><a href="#Add-browserslist" class="headerlink" title="Add browserslist"></a><a href="https://github.com/kdevkr/webpack5/commit/c911ef73aa85ebde4d9c738c07999300c05bfaf8">Add browserslist</a></h4><p>postcss의 autoprefixer 또는 babel에서 참고할 타겟 정보를 위해 browserslist를 추가합니다.</p>
+<h4 id="Add-prettierrc"><a href="#Add-prettierrc" class="headerlink" title="Add prettierrc"></a><a href="https://github.com/kdevkr/webpack5/commit/b5c8e20ebdb2224f1268b431aafb82a6b49e7b3a">Add prettierrc</a></h4><p>불필요한 포맷팅을 방지하기 위한 prettier 옵션을 조정합니다.</p>
+<h4 id="Add-asset"><a href="#Add-asset" class="headerlink" title="Add asset"></a><a href="https://github.com/kdevkr/webpack5/commit/1ba05ff066806fb2c7b59eace748e04e73756243">Add asset</a></h4><p>이미지 또는 폰트 등을 위한 에셋 모듈을 추가합니다.</p>
+<h4 id="Apply-strict-npm-engines"><a href="#Apply-strict-npm-engines" class="headerlink" title="Apply strict npm engines"></a><a href="https://github.com/kdevkr/webpack5/commit/1b768c5881db9d8348d54f926a11e537a50050ac">Apply strict npm engines</a></h4><p>지금까지 설치된 패키지에서 최소로 요구하는 노드 버전을 명시하고 제한되도록 설정합니다.</p>
+<h4 id="Apply-settings-for-vscode"><a href="#Apply-settings-for-vscode" class="headerlink" title="Apply settings for vscode"></a><a href="https://github.com/kdevkr/webpack5/commit/9008824470873ce172e52294ddac7eee8304c256">Apply settings for vscode</a></h4><p>VSCode를 사용하는 경우 저장될 때 ESLint가 동작하도록 설정합니다.</p>
+<h4 id="Add-project-version-in-output-filename"><a href="#Add-project-version-in-output-filename" class="headerlink" title="Add project version in output filename"></a><a href="https://github.com/kdevkr/webpack5/commit/769171d627bb1f4bfbb4bacce62dc067ff9b617a">Add project version in output filename</a></h4><p>(Optional) package.json에 정의된 프로젝트 버전을 번들 파일명에 포함시킬 수 있음을 보여줍니다.</p>
+<h4 id="Apply-optimization"><a href="#Apply-optimization" class="headerlink" title="Apply optimization"></a><a href="https://github.com/kdevkr/webpack5/commit/bab1505c643b4ae3ea5e7a86bdc90317f4afe470">Apply optimization</a></h4><p>프로덕션 환경을 위한 최적화 구성을 조정합니다.</p>
+<h4 id="Add-manifest"><a href="#Add-manifest" class="headerlink" title="Add manifest"></a><a href="https://github.com/kdevkr/webpack5/commit/7d0cd27b85a8f1df757e16c3ddb6ad32b8f7b39e">Add manifest</a></h4><p>매니페스트 파일이 생성할 수 있도록 플러그인을 추가합니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">npx webpack --node-env production <span class="token parameter variable">--env</span> manifest</code></pre>
 
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span>exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
-                    exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-					<span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="언더토우-HTTP-핸들러-교체하기"><a href="#언더토우-HTTP-핸들러-교체하기" class="headerlink" title="언더토우 HTTP 핸들러 교체하기"></a>언더토우 HTTP 핸들러 교체하기</h4><p>크롬 브라우저를 실행해서 localhost:8080을 입력하면 Hello World가 출력된다. 그러나, 인텔리제이 콘솔에 표시된 것을 살펴보면 Hello World가 두번 출력될 것이다. 우리는 브라우저로 한번 접근했을 뿐인데 왜 두번 출력되는지 의아한 것을 인지해야한다. 이러한 접근은 문제 파악의 시작점이다. (아직은 익숙치 않겠지만) F12를 눌러 개발자 도구를 표시한 후 Network 탭을 누른 뒤 F5를 눌러서 페이지를 새로고침 해보면 localhost 이외에 favicon.ico라는 것이 있음을 확인할 수 있다. 이 파비콘이라는 것은 웹 사이트 탭 왼쪽에 표시되는 작은 로고를 의미한다. 그러니까, 브라우저는 파비콘 표시를 위해 자동으로 추가 요청하고 있는 것이다. 더 자세하게 살펴보면 우리가 작성한 코드대로 text&#x2F;plain 타입에 Hello World가 전달되었음을 확인할 수 있을 것이다.</p>
-<p><img data-src="/images/posts/undertow/03.png"></p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> exchange <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
-                            exchange<span class="token punctuation">.</span><span class="token function">getResponseHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                            exchange<span class="token punctuation">.</span><span class="token function">getResponseSender</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>결국, 기존 코드의 핸들러는 모든 요청에 대해 Hello World를 출력하는 애플리케이션이 된 것을 의미한다. 이것을 메인 요청에 대해서만 Hello World를 출력할 수 있도록 핸들러를 교체해보자. 위와 같이 PathHandler를 사용하면 특정 경로를 처리할 핸들러를 별도로 등록할 수 있게 제공한다. 실행중인 애플리케이션을 종료한 후 다시 시작해보면 favicon.ico에 대해서는 요청을 처리하지 않아 404라는 의미로 빨간색으로 표시되었고 인텔리제이 콘솔에는 의도한 것처럼 Hello World가 단 한번 출력됨을 알 수 있다.</p>
-<h4 id="언더토우-서블릿-컨테이너로-전환하기"><a href="#언더토우-서블릿-컨테이너로-전환하기" class="headerlink" title="언더토우 서블릿 컨테이너로 전환하기"></a>언더토우 서블릿 컨테이너로 전환하기</h4><p>앞선, Hello World 출력은 언더토우의 코어 모듈을 사용하여 처리하는 핸들러를 등록했을 뿐이다. 우리는 처음에 서블릿 모듈까지 추가했으므로 자바 서블릿을 사용하는 웹 애플리케이션으로 전환해보자. 언더토우 서블릿 모듈의 사용법도 <a href="https://undertow.io/undertow-docs/undertow-docs-2.1.0/index.html#undertow-servlet">공식 문서를 참고</a>하면 된다. 어느정도 눈치챈 사람들이 있다면 MVC 패턴을 들어봤거나 DispatcherServlet의 용도를 아는 것일 것이다. 현재는 본래 용도가 아닌 Hello World를 출력하기 위한 서블릿이기에 몰라도 되므로 궁금한 사람들만 찾아보자.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Handlers</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span></span><span class="token class-name">Undertow</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">Servlets</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentInfo</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>api<span class="token punctuation">.</span></span><span class="token class-name">DeploymentManager</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">DeploymentInfo</span> deployment <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">deployment</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setClassLoader</span><span class="token punctuation">(</span><span class="token class-name">Main</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setContextPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setDeploymentName</span><span class="token punctuation">(</span><span class="token string">"main.war"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">addServlets</span><span class="token punctuation">(</span><span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">servlet</span><span class="token punctuation">(</span><span class="token string">"DispatcherServlet"</span><span class="token punctuation">,</span> <span class="token class-name">DispatcherServlet</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-                        <span class="token punctuation">.</span><span class="token function">addMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">DeploymentManager</span> manager <span class="token operator">=</span> <span class="token class-name">Servlets</span><span class="token punctuation">.</span><span class="token function">defaultContainer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addDeployment</span><span class="token punctuation">(</span>deployment<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        manager<span class="token punctuation">.</span><span class="token function">deploy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">Undertow</span> server <span class="token operator">=</span> <span class="token class-name">Undertow</span><span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">addHttpListener</span><span class="token punctuation">(</span><span class="token number">8080</span><span class="token punctuation">,</span> <span class="token string">"localhost"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">setHandler</span><span class="token punctuation">(</span><span class="token class-name">Handlers</span><span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                        <span class="token punctuation">.</span><span class="token function">addExactPath</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> manager<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        server<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>example</span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">io<span class="token punctuation">.</span>undertow<span class="token punctuation">.</span>util<span class="token punctuation">.</span></span><span class="token class-name">Headers</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span></span><span class="token class-name">ServletException</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServlet</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletRequest</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">jakarta<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span></span><span class="token class-name">HttpServletResponse</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>io<span class="token punctuation">.</span></span><span class="token class-name">IOException</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DispatcherServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token class-name">HttpServletRequest</span> req<span class="token punctuation">,</span> <span class="token class-name">HttpServletResponse</span> resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ServletException</span><span class="token punctuation">,</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span>
-        resp<span class="token punctuation">.</span><span class="token function">addHeader</span><span class="token punctuation">(</span><span class="token class-name">Headers</span><span class="token punctuation">.</span><span class="token constant">CONTENT_TYPE</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>앞선 코드의 문제점은 디스패처서블릿이 본 용도가 아니므로 시간이 많다면 본인이 생각하는 방식대로 고쳐보는 것도 추천한다. 많은 신입 개발자들이 오해하는 것은 효율적인 관점에서 코드 작성에 대해 정답이 있다는 것이라고 생각한다는 것일지 모르겠다. 유용한 정보일지는 모르겠으나 누군가에게는 도움이 되는 글이었으면 한다.</p>
+<h4 id="Add-bootstrap-vue"><a href="#Add-bootstrap-vue" class="headerlink" title="Add bootstrap-vue"></a><a href="https://github.com/kdevkr/webpack5/commit/c3da5f586c6ec368778e2c90478196e4af037a82">Add bootstrap-vue</a></h4><p>BootstrapVue를 추가해보고 <a href="https://kdevkr.github.io/no-emit-deprecation-warnings-of-dart-sass/">최신 버전의 Sass에서 출력되는 Deprecation 경고가 출력되지 않도록</a> 설정합니다.</p>
+<p>감사합니다.</p>
 ]]></content>
+      <tags>
+        <tag>Webpack5</tag>
+      </tags>
   </entry>
   <entry>
     <title>보안 취약점 (Vulnerability)</title>
@@ -13125,49 +13187,6 @@ dependencyCheck <span class="token punctuation">&#123;</span>
 <p><a href="https://plugins.jenkins.io/dependency-check-jenkins-plugin/">젠킨스 OWASP Dependency-Check 플러그인</a>도 있는데 OWASP Dependency-Check로 체크하는 경우 생각보다 많은 취약점이 확인되어서 최신 라이브러리를 사용하는 프로젝트가 아니라면 좋아보이지는 않는다. 개인적으로 CVE 검출을 위해서 사용하진 않을 것 같다.</p>
 </blockquote>
 ]]></content>
-  </entry>
-  <entry>
-    <title>Webpack 5 기반의 Vue 개발 환경</title>
-    <url>/webpack5-for-vue/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 <strong>Webpack 5 기반의 Vue 개발 환경</strong>에 대해서 알아보는 시간을 가져보도록 하겠습니다.<br>본 글에서 설명한 내용에 대한 코드는 <a href="https://github.com/kdevkr/webpack5">kdevkr&#x2F;webpack5</a>에서 제공합니다.</p>
-<h2 id="Webpack"><a href="#Webpack" class="headerlink" title="Webpack"></a>Webpack</h2><p>반드시 그런 것은 아니지만 많은 분들이 <a href="https://create-react-app.dev/">Create React App</a> 또는 <a href="https://cli.vuejs.org/">Vue CLI</a>라는 도구를 통해서 프론트엔드 개발 환경에 대한 기본 프리셋을 기반으로 학습을 시작하거나 개발 환경을 구축합니다. 이 도구들은 여러가지 사항에 대한 웹팩 구성을 기본적으로 제공함으로써 웹팩에 대한 내용을 알지 못하더라도 쉽게 리액트 또는 뷰에 대한 학습을 진행할 수 있게 도와주는 유용한 도구입니다. </p>
-<p>그럼에도 불구하고, 실무 환경에서는 이 도구들을 사용하지 않고 직접 웹팩 설정에 대해 구성하여 사용합니다. 또한, Vue CLI는 안타깝게도 웹팩 4에 대한 구성을 제공하므로 이 도구로 만들어지는 환경은 무조건 웹팩 4로 제한되는 문제점을 가지고 있습니다. <a href="https://webpack.js.org/blog/2020-10-10-webpack-5-release/">2020년 10월에 릴리즈된 웹팩 5</a> 기반의 개발 환경을 만들기 위해서는 직접 웹팩 구성을 수행할 수 있어야만 합니다.</p>
-<h3 id="요구사항"><a href="#요구사항" class="headerlink" title="요구사항"></a>요구사항</h3><p>시작하기에 앞서, 웹팩 5는 노드 10.13.0 이상의 버전을 요구하며 함께 개발 프록시 서버로 활용할 수 있는 webpack-dev-server@4 에서는 노드 12.13.0 이상을 요구합니다. </p>
-<ul>
-<li>Webpack5 required v10.13.0+</li>
-<li>webpack-dev-server@4 v12.13.0+</li>
-</ul>
-<h4 id="프로젝트-노드-버전-제한"><a href="#프로젝트-노드-버전-제한" class="headerlink" title="프로젝트 노드 버전 제한"></a>프로젝트 노드 버전 제한</h4><p>위 요구사항에 따라 프로젝트에서 사용할 수 있는 노드 버전을 제한하는 것이 좋습니다. 제가 이전에 공유한 <a href="https://kdevkr.github.io/strict-nodejs-version-for-project/">프로젝트의 노드 버전 제한하기</a>를 참고하여 노드 엔진 버전을 12.13.0 이상으로 설정해두는 것을 추천하는 바입니다.</p>
-<h3 id="커밋별로-확인하는-구성"><a href="#커밋별로-확인하는-구성" class="headerlink" title="커밋별로 확인하는 구성"></a>커밋별로 확인하는 구성</h3><p>각 커밋 단위의 Browser Files를 통해 어떻게 구성이 변화하는지를 참고하시면 좋습니다.</p>
-<h4 id="Add-webpack-config-js-for-default-configuration"><a href="#Add-webpack-config-js-for-default-configuration" class="headerlink" title="Add webpack.config.js for default configuration"></a><a href="https://github.com/kdevkr/webpack5/commit/3f858c2702720088b8647bdb55a9f830d54a8d91">Add webpack.config.js for default configuration</a></h4><p>기본 구성을 위한 webpack.config.js 파일을 만들고 node-env 값에 따라 번들 파일명을 다르게 지정할 수 있음을 보여줍니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">npx webpack --node-env production <span class="token comment"># 모드를 지정하지 않았지만 node-env 값에 의해 처리됩니다.</span></code></pre>
-
-<h4 id="Add-vue-loader"><a href="#Add-vue-loader" class="headerlink" title="Add vue-loader"></a><a href="https://github.com/kdevkr/webpack5/commit/3ca2fc1de5573ae339b0271ea482a73bf3dac397">Add vue-loader</a></h4><p>Vue SFC 파일을 처리하기 위한 vue-loader를 추가하고 Vue 개발 환경을 준비하고 간단한 샘플 HTML 파일을 만들어서 Vue 코드가 정상적으로 변환되었음을 확인합니다.</p>
-<h4 id="Add-sass-postcss"><a href="#Add-sass-postcss" class="headerlink" title="Add sass, postcss"></a><a href="https://github.com/kdevkr/webpack5/commit/68ffce2b18c64e67b944a383b216c2e6fe784396">Add sass, postcss</a></h4><p>Vue SFC의 스타일 블록의 언어를 SCSS로 사용하기 위해서 sass 및 postcss에 대한 설정을 추가합니다. </p>
-<h4 id="Add-stylelint"><a href="#Add-stylelint" class="headerlink" title="Add stylelint"></a><a href="https://github.com/kdevkr/webpack5/commit/7e1e00735738e9106033c6df675977846b159552">Add stylelint</a></h4><p>반드시 필요한 설정은 아니지만 CSS에 대한 린트를 적용하기 위해 stylelint를 postcss 플러그인으로 추가합니다.</p>
-<h4 id="Add-eslint"><a href="#Add-eslint" class="headerlink" title="Add eslint"></a><a href="https://github.com/kdevkr/webpack5/commit/f7f566314fd675e18d3f7b3dd35283317c5891ae">Add eslint</a></h4><p>자바스크립트에 대한 린트를 적용하기 위해 eslint를 추가합니다.</p>
-<h4 id="Add-babel"><a href="#Add-babel" class="headerlink" title="Add babel"></a><a href="https://github.com/kdevkr/webpack5/commit/c5211b28ab8176e8c5c9fb39c755083679cb24df">Add babel</a></h4><p>ES6+ 문법을 지원하지 않는 브라우저를 위해 ES5 문법으로 변환하기 위한 babel을 추가합니다. babel 7 부터는 폴리필 적용 방식이 변경되었음을 주의해야합니다. 바벨 폴리필에 대해서는 다음의 두 링크를 참고하시면 좋습니다.</p>
-<ul>
-<li><a href="https://poiemaweb.com/babel-polyfill">폐지된 @babel&#x2F;polyfill 대신 @babel&#x2F;plugin-transform-runtime을 사용해 폴리필 추가하기</a></li>
-<li><a href="https://tech.kakao.com/2020/12/01/frontend-growth-02/">Babel7과 corejs3 설정으로 전역 오염 없는 폴리필 사용하기</a></li>
-</ul>
-<h4 id="Add-browserslist"><a href="#Add-browserslist" class="headerlink" title="Add browserslist"></a><a href="https://github.com/kdevkr/webpack5/commit/c911ef73aa85ebde4d9c738c07999300c05bfaf8">Add browserslist</a></h4><p>postcss의 autoprefixer 또는 babel에서 참고할 타겟 정보를 위해 browserslist를 추가합니다.</p>
-<h4 id="Add-prettierrc"><a href="#Add-prettierrc" class="headerlink" title="Add prettierrc"></a><a href="https://github.com/kdevkr/webpack5/commit/b5c8e20ebdb2224f1268b431aafb82a6b49e7b3a">Add prettierrc</a></h4><p>불필요한 포맷팅을 방지하기 위한 prettier 옵션을 조정합니다.</p>
-<h4 id="Add-asset"><a href="#Add-asset" class="headerlink" title="Add asset"></a><a href="https://github.com/kdevkr/webpack5/commit/1ba05ff066806fb2c7b59eace748e04e73756243">Add asset</a></h4><p>이미지 또는 폰트 등을 위한 에셋 모듈을 추가합니다.</p>
-<h4 id="Apply-strict-npm-engines"><a href="#Apply-strict-npm-engines" class="headerlink" title="Apply strict npm engines"></a><a href="https://github.com/kdevkr/webpack5/commit/1b768c5881db9d8348d54f926a11e537a50050ac">Apply strict npm engines</a></h4><p>지금까지 설치된 패키지에서 최소로 요구하는 노드 버전을 명시하고 제한되도록 설정합니다.</p>
-<h4 id="Apply-settings-for-vscode"><a href="#Apply-settings-for-vscode" class="headerlink" title="Apply settings for vscode"></a><a href="https://github.com/kdevkr/webpack5/commit/9008824470873ce172e52294ddac7eee8304c256">Apply settings for vscode</a></h4><p>VSCode를 사용하는 경우 저장될 때 ESLint가 동작하도록 설정합니다.</p>
-<h4 id="Add-project-version-in-output-filename"><a href="#Add-project-version-in-output-filename" class="headerlink" title="Add project version in output filename"></a><a href="https://github.com/kdevkr/webpack5/commit/769171d627bb1f4bfbb4bacce62dc067ff9b617a">Add project version in output filename</a></h4><p>(Optional) package.json에 정의된 프로젝트 버전을 번들 파일명에 포함시킬 수 있음을 보여줍니다.</p>
-<h4 id="Apply-optimization"><a href="#Apply-optimization" class="headerlink" title="Apply optimization"></a><a href="https://github.com/kdevkr/webpack5/commit/bab1505c643b4ae3ea5e7a86bdc90317f4afe470">Apply optimization</a></h4><p>프로덕션 환경을 위한 최적화 구성을 조정합니다.</p>
-<h4 id="Add-manifest"><a href="#Add-manifest" class="headerlink" title="Add manifest"></a><a href="https://github.com/kdevkr/webpack5/commit/7d0cd27b85a8f1df757e16c3ddb6ad32b8f7b39e">Add manifest</a></h4><p>매니페스트 파일이 생성할 수 있도록 플러그인을 추가합니다. </p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">npx webpack --node-env production <span class="token parameter variable">--env</span> manifest</code></pre>
-
-<h4 id="Add-bootstrap-vue"><a href="#Add-bootstrap-vue" class="headerlink" title="Add bootstrap-vue"></a><a href="https://github.com/kdevkr/webpack5/commit/c3da5f586c6ec368778e2c90478196e4af037a82">Add bootstrap-vue</a></h4><p>BootstrapVue를 추가해보고 <a href="https://kdevkr.github.io/no-emit-deprecation-warnings-of-dart-sass/">최신 버전의 Sass에서 출력되는 Deprecation 경고가 출력되지 않도록</a> 설정합니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Webpack5</tag>
-      </tags>
   </entry>
   <entry>
     <title>HandlerInterceptor은 언제 사용하나요?</title>

@@ -3681,6 +3681,37 @@ Ncat: <span class="token number">0</span> bytes sent, <span class="token number"
 ]]></content>
   </entry>
   <entry>
+    <title>Amazon Linux 2023 Docker Compose 플러그인 설치</title>
+    <url>/install-docker-compose-in-amazon-linux-2023/</url>
+    <content><![CDATA[<p>Amazon Linux 2023 에서는 Extra를 제공하지는 않지만 Docker는 기본적으로 포함되어있다. Amazon Linux 2 에서와 동일하게 Docker Compose Plugin 은 별도로 포함해주지 않으므로 직접 수동으로 설치해야한다. 다만, docker-compose 명령어로 별도로 사용하기 보다는 최신 버전에 맞춰 Docker <a href="https://docs.docker.com/compose/install/linux/#install-the-plugin-manually">Compose 플러그인</a>으로 설치해보도록 하자. <a href="https://github.com/docker/compose/releases">Docker Compose Releases</a> 사이트에서 다운로드 받은 docker-compose 를 cli-plugins 폴더 아래에 복사하면 된다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># Docker</span>
+<span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token parameter variable">-y</span> <span class="token function">docker</span>
+<span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> ec2-user
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> <span class="token function">docker</span>
+<span class="token builtin class-name">exec</span> <span class="token function">bash</span>
+
+<span class="token function">docker</span> <span class="token function">ps</span>
+
+<span class="token comment"># Compose Plugin</span>
+<span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /usr/local/lib/docker/cli-plugins/
+<span class="token function">sudo</span> <span class="token function">curl</span> <span class="token parameter variable">-SL</span> <span class="token string">"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-<span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> <span class="token parameter variable">-m</span><span class="token variable">)</span></span>"</span> <span class="token parameter variable">-o</span> /usr/local/lib/docker/cli-plugins/docker-compose
+<span class="token function">sudo</span> <span class="token function">chmod</span> +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+<span class="token function">docker</span> compose version</code></pre>
+
+<h4 id="Compose-플러그인을-docker-compose-명령어로-사용하기"><a href="#Compose-플러그인을-docker-compose-명령어로-사용하기" class="headerlink" title="Compose 플러그인을 docker-compose 명령어로 사용하기"></a>Compose 플러그인을 docker-compose 명령어로 사용하기</h4><p>Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 심볼릭 링크 또는 alias로 등록하면 된다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># sudo ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose</span>
+<span class="token builtin class-name">alias</span> docker-compose<span class="token operator">=</span><span class="token string">'docker compose --compatibility "$@"'</span>
+
+<span class="token function">docker-compose</span> version</code></pre>
+]]></content>
+      <tags>
+        <tag>AL2023</tag>
+        <tag>Docker</tag>
+        <tag>Docker Compose</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>개발자를 위한 인프라 지식</title>
     <url>/infrastructure/</url>
     <content><![CDATA[<blockquote>
@@ -3820,37 +3851,6 @@ journalctl <span class="token parameter variable">-b</span>
       <tags>
         <tag>Infrastructure</tag>
         <tag>Microarchitecture</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Amazon Linux 2023 Docker Compose 플러그인 설치</title>
-    <url>/install-docker-compose-in-amazon-linux-2023/</url>
-    <content><![CDATA[<p>Amazon Linux 2023 에서는 Extra를 제공하지는 않지만 Docker는 기본적으로 포함되어있다. Amazon Linux 2 에서와 동일하게 Docker Compose Plugin 은 별도로 포함해주지 않으므로 직접 수동으로 설치해야한다. 다만, docker-compose 명령어로 별도로 사용하기 보다는 최신 버전에 맞춰 Docker <a href="https://docs.docker.com/compose/install/linux/#install-the-plugin-manually">Compose 플러그인</a>으로 설치해보도록 하자. <a href="https://github.com/docker/compose/releases">Docker Compose Releases</a> 사이트에서 다운로드 받은 docker-compose 를 cli-plugins 폴더 아래에 복사하면 된다.</p>
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># Docker</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token parameter variable">-y</span> <span class="token function">docker</span>
-<span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> ec2-user
-<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> <span class="token function">docker</span>
-<span class="token builtin class-name">exec</span> <span class="token function">bash</span>
-
-<span class="token function">docker</span> <span class="token function">ps</span>
-
-<span class="token comment"># Compose Plugin</span>
-<span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /usr/local/lib/docker/cli-plugins/
-<span class="token function">sudo</span> <span class="token function">curl</span> <span class="token parameter variable">-SL</span> <span class="token string">"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-<span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> <span class="token parameter variable">-m</span><span class="token variable">)</span></span>"</span> <span class="token parameter variable">-o</span> /usr/local/lib/docker/cli-plugins/docker-compose
-<span class="token function">sudo</span> <span class="token function">chmod</span> +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-<span class="token function">docker</span> compose version</code></pre>
-
-<h4 id="Compose-플러그인을-docker-compose-명령어로-사용하기"><a href="#Compose-플러그인을-docker-compose-명령어로-사용하기" class="headerlink" title="Compose 플러그인을 docker-compose 명령어로 사용하기"></a>Compose 플러그인을 docker-compose 명령어로 사용하기</h4><p>Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 심볼릭 링크 또는 alias로 등록하면 된다.</p>
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># sudo ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose</span>
-<span class="token builtin class-name">alias</span> docker-compose<span class="token operator">=</span><span class="token string">'docker compose --compatibility "$@"'</span>
-
-<span class="token function">docker-compose</span> version</code></pre>
-]]></content>
-      <tags>
-        <tag>AL2023</tag>
-        <tag>Docker</tag>
-        <tag>Docker Compose</tag>
       </tags>
   </entry>
   <entry>
@@ -6135,21 +6135,6 @@ dependencies <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
-    <title>기록보다 더 중요한 것</title>
-    <url>/more-important-than-blogging/</url>
-    <content><![CDATA[<p>신입 개발자 인터뷰 과정에서 배우게 된 건 <strong>기록보다 중요한 것은 다시 되돌아보는 행위</strong>인 것 같다.</p>
-<p>신입 개발자 이력서를 검토하다보면 경력 개발자와 다르게 기술 블로그를 필수로 첨부하거나 <strong>기억보다 기록을</strong> 어필하는 분들이 상당히 많다고 느낀다. 이렇게 신입 개발자들에게 기술 블로그가 거의 필수가 된 이유는 꾸준하게 블로그에 자신의 생각이나 경험한 것들을 기록하는 유튜브 개발바닥의 향로님의 영향이 클 것 같다고 생각된다.</p>
-<p>아무튼 신입 개발자 인터뷰 과정에서 기술 블로그에 있는 내용을 토대로 물어보게 되면 답변을 못하는 경우가 생각보다 많다. 아무래도 당장 배워야할 것이 많고 잊어버리거나 우선순위에 밀려서 신경쓰지 않던 지식들이기 때문일 것 같다. 국비지원이나 부트캠프에서 많은 걸을 배웠다고 생각하지만 짧은 기간으로 인해 생략하고 넘어간 기본적으로 알아야할 지식들도 많다.</p>
-<p>개인적으로 솔직하게 신입 개발자들에게 물어볼만한 것들은 이미 인터넷에 신입 개발자 질문 리스트라며 문제 은행식으로 꽤나 많이 공유되어 있다. 그래서 지원자마다 다르게 물어보게 되는 건 <strong>블로그에 있는 내용을 토대로 얼마나 더 찾아보고 이해했는가</strong> 이다.</p>
-<p>최소한 면접을 보기 전에 <strong>자신이 작성했던 내용을 다시 살펴보는 게 중요</strong>할 것 같다. 현재 진행하고 있는 채용에서 인터뷰 과정을 되돌아보았을 때 자세히 답변을 하지 못하더라도 지식에 대한 키워드를 들어본 듯한 반응이 있는 것과 전혀 알아채지 못하는 건 확실하게 느낌이 다르다.</p>
-<p>나도 이 블로그에 작성했던 것들을 자주 되돌아보아야 겠다. 🙄</p>
-]]></content>
-      <tags>
-        <tag>개발자 인터뷰</tag>
-        <tag>기술 블로그</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mutual TLS</title>
     <url>/mutual-tls/</url>
     <content><![CDATA[<blockquote>
@@ -6344,38 +6329,18 @@ dependencies <span class="token punctuation">&#123;</span>
       </tags>
   </entry>
   <entry>
-    <title>개발자가 알아야할 네트워크 지식</title>
-    <url>/network/</url>
-    <content><![CDATA[<p><img data-src="/images/posts/network/01.jpg" alt="노란건 돌돌이..."></p>
-<p><a href="https://roadmap.sh/backend">roadmap.sh</a>를 참고하면 프론트엔드와 백엔드 개발자 모두 인터넷이라는 기초 지식을 필요로 하다고 말합니다. 그렇다면 위 장비들이 인터넷을 사용하기 위해서 어떠한 용도로 사용되는 장비라는 것을 아는 개발자가 얼마나 될까요? 이미 이것들을 알거나 다루지 않는 경험 많은 개발자들은 “개발자는 저것을 사용할 일이 없어요”라고 할테지요. 물론 저도 위 장비들을 경험한 것은 개발자로 일하고 있는 지금이 아니라 컴퓨터공학과라는 이유로 가설병 보직을 받고나서 사단 내 유선 전화를 고치거나 신규로 다이렉트 전화선을 추가해야하는 요건이 있을때 사용해본 경험이 있을 뿐입니다.</p>
-<blockquote>
-<p>심지어는 유선병이라는 이유로 늘어진 통신선을 정리하기 위해서 전봇대도 타야하는 상황도…</p>
-</blockquote>
-<p>아무튼 위와 같은 경험이 없었더라면 인터넷을 사용하기 위해서 사용하는 <em>RJ45 커넥터 규격</em>이란 것을 떠올리거나 UTP 케이블을 커넥터와 결합할 때 일반적으로 나열하는 <em>색상의 순서가 표준으로 정해져있다</em>는 것을 알지 못했을 겁니다. 왜냐하면 현재 개발자로 일할때에는 인터넷 선에 대한 부분을 직접 다루어본다거나 이미 구성된 서버 인프라 환경을 통해서 애플리케이션을 배포하고 운영하기 때문이죠.</p>
-<p><img data-src="/images/posts/network/02.png" alt="대한민국 해저 케이블 위치"></p>
-<p>인터넷으로 전세계가 연결될 수 있다는 것을 알아도 우리나라에서 다른 나라로 트래픽이 전달되기 위해서는 수 많은 <a href="https://www.submarinecablemap.com/country/south-korea">해저 광 케이블</a>이 설치되고 경유한다는 것까지는 모를 수 있습니다. 실제로 개발자 또는 엔지니어가 아닌 사업팀에게 사용자의 클릭으로 인해 어떠한 요청이 서버로 전달되고 다시 돌아오는데까지 설명하더라도 바다를 통해서 다른 나라로 건너가서 서버로 들어오게 된다라고 설명하지는 않습니다.</p>
-<blockquote>
-<p>개인적으로 궁금할 수는 있지만 굳이 모른다고해도 일하거나 이해하는데 지장이 없기 때문이죠.</p>
-</blockquote>
-<h4 id="해저-케이블-관련-정보"><a href="#해저-케이블-관련-정보" class="headerlink" title="해저 케이블 관련 정보"></a>해저 케이블 관련 정보</h4><ul>
-<li><a href="https://www.yna.co.kr/view/AKR20210108069100051">해저케이블 있기에 가능한 지구촌 소통</a></li>
-<li><a href="https://brunch.co.kr/@go2hanoi/14">베트남 해저 케이블은 왜 자주 끊길까?</a></li>
-<li><a href="http://www.goodmorningvietnam.co.kr/mobile/article.html?no=49888">해저 케이블 루트 2개에 문제가 있는데 여전히 고칠 수 없다</a></li>
-</ul>
-<p>조직내에 서버 인프라 엔지니어가 있거나 인프라 팀이 존재한다면 애플리케이션으로 트래픽이 전달되도록 <a href="https://aws.amazon.com/ko/route53/what-is-dns/">DNS</a>와 <a href="https://docs.microsoft.com/ko-kr/azure/rtos/netx-duo/netx-duo-nat/chapter1">NAT</a>와 같은 설정들을 개발자가 담당하지는 않을겁니다. AWS와 같은 클라우드 서비스에서는 개발자가 직접 웹 콘솔을 통해서 클릭만으로도 서버 인프라 구성에 대한 설정을 쉽게 할 수 있도록 제공하긴 합니다. 그래서 클라우드 인프라 환경을 직접 다루는 저와 같은 개발자들은 요구사항에 따라서 인프라 구성을 검토하거나 설정을 변경해야하는 작업도 해야할 수 있기에 어느정도의 인프라 지식도 필요하게 되죠.</p>
-<blockquote>
-<p>알아야하는 인프라 지식은 현재 조직에서 어떤 것을 경험하느냐에 따라 달라집니다.</p>
-</blockquote>
-<p>일반적으로는 HTTP라는 통신 프로토콜을 사용하지만 사업 분야에 따라서 <a href="https://mqtt.org/">MQTT 통신 프로토콜</a>를 통해 데이터가 전달된다거나 <a href="https://ko.wikipedia.org/w/index.php?title=%EB%AA%A8%EB%93%9C%EB%B2%84%EC%8A%A4&tableofcontents=0">Modbus TCP</a>를 통해 산업 자동화 장비와의 통신으로 데이터를 수집하고 심지어는 차량에서는 <a href="https://ko.wikipedia.org/wiki/CAN_%EB%B2%84%EC%8A%A4">CAN 통신</a>을 사용하고 OBD 모듈을 통해서 데이터를 전달받기도 하죠. 통신 프로토콜 뿐만 아니라 이더넷으로 인터넷에 접속하지 않고 프라이빗 네트워크 환경으로 연결하며 무선 통신을 통해서 인터넷으로 접속하는 인프라 환경을 경험해보지 않았다면 아마도 네트워크 우선 순위가 있다는 지식을 알지 못하고 있을 수 있씁니다.</p>
-<blockquote>
-<p>셀룰러 모듈이 포함된 클라이언트 장비를 전달하고나서 유선 연결을 시도한 순간 인터넷 연결이 끊어져서 원격이 해제되었던 것을 실제로 경험하기도 했죠.</p>
-</blockquote>
-<p>대부분의 개발자가 웹 서버 또는 애플리케이션에 SSL 인증서를 설치해서 HTTPS 통신을 할 수 있도록 구성할 수 있지만 AWS 클라우드 환경을 사용하지 않거나 ELB 중 NLB를 통해서 ECC 기반의 SSL 인증서를 설정하여 TLS 오프로드 기능을 설정하려고 시도하지 않았다면 <a href="https://docs.aws.amazon.com/ko_kr/elasticloadbalancing/latest/network/create-tls-listener.html#tls-listener-certificates">2048 이상의 RSA 키 또는 EC 키가 포함된 인증서를 지원하지 않음</a>에 대한 것을 알지 못할 수 있습니다. </p>
-<p>결국은 개발자라는 직무에서 알아야할 네트워크 지식은 정해져있지 않으며 현재 내가 조직에서 어떠한 요구사항을 처리하는가 또는 어떤 것까지 담당하고 경험하는가에 따라 그 깊이와 범위가 달라질 수 있다는 점을 인지해야할 것 같습니다. </p>
+    <title>기록보다 더 중요한 것</title>
+    <url>/more-important-than-blogging/</url>
+    <content><![CDATA[<p>신입 개발자 인터뷰 과정에서 배우게 된 건 <strong>기록보다 중요한 것은 다시 되돌아보는 행위</strong>인 것 같다.</p>
+<p>신입 개발자 이력서를 검토하다보면 경력 개발자와 다르게 기술 블로그를 필수로 첨부하거나 <strong>기억보다 기록을</strong> 어필하는 분들이 상당히 많다고 느낀다. 이렇게 신입 개발자들에게 기술 블로그가 거의 필수가 된 이유는 꾸준하게 블로그에 자신의 생각이나 경험한 것들을 기록하는 유튜브 개발바닥의 향로님의 영향이 클 것 같다고 생각된다.</p>
+<p>아무튼 신입 개발자 인터뷰 과정에서 기술 블로그에 있는 내용을 토대로 물어보게 되면 답변을 못하는 경우가 생각보다 많다. 아무래도 당장 배워야할 것이 많고 잊어버리거나 우선순위에 밀려서 신경쓰지 않던 지식들이기 때문일 것 같다. 국비지원이나 부트캠프에서 많은 걸을 배웠다고 생각하지만 짧은 기간으로 인해 생략하고 넘어간 기본적으로 알아야할 지식들도 많다.</p>
+<p>개인적으로 솔직하게 신입 개발자들에게 물어볼만한 것들은 이미 인터넷에 신입 개발자 질문 리스트라며 문제 은행식으로 꽤나 많이 공유되어 있다. 그래서 지원자마다 다르게 물어보게 되는 건 <strong>블로그에 있는 내용을 토대로 얼마나 더 찾아보고 이해했는가</strong> 이다.</p>
+<p>최소한 면접을 보기 전에 <strong>자신이 작성했던 내용을 다시 살펴보는 게 중요</strong>할 것 같다. 현재 진행하고 있는 채용에서 인터뷰 과정을 되돌아보았을 때 자세히 답변을 하지 못하더라도 지식에 대한 키워드를 들어본 듯한 반응이 있는 것과 전혀 알아채지 못하는 건 확실하게 느낌이 다르다.</p>
+<p>나도 이 블로그에 작성했던 것들을 자주 되돌아보아야 겠다. 🙄</p>
 ]]></content>
       <tags>
-        <tag>개발자</tag>
-        <tag>네트워크</tag>
+        <tag>개발자 인터뷰</tag>
+        <tag>기술 블로그</tag>
       </tags>
   </entry>
   <entry>
@@ -6421,6 +6386,41 @@ dependencies <span class="token punctuation">&#123;</span>
       <tags>
         <tag>nginx</tag>
         <tag>mirror</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>개발자가 알아야할 네트워크 지식</title>
+    <url>/network/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/network/01.jpg" alt="노란건 돌돌이..."></p>
+<p><a href="https://roadmap.sh/backend">roadmap.sh</a>를 참고하면 프론트엔드와 백엔드 개발자 모두 인터넷이라는 기초 지식을 필요로 하다고 말합니다. 그렇다면 위 장비들이 인터넷을 사용하기 위해서 어떠한 용도로 사용되는 장비라는 것을 아는 개발자가 얼마나 될까요? 이미 이것들을 알거나 다루지 않는 경험 많은 개발자들은 “개발자는 저것을 사용할 일이 없어요”라고 할테지요. 물론 저도 위 장비들을 경험한 것은 개발자로 일하고 있는 지금이 아니라 컴퓨터공학과라는 이유로 가설병 보직을 받고나서 사단 내 유선 전화를 고치거나 신규로 다이렉트 전화선을 추가해야하는 요건이 있을때 사용해본 경험이 있을 뿐입니다.</p>
+<blockquote>
+<p>심지어는 유선병이라는 이유로 늘어진 통신선을 정리하기 위해서 전봇대도 타야하는 상황도…</p>
+</blockquote>
+<p>아무튼 위와 같은 경험이 없었더라면 인터넷을 사용하기 위해서 사용하는 <em>RJ45 커넥터 규격</em>이란 것을 떠올리거나 UTP 케이블을 커넥터와 결합할 때 일반적으로 나열하는 <em>색상의 순서가 표준으로 정해져있다</em>는 것을 알지 못했을 겁니다. 왜냐하면 현재 개발자로 일할때에는 인터넷 선에 대한 부분을 직접 다루어본다거나 이미 구성된 서버 인프라 환경을 통해서 애플리케이션을 배포하고 운영하기 때문이죠.</p>
+<p><img data-src="/images/posts/network/02.png" alt="대한민국 해저 케이블 위치"></p>
+<p>인터넷으로 전세계가 연결될 수 있다는 것을 알아도 우리나라에서 다른 나라로 트래픽이 전달되기 위해서는 수 많은 <a href="https://www.submarinecablemap.com/country/south-korea">해저 광 케이블</a>이 설치되고 경유한다는 것까지는 모를 수 있습니다. 실제로 개발자 또는 엔지니어가 아닌 사업팀에게 사용자의 클릭으로 인해 어떠한 요청이 서버로 전달되고 다시 돌아오는데까지 설명하더라도 바다를 통해서 다른 나라로 건너가서 서버로 들어오게 된다라고 설명하지는 않습니다.</p>
+<blockquote>
+<p>개인적으로 궁금할 수는 있지만 굳이 모른다고해도 일하거나 이해하는데 지장이 없기 때문이죠.</p>
+</blockquote>
+<h4 id="해저-케이블-관련-정보"><a href="#해저-케이블-관련-정보" class="headerlink" title="해저 케이블 관련 정보"></a>해저 케이블 관련 정보</h4><ul>
+<li><a href="https://www.yna.co.kr/view/AKR20210108069100051">해저케이블 있기에 가능한 지구촌 소통</a></li>
+<li><a href="https://brunch.co.kr/@go2hanoi/14">베트남 해저 케이블은 왜 자주 끊길까?</a></li>
+<li><a href="http://www.goodmorningvietnam.co.kr/mobile/article.html?no=49888">해저 케이블 루트 2개에 문제가 있는데 여전히 고칠 수 없다</a></li>
+</ul>
+<p>조직내에 서버 인프라 엔지니어가 있거나 인프라 팀이 존재한다면 애플리케이션으로 트래픽이 전달되도록 <a href="https://aws.amazon.com/ko/route53/what-is-dns/">DNS</a>와 <a href="https://docs.microsoft.com/ko-kr/azure/rtos/netx-duo/netx-duo-nat/chapter1">NAT</a>와 같은 설정들을 개발자가 담당하지는 않을겁니다. AWS와 같은 클라우드 서비스에서는 개발자가 직접 웹 콘솔을 통해서 클릭만으로도 서버 인프라 구성에 대한 설정을 쉽게 할 수 있도록 제공하긴 합니다. 그래서 클라우드 인프라 환경을 직접 다루는 저와 같은 개발자들은 요구사항에 따라서 인프라 구성을 검토하거나 설정을 변경해야하는 작업도 해야할 수 있기에 어느정도의 인프라 지식도 필요하게 되죠.</p>
+<blockquote>
+<p>알아야하는 인프라 지식은 현재 조직에서 어떤 것을 경험하느냐에 따라 달라집니다.</p>
+</blockquote>
+<p>일반적으로는 HTTP라는 통신 프로토콜을 사용하지만 사업 분야에 따라서 <a href="https://mqtt.org/">MQTT 통신 프로토콜</a>를 통해 데이터가 전달된다거나 <a href="https://ko.wikipedia.org/w/index.php?title=%EB%AA%A8%EB%93%9C%EB%B2%84%EC%8A%A4&tableofcontents=0">Modbus TCP</a>를 통해 산업 자동화 장비와의 통신으로 데이터를 수집하고 심지어는 차량에서는 <a href="https://ko.wikipedia.org/wiki/CAN_%EB%B2%84%EC%8A%A4">CAN 통신</a>을 사용하고 OBD 모듈을 통해서 데이터를 전달받기도 하죠. 통신 프로토콜 뿐만 아니라 이더넷으로 인터넷에 접속하지 않고 프라이빗 네트워크 환경으로 연결하며 무선 통신을 통해서 인터넷으로 접속하는 인프라 환경을 경험해보지 않았다면 아마도 네트워크 우선 순위가 있다는 지식을 알지 못하고 있을 수 있씁니다.</p>
+<blockquote>
+<p>셀룰러 모듈이 포함된 클라이언트 장비를 전달하고나서 유선 연결을 시도한 순간 인터넷 연결이 끊어져서 원격이 해제되었던 것을 실제로 경험하기도 했죠.</p>
+</blockquote>
+<p>대부분의 개발자가 웹 서버 또는 애플리케이션에 SSL 인증서를 설치해서 HTTPS 통신을 할 수 있도록 구성할 수 있지만 AWS 클라우드 환경을 사용하지 않거나 ELB 중 NLB를 통해서 ECC 기반의 SSL 인증서를 설정하여 TLS 오프로드 기능을 설정하려고 시도하지 않았다면 <a href="https://docs.aws.amazon.com/ko_kr/elasticloadbalancing/latest/network/create-tls-listener.html#tls-listener-certificates">2048 이상의 RSA 키 또는 EC 키가 포함된 인증서를 지원하지 않음</a>에 대한 것을 알지 못할 수 있습니다. </p>
+<p>결국은 개발자라는 직무에서 알아야할 네트워크 지식은 정해져있지 않으며 현재 내가 조직에서 어떠한 요구사항을 처리하는가 또는 어떤 것까지 담당하고 경험하는가에 따라 그 깊이와 범위가 달라질 수 있다는 점을 인지해야할 것 같습니다. </p>
+]]></content>
+      <tags>
+        <tag>개발자</tag>
+        <tag>네트워크</tag>
       </tags>
   </entry>
   <entry>
@@ -6701,6 +6701,35 @@ Migrated <span class="token string">"local.dev+1.jks"</span> to PKCS12. The JKS 
         <tag>PKI</tag>
         <tag>PKCS#8</tag>
         <tag>PKCS#12</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PWA 와 FCM 푸시 알림</title>
+    <url>/pwa-fcm-web-push/</url>
+    <content><![CDATA[<h4 id="PWA의-서비스-워커는-HTTPS를-요구"><a href="#PWA의-서비스-워커는-HTTPS를-요구" class="headerlink" title="PWA의 서비스 워커는 HTTPS를 요구"></a>PWA의 서비스 워커는 HTTPS를 요구</h4><p>PWA 앱에서 푸시 알림을 보내기 위해서는 사용자가 사이트 또는 앱에 대한 알림 권한을 허용해야하며 PWA 앱이 종료되어있어도 백그라운드 상태에서 동작하는 서비스 워커가 필요하다. Vite 기반으로 구성되어있는 프로젝트에서는 <a href="https://vite-pwa-org.netlify.app/">PWA Plugin for Vite</a>로 쉽게 PWA 설치 지원과 함께 서비스 워커를 등록할 수 있게 설정할 수 있다. 서비스 워커는 HTTPS 에서 동작해야하므로 개발 환경에서는 <a href="https://github.com/liuweiGL/vite-plugin-mkcert">vite-plugin-mkcert</a>가 도움이 될 수 있다.</p>
+<h4 id="서비스-워커의-상태-변경을-고려하기"><a href="#서비스-워커의-상태-변경을-고려하기" class="headerlink" title="서비스 워커의 상태 변경을 고려하기"></a>서비스 워커의 상태 변경을 고려하기</h4><p>서비스 워커의 생명 주기를 이해하고 새로 설치되거나 업데이트되는 서비스 워커로 인해 메시지 수신이 원활하지 않을 수 있다는 점을 인지해야한다. <a href="https://developer.mozilla.org/ko/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting">ServiceWorkerGlobalScope.skipWaiting</a> 이나 <a href="https://developer.mozilla.org/ko/docs/Web/API/Clients/claim">Clients::claim()</a>이 도움이 될 수도 있다.</p>
+<h5 id="서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다"><a href="#서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다" class="headerlink" title="서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다"></a>서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다</h5><pre class="language-javascript" data-language="javascript"><div class="caption"><span>main.js</span></div><code class="language-javascript"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">'serviceWorker'</span> <span class="token keyword">in</span> navigator<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    navigator<span class="token punctuation">.</span>serviceWorker<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>
+        <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'/sw.js'</span> <span class="token operator">:</span> <span class="token string">'/dev-sw.js?dev-sw'</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span><span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'classic'</span> <span class="token operator">:</span> <span class="token string">'module'</span><span class="token punctuation">&#125;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">registration</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'register service worker'</span><span class="token punctuation">,</span> registration<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>FCM 관련 일부 글에서 서비스 워커의 파일이 반드시 <code>firebase-messaing-sw.js</code> 이어야 한다고 언급하는데 잘못된 정보에 해당되며 FCM 메시지 수신을 위해서 PWA 앱에서 사용중인 <code>서비스 워커 내에 Firebase SDK를 초기화</code>하는게 중요한 부분이다. 위 코드와 같이 개발 환경에서는 <a href="https://vite-pwa-org.netlify.app/guide/development#injectmanifest-strategy">dev-sw.js</a>를 서비스 워커로 등록하여 사용할 수 있음을 보여준다.</p>
+<h4 id="FCM-푸시-알림이-여러번-표시되는-문제-🔥"><a href="#FCM-푸시-알림이-여러번-표시되는-문제-🔥" class="headerlink" title="FCM 푸시 알림이 여러번 표시되는 문제 🔥"></a>FCM 푸시 알림이 여러번 표시되는 문제 🔥</h4><p><a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2024-07-06.md">PWA 앱의 푸시 알림에서 FCM 메시지가 여러번 표시되는 문제</a>와 같이 백그라운드 상태에 있는 PWA 앱에서 푸시 알림이 여러번 표시되는 이유는 <a href="https://firebase.google.com/docs/cloud-messaging/js/receive?hl=ko">자바스크립트 클라이언트에서 메시지 수신</a>시 알림 메시지에 의한 기본 화면 표시에 대해 고려하지 않은 문제에 해당된다. 자바스크립트 클라이언트에서 커스텀 메시지로 푸시 알림을 제공하고 싶다면 서버에서는 알림 메시지가 포함되지 않은 데이터 메시지로 구성하여 전달해야한다.</p>
+<h4 id="자바스크립트-클라이언트-API-키는-안전하다"><a href="#자바스크립트-클라이언트-API-키는-안전하다" class="headerlink" title="자바스크립트 클라이언트 API 키는 안전하다"></a>자바스크립트 클라이언트 API 키는 안전하다</h4><p>일반적으로 자바스크립트로 동작하는 SDK에 대한 키는 외부에 노출될 수 밖에 없으므로 FCM 메시지를 수신할 수 있는 최소한의 권한을 보유한다. FCM 콘솔에서 <a href="https://developer.chrome.com/blog/web-push-interop-wins?hl=ko#introducing_vapid_for_server_identification">웹 푸시 인증서</a>는 <code>최대 2개까지 발급</code>할 수 있으므로 <code>VAPID</code>를 환경별로 나누어서 사용하는 것도 좋아보인다. 더 자세한 내용은 <a href="https://firebase.google.com/docs/projects/api-keys?hl=ko">Firebase용 API 키 사용 및 관리에 대해 알아보기</a>를 참고하여 고려해보도록 하자.</p>
+<h4 id="시스템-규모에-따른-토큰-관리-전략"><a href="#시스템-규모에-따른-토큰-관리-전략" class="headerlink" title="시스템 규모에 따른 토큰 관리 전략"></a>시스템 규모에 따른 토큰 관리 전략</h4><p><a href="https://firebase.google.com/docs/cloud-messaging/manage-tokens?hl=ko">FCM 등록 토큰 관리를 위한 권장사항</a>과 <a href="https://firebase.google.com/docs/cloud-messaging/scale-fcm?hl=ko">FCM 메시지를 대규모로 전송할 때의 권장사항</a>를 참고하여 시스템에 저장되어 메시지 전송 시 사용되는 토큰의 수를 관리하는게 필요하다. 서버에서는 사용자가 PWA 앱을 삭제하는지를 감지하여 더이상 토큰이 사용되지 않는지 알 수 없다. FCM 메시지 전송 시 무제한으로 발송할 수는 없으므로 오랫동안 사용되지 않거나 만료된 토큰은 주기적으로 삭제하는 작업이 있어야한다.</p>
+<h4 id="iOS의-PWA-앱-지원-여부"><a href="#iOS의-PWA-앱-지원-여부" class="headerlink" title="iOS의 PWA 앱 지원 여부"></a>iOS의 PWA 앱 지원 여부</h4><p>안드로이드와 크롬 브라우저와 달리 iOS 또는 사파리 브라우저에 따라 PWA 앱 설치 및 푸시 API를 지원하는지의 여부가 다름을 인지해야한다. 또한, 홈 화면으로 추가되는 앱은 반드시 기본으로 제공되는 사파리 브라우저로 실행되는 것도 중요한 부분에 해당된다.</p>
+<ul>
+<li><a href="https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers">Safari 16.1 and macOS 16.4 iOS &amp; iPadOS 부터 Push API 지원</a></li>
+<li><a href="https://developer.apple.com/support/dma-and-apps-in-the-eu/">유럽 연합의 국가에서 iOS 17.4 이상에서 PWA 지원 종료</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>PWA</tag>
+        <tag>FCM</tag>
       </tags>
   </entry>
   <entry>
@@ -7413,6 +7442,22 @@ docker compose exec nginx nginx -s reload
       </tags>
   </entry>
   <entry>
+    <title>스스로 리뷰하는 습관을 가지자</title>
+    <url>/review-yourself/</url>
+    <content><![CDATA[<p>신입 웹 개발자들의 이력서나 인터뷰 과정에서 회사 내에 코드 리뷰 문화가 있는지 물어보는 사람이 많은 것 같다. 어떤 사람은 자신이 작성한 코드가 효율적인지 평가받고 싶은 니즈이고 어떤 사람은 팀 프로젝트를 진행하면서 처음의 목표와는 다르게 짧은 기간에 결과물을 만들어내기 위해 리뷰 과정을 생략할 수 밖에 없었던 경험을 코드 리뷰 문화가 정착된 조직에서 경험하고자 하는 것 같다. 솔직하게 이야기하자면 회사 내에 코드 리뷰 문화는 없으며 내가 속한 팀에 한해서만 주니어 개발자들의 요청에 의해서 코드 리뷰 과정을 도입하여 프로젝트 업무를 수행하고 있다. 아무래도 팀장이라는 직무를 수행하고 있기에 내심 원했던 것을 팀에서 요청했을 지 모를 일이다. 아무튼 코드 리뷰 과정을 수행한다고 해서 현실적으로 빠르게 업무를 수행하고 생각보다 많은 것들을 처리해야하므로 모두가 만족할만한 상세한 코드 리뷰는 없다고 말할 수 있다.</p>
+<p>인터넷에서 코드 리뷰에 대한 글들을 살펴보니 생각보다 많은 조직에서 개발자들이 코드 리뷰에 대한 오해를 했었고 현재의 팀에서도 코드 리뷰에 대한 작은 오해들을 조금씩 해소에 나가고 있다고 생각한다. 코드 리뷰 과정에서 가장 큰 오해는 경험이 많은 개발자의 의견이 정답이라고 가정하는 것이며 작은 오해는 코드 리뷰를 통해 모든 것을 체크해야한다고 생각한다는 것이다. 앞서 이야기했듯이 빠르게 많은 업무를 처리해야하므로 코드 리뷰에 많은 시간을 소비하기엔 어려운게 현실이다. 그렇다면 최소한 대부분의 개발자들이 기본으로 생각하는 사소한 관점에 대해서 스스로 리뷰하는 과정과 습관이 필요해진다는 의미로 생각할 수 있다.</p>
+<p>그렇다면, 개발자가 스스로 리뷰할 수 있는 방법은 무엇이 있을지 같이 생각해보자.</p>
+<h4 id="깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기"><a href="#깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기" class="headerlink" title="깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기"></a>깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기</h4><p>사소한 실수로 인해 깃 커밋 과정에서 풀 리퀘스트에 대한 내용과 상관없는 변경사항이 나도 모르게 포함될 수 있다. 코드 리뷰를 수행하는 리뷰어 입장에서는 요구사항과 상관없는 변경사항으로 인해 그로 인해 발생할 수 있는 영향도 체크까지 해야하는 불필요한 상황이 발생할 수 있다. 코드 리뷰 과정의 목적 중에 하나는 작업자가 고려하거나 체크하지 못한 부분을 크로스 체크하기 위함이 있지만 그러한 과정을 줄이려는 노력은 반드시 필요하다.</p>
+<h4 id="코딩-컨벤션에-맞는-포맷팅을-수행하기"><a href="#코딩-컨벤션에-맞는-포맷팅을-수행하기" class="headerlink" title="코딩 컨벤션에 맞는 포맷팅을 수행하기"></a>코딩 컨벤션에 맞는 포맷팅을 수행하기</h4><p>인텔리제이와 이클립스를 포함한 많은 개발도구에서는 문서에 대한 포맷팅 기능을 포함하고 있다. CheckStyle, Prettier, ESLint와 같은 플러그인과 통합하여 프로젝트마다 정해진 방식으로 포맷팅을 유지할 수 있고 코드 가독성을 유지하여 리뷰어가 더 쉽게 코드 변경사항을 체크할 수 있도록 제공할 수 있다. 어떤 개발자들은 포맷팅에 대해서 관심이 없어 무시하는 경향이 있는데 굳이 클린 코드라는 관점이 아니라도 사소한 포맷팅 습관으로도 코드 가독성은 엄청나게 높아진다.</p>
+<h4 id="SonarLint로-코드-품질을-리뷰하기"><a href="#SonarLint로-코드-품질을-리뷰하기" class="headerlink" title="SonarLint로 코드 품질을 리뷰하기"></a>SonarLint로 코드 품질을 리뷰하기</h4><p>SonarLint와 같은 정적 품질을 수행할 수 있는 도구를 통해 스스로 작성한 코드 품질에 대해서 살펴보고 리뷰할 수 있다. 클린 아키텍처와 클린 코드가 개발자 관점에서 도움이 되는 지식은 맞으나 사소한 것들도 체크하지 못하는 상황에서 좋은 코드를 작성하는 것에만 관심이 있다면 그것이 정말로 옳은 방향인지 다시 생각해보자. 스스로 <code>Standard outputs should not be used directly to log anything</code> 이라는 <a href="https://refactoring.guru/refactoring/smells">코드 스멜</a>을 아는가?</p>
+<p>신입 또는 주니어 개발자에게 기본적으로 요구되는 필수 역량에서 기본이라는 의미는 어쩌면 어떤 지식의 깊은 이해로 인해 잊어버리는 사소한 것들을 말하는게 아닐까 싶다. 스스로 리뷰하는 습관을 가져서 생각보다 잊어버리기 쉬운 사소한 것들을 체크해보도록 하자. </p>
+]]></content>
+      <tags>
+        <tag>Code Review</tag>
+        <tag>PR</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>프리마커 템플릿으로 이메일 발송하기</title>
     <url>/sending-mail-with-freemarker-template/</url>
     <content><![CDATA[<blockquote>
@@ -7509,22 +7554,6 @@ Caused by: javax.mail.AuthenticationFailedException: <span class="token number">
 <li><a href="https://www.baeldung.com/freemarker-in-spring-mvc-tutorial">Introduction to Using FreeMarker in Spring MVC</a></li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>스스로 리뷰하는 습관을 가지자</title>
-    <url>/review-yourself/</url>
-    <content><![CDATA[<p>신입 웹 개발자들의 이력서나 인터뷰 과정에서 회사 내에 코드 리뷰 문화가 있는지 물어보는 사람이 많은 것 같다. 어떤 사람은 자신이 작성한 코드가 효율적인지 평가받고 싶은 니즈이고 어떤 사람은 팀 프로젝트를 진행하면서 처음의 목표와는 다르게 짧은 기간에 결과물을 만들어내기 위해 리뷰 과정을 생략할 수 밖에 없었던 경험을 코드 리뷰 문화가 정착된 조직에서 경험하고자 하는 것 같다. 솔직하게 이야기하자면 회사 내에 코드 리뷰 문화는 없으며 내가 속한 팀에 한해서만 주니어 개발자들의 요청에 의해서 코드 리뷰 과정을 도입하여 프로젝트 업무를 수행하고 있다. 아무래도 팀장이라는 직무를 수행하고 있기에 내심 원했던 것을 팀에서 요청했을 지 모를 일이다. 아무튼 코드 리뷰 과정을 수행한다고 해서 현실적으로 빠르게 업무를 수행하고 생각보다 많은 것들을 처리해야하므로 모두가 만족할만한 상세한 코드 리뷰는 없다고 말할 수 있다.</p>
-<p>인터넷에서 코드 리뷰에 대한 글들을 살펴보니 생각보다 많은 조직에서 개발자들이 코드 리뷰에 대한 오해를 했었고 현재의 팀에서도 코드 리뷰에 대한 작은 오해들을 조금씩 해소에 나가고 있다고 생각한다. 코드 리뷰 과정에서 가장 큰 오해는 경험이 많은 개발자의 의견이 정답이라고 가정하는 것이며 작은 오해는 코드 리뷰를 통해 모든 것을 체크해야한다고 생각한다는 것이다. 앞서 이야기했듯이 빠르게 많은 업무를 처리해야하므로 코드 리뷰에 많은 시간을 소비하기엔 어려운게 현실이다. 그렇다면 최소한 대부분의 개발자들이 기본으로 생각하는 사소한 관점에 대해서 스스로 리뷰하는 과정과 습관이 필요해진다는 의미로 생각할 수 있다.</p>
-<p>그렇다면, 개발자가 스스로 리뷰할 수 있는 방법은 무엇이 있을지 같이 생각해보자.</p>
-<h4 id="깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기"><a href="#깃-커밋-과정에서-불필요한-반영사항을-다시-한번-체크하기" class="headerlink" title="깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기"></a>깃 커밋 과정에서 불필요한 반영사항을 다시 한번 체크하기</h4><p>사소한 실수로 인해 깃 커밋 과정에서 풀 리퀘스트에 대한 내용과 상관없는 변경사항이 나도 모르게 포함될 수 있다. 코드 리뷰를 수행하는 리뷰어 입장에서는 요구사항과 상관없는 변경사항으로 인해 그로 인해 발생할 수 있는 영향도 체크까지 해야하는 불필요한 상황이 발생할 수 있다. 코드 리뷰 과정의 목적 중에 하나는 작업자가 고려하거나 체크하지 못한 부분을 크로스 체크하기 위함이 있지만 그러한 과정을 줄이려는 노력은 반드시 필요하다.</p>
-<h4 id="코딩-컨벤션에-맞는-포맷팅을-수행하기"><a href="#코딩-컨벤션에-맞는-포맷팅을-수행하기" class="headerlink" title="코딩 컨벤션에 맞는 포맷팅을 수행하기"></a>코딩 컨벤션에 맞는 포맷팅을 수행하기</h4><p>인텔리제이와 이클립스를 포함한 많은 개발도구에서는 문서에 대한 포맷팅 기능을 포함하고 있다. CheckStyle, Prettier, ESLint와 같은 플러그인과 통합하여 프로젝트마다 정해진 방식으로 포맷팅을 유지할 수 있고 코드 가독성을 유지하여 리뷰어가 더 쉽게 코드 변경사항을 체크할 수 있도록 제공할 수 있다. 어떤 개발자들은 포맷팅에 대해서 관심이 없어 무시하는 경향이 있는데 굳이 클린 코드라는 관점이 아니라도 사소한 포맷팅 습관으로도 코드 가독성은 엄청나게 높아진다.</p>
-<h4 id="SonarLint로-코드-품질을-리뷰하기"><a href="#SonarLint로-코드-품질을-리뷰하기" class="headerlink" title="SonarLint로 코드 품질을 리뷰하기"></a>SonarLint로 코드 품질을 리뷰하기</h4><p>SonarLint와 같은 정적 품질을 수행할 수 있는 도구를 통해 스스로 작성한 코드 품질에 대해서 살펴보고 리뷰할 수 있다. 클린 아키텍처와 클린 코드가 개발자 관점에서 도움이 되는 지식은 맞으나 사소한 것들도 체크하지 못하는 상황에서 좋은 코드를 작성하는 것에만 관심이 있다면 그것이 정말로 옳은 방향인지 다시 생각해보자. 스스로 <code>Standard outputs should not be used directly to log anything</code> 이라는 <a href="https://refactoring.guru/refactoring/smells">코드 스멜</a>을 아는가?</p>
-<p>신입 또는 주니어 개발자에게 기본적으로 요구되는 필수 역량에서 기본이라는 의미는 어쩌면 어떤 지식의 깊은 이해로 인해 잊어버리는 사소한 것들을 말하는게 아닐까 싶다. 스스로 리뷰하는 습관을 가져서 생각보다 잊어버리기 쉬운 사소한 것들을 체크해보도록 하자. </p>
-]]></content>
-      <tags>
-        <tag>Code Review</tag>
-        <tag>PR</tag>
-      </tags>
   </entry>
   <entry>
     <title>Sentry</title>
@@ -7808,45 +7837,6 @@ CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으�
       </tags>
   </entry>
   <entry>
-    <title>Spring Boot 3.x Micrometer Tracing</title>
-    <url>/spring-boot-3-tracing/</url>
-    <content><![CDATA[<blockquote>
-<p>Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>.</p>
-</blockquote>
-<p>Spring Cloud Sleuth 프로젝트는 더이상 Spring Boot 3.x 와의 호환성을 지원하지 않는다. 분산 추적 데이터 모델을 적용하기 위한 자동 구성이 Spring Cloud Sleuth 에서 Spring Boot로 이동되어있기 때문이다. Spring Boot 3.x 에서는 더이상 Spring Cloud Sleuth는 필요하지 않으며 <code>Micrometer Tracing</code>에 대한 설정을 수행하면 된다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'org.springframework.boot'</span> version <span class="token string">'3.1.3'</span>
-    id <span class="token string">'io.spring.dependency-management'</span> version <span class="token string">'1.1.3'</span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-actuator'</span>
-    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
-    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
-    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span> <span class="token comment">// Optional</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="AutoConfigure-Micrometer-Tracing"><a href="#AutoConfigure-Micrometer-Tracing" class="headerlink" title="AutoConfigure Micrometer Tracing"></a>AutoConfigure Micrometer Tracing</h4><p>스프링 부트 자동 구성에 포함되어 있는 BraveAutoConfiguration과 ZipkinAutoConfiguration가 자동으로 적용되므로 아래와 같이 TracingProperties 속성을 원하는대로 적용하면 된다. 본 글에서는 Zipkin과의 연동을 위해서 기본적으로 사용되는 B3 방식을 지정하였다.</p>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">management.tracing</span><span class="token punctuation">:</span>
-  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> b3
-  <span class="token key atrule">sampling.probability</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
-  
-<span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
-
-<h4 id="Automatic-Context-Propagation-for-WebFlux"><a href="#Automatic-Context-Propagation-for-WebFlux" class="headerlink" title="Automatic Context Propagation for WebFlux"></a>Automatic Context Propagation for WebFlux</h4><p>Spring Cloud Gateway와 같이 WebFlux 기반으로 동작하는 애플리케이션에서는 Project Reactor 3의 Context Propagation에 대한 자동 구성을 위해서 아래와 같이 Hooks.enableAutomaticContextPropagation을 메인 함수에서 호출해야한다. 더 자세한 내용은 <a href="https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive">Context Propagation with Project Reactor 3 - Unified Bridging between Reactive and Imperative</a>를 참고하면 된다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">reactor<span class="token punctuation">.</span>core<span class="token punctuation">.</span>publisher<span class="token punctuation">.</span></span><span class="token class-name">Hooks</span></span><span class="token punctuation">;</span>
-
-<span class="token annotation punctuation">@SpringBootApplication</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Application</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Hooks</span><span class="token punctuation">.</span><span class="token function">enableAutomaticContextPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>]]></content>
-  </entry>
-  <entry>
     <title>Spring AI + Ollama</title>
     <url>/spring-ai-with-ollama/</url>
     <content><![CDATA[<p>Spring AI 프로젝트에서 OpenAI의 ChatGPT 또는 Anthropic의 Claude를 지원하지만 로컬 머신에서 실행할 수 있는 Ollama도 지원하고 있다.<br>내 컴퓨터에 Ollama를 설치하고 파라미터가 작은 모델을 선택해서 간단하게 AI 엔지니어링을 해보도록 하려고 한다. </p>
@@ -7942,6 +7932,45 @@ To calculate this for any specific time:
         <tag>spring ai</tag>
         <tag>ollama</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Spring Boot 3.x Micrometer Tracing</title>
+    <url>/spring-boot-3-tracing/</url>
+    <content><![CDATA[<blockquote>
+<p>Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>.</p>
+</blockquote>
+<p>Spring Cloud Sleuth 프로젝트는 더이상 Spring Boot 3.x 와의 호환성을 지원하지 않는다. 분산 추적 데이터 모델을 적용하기 위한 자동 구성이 Spring Cloud Sleuth 에서 Spring Boot로 이동되어있기 때문이다. Spring Boot 3.x 에서는 더이상 Spring Cloud Sleuth는 필요하지 않으며 <code>Micrometer Tracing</code>에 대한 설정을 수행하면 된다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'org.springframework.boot'</span> version <span class="token string">'3.1.3'</span>
+    id <span class="token string">'io.spring.dependency-management'</span> version <span class="token string">'1.1.3'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-actuator'</span>
+    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
+    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
+    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span> <span class="token comment">// Optional</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="AutoConfigure-Micrometer-Tracing"><a href="#AutoConfigure-Micrometer-Tracing" class="headerlink" title="AutoConfigure Micrometer Tracing"></a>AutoConfigure Micrometer Tracing</h4><p>스프링 부트 자동 구성에 포함되어 있는 BraveAutoConfiguration과 ZipkinAutoConfiguration가 자동으로 적용되므로 아래와 같이 TracingProperties 속성을 원하는대로 적용하면 된다. 본 글에서는 Zipkin과의 연동을 위해서 기본적으로 사용되는 B3 방식을 지정하였다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">management.tracing</span><span class="token punctuation">:</span>
+  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> b3
+  <span class="token key atrule">sampling.probability</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
+  
+<span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
+
+<h4 id="Automatic-Context-Propagation-for-WebFlux"><a href="#Automatic-Context-Propagation-for-WebFlux" class="headerlink" title="Automatic Context Propagation for WebFlux"></a>Automatic Context Propagation for WebFlux</h4><p>Spring Cloud Gateway와 같이 WebFlux 기반으로 동작하는 애플리케이션에서는 Project Reactor 3의 Context Propagation에 대한 자동 구성을 위해서 아래와 같이 Hooks.enableAutomaticContextPropagation을 메인 함수에서 호출해야한다. 더 자세한 내용은 <a href="https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive">Context Propagation with Project Reactor 3 - Unified Bridging between Reactive and Imperative</a>를 참고하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">reactor<span class="token punctuation">.</span>core<span class="token punctuation">.</span>publisher<span class="token punctuation">.</span></span><span class="token class-name">Hooks</span></span><span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Application</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Hooks</span><span class="token punctuation">.</span><span class="token function">enableAutomaticContextPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>]]></content>
   </entry>
   <entry>
     <title>스프링 부트 액세스 로그를 엘라스틱서치에 기록하기</title>
@@ -8483,112 +8512,6 @@ implementation <span class="token string">'org.springframework.integration:sprin
 ]]></content>
   </entry>
   <entry>
-    <title>스프링 부트 로깅 레벨 선언 (Feat. Yaml)</title>
-    <url>/spring-boot-logging-level/</url>
-    <content><![CDATA[<pre class="language-properties" data-language="properties"><div class="caption"><span>application.properties</span></div><code class="language-properties"><span class="token key attr-name">logging.level.org.springframework.security.web.FilterChainProxy</span><span class="token punctuation">=</span><span class="token value attr-value">TRACE</span></code></pre>
-
-<p>스프링 부트 애플리케이션에서 logging.level 하위에 패키지와 클래스 명을 선언하면 로깅 레벨을 쉽게 조정할 수 있고 스프링 부트 프로젝트를 만들면 기본으로 사용되는 프로퍼티(.properties) 파일에는 위와 같이 작성해야 한다. 그러나, 아무래도 프로퍼티 파일의 여러가지 문제점으로 인해 application.yml 파일로 변경하여 사용할 것이다. Yaml은 계층으로 키를 관리하기 때문에 인텔리제이 IDEA에서 <code>org.springframework.security.web.FilterChainProxy</code>를 그대로 복사하여 붙여넣기를 시도하는 경우 아래와 같이 자동으로 키를 만들어주게 된다.</p>
-<blockquote>
-<p>패키지 명을 입력하면 다음 디렉토리를 자동으로 알려주기는 하나 해당 디렉토리에서 존재하는 클래스까지는 알려주지 않으므로 FilterChainProxy의 클래스 위치를 찾아서 상단에 기재된 패키지 명을 복사하는게 더 빠르고 편리하다.</p>
-</blockquote>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
-  <span class="token key atrule">level</span><span class="token punctuation">:</span>
-    <span class="token key atrule">org</span><span class="token punctuation">:</span>
-      <span class="token key atrule">springframework</span><span class="token punctuation">:</span>
-        <span class="token key atrule">security</span><span class="token punctuation">:</span>
-          <span class="token key atrule">web</span><span class="token punctuation">:</span>
-            <span class="token key atrule">FilterChainProxy</span><span class="token punctuation">:</span>
-</code></pre>
-
-<p>위와 같이 만들어지는게 잘못된 것은 아니지만 가독성이나 유지 관리 면에서는 너무 길어지므로 비효율적이라 생각한다. 여기서 logging.level 하위 계층을 표현하는 경우에 작은 따옴표(<code>&#39;</code>)를 활용하면 한줄로 표현할 수 있다. </p>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
-  <span class="token key atrule">level</span><span class="token punctuation">:</span>
-    <span class="token key atrule">'org.springframework.security.web.FilterChainProxy'</span><span class="token punctuation">:</span> TRACE</code></pre>
-
-<blockquote>
-<p>작은 따옴표로 하나의 키로 표현할 수 있게 되지만 맨 뒤에 콜론은 자동으로 붙여주지 않으므로 옆으로 이동하여 콜론을 포함한 로그 레벨을 입력해야한다. 개인적으로는 콜론까지 입력하는 부분은 그렇게 불편한 부분은 아니라고 생각된다.</p>
-</blockquote>
-<h4 id="로그-그룹-Optional"><a href="#로그-그룹-Optional" class="headerlink" title="로그 그룹 (Optional)"></a>로그 그룹 (Optional)</h4><p>스프링 부트 2.1+ 부터는 로그 레벨 뿐만 아니라 특정 클래스들에 대한 로그 레벨을 한번에 관리할 수 있는 <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#logging-groups">로그 그룹</a>을 지원하고 Yaml 문법을 활용하여 작은 따옴표가 없어도 표현할 수 있다.</p>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
-  <span class="token key atrule">level</span><span class="token punctuation">:</span>
-    <span class="token key atrule">study</span><span class="token punctuation">:</span> TRACE
-  <span class="token key atrule">group</span><span class="token punctuation">:</span>
-    <span class="token key atrule">study</span><span class="token punctuation">:</span>
-      <span class="token punctuation">-</span> org.springframework.web
-      <span class="token punctuation">-</span> org.springframework.jdbc.core
-      <span class="token punctuation">-</span> org.springframework.security.web.FilterChainProxy</code></pre>
-
-<p>로그 그룹을 사용한다면 굳이 작은 따옴표가 필요하지 않지만 일반적으로 로그 레벨 조정은 세부적인 클래스 단위로 변경하는 경우가 많기 때문에 많이 활용되진 않는다. 이와 같이 <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging">스프링 부트 공식 문서의 Logging 항목</a>에서도 다루지 않는 내용이기 때문에 생략된 정보가 없는지는 별도로 찾아보는 행위도 간혹 필요하다. 본 글에서 공유한 내용은 그저 Yaml 파일에 대한 기본 문법을 활용한 것이다.</p>
-]]></content>
-      <tags>
-        <tag>Logging</tag>
-        <tag>Yaml</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>스프링 부트 메일 헬스체크 캐시하기</title>
-    <url>/spring-boot-mail-health-check/</url>
-    <content><![CDATA[<p>토스의 <a href="https://toss.tech/article/how-to-work-health-check-in-spring-boot-actuator">Spring Boot Actuator의 헬스체크 살펴보기</a>라는 글을 보고 스프링 부트 액추에이터에서 기본으로 제공하는 MailHealthIndiator의 헬스 체크 결과를 별도로 요청하는 경우 <code>management.endpoint.health.cache-time-to-live</code> 속성으로 캐시되지 않음을 확인했다. 해당 속성은 전체 헬스 체크 결과를 반환하는 헬스 엔드포인트(&#x2F;actuator&#x2F;health)에 해당하는 캐시 옵션으로 메일에 대한 헬스 엔드포인트(&#x2F;actuator&#x2F;health&#x2F;mail)에 대해서는 적용되지 않는다.</p>
-<p>스프링 부트 액추에이터의 <a href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/mail/MailHealthIndicator.java">MailHealthIndicator</a> 는 JavaMailSenderImpl의 testConnection 함수를 호출하여 헬스 체크 결과를 반환하도록 작성되어있다. MailHealthIndicator라는 이름으로 HealthIIndicator를 구현하면 기본적으로 제공하는 MailHealthIndicator 대신에 등록되므로 SMTP 서버로의 연결 수행 결과를 캐시하여 응답하도록 작성해볼 수 있다.</p>
-<h4 id="CachableMailHealthIndicator"><a href="#CachableMailHealthIndicator" class="headerlink" title="CachableMailHealthIndicator"></a>CachableMailHealthIndicator</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>google<span class="token punctuation">.</span>common<span class="token punctuation">.</span>cache<span class="token punctuation">.</span></span><span class="token class-name">Cache</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>google<span class="token punctuation">.</span>common<span class="token punctuation">.</span>cache<span class="token punctuation">.</span></span><span class="token class-name">CacheBuilder</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span></span><span class="token class-name">InitializingBean</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>actuate<span class="token punctuation">.</span>health<span class="token punctuation">.</span></span><span class="token class-name">Health</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>actuate<span class="token punctuation">.</span>mail<span class="token punctuation">.</span></span><span class="token class-name">MailHealthIndicator</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>mail<span class="token punctuation">.</span>javamail<span class="token punctuation">.</span></span><span class="token class-name">JavaMailSenderImpl</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span></span><span class="token class-name">Component</span></span><span class="token punctuation">;</span>
-
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span><span class="token class-name">Duration</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span><span class="token class-name">Instant</span></span><span class="token punctuation">;</span>
-
-<span class="token annotation punctuation">@Component</span><span class="token punctuation">(</span><span class="token string">"mailHealthIndicator"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CachableMailHealthIndicator</span> <span class="token keyword">extends</span> <span class="token class-name">MailHealthIndicator</span> <span class="token keyword">implements</span> <span class="token class-name">InitializingBean</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Cache</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Health</span><span class="token punctuation">></span></span> cache<span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token class-name">CachableMailHealthIndicator</span><span class="token punctuation">(</span><span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">super</span><span class="token punctuation">(</span>javaMailSender<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doHealthCheck</span><span class="token punctuation">(</span><span class="token class-name">Health<span class="token punctuation">.</span>Builder</span> builder<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Health</span> cached <span class="token operator">=</span> cache <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">?</span> cache<span class="token punctuation">.</span><span class="token function">getIfPresent</span><span class="token punctuation">(</span><span class="token string">"mail"</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>cached <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            builder<span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>cached<span class="token punctuation">.</span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withDetails</span><span class="token punctuation">(</span>cached<span class="token punctuation">.</span><span class="token function">getDetails</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">return</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doHealthCheck</span><span class="token punctuation">(</span>builder<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            builder<span class="token punctuation">.</span><span class="token function">down</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>cache <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token class-name">Health</span> health <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">withDetail</span><span class="token punctuation">(</span><span class="token string">"datetime"</span><span class="token punctuation">,</span> <span class="token class-name">Instant</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            cache<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"mail"</span><span class="token punctuation">,</span> health<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterPropertiesSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        cache <span class="token operator">=</span> <span class="token class-name">CacheBuilder</span><span class="token punctuation">.</span><span class="token function">newBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">maximumSize</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">expireAfterWrite</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofSeconds</span><span class="token punctuation">(</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p><img data-src="/images/posts/spring-boot-mail-health-check/01.png" alt="268ms → 4ms"></p>
-<blockquote>
-<p>CacheableMailHealthIndicator는 호스트 정보 뿐만 아니라 <strong>캐시된 시간</strong>을 포함하여 언제 측정된 결과인지도 확인할 수 있습니다.</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Spring Boot Actuator</tag>
-        <tag>MailHealthIndicator</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>스프링 부트 애플리케이션을 Vue와 함께 개발하기</title>
     <url>/spring-boot-integration-vuejs/</url>
     <content><![CDATA[<blockquote>
@@ -8707,6 +8630,112 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 
 <p>이제 여러분도 스프링 부트 애플리케이션을 Vue와 함께 개발할 수 있게 되었습니다. 감사합니다. 😀</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>스프링 부트 로깅 레벨 선언 (Feat. Yaml)</title>
+    <url>/spring-boot-logging-level/</url>
+    <content><![CDATA[<pre class="language-properties" data-language="properties"><div class="caption"><span>application.properties</span></div><code class="language-properties"><span class="token key attr-name">logging.level.org.springframework.security.web.FilterChainProxy</span><span class="token punctuation">=</span><span class="token value attr-value">TRACE</span></code></pre>
+
+<p>스프링 부트 애플리케이션에서 logging.level 하위에 패키지와 클래스 명을 선언하면 로깅 레벨을 쉽게 조정할 수 있고 스프링 부트 프로젝트를 만들면 기본으로 사용되는 프로퍼티(.properties) 파일에는 위와 같이 작성해야 한다. 그러나, 아무래도 프로퍼티 파일의 여러가지 문제점으로 인해 application.yml 파일로 변경하여 사용할 것이다. Yaml은 계층으로 키를 관리하기 때문에 인텔리제이 IDEA에서 <code>org.springframework.security.web.FilterChainProxy</code>를 그대로 복사하여 붙여넣기를 시도하는 경우 아래와 같이 자동으로 키를 만들어주게 된다.</p>
+<blockquote>
+<p>패키지 명을 입력하면 다음 디렉토리를 자동으로 알려주기는 하나 해당 디렉토리에서 존재하는 클래스까지는 알려주지 않으므로 FilterChainProxy의 클래스 위치를 찾아서 상단에 기재된 패키지 명을 복사하는게 더 빠르고 편리하다.</p>
+</blockquote>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
+  <span class="token key atrule">level</span><span class="token punctuation">:</span>
+    <span class="token key atrule">org</span><span class="token punctuation">:</span>
+      <span class="token key atrule">springframework</span><span class="token punctuation">:</span>
+        <span class="token key atrule">security</span><span class="token punctuation">:</span>
+          <span class="token key atrule">web</span><span class="token punctuation">:</span>
+            <span class="token key atrule">FilterChainProxy</span><span class="token punctuation">:</span>
+</code></pre>
+
+<p>위와 같이 만들어지는게 잘못된 것은 아니지만 가독성이나 유지 관리 면에서는 너무 길어지므로 비효율적이라 생각한다. 여기서 logging.level 하위 계층을 표현하는 경우에 작은 따옴표(<code>&#39;</code>)를 활용하면 한줄로 표현할 수 있다. </p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
+  <span class="token key atrule">level</span><span class="token punctuation">:</span>
+    <span class="token key atrule">'org.springframework.security.web.FilterChainProxy'</span><span class="token punctuation">:</span> TRACE</code></pre>
+
+<blockquote>
+<p>작은 따옴표로 하나의 키로 표현할 수 있게 되지만 맨 뒤에 콜론은 자동으로 붙여주지 않으므로 옆으로 이동하여 콜론을 포함한 로그 레벨을 입력해야한다. 개인적으로는 콜론까지 입력하는 부분은 그렇게 불편한 부분은 아니라고 생각된다.</p>
+</blockquote>
+<h4 id="로그-그룹-Optional"><a href="#로그-그룹-Optional" class="headerlink" title="로그 그룹 (Optional)"></a>로그 그룹 (Optional)</h4><p>스프링 부트 2.1+ 부터는 로그 레벨 뿐만 아니라 특정 클래스들에 대한 로그 레벨을 한번에 관리할 수 있는 <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#logging-groups">로그 그룹</a>을 지원하고 Yaml 문법을 활용하여 작은 따옴표가 없어도 표현할 수 있다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">logging</span><span class="token punctuation">:</span>
+  <span class="token key atrule">level</span><span class="token punctuation">:</span>
+    <span class="token key atrule">study</span><span class="token punctuation">:</span> TRACE
+  <span class="token key atrule">group</span><span class="token punctuation">:</span>
+    <span class="token key atrule">study</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> org.springframework.web
+      <span class="token punctuation">-</span> org.springframework.jdbc.core
+      <span class="token punctuation">-</span> org.springframework.security.web.FilterChainProxy</code></pre>
+
+<p>로그 그룹을 사용한다면 굳이 작은 따옴표가 필요하지 않지만 일반적으로 로그 레벨 조정은 세부적인 클래스 단위로 변경하는 경우가 많기 때문에 많이 활용되진 않는다. 이와 같이 <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.logging">스프링 부트 공식 문서의 Logging 항목</a>에서도 다루지 않는 내용이기 때문에 생략된 정보가 없는지는 별도로 찾아보는 행위도 간혹 필요하다. 본 글에서 공유한 내용은 그저 Yaml 파일에 대한 기본 문법을 활용한 것이다.</p>
+]]></content>
+      <tags>
+        <tag>Logging</tag>
+        <tag>Yaml</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>스프링 부트 메일 헬스체크 캐시하기</title>
+    <url>/spring-boot-mail-health-check/</url>
+    <content><![CDATA[<p>토스의 <a href="https://toss.tech/article/how-to-work-health-check-in-spring-boot-actuator">Spring Boot Actuator의 헬스체크 살펴보기</a>라는 글을 보고 스프링 부트 액추에이터에서 기본으로 제공하는 MailHealthIndiator의 헬스 체크 결과를 별도로 요청하는 경우 <code>management.endpoint.health.cache-time-to-live</code> 속성으로 캐시되지 않음을 확인했다. 해당 속성은 전체 헬스 체크 결과를 반환하는 헬스 엔드포인트(&#x2F;actuator&#x2F;health)에 해당하는 캐시 옵션으로 메일에 대한 헬스 엔드포인트(&#x2F;actuator&#x2F;health&#x2F;mail)에 대해서는 적용되지 않는다.</p>
+<p>스프링 부트 액추에이터의 <a href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/mail/MailHealthIndicator.java">MailHealthIndicator</a> 는 JavaMailSenderImpl의 testConnection 함수를 호출하여 헬스 체크 결과를 반환하도록 작성되어있다. MailHealthIndicator라는 이름으로 HealthIIndicator를 구현하면 기본적으로 제공하는 MailHealthIndicator 대신에 등록되므로 SMTP 서버로의 연결 수행 결과를 캐시하여 응답하도록 작성해볼 수 있다.</p>
+<h4 id="CachableMailHealthIndicator"><a href="#CachableMailHealthIndicator" class="headerlink" title="CachableMailHealthIndicator"></a>CachableMailHealthIndicator</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>google<span class="token punctuation">.</span>common<span class="token punctuation">.</span>cache<span class="token punctuation">.</span></span><span class="token class-name">Cache</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>google<span class="token punctuation">.</span>common<span class="token punctuation">.</span>cache<span class="token punctuation">.</span></span><span class="token class-name">CacheBuilder</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span></span><span class="token class-name">InitializingBean</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>actuate<span class="token punctuation">.</span>health<span class="token punctuation">.</span></span><span class="token class-name">Health</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>actuate<span class="token punctuation">.</span>mail<span class="token punctuation">.</span></span><span class="token class-name">MailHealthIndicator</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>mail<span class="token punctuation">.</span>javamail<span class="token punctuation">.</span></span><span class="token class-name">JavaMailSenderImpl</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span></span><span class="token class-name">Component</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span><span class="token class-name">Duration</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>time<span class="token punctuation">.</span></span><span class="token class-name">Instant</span></span><span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Component</span><span class="token punctuation">(</span><span class="token string">"mailHealthIndicator"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CachableMailHealthIndicator</span> <span class="token keyword">extends</span> <span class="token class-name">MailHealthIndicator</span> <span class="token keyword">implements</span> <span class="token class-name">InitializingBean</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Cache</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Health</span><span class="token punctuation">></span></span> cache<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">CachableMailHealthIndicator</span><span class="token punctuation">(</span><span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span>javaMailSender<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doHealthCheck</span><span class="token punctuation">(</span><span class="token class-name">Health<span class="token punctuation">.</span>Builder</span> builder<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Health</span> cached <span class="token operator">=</span> cache <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">?</span> cache<span class="token punctuation">.</span><span class="token function">getIfPresent</span><span class="token punctuation">(</span><span class="token string">"mail"</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cached <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            builder<span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>cached<span class="token punctuation">.</span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">withDetails</span><span class="token punctuation">(</span>cached<span class="token punctuation">.</span><span class="token function">getDetails</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">doHealthCheck</span><span class="token punctuation">(</span>builder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            builder<span class="token punctuation">.</span><span class="token function">down</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cache <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">Health</span> health <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">withDetail</span><span class="token punctuation">(</span><span class="token string">"datetime"</span><span class="token punctuation">,</span> <span class="token class-name">Instant</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            cache<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"mail"</span><span class="token punctuation">,</span> health<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterPropertiesSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        cache <span class="token operator">=</span> <span class="token class-name">CacheBuilder</span><span class="token punctuation">.</span><span class="token function">newBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">maximumSize</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">expireAfterWrite</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofSeconds</span><span class="token punctuation">(</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><img data-src="/images/posts/spring-boot-mail-health-check/01.png" alt="268ms → 4ms"></p>
+<blockquote>
+<p>CacheableMailHealthIndicator는 호스트 정보 뿐만 아니라 <strong>캐시된 시간</strong>을 포함하여 언제 측정된 결과인지도 확인할 수 있습니다.</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Spring Boot Actuator</tag>
+        <tag>MailHealthIndicator</tag>
+      </tags>
   </entry>
   <entry>
     <title>메소드 보안에 의한 트랜잭션 이슈</title>
@@ -10141,69 +10170,6 @@ $$ <span class="token keyword">LANGUAGE</span> plpgsql<span class="token punctua
       </tags>
   </entry>
   <entry>
-    <title>스프링 벨리데이션</title>
-    <url>/spring-validation/</url>
-    <content><![CDATA[<h4 id="자카르타-벨리데이션"><a href="#자카르타-벨리데이션" class="headerlink" title="자카르타 벨리데이션"></a>자카르타 벨리데이션</h4><p>스프링 부트에서 제공하는 벨리데이션은 spring-boot-starter-validation 모듈에 포함되어 있으며 <a href="https://beanvalidation.org/">Jakarta Bean Validation</a>을 따르는 <a href="https://github.com/hibernate/hibernate-validator/">Hibhernate Validator</a>를 의존하고 있다. 스프링 부트에 의한 자동 구성은 ValidationAutoConfiguration으로 수행하며 LocalValidatorFactoryBean를 기본 Validator 빈으로써 등록함을 확인할 수 있다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-validation'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="LocalValidatorFactoryBean"><a href="#LocalValidatorFactoryBean" class="headerlink" title="LocalValidatorFactoryBean"></a>LocalValidatorFactoryBean</h4><p>애플리케이션 컨텍스트에 존재하는 메시지 소스를 기반으로 보간을 처리하는 MessageSourceMessageInterpolator가 사용되도록 구현되어있다. <a href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/validation/MessageInterpolatorFactory.java">MessageInterpolatorFactory</a>의 내부 구현을 살펴보면 메시지 소스가 없다면 하이버네이트 벨리데이터의 ResourceBundleMessageInterpolator가 사용되나 스프링 부트에 의해 메시지 소스 자체도 자동 구성되므로 결국 MessageSourceMessageInterpolator가 사용된다고 인지하면 된다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@Role</span><span class="token punctuation">(</span><span class="token class-name">BeanDefinition</span><span class="token punctuation">.</span><span class="token constant">ROLE_INFRASTRUCTURE</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">Validator</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">defaultValidator</span><span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span> applicationContext<span class="token punctuation">,</span>
-        <span class="token class-name">ObjectProvider</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ValidationConfigurationCustomizer</span><span class="token punctuation">></span></span> customizers<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setConfigurationInitializer</span><span class="token punctuation">(</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span> <span class="token operator">-></span> customizers<span class="token punctuation">.</span><span class="token function">orderedStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        <span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>customizer<span class="token punctuation">)</span> <span class="token operator">-></span> customizer<span class="token punctuation">.</span><span class="token function">customize</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token class-name">MessageInterpolatorFactory</span> interpolatorFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MessageInterpolatorFactory</span><span class="token punctuation">(</span>applicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>interpolatorFactory<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>최종적으로는 MessageSourceMessageInterpolator가 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-context/src/main/java/org/springframework/validation/beanvalidation/LocaleContextMessageInterpolator.java">LocaleContextMessageInterpolator</a>로 래핑되며 LocaleContextHolder.getLocale()를 사용하여 스프링 웹 요청에 의한 스레드에 대해 로케일 기반으로 메시지 보간이 처리되도록 지원한다. </p>
-<h4 id="기본-벨리데이션-메시지"><a href="#기본-벨리데이션-메시지" class="headerlink" title="기본 벨리데이션 메시지"></a>기본 벨리데이션 메시지</h4><p>하이버네이트 벨리데이터 라이브러리 내에는 기본으로 정의된 <a href="https://github.com/hibernate/hibernate-validator/tree/main/engine/src/main/resources/org/hibernate/validator">ValidationMessages</a>를 포함하고 있다. 따라서, @NotEmpty 또는 @Length, @Email 과 같은 자카르타 벨리데이션에 정의되어있는 Constraints에 대해서는 기본적으로 메시지 보간으로 처리될 수 있다.</p>
-<p><img data-src="/images/posts/spring-validation/hibernate-validator-01.png" alt="org.hibernate.validator.ValidationMessages"></p>
-<h4 id="유효성-검사"><a href="#유효성-검사" class="headerlink" title="유효성 검사"></a>유효성 검사</h4><p><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a>에서 알 수 있듯이 자카르타 벨리데이션의 팩토리 함수를 통해 간단하게 벨리데이터를 생성하고 자바 빈 클래스에 저장된 정보가 올바른지 필드 검증을 쉽게 수행할 수 있다. 그러나, 스프링 부트를 사용한다면 자동 구성되는 LocalValidatorFactoryBean를 사용하는 것이 좋다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginService</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validate</span><span class="token punctuation">(</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span> login<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">buildDefaultValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> constraintViolations<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="사용자-정의-메시지-제약사항"><a href="#사용자-정의-메시지-제약사항" class="headerlink" title="사용자 정의 메시지 제약사항"></a>사용자 정의 메시지 제약사항</h4><p>스프링 메시지 소스에 사용자 정의 메시지를 지정하더라도 메시지 패턴에서 {value}와 같은 파라미터 표현이 불가능하다. 예를 들어, 다음과 같이 어떤 값에 대한 길이를 제한한다고 가정하여 @Min 어노테이션을 부여했다고 가정해보자.</p>
-<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>messages</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entry</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>javax.validation.constraints.Min.message<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(사용자 정의) &#123;value&#125; 보다 같거나 커야합니다]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(Custom) must be greater than or equal to &#123;value&#125;]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre>
-
-<pre class="language-none"><code class="language-none">org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.validation.ValidationException: HV000149: An exception occurred during message interpolation
-...
-Caused by: java.lang.IllegalArgumentException: can&#39;t parse argument number: value
-	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1451) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.applyPattern(MessageFormat.java:491) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.&lt;init&gt;(MessageFormat.java:390) ~[na:na]
-...
-Caused by: java.lang.NumberFormatException: For input string: &quot;value&quot;
-	at java.base&#x2F;java.lang.NumberFormatException.forInputString(NumberFormatException.java:65) ~[na:na]
-	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:652) ~[na:na]
-	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:770) ~[na:na]
-	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1449) ~[na:na]</code></pre>
-
-<p>이러한 파라미터 표현은 Hibernate Validator에서 지원하는 표현식이므로 MessageFormat으로 지원하는 표현식과는 다르다. MessageFormat는 {0}, {1} 이렇게 숫자 기반의 표현식을 지원하기 때문에 표현식 제약이 발생한다. 아쉬운 부분이지만 사용자 정의 메시지에서 파라미터 표현식을 사용해야한다면 ValidationMessages 리소스 번들을 클래스패스에 재정의해서 사용할 수 밖에 없을 것 같다.</p>
-]]></content>
-      <tags>
-        <tag>Jakarta Bean Validation</tag>
-        <tag>Hibernate Validator</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Springdoc OpenAPI UI</title>
     <url>/springdoc-openapi-ui/</url>
     <content><![CDATA[<p>Springdoc OpenAPI UI는 OpenAPI 3 기반의 Swagger API 문서를 작성할 수 있게 제공해주는 라이브러리이다. 오늘은 Springdoc OpenAPI UI 를 사용하는 방법에 대해서 학습해보면서 알게된 유용한 정보들 대해서 공유해보고자 한다. </p>
@@ -10272,6 +10238,69 @@ Caused by: java.lang.NumberFormatException: For input string: &quot;value&quot;
 <p>이에 대한 자세한 코드는 <a href="https://github.com/kdevkr/spring-boot-2-springdoc.git">spring-boot2-springdoc</a> 에서 확인할 수 있습니다.</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>스프링 벨리데이션</title>
+    <url>/spring-validation/</url>
+    <content><![CDATA[<h4 id="자카르타-벨리데이션"><a href="#자카르타-벨리데이션" class="headerlink" title="자카르타 벨리데이션"></a>자카르타 벨리데이션</h4><p>스프링 부트에서 제공하는 벨리데이션은 spring-boot-starter-validation 모듈에 포함되어 있으며 <a href="https://beanvalidation.org/">Jakarta Bean Validation</a>을 따르는 <a href="https://github.com/hibernate/hibernate-validator/">Hibhernate Validator</a>를 의존하고 있다. 스프링 부트에 의한 자동 구성은 ValidationAutoConfiguration으로 수행하며 LocalValidatorFactoryBean를 기본 Validator 빈으로써 등록함을 확인할 수 있다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-validation'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="LocalValidatorFactoryBean"><a href="#LocalValidatorFactoryBean" class="headerlink" title="LocalValidatorFactoryBean"></a>LocalValidatorFactoryBean</h4><p>애플리케이션 컨텍스트에 존재하는 메시지 소스를 기반으로 보간을 처리하는 MessageSourceMessageInterpolator가 사용되도록 구현되어있다. <a href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/validation/MessageInterpolatorFactory.java">MessageInterpolatorFactory</a>의 내부 구현을 살펴보면 메시지 소스가 없다면 하이버네이트 벨리데이터의 ResourceBundleMessageInterpolator가 사용되나 스프링 부트에 의해 메시지 소스 자체도 자동 구성되므로 결국 MessageSourceMessageInterpolator가 사용된다고 인지하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
+<span class="token annotation punctuation">@Role</span><span class="token punctuation">(</span><span class="token class-name">BeanDefinition</span><span class="token punctuation">.</span><span class="token constant">ROLE_INFRASTRUCTURE</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">Validator</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">LocalValidatorFactoryBean</span> <span class="token function">defaultValidator</span><span class="token punctuation">(</span><span class="token class-name">ApplicationContext</span> applicationContext<span class="token punctuation">,</span>
+        <span class="token class-name">ObjectProvider</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ValidationConfigurationCustomizer</span><span class="token punctuation">></span></span> customizers<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">LocalValidatorFactoryBean</span> factoryBean <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LocalValidatorFactoryBean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    factoryBean<span class="token punctuation">.</span><span class="token function">setConfigurationInitializer</span><span class="token punctuation">(</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span> <span class="token operator">-></span> customizers<span class="token punctuation">.</span><span class="token function">orderedStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>customizer<span class="token punctuation">)</span> <span class="token operator">-></span> customizer<span class="token punctuation">.</span><span class="token function">customize</span><span class="token punctuation">(</span>configuration<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">MessageInterpolatorFactory</span> interpolatorFactory <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MessageInterpolatorFactory</span><span class="token punctuation">(</span>applicationContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    factoryBean<span class="token punctuation">.</span><span class="token function">setMessageInterpolator</span><span class="token punctuation">(</span>interpolatorFactory<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> factoryBean<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>최종적으로는 MessageSourceMessageInterpolator가 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-context/src/main/java/org/springframework/validation/beanvalidation/LocaleContextMessageInterpolator.java">LocaleContextMessageInterpolator</a>로 래핑되며 LocaleContextHolder.getLocale()를 사용하여 스프링 웹 요청에 의한 스레드에 대해 로케일 기반으로 메시지 보간이 처리되도록 지원한다. </p>
+<h4 id="기본-벨리데이션-메시지"><a href="#기본-벨리데이션-메시지" class="headerlink" title="기본 벨리데이션 메시지"></a>기본 벨리데이션 메시지</h4><p>하이버네이트 벨리데이터 라이브러리 내에는 기본으로 정의된 <a href="https://github.com/hibernate/hibernate-validator/tree/main/engine/src/main/resources/org/hibernate/validator">ValidationMessages</a>를 포함하고 있다. 따라서, @NotEmpty 또는 @Length, @Email 과 같은 자카르타 벨리데이션에 정의되어있는 Constraints에 대해서는 기본적으로 메시지 보간으로 처리될 수 있다.</p>
+<p><img data-src="/images/posts/spring-validation/hibernate-validator-01.png" alt="org.hibernate.validator.ValidationMessages"></p>
+<h4 id="유효성-검사"><a href="#유효성-검사" class="headerlink" title="유효성 검사"></a>유효성 검사</h4><p><a href="https://meetup.toast.com/posts/223">Validation 어디까지 해봤니?</a>에서 알 수 있듯이 자카르타 벨리데이션의 팩토리 함수를 통해 간단하게 벨리데이터를 생성하고 자바 빈 클래스에 저장된 정보가 올바른지 필드 검증을 쉽게 수행할 수 있다. 그러나, 스프링 부트를 사용한다면 자동 구성되는 LocalValidatorFactoryBean를 사용하는 것이 좋다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginService</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validate</span><span class="token punctuation">(</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span> login<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Validator</span> validator <span class="token operator">=</span> <span class="token class-name">Validation</span><span class="token punctuation">.</span><span class="token function">buildDefaultValidatorFactory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getValidator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Set</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">ConstraintViolation</span><span class="token punctuation">&lt;</span><span class="token class-name">Account<span class="token punctuation">.</span>Login</span><span class="token punctuation">></span><span class="token punctuation">></span></span> constraintViolations <span class="token operator">=</span> validator<span class="token punctuation">.</span><span class="token function">validate</span><span class="token punctuation">(</span>login<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> constraintViolations<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="사용자-정의-메시지-제약사항"><a href="#사용자-정의-메시지-제약사항" class="headerlink" title="사용자 정의 메시지 제약사항"></a>사용자 정의 메시지 제약사항</h4><p>스프링 메시지 소스에 사용자 정의 메시지를 지정하더라도 메시지 패턴에서 {value}와 같은 파라미터 표현이 불가능하다. 예를 들어, 다음과 같이 어떤 값에 대한 길이를 제한한다고 가정하여 @Min 어노테이션을 부여했다고 가정해보자.</p>
+<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>messages</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entry</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>javax.validation.constraints.Min.message<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ko_KR</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(사용자 정의) &#123;value&#125; 보다 같거나 커야합니다]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ko_KR</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>en_US</span><span class="token punctuation">></span></span><span class="token cdata">&lt;![CDATA[(Custom) must be greater than or equal to &#123;value&#125;]]></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>en_US</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entry</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>messages</span><span class="token punctuation">></span></span></code></pre>
+
+<pre class="language-none"><code class="language-none">org.springframework.web.util.NestedServletException: Request processing failed; nested exception is javax.validation.ValidationException: HV000149: An exception occurred during message interpolation
+...
+Caused by: java.lang.IllegalArgumentException: can&#39;t parse argument number: value
+	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1451) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.applyPattern(MessageFormat.java:491) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.&lt;init&gt;(MessageFormat.java:390) ~[na:na]
+...
+Caused by: java.lang.NumberFormatException: For input string: &quot;value&quot;
+	at java.base&#x2F;java.lang.NumberFormatException.forInputString(NumberFormatException.java:65) ~[na:na]
+	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:652) ~[na:na]
+	at java.base&#x2F;java.lang.Integer.parseInt(Integer.java:770) ~[na:na]
+	at java.base&#x2F;java.text.MessageFormat.makeFormat(MessageFormat.java:1449) ~[na:na]</code></pre>
+
+<p>이러한 파라미터 표현은 Hibernate Validator에서 지원하는 표현식이므로 MessageFormat으로 지원하는 표현식과는 다르다. MessageFormat는 {0}, {1} 이렇게 숫자 기반의 표현식을 지원하기 때문에 표현식 제약이 발생한다. 아쉬운 부분이지만 사용자 정의 메시지에서 파라미터 표현식을 사용해야한다면 ValidationMessages 리소스 번들을 클래스패스에 재정의해서 사용할 수 밖에 없을 것 같다.</p>
+]]></content>
+      <tags>
+        <tag>Jakarta Bean Validation</tag>
+        <tag>Hibernate Validator</tag>
+      </tags>
   </entry>
   <entry>
     <title>SpringDoc UI 인증을 위한 토큰 기본값 표시</title>
@@ -12054,6 +12083,28 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
       </tags>
   </entry>
   <entry>
+    <title>언더토우 임시 디렉토리 삭제 방지</title>
+    <url>/undertow-temp-dir/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://github.com/spring-projects/spring-boot/issues/9616">Tomcat does not create temporary directory used to store file uploads when it does not exist</a><br><a href="https://adunhansa.tistory.com/209">스프링 부트 파일 업로드 에러 The temporary upload location []  is not valid</a></p>
+</blockquote>
+<p>일반적으로 자주 발생하는 상황은 아니지만 아래와 같이 파일 업로드 시 임시 디렉토리에 대한 삭제 문제로 멀티파트 요청에 대해 임시적으로 저장하는 과정에서 <code>NoSuchFileException</code>이 발생할 수 있습니다. 리눅스 시스템에서 임시 디렉토리 경로에 존재하는 파일이나 디렉토리를 일정 기간 사용하지 않았을 경우 삭제하도록 되어있는 부분으로 인하여 애플리케이션 서버로 파일 업로드가 주기적으로 요청되지 않는 한 멀티파트에 대한 임시 파일이 만들어지지 않으므로 위 현상이 나타나게 됩니다.</p>
+<p>언더토우에서는 MultiPartParserDefinition$MultiPartUploadHandler의 beginPart라는 함수에서 멀티파트 폼 데이터에 대해 임시 파일을 만들고 읽어들이도록 되어있습니다. 스프링 부트 기반의 애플리케이션 서버에서 멀티파트에 대한 로케이션 속성을 지정하지 않으면 언더토우는 서블릿 배포 시 시스템의 임시 디렉토리 경로에 멀티파트 업로드를 위한 폴더를 생성합니다.</p>
+<p><a href="https://github.com/kdevkr/spring-demo-undertow">Spring Demo Undertow</a> 리파지토리를 클론하여 애플리케이션을 실행하면 다음과 같이 현재 실행중인 애플리케이션 서버에서 바라보는 파일 업로드 경로가 로그로 출력됩니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Current</span> temp dir<span class="token operator">:</span> <span class="token class-name">C</span><span class="token operator">:</span>\<span class="token class-name">Users</span>\<span class="token class-name">Mambo</span>\<span class="token class-name">AppData</span>\<span class="token class-name">Local</span>\<span class="token class-name">Temp</span>\undertow<span class="token punctuation">.</span><span class="token number">8080.5583604686546214060</span></code></pre>
+
+<p>위 로그를 출력하는 MultipartCustomizer는 UndertowDeploymentInfoCustomizer 인터페이스를 구현한 클래스로 시스템 기본 임시 디렉토리를 사용하는 경우에 주기적인 스케줄로 파일 업로드 경로가 삭제되었는지를 확인하고 복구합니다. 멀티파트 요청에 대한 파일 업로드 경로를 별도로 지정하지 않은 리눅스 환경에서는 파일 업로드를 시도하는 경우에 따라 리눅스 시스템에서 파일 업로드를 위한 폴더를 삭제할 가능성을 내재하고 있으므로 애플리케이션을 재실행하지 않아도 자동적으로 처리하거나 삭제를 방지하는 것을 도와주는 트릭을 구현할 수 있습니다.</p>
+<blockquote>
+<p>멀티파트 요청이 정상적으로 수행하는 경우 만들어진 임시 파일이 자동적으로 삭제되므로 시스템 기본 임시 디렉토리를 사용하는 것보다는 별도의 파일 업로드 경로를 지정하고 주기적으로 삭제되지 않고 남아있는 파일들이 있는지 관리하는 것이 더 좋은 대안입니다.</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>MultiPartParserDefinition</tag>
+        <tag>MultipartConfigElement</tag>
+        <tag>UndertowDeploymentInfoCustomizer</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>초보가 이해하는 스프링 시큐리티</title>
     <url>/understanding-spring-security/</url>
     <content><![CDATA[<blockquote>
@@ -12615,28 +12666,6 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
       </tags>
   </entry>
   <entry>
-    <title>언더토우 임시 디렉토리 삭제 방지</title>
-    <url>/undertow-temp-dir/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="https://github.com/spring-projects/spring-boot/issues/9616">Tomcat does not create temporary directory used to store file uploads when it does not exist</a><br><a href="https://adunhansa.tistory.com/209">스프링 부트 파일 업로드 에러 The temporary upload location []  is not valid</a></p>
-</blockquote>
-<p>일반적으로 자주 발생하는 상황은 아니지만 아래와 같이 파일 업로드 시 임시 디렉토리에 대한 삭제 문제로 멀티파트 요청에 대해 임시적으로 저장하는 과정에서 <code>NoSuchFileException</code>이 발생할 수 있습니다. 리눅스 시스템에서 임시 디렉토리 경로에 존재하는 파일이나 디렉토리를 일정 기간 사용하지 않았을 경우 삭제하도록 되어있는 부분으로 인하여 애플리케이션 서버로 파일 업로드가 주기적으로 요청되지 않는 한 멀티파트에 대한 임시 파일이 만들어지지 않으므로 위 현상이 나타나게 됩니다.</p>
-<p>언더토우에서는 MultiPartParserDefinition$MultiPartUploadHandler의 beginPart라는 함수에서 멀티파트 폼 데이터에 대해 임시 파일을 만들고 읽어들이도록 되어있습니다. 스프링 부트 기반의 애플리케이션 서버에서 멀티파트에 대한 로케이션 속성을 지정하지 않으면 언더토우는 서블릿 배포 시 시스템의 임시 디렉토리 경로에 멀티파트 업로드를 위한 폴더를 생성합니다.</p>
-<p><a href="https://github.com/kdevkr/spring-demo-undertow">Spring Demo Undertow</a> 리파지토리를 클론하여 애플리케이션을 실행하면 다음과 같이 현재 실행중인 애플리케이션 서버에서 바라보는 파일 업로드 경로가 로그로 출력됩니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Current</span> temp dir<span class="token operator">:</span> <span class="token class-name">C</span><span class="token operator">:</span>\<span class="token class-name">Users</span>\<span class="token class-name">Mambo</span>\<span class="token class-name">AppData</span>\<span class="token class-name">Local</span>\<span class="token class-name">Temp</span>\undertow<span class="token punctuation">.</span><span class="token number">8080.5583604686546214060</span></code></pre>
-
-<p>위 로그를 출력하는 MultipartCustomizer는 UndertowDeploymentInfoCustomizer 인터페이스를 구현한 클래스로 시스템 기본 임시 디렉토리를 사용하는 경우에 주기적인 스케줄로 파일 업로드 경로가 삭제되었는지를 확인하고 복구합니다. 멀티파트 요청에 대한 파일 업로드 경로를 별도로 지정하지 않은 리눅스 환경에서는 파일 업로드를 시도하는 경우에 따라 리눅스 시스템에서 파일 업로드를 위한 폴더를 삭제할 가능성을 내재하고 있으므로 애플리케이션을 재실행하지 않아도 자동적으로 처리하거나 삭제를 방지하는 것을 도와주는 트릭을 구현할 수 있습니다.</p>
-<blockquote>
-<p>멀티파트 요청이 정상적으로 수행하는 경우 만들어진 임시 파일이 자동적으로 삭제되므로 시스템 기본 임시 디렉토리를 사용하는 것보다는 별도의 파일 업로드 경로를 지정하고 주기적으로 삭제되지 않고 남아있는 파일들이 있는지 관리하는 것이 더 좋은 대안입니다.</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>MultiPartParserDefinition</tag>
-        <tag>MultipartConfigElement</tag>
-        <tag>UndertowDeploymentInfoCustomizer</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Tracing Handshake Websocket With Undertow</title>
     <url>/undertow-websocket-tracing/</url>
     <content><![CDATA[<blockquote>
@@ -12880,34 +12909,6 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
 
 <p>앞선 코드의 문제점은 디스패처서블릿이 본 용도가 아니므로 시간이 많다면 본인이 생각하는 방식대로 고쳐보는 것도 추천한다. 많은 신입 개발자들이 오해하는 것은 효율적인 관점에서 코드 작성에 대해 정답이 있다는 것이라고 생각한다는 것일지 모르겠다. 유용한 정보일지는 모르겠으나 누군가에게는 도움이 되는 글이었으면 한다.</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>유닉스 타임스탬프와 시간 정밀도</title>
-    <url>/unix-timestamp/</url>
-    <content><![CDATA[<p>각 나라에서 사용하는 표준 시간은 다르고 동일한 나라에서도 여러가지 시간 기준이 존재합니다. 그러나, 개발자들은 사람마다 다른 시간을 그대로 사용할 수 없으며 전세계적으로 사용되는 표준 시간으로 정의된 것을 따라야합니다. 세계협정시라고 부르는 UTC는 1970년 1월 1일을 기준으로 산정한 시간으로 보통 유닉스 시간 또는 유닉스 타임스탬프라고 합니다.</p>
-<h3 id="유닉스-시간"><a href="#유닉스-시간" class="headerlink" title="유닉스 시간"></a>유닉스 시간</h3><p>기본적으로 타임스탬프에 대해서 초 단위로 세어지는 정수로 표현한 값을 유닉스 시간(Unix Epoch) 또는 유닉스 타임스탬프라고 합니다. PostgreSQL 에서는 타임스탬프 유형의 컬럼에 대해서 EPOCH 키워드를 통해서 초 단위로 환산된 유닉스 시간을 추출할 수 있도록 지원합니다.</p>
-<ul>
-<li><a href="https://www.epoch101.com/#epochConvertToReadable-Container">Convert Epoch&#x2F;Unix Timestamp</a></li>
-<li><a href="https://it-tools.tech/date-converter">Date-time converter</a></li>
-</ul>
-<h3 id="타임스탬프-정밀도"><a href="#타임스탬프-정밀도" class="headerlink" title="타임스탬프 정밀도"></a>타임스탬프 정밀도</h3><p>유닉스 시간이 정의되고 시간이 흘러 현재는 타임스탬프가 초 단위가 아닌 밀리고 그리고 심지어는 나노초 까지의 단위로 타임스탬프 정밀도를 지원하게 됩니다. 사용하는 언어 또는 외부 솔루션에 따라서 정밀도 표현 지원이 다르며 심지어 시계열 데이터베이스인 KDB+ 에서의 <a href="https://code.kx.com/q4m3/2_Basic_Data_Types_Atoms/#25-temporal-data">시간 유형</a>은 1970년 1월 1일이 아닌 2000년 1월 1일을 기준의 나노초 정밀도를 가지는 타임스탬프를 지원합니다.</p>
-<pre class="language-q" data-language="q"><code class="language-q"><span class="token datetime number">2000.01.01</span><span class="token verb operator">=</span><span class="token number">0</span>
-<span class="token number">1b</span>
-
-<span class="token punctuation">.</span>z<span class="token punctuation">.</span>p
-<span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span></code></pre>
-
-<p>타임스탬프를 스칼라 실수로 변환해보면 나노초 단위로 세어진 정수값으로 표현되므로 다른 시스템과 연계하기 위해 1970년 1월 1일 부터의 밀리초 단위로 세어지는 정수값으로 환산할 수 있습니다. (1 나노초는 10^6 밀리초 입니다.)</p>
-<pre class="language-q" data-language="q"><code class="language-q"><span class="token keyword">floor</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span><span class="token punctuation">)</span><span class="token verb operator">-</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">1970.01.01</span>D<span class="token datetime number">00:00</span><span class="token punctuation">)</span><span class="token verb operator">%</span><span class="token number">1e6</span>
-<span class="token number">1662068332940</span></code></pre>
-
-<p>현재 조직에서는 초 단위의 유닉스 시간이 아닌 밀리초로 환산한 정수값을 토대로 타임스탬프에 대한 데이터를 시스템 간 전달하고 있습니다. 대부분의 시스템은 여러가지 언어로 작성된 애플리케이션과 외부 솔루션과의 연계를 수행하며 동작하게 되므로 각 시스템에서 지원하는 타임스탬프의 정밀도 표현 차이로 인해서 약간의 차이가 발생할 수 있음을 고려해야할 수 있습니다.</p>
-<h3 id="타임스탬프-표현"><a href="#타임스탬프-표현" class="headerlink" title="타임스탬프 표현"></a>타임스탬프 표현</h3><p>서버와 클라이언트 간 요청과 응답 시 전달되는 페이로드에 포함되는 타임스탬프는 어떻게 표현할 수 있을까요? 일반적으로 시스템 또는 개발자의 선호도에 따라서 UTC 기준의 Epoch라는 숫자 형태 또는 RFC 3339의 ISO 8601 형식으로 문자열 형태로 표현하게 됩니다. <a href="https://r.bluethl.net/how-to-design-better-apis#heading-2-use-iso-8601httpsenwikipediaorgwikiiso8601-utc-dates">더 나은 API 설계 시에는 ISO 8601 UTC</a>를 사용해야한다는 관점이 있지만 간을 문자열로 표현하는 것에는 <a href="https://engineering.fb.com/2022/07/25/production-engineering/its-time-to-leave-the-leap-second-in-the-past/">윤초 문제</a>가 포함되어있기 때문에 윤초를 무시한 밀리초 단위의 유닉스 시간을 사용할때에도 있습니다. 예를 들어, 유튜브의 경우 사용자의 이벤트 트래킹을 위해 로그 이벤트를 전송할 때에 밀리초 단위의 정수값을 전달하고 있습니다.</p>
-]]></content>
-      <tags>
-        <tag>Unix Timestamp</tag>
-        <tag>Unix Epoch</tag>
-      </tags>
   </entry>
   <entry>
     <title>보안 취약점 (Vulnerability)</title>
@@ -13397,6 +13398,34 @@ dependencyCheck <span class="token punctuation">&#123;</span>
 <p><a href="https://plugins.jenkins.io/dependency-check-jenkins-plugin/">젠킨스 OWASP Dependency-Check 플러그인</a>도 있는데 OWASP Dependency-Check로 체크하는 경우 생각보다 많은 취약점이 확인되어서 최신 라이브러리를 사용하는 프로젝트가 아니라면 좋아보이지는 않는다. 개인적으로 CVE 검출을 위해서 사용하진 않을 것 같다.</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>유닉스 타임스탬프와 시간 정밀도</title>
+    <url>/unix-timestamp/</url>
+    <content><![CDATA[<p>각 나라에서 사용하는 표준 시간은 다르고 동일한 나라에서도 여러가지 시간 기준이 존재합니다. 그러나, 개발자들은 사람마다 다른 시간을 그대로 사용할 수 없으며 전세계적으로 사용되는 표준 시간으로 정의된 것을 따라야합니다. 세계협정시라고 부르는 UTC는 1970년 1월 1일을 기준으로 산정한 시간으로 보통 유닉스 시간 또는 유닉스 타임스탬프라고 합니다.</p>
+<h3 id="유닉스-시간"><a href="#유닉스-시간" class="headerlink" title="유닉스 시간"></a>유닉스 시간</h3><p>기본적으로 타임스탬프에 대해서 초 단위로 세어지는 정수로 표현한 값을 유닉스 시간(Unix Epoch) 또는 유닉스 타임스탬프라고 합니다. PostgreSQL 에서는 타임스탬프 유형의 컬럼에 대해서 EPOCH 키워드를 통해서 초 단위로 환산된 유닉스 시간을 추출할 수 있도록 지원합니다.</p>
+<ul>
+<li><a href="https://www.epoch101.com/#epochConvertToReadable-Container">Convert Epoch&#x2F;Unix Timestamp</a></li>
+<li><a href="https://it-tools.tech/date-converter">Date-time converter</a></li>
+</ul>
+<h3 id="타임스탬프-정밀도"><a href="#타임스탬프-정밀도" class="headerlink" title="타임스탬프 정밀도"></a>타임스탬프 정밀도</h3><p>유닉스 시간이 정의되고 시간이 흘러 현재는 타임스탬프가 초 단위가 아닌 밀리고 그리고 심지어는 나노초 까지의 단위로 타임스탬프 정밀도를 지원하게 됩니다. 사용하는 언어 또는 외부 솔루션에 따라서 정밀도 표현 지원이 다르며 심지어 시계열 데이터베이스인 KDB+ 에서의 <a href="https://code.kx.com/q4m3/2_Basic_Data_Types_Atoms/#25-temporal-data">시간 유형</a>은 1970년 1월 1일이 아닌 2000년 1월 1일을 기준의 나노초 정밀도를 가지는 타임스탬프를 지원합니다.</p>
+<pre class="language-q" data-language="q"><code class="language-q"><span class="token datetime number">2000.01.01</span><span class="token verb operator">=</span><span class="token number">0</span>
+<span class="token number">1b</span>
+
+<span class="token punctuation">.</span>z<span class="token punctuation">.</span>p
+<span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span></code></pre>
+
+<p>타임스탬프를 스칼라 실수로 변환해보면 나노초 단위로 세어진 정수값으로 표현되므로 다른 시스템과 연계하기 위해 1970년 1월 1일 부터의 밀리초 단위로 세어지는 정수값으로 환산할 수 있습니다. (1 나노초는 10^6 밀리초 입니다.)</p>
+<pre class="language-q" data-language="q"><code class="language-q"><span class="token keyword">floor</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">2022.09.01</span>D<span class="token datetime number">21:38:52.940</span><span class="token number">328000</span><span class="token punctuation">)</span><span class="token verb operator">-</span><span class="token symbol">`long</span><span class="token verb operator">$</span><span class="token datetime number">1970.01.01</span>D<span class="token datetime number">00:00</span><span class="token punctuation">)</span><span class="token verb operator">%</span><span class="token number">1e6</span>
+<span class="token number">1662068332940</span></code></pre>
+
+<p>현재 조직에서는 초 단위의 유닉스 시간이 아닌 밀리초로 환산한 정수값을 토대로 타임스탬프에 대한 데이터를 시스템 간 전달하고 있습니다. 대부분의 시스템은 여러가지 언어로 작성된 애플리케이션과 외부 솔루션과의 연계를 수행하며 동작하게 되므로 각 시스템에서 지원하는 타임스탬프의 정밀도 표현 차이로 인해서 약간의 차이가 발생할 수 있음을 고려해야할 수 있습니다.</p>
+<h3 id="타임스탬프-표현"><a href="#타임스탬프-표현" class="headerlink" title="타임스탬프 표현"></a>타임스탬프 표현</h3><p>서버와 클라이언트 간 요청과 응답 시 전달되는 페이로드에 포함되는 타임스탬프는 어떻게 표현할 수 있을까요? 일반적으로 시스템 또는 개발자의 선호도에 따라서 UTC 기준의 Epoch라는 숫자 형태 또는 RFC 3339의 ISO 8601 형식으로 문자열 형태로 표현하게 됩니다. <a href="https://r.bluethl.net/how-to-design-better-apis#heading-2-use-iso-8601httpsenwikipediaorgwikiiso8601-utc-dates">더 나은 API 설계 시에는 ISO 8601 UTC</a>를 사용해야한다는 관점이 있지만 간을 문자열로 표현하는 것에는 <a href="https://engineering.fb.com/2022/07/25/production-engineering/its-time-to-leave-the-leap-second-in-the-past/">윤초 문제</a>가 포함되어있기 때문에 윤초를 무시한 밀리초 단위의 유닉스 시간을 사용할때에도 있습니다. 예를 들어, 유튜브의 경우 사용자의 이벤트 트래킹을 위해 로그 이벤트를 전송할 때에 밀리초 단위의 정수값을 전달하고 있습니다.</p>
+]]></content>
+      <tags>
+        <tag>Unix Timestamp</tag>
+        <tag>Unix Epoch</tag>
+      </tags>
   </entry>
   <entry>
     <title>Webpack 5 기반의 Vue 개발 환경</title>

@@ -29,9 +29,65 @@ tags:
 - [패스키 중복 등록을 방지하는 방법](https://web.dev/articles/webauthn-exclude-credentials)
 - [AAGUID로 패스키 제공업체 확인](https://web.dev/articles/webauthn-aaguid?hl=ko)
 
-#### 패스키 로그인 서버 측 구현
+---
 
-자바 기반의 애플리케이션에서는 Yubico의 [java-webauthn-server](https://developers.yubico.com/java-webauthn-server/)를 이용할 수 있다. 패스키 로그인 시 클라이언트는 서버로부터 사이트 도메인에 대한 [Relying Party](https://webauthn.wtf/how-it-works/relying-party)와 함께 챌린지를 요청을 하고 제공받아야한다. 일반적으로 웹 사이트의 패스키 로그인에서 `rpID`는 도메인을 의미하며 `Challenge`는 [Replay attack](https://developer.mozilla.org/en-US/docs/Glossary/Replay_attack)을 방지하기 위해 의사 난수로 생성된 바이트 버퍼이다. 그 외에 여러가지 옵션들이 있는데 WebAuthn 가이드에서 [publicKeyCredentialCreationOptions](https://webauthn.guide/#registration)을 살펴보면 서버로부터 어떤 정보를 요구하는지와 각 필드 항목의 의미에 대해서 확인할 수 있다.
+#### 패스키 로그인을 위한 서버 측 신뢰 당사자 구현
+
+패스키 등록이나 인증을 수행하기 위해서 클라이언트의 Web Authentication API가 사용자 기기에 대해 공개키 크레덴셜을 발급하려고 할때 [신뢰 당사자(Relying Party)](https://webauthn.wtf/how-it-works/relying-party)와 챌린지(Challenge)가 포함된 것을 서버에 요청하게 된다. 일반적으로 패스키 로그인에서 신뢰 당사자는 웹 서비스를 제공하는 시스템의 도메인을 의미한다. 챌린지는 [Replay attack](https://developer.mozilla.org/en-US/docs/Glossary/Replay_attack)을 방지하기 위해 의사 난수로 생성된 바이트 버퍼에 해당된다. WebAuthn 가이드에서 [publicKeyCredentialCreationOptions](https://webauthn.guide/#registration)을 살펴보면 서버로부터 어떤 정보를 요구하는지와 각 필드 항목의 의미에 대해서 확인할 수 있다.
+
+```groovy
+dependencies {
+    implementation 'com.yubico:webauthn-server-core:2.5.2'
+    implementation 'com.yubico:yubico-util:2.5.2'
+    implementation 'com.yubico:webauthn-server-attestation:2.5.2'
+}
+```
+
+##### RP 초기화
+
+RelyingPartyIdentity로 신뢰 당사자에 대한 식별자를 구성하고 RelyingParty를 생성해보자. rpID는 애플리케이션에 대한 특정 도메인에 대해 자격 증명을 바인딩하는데 사용된다. 클라이언트는 패스키 등록과 인증을 수행하기 전에 rpID를 요청하여 받아갈 것이다.
+
+```java
+private RelyingParty generateRelyingParty(PasskeyCredentialRepository passkeyCredentialRepository) {
+    RelyingPartyIdentity rpID = RelyingPartyIdentity.builder()
+            .id("kdev.ing")
+            .name("Mambo App")
+            .build();
+
+    return RelyingParty.builder()
+            .identity(rpID)
+            .credentialRepository(passkeyCredentialRepository)
+            .allowOriginSubdomain(true)
+            .origins(Set.of("https://kdev.ing"))
+            .build();
+}
+```
+
+##### 등록 요청에 대한 공개키 생성 옵션 발급
+
+클라이언트에서 패스키 등록을 시작하기 위해 필요한 공개키 생성 옵션인 PublicKeyCredentialCreationOptions을 만들어보자. 공개키 생성 옵션에서 사용된 user.id 는 패스키 등록 후 전달받은 공개키 인증 정보에 userHandle로 포함된다.
+
+```java
+@GetMapping("/registration/options")
+public String registrationOptions() throws JsonProcessingException {
+    UserIdentity userIdentity = UserIdentity.builder()
+            .name("mambo")
+            .displayName("Mambo")
+            .id(new ByteArray(createUserHandle()))
+            .build();
+
+    return rp.startRegistration(
+            StartRegistrationOptions.builder()
+                    .user(userIdentity)
+                    .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+                            .residentKey(ResidentKeyRequirement.REQUIRED)
+                            .userVerification(UserVerificationRequirement.PREFERRED)
+                            .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                            .build())
+                    .build())
+            .toCredentialsCreateJson();
+}
+```
 
 ##### User Handle(user\.id)
 
@@ -53,9 +109,89 @@ private byte[] createUserHandle() throws NoSuchAlgorithmException {
 
 결론적으로, 서버 측에서는 패스키 등록을 위한 정보를 제공한 후 클라이언트가 사용자로부터 인증받은 기기에 대한 공개키와 식별 정보를 데이터베이스에 저장하고 패스키 로그인 시 전달받은 정보가 서버에 저장된 공개키로 신뢰할 수 있는지를 검증하고나서 사용자 계정에 대한 인증 처리를 수행하는 것이다.
 
-#### 패스키 로그인 클라이언트 측 구현
+##### 공개키 크레덴셜 검증 및 등록 완료
 
-클라이언트 측 구현은 [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#webauthn_concepts_and_usage)를 이용하면 되는데 [SimpleWebAuthn](https://simplewebauthn.dev/) 라이브러리를 활용하면 더 간단하게 패스키 등록과 인증을 수행하는 로직을 구현할 수 있다. 특히나, [browserSupportsWebAuthn()](https://simplewebauthn.dev/docs/packages/browser#browsersupportswebauthn)와 같은 함수를 통해 패스키를 지원하는 브라우저 또는 자동 완성(autofill)을 제공할 수 있는지를 쉽게 판단할 수 있게 도와준다.
+클라이언트의 WebAuthn API를 통해 전달받은 공개키 인증 정보를 통해 패스키 정보로 활용될 항목들을 추출한 뒤 서버에 저장하고 패스키 목록을 표시해주면 된다. 공개키 인증 정보에는 사용자 기기에 대한 디바이스 이름이나 생성된 시간 그리고 마지막으로 패스키가 사용된 시간에 대한 항목은 없으니 데이터베이스 설계 시 추가하는 걸 권장한다. 예를 들어, 깃허브에서는 패스키 등록 과정에서 패스키에 대한 닉네임을 설정하는 단계를 제공해주고 있다.
+
+```java
+@PostMapping("/registration/verify")
+public boolean finishRegistration(@RequestParam("request") String request,
+                                  @RequestParam("credential") String credential) throws JsonProcessingException, RegistrationFailedException {
+    PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = objectMapper.readValue(request, PublicKeyCredentialCreationOptions.class);
+    PublicKeyCredential publicKeyCredential = objectMapper.readValue(credential, PublicKeyCredential.class);
+
+    RegistrationResult result = rp.finishRegistration(
+            FinishRegistrationOptions.builder()
+                    .request(publicKeyCredentialCreationOptions)
+                    .response(publicKeyCredential)
+                    .build());
+
+    ByteArray aaguid = result.getAaguid();
+    ByteArray credentialId = result.getKeyId().getId();
+    ByteArray userHandle = publicKeyCredentialCreationOptions.getUser().getId();
+    ByteArray publicKey = result.getPublicKeyCose();
+    Instant creationAt = Instant.now();
+    Instant lastAccessTime = null;
+    String nickname = "";
+
+    // todo: save credential for user
+    return true;
+}
+```
+
+> 위 예시에서는 클라이언트로부터 패스키 발급 시 사용된 생성 옵션을 그대로 받아오지만 실제로는 세션이나 별도의 저장소에서 받아오도록 구현하세요.
+
+##### 패스키 인증 요청에 대한 옵션 발급
+
+클라이언트의 패스키 인증을 위한 옵션 요청 시 사용자를 식별할 수 있는지 여부에 따라 등록된 공개키 크레덴셜 정보를 포함하여 응답하면 된다. 공개키 크레덴셜 정보는 RP 초기화 시 사용된 CredentialRepository 인터페이스를 구현한 클래스에서 정의한 함수 결과대로 제공될 것이다.
+
+```java
+@GetMapping("/authentication/options")
+public String startAssertion(@RequestParam(required = false) String username) throws JsonProcessingException {
+    StartAssertionOptions.StartAssertionOptionsBuilder builder = StartAssertionOptions.builder();
+    if (username != null && !username.trim().isEmpty()) {c
+        builder.username(username);
+    }
+    AssertionRequest assertionRequest = rp.startAssertion(builder.build());
+    return assertionRequest.toCredentialsGetJson();
+}
+```
+
+##### 패스키 로그인 요청 검증 및 완료
+
+클라이언트가 전달하는 공개키 인증 정보를 토대로 요청에 대해 검증하고 세션 로그인 또는 인증 토큰을 발급하도록 구현하면 된다.
+
+```java
+@PostMapping("/authentication/verify")
+public Object finishAssertion(@RequestParam("request") String request,
+                              @RequestParam("response") String response) throws JsonProcessingException, AssertionFailedException {
+    AssertionRequest assertionRequest = objectMapper.readValue(request, AssertionRequest.class);
+    PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc =
+            objectMapper.readValue(response, new TypeReference<>() {
+            });
+
+    AssertionResult result = rp.finishAssertion(FinishAssertionOptions.builder()
+            .request(assertionRequest)
+            .response(pkc)
+            .build());
+
+    if (result.isSuccess()) {
+        // todo: process authenticate
+        String username = result.getUsername();
+        ByteArray credentialId = result.getCredential().getCredentialId();
+        ByteArray userHandle = result.getCredential().getUserHandle();
+        return true;
+    }
+
+    return false;
+}
+```
+
+---
+
+#### 패스키 로그인을 위한 클라이언트 구현
+
+패스키 로그인을 위해 클라이언트의 [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#webauthn_concepts_and_usage)를 이용해서 패스키 등록과 인증을 수행하도록 구현해보자. WebAuthn API를 직접적으로 사용하여 구현해도 무방하지만 프론트엔드 개발자가 아닌 관계로 [SimpleWebAuthn](https://simplewebauthn.dev/) 라이브러리를 사용하면 더 간단하게 패스키 등록과 인증을 수행하는 로직을 구현할 수 있기에 활용하도록 하겠다. [browserSupportsWebAuthn()](https://simplewebauthn.dev/docs/packages/browser#browsersupportswebauthn)와 같은 함수를 통해 패스키를 지원하는 브라우저 또는 자동 완성(Autofill)을 제공할 수 있는지를 쉽게 판단할 수 있게 도와주므로 유용하다.
 
 ##### 자동 완성을 위한 mediation 옵션
 
@@ -81,6 +217,8 @@ export const processAutofill = async () => {
     }
 }
 ```
+
+> 조건부 UI을 통해 사용자에게 자동 완성을 제공하고 패스키 로그인이라는 별도의 버튼을 이용하게 하고자한다면 AbortController를 사용해서 자동 완성을 위해 대기하는 프로미스를 취소하도록 구현해야합니다.
 
 #### 계정 설정 내 패스키 표시
 

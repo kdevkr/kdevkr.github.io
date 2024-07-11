@@ -1,6 +1,6 @@
 ---
 title: 패스키 로그인
-date: 2024-07-10T21:00+09:00
+date: 2024-07-11T21:00+09:00
 tags:
 - Passkey
 - WebAuthn
@@ -94,3 +94,15 @@ export const processAutofill = async () => {
 
 > 패스키에 대한 UX 가이드라인을 살펴보면 패스키 관리에 대해 [패스키 아이콘](https://fonts.google.com/icons?icon.query=passkey)을 표시하는걸 권장한다고 하네요.
 
+#### 패스키 삭제
+
+사용자 계정에 등록한 패스키 목록에서 패스키를 삭제할 때 고려해보아야할 부분이 있다. 패스키에 대한 공개키 크레덴셜을 저장하고 있는 시스템에서는 사용자 기기에 등록된 패스키 정보를 삭제할 방법이 없다. 또한, 사용자가 패스키를 등록하고나서 디바이스에 등록된 패스키를 삭제하는 경우에는 시스템에는 불필요하게 패스키 목록이 남겨지는 문제가 있으므로 이를 고려해보아야한다. 
+
+![](/images/posts/passkey-login/01.png)
+
+예를 들어, 위와 같이 깃허브에서는 패스키 삭제 후에 기기에 남아있는 패스키 정보로 인해 로그인 시도 시 패스키 옵션이 표시될 수 있음을 안내하고 있다. AAGUID와 디바이스에 따라 패스키를 관리하고 삭제하는 방법이 다르므로 자세한 가이드는 제공하지 않는 것 같다. 그럼에도 가이드를 제공하고 싶다면 자주 사용될 수 있는 기기에 대해서는 제공해줄 수 있어보인다.
+
+- Google Passsword Manager: 브라우저 URL에 chrome://settings/passkeys 입력
+- iCloud Keychain: [Mac 및 iCloud 키체인에서 패스키 또는 암호 제거하기](https://support.apple.com/ko-kr/guide/mac-help/mchl77e2cb66/mac)
+- Samsung Pass: Samsung Wallet → Samsung Pass → 로그인 정보 → 패스키 에서 삭제할 수 있다.
+- Chrome Profile: [Chrome에서 패스키 관리하기](https://support.google.com/chrome/answer/13168025?hl=ko)

@@ -262,13 +262,13 @@ const cancelAutofill = async () => {
 
 #### 패스키 삭제
 
-사용자 계정에 등록한 패스키 목록에서 패스키를 삭제할 때 고려해보아야할 부분이 있다. 패스키에 대한 공개키 크레덴셜을 저장하고 있는 시스템에서는 사용자 기기에 등록된 패스키 정보를 삭제할 방법이 없다. 또한, 사용자가 패스키를 등록하고나서 디바이스에 등록된 패스키를 삭제하는 경우에는 시스템에는 불필요하게 패스키 목록이 남겨지는 문제가 있으므로 이를 고려해보아야한다. 
-
 ![](/images/posts/passkey-login/01.png)
 
-예를 들어, 위와 같이 깃허브에서는 패스키 삭제 후에 기기에 남아있는 패스키 정보로 인해 로그인 시도 시 패스키 옵션이 표시될 수 있음을 안내하고 있다. AAGUID와 디바이스에 따라 패스키를 관리하고 삭제하는 방법이 다르므로 자세한 가이드는 제공하지 않는 것 같다. 그럼에도 가이드를 제공하고 싶다면 자주 사용될 수 있는 기기에 대해서는 제공해줄 수 있어보인다.
+위 화면은 깃허브에서 사용자 계정에 등록했던 패스키를 삭제하려고 했을때 제공되는 메시지이다. 패스키 관리 시 등록한 패스키를 삭제하면 되겠지만 고려해야할 부분이 있다. 서버에 등록된 패스키를 삭제한다고해서 사용자가 사용했던 인증 기기의 패스키 등록 정보는 삭제되지 않는다는 것이다. 또한, 사용자가 인증 기기의 패스키를 삭제해버리는 경우 사용자 계정에 등록된 패스키는 무용지물이 되며 불필요하게 패스키 등록 정보로 남아있게 된다.
 
-- Google Passsword Manager: 브라우저 URL에 chrome://settings/passkeys 입력
+패스키 등록을 지원하는 인증 기기별로 자세한 패스키 삭제 가이드를 제공할 순 없으므로 사용자 계정에서 패스키를 삭제하더라도 패스키 로그인 시에는 패스키 옵션으로 표시될 수 있음을 알려주고 있는 것이다. 다음은 자주 사용될만한 인증 기기에서의 패스키 삭제 방법이므로 참고하길 바란다.
+
+- Google Passsword Manager: 브라우저 URL에 [chrome://settings/passkeys](chrome://settings/passkeys) 입력
 - iCloud Keychain: [Mac 및 iCloud 키체인에서 패스키 또는 암호 제거하기](https://support.apple.com/ko-kr/guide/mac-help/mchl77e2cb66/mac)
-- Samsung Pass: Samsung Wallet → Samsung Pass → 로그인 정보 → 패스키 에서 삭제할 수 있다.
 - Chrome Profile: [Chrome에서 패스키 관리하기](https://support.google.com/chrome/answer/13168025?hl=ko)
+- Samsung Pass: Samsung Wallet → Samsung Pass → 로그인 정보 → 패스키 에서 삭제할 수 있다.

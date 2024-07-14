@@ -1,6 +1,6 @@
 ---
 title: 패스키 로그인
-date: 2024-07-13T12:00+09:00
+date: 2024-07-14T11:00+09:00
 tags:
 - Passkey
 - WebAuthn
@@ -66,23 +66,24 @@ private byte[] createUserHandle() throws NoSuchAlgorithmException {
 }
 
 @GetMapping("/registration/challenge")
-public String startRegistration() throws JsonProcessingException {
+public String startRegistration(HttpSession httpSession) throws JsonProcessingException {
     UserIdentity userIdentity = UserIdentity.builder()
             .name("mambo")
             .displayName("Mambo")
             .id(new ByteArray(createUserHandle()))
             .build();
 
-    return rp.startRegistration(
-            StartRegistrationOptions.builder()
-                    .user(userIdentity)
-                    .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-                            .residentKey(ResidentKeyRequirement.REQUIRED)
-                            .userVerification(UserVerificationRequirement.PREFERRED)
-                            .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
-                            .build())
-                    .build())
-            .toCredentialsCreateJson();
+    PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = rp.startRegistration(
+                StartRegistrationOptions.builder()
+                        .user(userIdentity)
+                        .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+                                .residentKey(ResidentKeyRequirement.REQUIRED)
+                                .authenticatorAttachment(AuthenticatorAttachment.CROSS_PLATFORM)
+                                .build())
+                        .build());
+
+    httpSession.setAttribute("publicKeyCredentialCreationOptions", publicKeyCredentialCreationOptions.toJson());
+    return publicKeyCredentialCreationOptions.toCredentialsCreateJson();
 }
 ```
 
@@ -94,10 +95,13 @@ public String startRegistration() throws JsonProcessingException {
 
 ```java
 @PostMapping("/registration/verify")
-public boolean finishRegistration(@RequestParam("request") String request,
-                                  @RequestParam("credential") String credential) throws JsonProcessingException, RegistrationFailedException {
-    PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions = objectMapper.readValue(request, PublicKeyCredentialCreationOptions.class);
-    PublicKeyCredential publicKeyCredential = objectMapper.readValue(credential, PublicKeyCredential.class);
+public boolean finishRegistration((HttpSession httpSession,
+                                  @RequestBody String credential)) throws JsonProcessingException, RegistrationFailedException {
+    String credentialsCreateJson = (String) httpSession.getAttribute("publicKeyCredentialCreationOptions");
+    PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions =
+            PublicKeyCredentialCreationOptions.fromJson(credentialsCreateJson);
+    PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> publicKeyCredential =
+            PublicKeyCredential.parseRegistrationResponseJson(credential);
 
     RegistrationResult result = rp.finishRegistration(
             FinishRegistrationOptions.builder()
@@ -109,9 +113,9 @@ public boolean finishRegistration(@RequestParam("request") String request,
     ByteArray credentialId = result.getKeyId().getId();
     ByteArray userHandle = publicKeyCredentialCreationOptions.getUser().getId();
     ByteArray publicKey = result.getPublicKeyCose();
-    Instant creationAt = Instant.now();
-    Instant lastAccessTime = null;
-    String nickname = "";
+    ByteArray attestation = publicKeyCredential.getResponse().getAttestationObject();
+    String[] transports = publicKeyCredential.getResponse().getTransports().stream().map(AuthenticatorTransport::getId).toArray(String[]::new);
+    long signatureCounter = publicKeyCredential.getResponse().getAttestation().getAuthenticatorData().getSignatureCounter();
 
     // todo: save credential for user
     return true;
@@ -130,12 +134,14 @@ public boolean finishRegistration(@RequestParam("request") String request,
 
 ```java
 @GetMapping("/authentication/challenge")
-public String startAssertion(@RequestParam(required = false) String username) throws JsonProcessingException {
-    StartAssertionOptions.StartAssertionOptionsBuilder builder = StartAssertionOptions.builder();
-    if (username != null && !username.trim().isEmpty()) {c
+public String startAssertion(HttpSession httpSession,
+                             @RequestParam(required = false) String username) throws JsonProcessingException {
+    StartAssertionOptions.StartAssertionOptionsBuilder builder = StartAssertionOptions.builder().timeout(Duration.ofSeconds(5).toMillis());
+    if (username != null && !username.trim().isEmpty()) {
         builder.username(username);
     }
-    AssertionRequest assertionRequest = rp.startAssertion(builder.build());
+    AssertionRequest assertionRequest = relyingParty.startAssertion(builder.build());
+    httpSession.setAttribute("assertionRequest", assertionRequest.toJson());
     return assertionRequest.toCredentialsGetJson();
 }
 ```
@@ -146,16 +152,16 @@ public String startAssertion(@RequestParam(required = false) String username) th
 
 ```java
 @PostMapping("/authentication/verify")
-public Object finishAssertion(@RequestParam("request") String request,
-                              @RequestParam("response") String response) throws JsonProcessingException, AssertionFailedException {
-    AssertionRequest assertionRequest = objectMapper.readValue(request, AssertionRequest.class);
-    PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc =
-            objectMapper.readValue(response, new TypeReference<>() {
-            });
+public Object finishAssertion(HttpSession httpSession,
+                                @RequestBody String credential) throws IOException, AssertionFailedException {
+    String assertionRequestJson = (String) httpSession.getAttribute("assertionRequest");
+    AssertionRequest assertionRequest = AssertionRequest.fromJson(assertionRequestJson);
+    PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> publicKeyCredential
+            = PublicKeyCredential.parseAssertionResponseJson(credential);
 
-    AssertionResult result = rp.finishAssertion(FinishAssertionOptions.builder()
+    AssertionResult result = relyingParty.finishAssertion(FinishAssertionOptions.builder()
             .request(assertionRequest)
-            .response(pkc)
+            .response(publicKeyCredential)
             .build());
 
     if (result.isSuccess()) {
@@ -272,3 +278,41 @@ const cancelAutofill = async () => {
 - iCloud Keychain: [Mac 및 iCloud 키체인에서 패스키 또는 암호 제거하기](https://support.apple.com/ko-kr/guide/mac-help/mchl77e2cb66/mac)
 - Chrome Profile: [Chrome에서 패스키 관리하기](https://support.google.com/chrome/answer/13168025?hl=ko)
 - Samsung Pass: Samsung Wallet → Samsung Pass → 로그인 정보 → 패스키 에서 삭제할 수 있다.
+
+#### 패스키 데이터베이스 스키마
+
+```sql
+CREATE TABLE IF NOT EXISTS users
+(
+    id         BIGSERIAL PRIMARY KEY,
+    login_id   VARCHAR NOT NULL,
+    password   VARCHAR NOT NULL,
+    username   VARCHAR,
+    created_at TIMESTAMP DEFAULT NOW() WITH TIME ZONE 'UTC'
+);
+
+CREATE TABLE IF NOT EXISTS users_handle
+(
+    user_id     BIGINT PRIMARY KEY,
+    user_handle VARCHAR NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS authenticator
+(
+    id               BIGSERIAL PRIMARY KEY,
+    credential_id    VARCHAR NOT NULL,
+    user_handle      VARCHAR NOT NULL,
+    aaguid           VARCHAR NOT NULL,
+    nickname         VARCHAR,
+    publickey        VARCHAR,
+    signature_count  INTEGER   DEFAULT 0,
+    attestation      bytea,
+    transports       VARCHAR[],
+    last_access_time TIMESTAMP,
+    created_at       TIMESTAMP DEFAULT NOW() WITH TIME ZONE 'UTC',
+    CONSTRAINT authenticators_uk UNIQUE (credential_id, user_handle),
+    FOREIGN KEY (user_handle) REFERENCES users_handle (user_handle) ON DELETE CASCADE
+);
+```
+

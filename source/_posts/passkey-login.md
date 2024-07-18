@@ -254,10 +254,7 @@ onMounted(async () => {
 })
 
 // passkey.js
-import {
-    browserSupportsWebAuthnAutofill
-    WebAuthnAbortService
-} from '@simplewebauthn/browser';
+import {browserSupportsWebAuthnAutofill} from '@simplewebauthn/browser';
 
 export const processAutofill = async () => {
     if (await browserSupportsWebAuthnAutofill()) {
@@ -266,13 +263,9 @@ export const processAutofill = async () => {
         const response = await axios.post('/api/passkey/authentication/verify', authenticationResponse)
     }
 }
-
-const cancelAutofill = async () => {
-    WebAuthnAbortService.cancelCeremony();
-}
 ```
 
-> 조건부 UI로 사용자에게 자동 완성을 제공할 때 주의해야할 부분이 있는데요. WebAuthn은 반드시 하나만 동작해야하기 때문에 자동 완성에 의한 프로미스가 대기중인 상태에서 패스키 로그인 버튼을 제공하는 경우 대기중인 프로미스를 취소해야합니다.
+> 조건부 UI로 사용자에게 자동 완성을 제공할 때 패스키에 대한 프로미스가 계속 대기하는 상태로 진행하고 있는데요. 기존에 진행중인 패스키를 취소할 수 있도록 SimpleWebAuthn의 startAuthentication은 내부적으로 구현되어있으므로 신경 쓸 필요는 없습니다.
 
 ---
 

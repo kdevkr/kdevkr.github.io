@@ -6,6 +6,10 @@ tags:
 - WebAuthn
 ---
 
+#### 패스키 생성 알고리즘
+
+패스키 등록 시 PublicKeyCredentialCreationOptions의 pubKeyCredParams 를 통해 RP 서버에서 선호하는 공개키 알고리즘 목록을 제공할 수 있는데요. 이때 공개키 알고리즘 목록에는 ES256과 RS256은 반드시 포함하는게 좋습니다. 그 이유는 [대부분 ES256를 지원하고 일부는 RS256를 지원](https://github.com/w3c/webauthn/issues/1757#issuecomment-1169035781)한다고 하기 때문입니다.
+
 #### 패스키 제공업체 표시
 
 [Determine the passkey provider with AAGUID](https://web.dev/articles/webauthn-aaguid?hl=ko)에서 소개하는 [Passkey Provider AAGUIDs](https://github.com/passkeydeveloper/passkey-authenticator-aaguids)에는 일부 인증 기기에 대한 이름과 아이콘 정보를 포함하고 있습니다. [Passkeys Authenticator AAGUID Explorer](https://passkeydeveloper.github.io/passkey-authenticator-aaguids/explorer/)를 살펴보면 대부분의 사용자는 주로 아래의 인증 기기를 사용할 것 같습니다.

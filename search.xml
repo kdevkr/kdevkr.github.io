@@ -4115,39 +4115,6 @@ Installing to /usr/local/bin
       </tags>
   </entry>
   <entry>
-    <title>아이패드 에어에서 무선 네트워크가 표시되지 않은 이유</title>
-    <url>/ipad-air-not-found-wifi-network/</url>
-    <content><![CDATA[<blockquote>
-<p>개발 관련 트러블슈팅은 아니지만 오랜만에 경험하는 한글 인코딩 문제가 포함되어있어 공유하려고 합니다. 여자친구에게 선물해준 아이패드 에어 5세대에서 사용중인 공유기의 무선 네트워크가 와이파이 목록에 표시되지 않는다고 하여 원인을 찾아 해결하는 과정에서 일어난 이야기입니다.</p>
-</blockquote>
-<h4 id="공유기-와이파이가-아이패드에-표시되지-않는다"><a href="#공유기-와이파이가-아이패드에-표시되지-않는다" class="headerlink" title="공유기 와이파이가 아이패드에 표시되지 않는다"></a>공유기 와이파이가 아이패드에 표시되지 않는다</h4><p>아이패드 에어 5세대를 수령하고나서 생각보다 많은 불량 테스트를 해야한다고 영상을 공유해줬는데 별다른 문제는 없다고 했지만 뜬금없이 <code>사무실의 공유기가 와이파이 목록에 표시되지 않는다</code>는 이야기를 들었다. 조금은 이해되지 않는 문제이기도 하고 전자 장비의 네트워크 문제는 일개 웹 개발자가 해결할 수 있는 영역의 문제가 아닐 수도 있어서 ChatGTP 에도 물어보고 이리저리 검색을 해보았지만 네트워크 연결에 대한 이슈는 있어도 무선 네트워크 자체가 표시되지 않는다는 문의는 딱히 보이지 않았다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/07.jpg" alt="문제의 현상을 만난 아이패드 에어 5세대 핑크"></p>
-<h4 id="네트워크-이름-숨김의-문제는-아니다"><a href="#네트워크-이름-숨김의-문제는-아니다" class="headerlink" title="네트워크 이름 숨김의 문제는 아니다"></a>네트워크 이름 숨김의 문제는 아니다</h4><p>네트워크가 표시되지 않는다는 물음에 처음으로 생각했던 원인은 혹시나 <code>공유기의 무선 네트워크 이름(SSID)을 숨긴 상태</code>는 아닐까였다. 팀뷰어 프로그램으로 원격을 시도해서 공유기 설정(192.168.0.1)로 들어가 확인해보았지만 네트워크 이름 알림은 제대로 체크가 되어있는 상황이었다. 아이패드 이외에 갤럭시와 같은 휴대폰에서는 정상적으로 네트워크가 표시되고 연결할 수 있는 상황이었다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/08.png" alt="인터넷 속도 26Mbps?..."></p>
-<h4 id="와이파이-규격의-호환성-문제일까"><a href="#와이파이-규격의-호환성-문제일까" class="headerlink" title="와이파이 규격의 호환성 문제일까"></a>와이파이 규격의 호환성 문제일까</h4><p>아이패드 에어 5세대의 와이파이 규격은 <code>Wi-Fi 6</code>로 최신 와이파이 규격이기에 혹시나 사무실에서 사용중인 <code>공유기가 오래되어 지원하지 않는 와이파이 규격인가</code>를 의심했다. 공유기의 제품명을 확인해보니 <a href="https://namu.wiki/w/ipTIME%20N704BCM">ipTIME N704BCM</a> 이었고 무려 2012년에 출시해서 아직도 판매하는 업체가 존재하는 것을 확인할 수 있었다. 와이파이 지원 규격은 <code>Wi-Fi 4</code>이기 때문에 <a href="https://support.apple.com/ko-kr/guide/deployment/depf9bb7e412/web">아이패드 에어의 와이파이 호환성</a> 정보를 찾아본 결과 <code>802.11n(Wi-Fi 4)를 지원</code>하는 것으로 나타났다. 그러면 왜 나오지 않는건데?!</p>
-<h4 id="네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식"><a href="#네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식" class="headerlink" title="네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식"></a>네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식</h4><p>와이파이 목록에 표시되지 않는 원인을 찾아가기 위해 이리 저리 검색해보던 중에 <a href="https://support.apple.com/ko-kr/HT202068">라우터에서 피해야 할 취약한 보안 설정</a>으로 <code>WPA/WPA2 혼합 모드는 더이상 사용되지 않는 구형 보안 프로토콜에 속한다</code>는 것이다. 보안이 취약한 네트워크라는 경고가 표시되더라도 네트워크 목록에 나타나야하고 연결할 수는 있어야하는데 <a href="https://support.apple.com/ko-kr/guide/security/sec8a67fa93d/web">무선 네트워크에 대한 보안 연결</a> 정보에서 <code>전환형 WPA/WPA2 는 향후 소프트웨어 버전에서 제거될 수 있다</code>는 문구를 확인할 수 있어서 혹시 몰라 사용중이었던 공유기의 무선 설정을 확인해보니 <code>WPAPSK/WPA2PSK + AES</code>로 선택되어있어 권장 설정에 해당하는 <code>WPA2PSAK + AES</code>로 변경했다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/01.png" alt="WPA/WPA2 혼합 모드"></p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/02.png" alt="개인용 WPA2"></p>
-<blockquote>
-<p>인증 및 암호화 방식을 변경하고나서도 네트워크 목록에 표시되지 않는다고 했으나 알고보니 네트워크 이름의 한글이 깨진 상태로 표시되고 있어서 인지를 못했던 것이다. 여자친구는 개발자가 아닌 일반인에 해당하므로 평소에 알고 있는 한글로 된 이름을 찾고 있었던 것이다.</p>
-</blockquote>
-<h4 id="네트워크-이름의-한글이-깨지는-문제"><a href="#네트워크-이름의-한글이-깨지는-문제" class="headerlink" title="네트워크 이름의 한글이 깨지는 문제"></a>네트워크 이름의 한글이 깨지는 문제</h4><p><img data-src="/images/posts/ipad-air-not-found-wifi/04.jpg" alt="세모???로 표시되는 한글"></p>
-<p>웹 개발자 입장에서 오랜만에 경험하는 한글 인코딩 문제인데 공유기가 오래되고 펌웨어 업데이트를 수행하지 않은지 오래되다보니 <code>UTF-8</code> 인코딩이 아닌 <code>EUC-KR</code>로 되어있던 것 같다. 공유기의 펌웨어 버전은 9.26 이었는데 아이피타임 웹사이트에서 찾아보니 2014년 8월에 업데이트된 버전으로 무려 약 10년이나 지난 버전에 해당된다. 아이피타임 공유기 설정 상 네트워크 이름(SSID)의 인코딩을 설정할 수 있도록 제공하는 부분은 없으므로 한글을 제대로 표시하기 위해서는 최신의 펌웨어 버전으로 업그레이드하는 방법 뿐이다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/04.png" alt="ipTIME N704BCM 펌웨어 업데이트 일자"></p>
-<blockquote>
-<p>해당 제품으로 지원하는 가장 최신 펌웨어 버전으로 업그레이드 해도 인코딩 문제가 해결되는지는 명확하지 않다. 또한, 원격으로 설정해주려고 하기 때문에 펌웨어 업데이트 실패에 대한 상황에 대비할 수 없어서 한글이 깨지는 것을 보완하기 위해 영어도 함께 이름에 표기하는 것으로 조치해주려고 한다.</p>
-</blockquote>
-<p>그럼에도 이상한 부분은 갤럭시와 아이폰에서도 네트워크와 한글이 정상적으로 표시된다고 하기에 아이폰은 EUC-KR에 대한 호환을 지원하지만 아이패드의 경우 UTF-8 인코딩만 지원한다고 생각하는 편이 좋을 것 같다. 아무래도 남자친구가 개발자이기에 어떻게든 해결하게 되었던 것 같은데 포기한 사람들도 꽤나 많을 것 같은 문제로 생각되어 정리했다.  </p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/05.jpg" alt="아무튼 해결! &lt;span class=&quot;emoji&quot; alias=&quot;smile&quot; style=&quot;&quot; fallback-src=&quot;https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8&quot;&gt;&#x1f604;&lt;/span&gt;"></p>
-]]></content>
-      <tags>
-        <tag>아이패드 에어</tag>
-        <tag>ipTIME 공유기</tag>
-        <tag>WPA2PSK</tag>
-        <tag>EUC-KR</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>IP 대역 그리고 위치추적</title>
     <url>/ip-band-and-location-tracking/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
@@ -4182,6 +4149,39 @@ Installing to /usr/local/bin
         <tag>IP Band</tag>
         <tag>NAT</tag>
         <tag>Location Tracking</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>아이패드 에어에서 무선 네트워크가 표시되지 않은 이유</title>
+    <url>/ipad-air-not-found-wifi-network/</url>
+    <content><![CDATA[<blockquote>
+<p>개발 관련 트러블슈팅은 아니지만 오랜만에 경험하는 한글 인코딩 문제가 포함되어있어 공유하려고 합니다. 여자친구에게 선물해준 아이패드 에어 5세대에서 사용중인 공유기의 무선 네트워크가 와이파이 목록에 표시되지 않는다고 하여 원인을 찾아 해결하는 과정에서 일어난 이야기입니다.</p>
+</blockquote>
+<h4 id="공유기-와이파이가-아이패드에-표시되지-않는다"><a href="#공유기-와이파이가-아이패드에-표시되지-않는다" class="headerlink" title="공유기 와이파이가 아이패드에 표시되지 않는다"></a>공유기 와이파이가 아이패드에 표시되지 않는다</h4><p>아이패드 에어 5세대를 수령하고나서 생각보다 많은 불량 테스트를 해야한다고 영상을 공유해줬는데 별다른 문제는 없다고 했지만 뜬금없이 <code>사무실의 공유기가 와이파이 목록에 표시되지 않는다</code>는 이야기를 들었다. 조금은 이해되지 않는 문제이기도 하고 전자 장비의 네트워크 문제는 일개 웹 개발자가 해결할 수 있는 영역의 문제가 아닐 수도 있어서 ChatGTP 에도 물어보고 이리저리 검색을 해보았지만 네트워크 연결에 대한 이슈는 있어도 무선 네트워크 자체가 표시되지 않는다는 문의는 딱히 보이지 않았다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/07.jpg" alt="문제의 현상을 만난 아이패드 에어 5세대 핑크"></p>
+<h4 id="네트워크-이름-숨김의-문제는-아니다"><a href="#네트워크-이름-숨김의-문제는-아니다" class="headerlink" title="네트워크 이름 숨김의 문제는 아니다"></a>네트워크 이름 숨김의 문제는 아니다</h4><p>네트워크가 표시되지 않는다는 물음에 처음으로 생각했던 원인은 혹시나 <code>공유기의 무선 네트워크 이름(SSID)을 숨긴 상태</code>는 아닐까였다. 팀뷰어 프로그램으로 원격을 시도해서 공유기 설정(192.168.0.1)로 들어가 확인해보았지만 네트워크 이름 알림은 제대로 체크가 되어있는 상황이었다. 아이패드 이외에 갤럭시와 같은 휴대폰에서는 정상적으로 네트워크가 표시되고 연결할 수 있는 상황이었다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/08.png" alt="인터넷 속도 26Mbps?..."></p>
+<h4 id="와이파이-규격의-호환성-문제일까"><a href="#와이파이-규격의-호환성-문제일까" class="headerlink" title="와이파이 규격의 호환성 문제일까"></a>와이파이 규격의 호환성 문제일까</h4><p>아이패드 에어 5세대의 와이파이 규격은 <code>Wi-Fi 6</code>로 최신 와이파이 규격이기에 혹시나 사무실에서 사용중인 <code>공유기가 오래되어 지원하지 않는 와이파이 규격인가</code>를 의심했다. 공유기의 제품명을 확인해보니 <a href="https://namu.wiki/w/ipTIME%20N704BCM">ipTIME N704BCM</a> 이었고 무려 2012년에 출시해서 아직도 판매하는 업체가 존재하는 것을 확인할 수 있었다. 와이파이 지원 규격은 <code>Wi-Fi 4</code>이기 때문에 <a href="https://support.apple.com/ko-kr/guide/deployment/depf9bb7e412/web">아이패드 에어의 와이파이 호환성</a> 정보를 찾아본 결과 <code>802.11n(Wi-Fi 4)를 지원</code>하는 것으로 나타났다. 그러면 왜 나오지 않는건데?!</p>
+<h4 id="네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식"><a href="#네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식" class="headerlink" title="네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식"></a>네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식</h4><p>와이파이 목록에 표시되지 않는 원인을 찾아가기 위해 이리 저리 검색해보던 중에 <a href="https://support.apple.com/ko-kr/HT202068">라우터에서 피해야 할 취약한 보안 설정</a>으로 <code>WPA/WPA2 혼합 모드는 더이상 사용되지 않는 구형 보안 프로토콜에 속한다</code>는 것이다. 보안이 취약한 네트워크라는 경고가 표시되더라도 네트워크 목록에 나타나야하고 연결할 수는 있어야하는데 <a href="https://support.apple.com/ko-kr/guide/security/sec8a67fa93d/web">무선 네트워크에 대한 보안 연결</a> 정보에서 <code>전환형 WPA/WPA2 는 향후 소프트웨어 버전에서 제거될 수 있다</code>는 문구를 확인할 수 있어서 혹시 몰라 사용중이었던 공유기의 무선 설정을 확인해보니 <code>WPAPSK/WPA2PSK + AES</code>로 선택되어있어 권장 설정에 해당하는 <code>WPA2PSAK + AES</code>로 변경했다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/01.png" alt="WPA/WPA2 혼합 모드"></p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/02.png" alt="개인용 WPA2"></p>
+<blockquote>
+<p>인증 및 암호화 방식을 변경하고나서도 네트워크 목록에 표시되지 않는다고 했으나 알고보니 네트워크 이름의 한글이 깨진 상태로 표시되고 있어서 인지를 못했던 것이다. 여자친구는 개발자가 아닌 일반인에 해당하므로 평소에 알고 있는 한글로 된 이름을 찾고 있었던 것이다.</p>
+</blockquote>
+<h4 id="네트워크-이름의-한글이-깨지는-문제"><a href="#네트워크-이름의-한글이-깨지는-문제" class="headerlink" title="네트워크 이름의 한글이 깨지는 문제"></a>네트워크 이름의 한글이 깨지는 문제</h4><p><img data-src="/images/posts/ipad-air-not-found-wifi/04.jpg" alt="세모???로 표시되는 한글"></p>
+<p>웹 개발자 입장에서 오랜만에 경험하는 한글 인코딩 문제인데 공유기가 오래되고 펌웨어 업데이트를 수행하지 않은지 오래되다보니 <code>UTF-8</code> 인코딩이 아닌 <code>EUC-KR</code>로 되어있던 것 같다. 공유기의 펌웨어 버전은 9.26 이었는데 아이피타임 웹사이트에서 찾아보니 2014년 8월에 업데이트된 버전으로 무려 약 10년이나 지난 버전에 해당된다. 아이피타임 공유기 설정 상 네트워크 이름(SSID)의 인코딩을 설정할 수 있도록 제공하는 부분은 없으므로 한글을 제대로 표시하기 위해서는 최신의 펌웨어 버전으로 업그레이드하는 방법 뿐이다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/04.png" alt="ipTIME N704BCM 펌웨어 업데이트 일자"></p>
+<blockquote>
+<p>해당 제품으로 지원하는 가장 최신 펌웨어 버전으로 업그레이드 해도 인코딩 문제가 해결되는지는 명확하지 않다. 또한, 원격으로 설정해주려고 하기 때문에 펌웨어 업데이트 실패에 대한 상황에 대비할 수 없어서 한글이 깨지는 것을 보완하기 위해 영어도 함께 이름에 표기하는 것으로 조치해주려고 한다.</p>
+</blockquote>
+<p>그럼에도 이상한 부분은 갤럭시와 아이폰에서도 네트워크와 한글이 정상적으로 표시된다고 하기에 아이폰은 EUC-KR에 대한 호환을 지원하지만 아이패드의 경우 UTF-8 인코딩만 지원한다고 생각하는 편이 좋을 것 같다. 아무래도 남자친구가 개발자이기에 어떻게든 해결하게 되었던 것 같은데 포기한 사람들도 꽤나 많을 것 같은 문제로 생각되어 정리했다.  </p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/05.jpg" alt="아무튼 해결! &lt;span class=&quot;emoji&quot; alias=&quot;smile&quot; style=&quot;&quot; fallback-src=&quot;https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8&quot;&gt;&#x1f604;&lt;/span&gt;"></p>
+]]></content>
+      <tags>
+        <tag>아이패드 에어</tag>
+        <tag>ipTIME 공유기</tag>
+        <tag>WPA2PSK</tag>
+        <tag>EUC-KR</tag>
       </tags>
   </entry>
   <entry>
@@ -5549,72 +5549,6 @@ It will expire on 22 May 2024 🗓</code></pre>
       </tags>
   </entry>
   <entry>
-    <title>롬복 어노테이션 프로세서</title>
-    <url>/lombok-annotation-processor/</url>
-    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
-<p>오늘은 인텔리제이에서 롬복 라이브러리를 적용하는 방법을 알아가기 위한 내용을 공유하고자 합니다.</p>
-<h2 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h2><p><a href="https://projectlombok.org/">롬복 라이브러리</a>는 자바 프로젝트에서 필수적으로 사용될만큼 편리하고 유용한 기능을 제공합니다. 롬복 라이브러리는 <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/apt/GettingStarted.html">APT(Annotation Processing Tool)</a>를 통해 어노테이션 프로세서(Annotation Processor)로 컴파일 단계에서 수행하게 됩니다. 따라서, 롬복 라이브러리를 사용하기 위해서는 프로젝트에서 어노테이션 프로세서를 동작시키기 위한 설정을 해야합니다.</p>
-<h3 id="인텔리제이-어노테이션-프로세서"><a href="#인텔리제이-어노테이션-프로세서" class="headerlink" title="인텔리제이 어노테이션 프로세서"></a>인텔리제이 어노테이션 프로세서</h3><p>인텔리제이에서는 클래스패스에 있는 어노테이션 프로세서를 구성하기 위한 <a href="https://www.jetbrains.com/help/idea/annotation-processors-support.html">어노테이션 프로세싱 기능</a>을 지원합니다. 이 어노테이션 프로세싱 기능이 활성화되면 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록하게 됩니다.</p>
-<p><img data-src="/images/posts/lombok-annotation-processor/intellij-annotation-processing.png"></p>
-<h4 id="그래들-프로젝트"><a href="#그래들-프로젝트" class="headerlink" title="그래들 프로젝트"></a>그래들 프로젝트</h4><p>인텔리제이는 그래들 프로젝트에 있는 기본 그래들 래퍼를 사용하여 프로젝트를 빌드하고 실행하도록 설정되어있습니다. <strong>Build Tools &gt; Gradle</strong> 메뉴에서 기본 그래들 래퍼가 아닌 인텔리제이 자체로 빌드하고 실행되도록 변경할 수 있습니다. 인텔리제이 자체적으로는 롬복 플러그인을 번들에 포함하고 있으므로 롬복 어노테이션 프로세서가 클래스패스에 위치하기 때문에 어노테이션 프로세싱 기능이 활성화되어있다면 롬복에 대한 어노테이션 프로세서가 자동으로 등록되게 됩니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p><em>인텔리제이는 친절하게도 롬복 라이브러리가 클래스패스에 있지만 어노테이션 프로세싱 기능이 비활성화되어있으면 이벤트 로그에 기능 활성화를 묻는 알림을 제공합니다.</em><br><em>또한, 인텔리제이를 사용하도록 선택한 환경에서는 별다른 설정없이도 클래스패스에 롬복 라이브러리가 있으면 어노테이션 프로세서가 동작함을 확인할 수 있습니다.</em></p>
-</blockquote>
-<h4 id="그래들-어노테이션-프로세서-구성"><a href="#그래들-어노테이션-프로세서-구성" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>프로젝트의 기본 설정은 프로젝트의 그래들 래퍼로 실행하는 환경이라고 하였습니다. 이 경우에는 롬복 라이브러리에 대한 어노테이션 프로세서를 그래들 구성 파일에 정의해야합니다.</p>
-<p><img data-src="/images/posts/lombok-annotation-processor/intellij-gradle-build-and-run.png"></p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
-    annotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>그래들의 annotationProcessor를 통해 롬복 라이브러리의 어노테이션 프로세서가 어노테이션 프로세서가 위치하는 클래스패스에 등록됨에 따라 인텔리제이는 어노테이션 프로세싱 기능 활성화 여부를 확인하고 활성화에 대한 알림을 제공합니다. </p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">configurations <span class="token punctuation">&#123;</span>
-   compileOnly <span class="token punctuation">&#123;</span>
-       extendsFrom annotationProcessor
-   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>그래들 기반의 스프링 부트 프로젝트를 시작할 때 롬복을 추가하면 위 구문이 포함되는 것을 확인하실 수 있습니다. 이 구문의 역할이 무엇인지 궁금하지 않으신가요? 인텔리제이는 그래들 설정 팡리에 위 구문이 포함되는 경우 <code>Gradle Imported</code>라는 이름의 프로파일로써 롬복 라이브러리를 어노테이션 프로세서로 등록하기 위한 어노테이션 프로세싱 기능을 활성화하는 것을 자동으로 구성하게 됩니다.</p>
-<p><img data-src="/images/posts/lombok-annotation-processor/intellij-lombok-annotation-processing-extends-from.png"></p>
-<blockquote>
-<p><em>인텔리제이는 기본 프로파일에 대해 어노테이션 프로세싱 기능이 활성화되어있지 않으면 이벤트 로그를 통해 롬복을 위한 어노테이션 프로세싱 기능 활성화를 안내하는 것 같습니다.</em></p>
-</blockquote>
-<h3 id="롬복-어노테이션-프로세서"><a href="#롬복-어노테이션-프로세서" class="headerlink" title="롬복 어노테이션 프로세서"></a>롬복 어노테이션 프로세서</h3><p>다시 내용을 정리해보자면, 롬복 라이브러리를 적용하기 위해서는 롬복 라이브러리의 어노테이션 프로세서를 등록하기 위한 설정을 수행해야합니다.</p>
-<ul>
-<li>인텔리제이 어노테이션 프로세싱 활성화(Enable annotation processing)</li>
-<li>그래들 어노테이션 프로세서 구성</li>
-</ul>
-<h4 id="그래들-어노테이션-프로세서-구성-1"><a href="#그래들-어노테이션-프로세서-구성-1" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>인텔리제이를 사용하는 개발 환경에서는 인텔리제이 어노테이션 프로세싱 활성화 기능을 통해 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록할 수 있습니다만, 젠킨스와 같은 빌드 환경에서 그래들로 어노테이션 프로세서를 등록하기 위해서는 이를 위한 구성을 해야합니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">configurations <span class="token punctuation">&#123;</span>
-    compileOnly <span class="token punctuation">&#123;</span>
-        extendsFrom annotationProcessor
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-dependencies <span class="token punctuation">&#123;</span>
-    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
-    annotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
-    testCompileOnly <span class="token string">'org.projectlombok:lombok'</span>
-    testAnnotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>그리고 위 구성은 간단하게 <strong>그래들 롬복 플러그인</strong> 으로 대체할 수 있는데 빌드 도구의 플러그인을 사용하는 것은 공식 홈페이지에서도 추천하는 방식입니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-   id <span class="token interpolation-string"><span class="token string">"io.freefair.lombok"</span></span> version <span class="token interpolation-string"><span class="token string">"6.3.0"</span></span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>IntelliJ</tag>
-        <tag>Lombok</tag>
-        <tag>Annotation Processor</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>스프링 부트 로그백 운영 설정</title>
     <url>/logback-spring/</url>
     <content><![CDATA[<p>스프링 부트 프로젝트를 기반으로 하는 애플리케이션에서는 기본적인 로깅 라이브러리로써 로그백이 사용됩니다. 스프링 부트의 포함된 org&#x2F;springframework&#x2F;boot&#x2F;logging&#x2F;logback&#x2F;base.xml 파일을 토대로 콘솔 및 파일로 로그를 출력할 수 있게 기본값이 정의되어 있습니다. LoggingApplicationListener에 의해 애플리케이션이 실행될 때 호출되는 여러가지 이벤트에 의해 LogbackLoggingSystem 으로써 로그백 설정이 적용됩니다.</p>
@@ -5685,6 +5619,72 @@ Base logback configuration provided for compatibility with Spring Boot 1.1
       <tags>
         <tag>Logging</tag>
         <tag>Logback</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>롬복 어노테이션 프로세서</title>
+    <url>/lombok-annotation-processor/</url>
+    <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
+<p>오늘은 인텔리제이에서 롬복 라이브러리를 적용하는 방법을 알아가기 위한 내용을 공유하고자 합니다.</p>
+<h2 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h2><p><a href="https://projectlombok.org/">롬복 라이브러리</a>는 자바 프로젝트에서 필수적으로 사용될만큼 편리하고 유용한 기능을 제공합니다. 롬복 라이브러리는 <a href="https://docs.oracle.com/javase/7/docs/technotes/guides/apt/GettingStarted.html">APT(Annotation Processing Tool)</a>를 통해 어노테이션 프로세서(Annotation Processor)로 컴파일 단계에서 수행하게 됩니다. 따라서, 롬복 라이브러리를 사용하기 위해서는 프로젝트에서 어노테이션 프로세서를 동작시키기 위한 설정을 해야합니다.</p>
+<h3 id="인텔리제이-어노테이션-프로세서"><a href="#인텔리제이-어노테이션-프로세서" class="headerlink" title="인텔리제이 어노테이션 프로세서"></a>인텔리제이 어노테이션 프로세서</h3><p>인텔리제이에서는 클래스패스에 있는 어노테이션 프로세서를 구성하기 위한 <a href="https://www.jetbrains.com/help/idea/annotation-processors-support.html">어노테이션 프로세싱 기능</a>을 지원합니다. 이 어노테이션 프로세싱 기능이 활성화되면 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록하게 됩니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-annotation-processing.png"></p>
+<h4 id="그래들-프로젝트"><a href="#그래들-프로젝트" class="headerlink" title="그래들 프로젝트"></a>그래들 프로젝트</h4><p>인텔리제이는 그래들 프로젝트에 있는 기본 그래들 래퍼를 사용하여 프로젝트를 빌드하고 실행하도록 설정되어있습니다. <strong>Build Tools &gt; Gradle</strong> 메뉴에서 기본 그래들 래퍼가 아닌 인텔리제이 자체로 빌드하고 실행되도록 변경할 수 있습니다. 인텔리제이 자체적으로는 롬복 플러그인을 번들에 포함하고 있으므로 롬복 어노테이션 프로세서가 클래스패스에 위치하기 때문에 어노테이션 프로세싱 기능이 활성화되어있다면 롬복에 대한 어노테이션 프로세서가 자동으로 등록되게 됩니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p><em>인텔리제이는 친절하게도 롬복 라이브러리가 클래스패스에 있지만 어노테이션 프로세싱 기능이 비활성화되어있으면 이벤트 로그에 기능 활성화를 묻는 알림을 제공합니다.</em><br><em>또한, 인텔리제이를 사용하도록 선택한 환경에서는 별다른 설정없이도 클래스패스에 롬복 라이브러리가 있으면 어노테이션 프로세서가 동작함을 확인할 수 있습니다.</em></p>
+</blockquote>
+<h4 id="그래들-어노테이션-프로세서-구성"><a href="#그래들-어노테이션-프로세서-구성" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>프로젝트의 기본 설정은 프로젝트의 그래들 래퍼로 실행하는 환경이라고 하였습니다. 이 경우에는 롬복 라이브러리에 대한 어노테이션 프로세서를 그래들 구성 파일에 정의해야합니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-gradle-build-and-run.png"></p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
+    annotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>그래들의 annotationProcessor를 통해 롬복 라이브러리의 어노테이션 프로세서가 어노테이션 프로세서가 위치하는 클래스패스에 등록됨에 따라 인텔리제이는 어노테이션 프로세싱 기능 활성화 여부를 확인하고 활성화에 대한 알림을 제공합니다. </p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">configurations <span class="token punctuation">&#123;</span>
+   compileOnly <span class="token punctuation">&#123;</span>
+       extendsFrom annotationProcessor
+   <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>그래들 기반의 스프링 부트 프로젝트를 시작할 때 롬복을 추가하면 위 구문이 포함되는 것을 확인하실 수 있습니다. 이 구문의 역할이 무엇인지 궁금하지 않으신가요? 인텔리제이는 그래들 설정 팡리에 위 구문이 포함되는 경우 <code>Gradle Imported</code>라는 이름의 프로파일로써 롬복 라이브러리를 어노테이션 프로세서로 등록하기 위한 어노테이션 프로세싱 기능을 활성화하는 것을 자동으로 구성하게 됩니다.</p>
+<p><img data-src="/images/posts/lombok-annotation-processor/intellij-lombok-annotation-processing-extends-from.png"></p>
+<blockquote>
+<p><em>인텔리제이는 기본 프로파일에 대해 어노테이션 프로세싱 기능이 활성화되어있지 않으면 이벤트 로그를 통해 롬복을 위한 어노테이션 프로세싱 기능 활성화를 안내하는 것 같습니다.</em></p>
+</blockquote>
+<h3 id="롬복-어노테이션-프로세서"><a href="#롬복-어노테이션-프로세서" class="headerlink" title="롬복 어노테이션 프로세서"></a>롬복 어노테이션 프로세서</h3><p>다시 내용을 정리해보자면, 롬복 라이브러리를 적용하기 위해서는 롬복 라이브러리의 어노테이션 프로세서를 등록하기 위한 설정을 수행해야합니다.</p>
+<ul>
+<li>인텔리제이 어노테이션 프로세싱 활성화(Enable annotation processing)</li>
+<li>그래들 어노테이션 프로세서 구성</li>
+</ul>
+<h4 id="그래들-어노테이션-프로세서-구성-1"><a href="#그래들-어노테이션-프로세서-구성-1" class="headerlink" title="그래들 어노테이션 프로세서 구성"></a>그래들 어노테이션 프로세서 구성</h4><p>인텔리제이를 사용하는 개발 환경에서는 인텔리제이 어노테이션 프로세싱 활성화 기능을 통해 클래스패스에 있는 어노테이션 프로세서를 자동으로 등록할 수 있습니다만, 젠킨스와 같은 빌드 환경에서 그래들로 어노테이션 프로세서를 등록하기 위해서는 이를 위한 구성을 해야합니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">configurations <span class="token punctuation">&#123;</span>
+    compileOnly <span class="token punctuation">&#123;</span>
+        extendsFrom annotationProcessor
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+dependencies <span class="token punctuation">&#123;</span>
+    compileOnly <span class="token string">'org.projectlombok:lombok'</span>
+    annotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
+    testCompileOnly <span class="token string">'org.projectlombok:lombok'</span>
+    testAnnotationProcessor <span class="token string">'org.projectlombok:lombok'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>그리고 위 구성은 간단하게 <strong>그래들 롬복 플러그인</strong> 으로 대체할 수 있는데 빌드 도구의 플러그인을 사용하는 것은 공식 홈페이지에서도 추천하는 방식입니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+   id <span class="token interpolation-string"><span class="token string">"io.freefair.lombok"</span></span> version <span class="token interpolation-string"><span class="token string">"6.3.0"</span></span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>IntelliJ</tag>
+        <tag>Lombok</tag>
+        <tag>Annotation Processor</tag>
       </tags>
   </entry>
   <entry>
@@ -13355,6 +13355,104 @@ $<span class="token punctuation">.</span><span class="token function">ajaxSetup<
         <tag>Unix Timestamp</tag>
         <tag>Unix Epoch</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>유효성 검증</title>
+    <url>/validation/</url>
+    <content><![CDATA[<blockquote>
+<p>서버 애플리케이션에서 좋은 REST API를 설계하는 것에는 잘못된 요청에 대해 유효성 검사를 포함하여 올바르게 예외를 처리하는 것도 포함됩니다.</p>
+</blockquote>
+<p>자바 애플리케이션에서 <strong>유효성 검증(Validation)</strong> 은 JSR-303 과 스프링 프레임워크에서 제공하는 추상화를 통해 쉽고 유연하게 유효성 검증을 수행할 수 있다. 아래의 스프링 부트 스타터를 추가하면 <strong>hibernate-validator</strong> 가 포함되어있다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">implementation <span class="token string">'org.springframework.boot:spring-boot-starter-validation'</span></code></pre>
+
+<h4 id="올바르지-않은-요청에-대한-예외-목록"><a href="#올바르지-않은-요청에-대한-예외-목록" class="headerlink" title="올바르지 않은 요청에 대한 예외 목록"></a>올바르지 않은 요청에 대한 예외 목록</h4><p>유효성 검사를 포함하여 잘못된 요청에 대해서 발생하는 예외는 아래와 같다.</p>
+<ul>
+<li>MissingPathVariableException - 경로 변수가 지정된 파라미터가 없거나 경로 변수에 빈 값이 주어진 경우</li>
+<li>MethodArgumentTypeMismatchException - 바인딩 데이터를 파라미터로 변환할 수 없는 경우</li>
+<li>HttpMessageNotReadableException - 요청 바디를 올바르게 처리할 수 없는 경우</li>
+<li>MissingServletRequestParameterException - 필수 파라미터가 포함되지 않은 경우</li>
+<li>MethodArgumentNotValidException - 폼 데이터 또는 요청 바디가 유효성 검사에 통과하지 못한 경우</li>
+<li>ConstraintViolationException - 경로 변수 또는 요청 파라미터가 유효성 검사에 통과하지 못한 경우</li>
+<li>HttpRequestMethodNotSupportedException - 지원하지 않는 HTTP 함수로 요청한 경우</li>
+</ul>
+<blockquote>
+<p>UnexpectedTypeException는 유효성 검사를 위해 잘못된 유형을 지정하였을 경우에 발생하므로 잘못된 요청이 아닌 서버 오류에 해당됩니다.<br>예를 들어, Integer 또는 Long과 같은 파라미터에 @NotBlank를 선언했을때 확인할 수 있습니다.</p>
+</blockquote>
+<h4 id="유효성-검사-예외-메시지를-확인하는-속성"><a href="#유효성-검사-예외-메시지를-확인하는-속성" class="headerlink" title="유효성 검사 예외 메시지를 확인하는 속성"></a>유효성 검사 예외 메시지를 확인하는 속성</h4><p>스프링 부트 애플리케이션에서 기본적인 오류 응답에 유효성 검사에 대한 메시지를 포함하여 확인하고 싶다면 아래와 같이 <code>server.error</code> 속성을 설정하면 된다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">server.error</span><span class="token punctuation">:</span>
+  <span class="token key atrule">include-exception</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">include-binding-errors</span><span class="token punctuation">:</span> always
+  <span class="token key atrule">include-message</span><span class="token punctuation">:</span> always
+  <span class="token key atrule">include-stacktrace</span><span class="token punctuation">:</span> never</code></pre>
+
+<h4 id="Valid-그리고-Validated"><a href="#Valid-그리고-Validated" class="headerlink" title="Valid 그리고 Validated"></a>Valid 그리고 Validated</h4><p>기본적으로 JSR-303 표준의 유효성 검사를 위한 어노테이션은 @Valid 이다. REST API 뿐만 아니라 비즈니스 레이어에서도 유효성 검사를 수행하고 싶은 경우에는 @Validated를 활용하여야 한다. 또한, <strong>@Validated</strong>는 groups 속성을 통해 동일한 모델에 대해서 상황에 따라 유효성 검증 유무를 선택할 수 있어 더 유연하게 처리할 수 있다. <strong>PathVariable</strong> 과 <strong>RequestParam</strong> 에 대해서 유효성 검사를 수행하고자 하는 경우에는 @Validated를 컨트롤러 클래스에 추가해야한다.</p>
+<h4 id="Cascaded-Validation"><a href="#Cascaded-Validation" class="headerlink" title="Cascaded Validation"></a>Cascaded Validation</h4><p>모델 빈 클래스에 하위 객체로 구성된 필드에 대해서 유효성 검증을 적용하고자하는 경우에는 필드에 <strong>@Valid</strong>를 선언하면 된다. 그렇지 않은 경우 하위 모델에 대해서는 기본적으로 유효성 검사를 자동으로 수행하지 않는다. 다음은 리스트로 구성된 필드에 개별 유효성 검사를 수행하는 케이스를 보여준다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Account</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@NotBlank</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> id<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@NotBlank</span>
+    <span class="token annotation punctuation">@Size</span><span class="token punctuation">(</span>min <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> password<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token class-name">List</span><span class="token operator">&lt;</span><span class="token annotation punctuation">@Valid</span> <span class="token class-name">Contact</span><span class="token operator">></span> contacts <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Data</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Contact</span> <span class="token punctuation">&#123;</span>
+        <span class="token annotation punctuation">@Size</span><span class="token punctuation">(</span>max <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">)</span>
+        <span class="token annotation punctuation">@NotEmpty</span>
+        <span class="token keyword">private</span> <span class="token class-name">String</span> name<span class="token punctuation">;</span>
+        <span class="token annotation punctuation">@Email</span>
+        <span class="token keyword">private</span> <span class="token class-name">String</span> email<span class="token punctuation">;</span>
+        <span class="token annotation punctuation">@Pattern</span><span class="token punctuation">(</span>regexp <span class="token operator">=</span> <span class="token string">"^\\+?[1-9]\\d&#123;0,2&#125;[\\s\\d]&#123;1,14&#125;$"</span><span class="token punctuation">)</span> <span class="token comment">// NOTE: E.164</span>
+        <span class="token keyword">private</span> <span class="token class-name">String</span> phone<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="ConstraintValidator"><a href="#ConstraintValidator" class="headerlink" title="ConstraintValidator"></a>ConstraintValidator</h4><p>JSR-303 또는 JSR-380 표준의 어노테이션으로 커버하지 못하는 입력값에 대한 유효성 검증을 위해서 <strong>ConstraintValidator</strong> 인터페이스를 구현하여 시스템 요구사항에 맞는 유효성 검증을 수행할 수 있도록 구현할 수 있다. 예를 들어, 앞선 예시에서는 전화번호 입력 필드에 대해서 E.164를 검증하기 위해서 정규식을 사용했지만 더 유연하게 입력할 수 있도록 지원하기 위해서 <a href="https://github.com/google/libphonenumber">google&#x2F;libphonenumber</a>에서 제공하는 유틸을 사용한 유효성 검증을 구현할 수 있다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Documented</span>
+<span class="token annotation punctuation">@Constraint</span><span class="token punctuation">(</span>validatedBy <span class="token operator">=</span> <span class="token class-name">PhoneConstraintValidator</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Target</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">METHOD</span><span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">FIELD</span><span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">ANNOTATION_TYPE</span><span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">CONSTRUCTOR</span><span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">PARAMETER</span><span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span><span class="token constant">TYPE_USE</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Retention</span><span class="token punctuation">(</span><span class="token class-name">RetentionPolicy</span><span class="token punctuation">.</span><span class="token constant">RUNTIME</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token annotation punctuation">@interface</span> <span class="token class-name">Phone</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">String</span> <span class="token function">message</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">"Invalid E.164 format: '$&#123;validatedValue&#125;'"</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">groups</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+    <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">extends</span> <span class="token class-name">Payload</span><span class="token punctuation">></span></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">payload</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PhoneConstraintValidator</span> <span class="token keyword">implements</span> <span class="token class-name">ConstraintValidator</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Phone</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">initialize</span><span class="token punctuation">(</span><span class="token class-name">Phone</span> constraintAnnotation<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ConstraintValidator</span><span class="token punctuation">.</span><span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">initialize</span><span class="token punctuation">(</span>constraintAnnotation<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isValid</span><span class="token punctuation">(</span><span class="token class-name">String</span> s<span class="token punctuation">,</span> <span class="token class-name">ConstraintValidatorContext</span> context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token class-name">PhoneNumberUtil</span> phoneUtil <span class="token operator">=</span> <span class="token class-name">PhoneNumberUtil</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Phonenumber<span class="token punctuation">.</span>PhoneNumber</span> number <span class="token operator">=</span> phoneUtil<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token class-name">Phonenumber<span class="token punctuation">.</span>PhoneNumber<span class="token punctuation">.</span>CountryCodeSource</span><span class="token punctuation">.</span><span class="token constant">UNSPECIFIED</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> phoneUtil<span class="token punctuation">.</span><span class="token function">isPossibleNumber</span><span class="token punctuation">(</span>number<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">NumberParseException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="유효성-검증-예외에-대한-오류-처리"><a href="#유효성-검증-예외에-대한-오류-처리" class="headerlink" title="유효성 검증 예외에 대한 오류 처리"></a>유효성 검증 예외에 대한 오류 처리</h4><p>유효성 검증 실패 시 데이터 바인딩 방식과 유효성 검증 어노테이션에 따라 예외가 발생한다. <strong>ExceptionHandler</strong>를 통해 공통 오류 응답을 구현하고자 한다면 최소한 <strong>ConstraintViolationException</strong>과 <strong>MethodArgumentNotValidException</strong> 에 대해서는 유효성 검사에 대한 메시지가 올바르게 포함되도록 작성하도록 하자.</p>
+<ul>
+<li>PathVariable, RequestParam + Validated → ConstraintViolationException</li>
+<li>RequestBody + Validated → MethodArgumentNotValidException</li>
+</ul>
+<h4 id="참고-링크"><a href="#참고-링크" class="headerlink" title="참고 링크"></a>참고 링크</h4><ul>
+<li><a href="https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html">Jakarta Bean Validation specification</a></li>
+<li><a href="https://meetup.nhncloud.com/posts/223">Validation 어디까지 해봤니?</a></li>
+<li><a href="https://www.baeldung.com/spring-valid-vs-validated">Differences in @Valid and @Validated Annotations in Spring</a></li>
+<li><a href="https://www.youtube.com/watch?v=GdKuxmtA65I">Bean Validation 2.0 - you’ve put your annotations everywhere! by Gunnar Morling</a></li>
+<li><a href="https://www.baeldung.com/java-validation">Java Bean Validation Basics</a></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>보안 취약점 (Vulnerability)</title>

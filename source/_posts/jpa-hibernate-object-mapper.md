@@ -1,6 +1,6 @@
 ---
 title: JPA - Hibernate ObjectMapper
-date: 2024-09-10T11:00+09:00
+date: 2024-09-10T23:00+09:00
 tags:
 - JPA
 - Hibernate

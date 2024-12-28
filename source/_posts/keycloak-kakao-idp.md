@@ -6,43 +6,55 @@ tags:
 - Kakao
 ---
 
-키클록(Keycloak)의 렐름(Realm)에 카카오를 IdP(Identity Provider)로 추가하고 카카오 계정으로 사용자 인증을 해보자. 카카오 소셜 프로바이더는 완전하지는 않지만 [OpenID Connect를 지원](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc)한다. 따라서, <U>OpenID Connect v1.0</U> 를 추가하여 로그인 화면에 노출시킬 수 있다.
+통합 인증을 위한 IAM 오픈소스인 키클록(Keycloak)에서 카카오 소셜 프로바이더를 IdP(Identity Provider)로 렐름(Realm)에 추가하고 카카오 계정으로 로그인하여 사용자를 인증해보도록 하자. 우선 카카오 소셜 프로바이더는 [OpenID Connect](https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc) 규격을 지원하고 있으므로 키클록에서 기본적으로 제공해주고 있는 <U>OpenID Connect v1.0</U> 프로바이더 방식으로 추가하여 로그인 화면에 선택 옵션으로 노출시킬 수 있다.
 
-####  OpenID Connect Provider 추가
+#### 카카오 로그인을 위한 REST API 키와 클라이언트 시크릿
 
-OpenID Connect Provider 추가 시 <U>Discovery endpoint</U> 에 카카오 로그인의 [OpenID Connect Discovery Metadata](https://kauth.kakao.com/.well-known/openid-configuration) 주소를 입력하면 OpenID Connect 메타데이터를 불러와서 자동으로 입력해준다. 그리고 카카오 디펠로퍼스에서 REST API 키와 클라이언트 시크릿을 다음의 메뉴에서 확인하고 설정하자.
+우선, [카카오 디펠로퍼스](https://developers.kakao.com/)에 카카오 계정으로 로그인한 후 애플리케이션을 만들고 카카오 로그인에 대한 설정을 진행하자. 키클록에서 OpenID Connect Provider 설정에 입력할 클라이언트 아이디와 클라이언트 시크릿 정보를 다음의 메뉴에서 확인하도록 하자. 클라이언트 시크릿은 코드 교환 과정에서는 노출되지 않으며 사용자 인증 후 코드를 통해 ID 토큰을 발급받기 위해서 사용된다.
 
 - Client ID : 내 애플리케이션 → 앱 설정 → 앱 키 (REST API 키)
 - Client Secret : 내 애플리케이션 → 제품 설정 → 카카오 로그인 → 보안 (Client Secret)
+
+####  키클록에 카카오 OpenID Connect Provider 추가
+
+Identity Providers 목록에서 <U>OpenID Connect v1.0</U>을 선택하고 <U>Discovery endpoint</U> 에 카카오 로그인의 [OpenID Connect Discovery Metadata](https://kauth.kakao.com/.well-known/openid-configuration) 주소를 입력하게 되면 키클록에서는 OpenID Connect 메타데이터를 불러와서 자동으로 입력해준다. 그리고 앞서 카카오 디펠로퍼스에서 확인해두었던 REST API 키와 클라이언트 시크릿을 입력하도록 하자.
+
+- Client ID : 내 애플리케이션 → 앱 설정 → 앱 키 (REST API 키)
+- Client Secret : 내 애플리케이션 → 제품 설정 → 카카오 로그인 → 보안 (Client Secret)
+- Client assertion signature algorithm : RS256 (Optinal)
+
+> 카카오에서는 서명 알고리즘으로 RS256 한가지를 지원하므로 굳이 선택할 필요는 없습니다.
 
 ![](/images/posts/keycloak-kakao-idp/01.png)
 
 #### 카카오 로그인 OpenID Connect 활성화 설정 및 Redirect URI 추가
 
-카카오 로그인 제품 설정의 OpenID Connect 옵션을 활성화하고 키클록에 추가한 IdP에 표시되는 <U>Redirect URI</U> 주소를 카카오 로그인의 Redirect URI 목록에 추가하자.
+애플리케이션의 제품 설정에서 카카오 로그인과 OpenID Connect 옵션을 활성화하고 키클록에 추가한 IdP 브로커에 표시되는 <U>Redirect URI</U> 주소를 카카오 로그인의 Redirect URI 목록에 추가하면 된다. 
 
 ![](/images/posts/keycloak-kakao-idp/02.png)
 
-#### Authorization Code Flow with PKCE (Optional)
+#### 코드 교환 과정에서 PKCE 사용하기
 
-카카오 프로바이더에서는 <U>RS256</U> 알고리즘 과 <U>PKCE</U>를 지원한다. 단, PKCE 방식은 <U>S256</U>으로 지정되어야한다.
+카카오 소셜 프로바이더는 <U>S256 방식의 PKCE</U>를 지원하므로 코드 교환 과정(Authorization Code Flow)에서 PKCE를 사용할 수 있다. 
 
 ![](/images/posts/keycloak-kakao-idp/03.png)
 
-#### 사용자 콘솔 로그인 화면
+#### 사용자 콘솔 로그인 화면에서 카카오 계정으로 로그인
 
-카카오 IdP가 추가되었다면 <U>사용자 콘솔(account-console)</U>의 로그인 화면에 카카오 프로바이더가 옵션으로 표시되는 것을 확인할 수 있을 것이다. 
+카카오 로그인을 위한 IdP를 추가했으므로 <U>사용자 콘솔(account-console)</U>의 로그인 화면에 카카오 프로바이더가 옵션으로 표시된다.  사용자 콘솔의 로그인 화면에서 카카오 프로바이더 이름을 선택하면 카카오 계정 로그인 화면으로 리다이렉트되며 카카오 계정으로 로그인하고 동의 항목에 따라 진행하면 키클록 사용자로 추가된다. 만약, 아래와 같이 <U>카카오 계정(이메일)에 대한 수집 항목</U>에 동의했다면 사용자 이름과 이메일이 모두 이메일로 설정되며 사용자 정보 입력 단계없이 사용자가 만들어지고 사용자 콘솔 화면이 보인다.
 
 ![](/images/posts/keycloak-kakao-idp/04.png)
 
-#### 카카오 계정 로그인 화면
-
-사용자 콘솔의 로그인 화면에서 카카오 프로바이더 이름을 선택하면 카카오 계정 로그인 화면으로 리다이렉트되며 카카오 계정으로 로그인하고 동의 항목에 따라 진행하면 키클록 사용자로 추가된다. 만약, 아래와 같이 <U>카카오 계정(이메일)에 대한 수집 항목</U>에 동의했다면 사용자 이름과 이메일이 모두 이메일로 설정되며 사용자 정보 입력 단계없이 사용자가 만들어지고 사용자 콘솔 화면이 보인다.
-
-![](/images/posts/keycloak-kakao-idp/05.png)
-
 #### Add Identity Provider Mapper
 
-카카오 로그인에 대한 수집 항목에 따라 <U>User Attribute</U> 에 추가하는 것은 개별적인 테스트가 필요해보인다. 예를 들어, <U>Attribute Importer</U>를 통해 Username 를 지정하려고 할때 입력된 클레임 정보가 없다면 빈 값이 들어가서 로그인은 가능하지만 관리자 콘솔의 사용자 목록에서 상세 정보를 확인하거나 삭제하는 것이 불가능하더라.
+카카오 [ID 토큰 페이로드](https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-response-id-token)에는 수집 동의 항목에 따라 클레임이 포함되어 있는데 이것을 <U>User Attribute</U> 에 추가하기 위해서는 Mapper 설정이 필요하다. 
+
+- username : sub
+- nickname : nickname
+- email : email (기본값)
 
 ![](/images/posts/keycloak-kakao-idp/06.png)
+
+> 위와 같이 username 에 대한 Mapper 설정을 추가하지 않는다면 이메일 정보가 username 으로 설정되는 것을 확인할 수 있습니다. 이때, username 에 존재하지 않는 항목을 연결한다면 관리자 콘솔에서 상세 정보를 확인하거나 삭제가 불가능해질 수 있으니 주의가 필요합니다.
+
+![카카오 계정으로 추가된 사용자 정보](/images/posts/keycloak-kakao-idp/07.png)

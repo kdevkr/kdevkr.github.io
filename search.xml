@@ -702,6 +702,53 @@ xxxxxx.execute-api.ap-northeast-2.amazonaws.com could not be resolved <span clas
       </tags>
   </entry>
   <entry>
+    <title>AWS EC2 볼륨 크기 확장하기</title>
+    <url>/aws-ebs-volume-expand/</url>
+    <content><![CDATA[<p>Amazon Aurora PostgreSQL 처럼 관리형 데이터베이스 서비스를 이용하지 않고 데이터베이스와 같이 대량의 데이터를 저장하기 위한 서버를 EC2 인스턴스에서 직접 운용하는 경우에는 데이터를 저장할 볼륨의 사용량을 모니터링하고 임계치를 넘어서는 경우 디스크 볼륨의 크기를 변경하고 파일 시스템을 확장하여야 한다.</p>
+<p>시계열 데이터를 저장하기 위해 KDB+ 시계열 데이터베이스를 EC2 인스턴스에 직접 설치하여 운용하고 있어 데이터가 저장되는 규모에 따라 볼륨에 대한 모니터링을 주기적으로 수행하고 볼륨 크기를 관리하는 작업을 수행해야 한다. 최근에는 <a href="https://aws.amazon.com/ko/finspace/features/managed-kdb-insights/">Amazon FinSpace를 통해 관리형 KDB Insight를 지원</a>하기는 합니다만 라이센스와 인프라 비용 문제로 관리형 서비스로 전환하여 사용중이지는 않는다.</p>
+<p>아무튼, Amazon EBS의 탄력적 볼륨은 서버에 연결된 볼륨을 해제하거나 EC2 서버를 재시작하지 않고도 변경된 볼륨을 반영할 수 있게 제공해주지만 AWS CLI 또는 웹 콘솔에서 볼륨의 크기를 변경하더라도 리눅스 파일 시스템에서 사용중인 볼륨을 자동으로 확장해주지는 않는다.</p>
+<h4 id="XFS-파일-시스템-확장"><a href="#XFS-파일-시스템-확장" class="headerlink" title="XFS 파일 시스템 확장"></a>XFS 파일 시스템 확장</h4><p>볼륨의 파일 시스템에 따라 xfs_growsfs 또는 resize2fs 명령어를 사용해서 볼륨의 크기만큼 확장할 수 있다. KDB+ 시계열 데이터베이스에서 사용하는 데이터 볼륨을 &#x2F;data 경로로 마운트되어있어 아래와 같이 파일 시스템을 확장할 수 있다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token function">sudo</span> <span class="token function">df</span> <span class="token parameter variable">-hT</span> /data
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/nvme2n1   xfs   500G  349G  152G  <span class="token number">70</span>% /data
+
+<span class="token function">sudo</span> xfs_growfs <span class="token parameter variable">-d</span> /data</code></pre>
+
+<h4 id="EBS-볼륨-수정-시-주의사항"><a href="#EBS-볼륨-수정-시-주의사항" class="headerlink" title="EBS 볼륨 수정 시 주의사항"></a>EBS 볼륨 수정 시 주의사항</h4><ul>
+<li>볼륨 크기를 변경하고나서 최소한 6시간 이내에 재수정이 불가능하다.</li>
+<li>볼륨 수정 후에도 optimizing 상태와 같은 볼륨 수정 상황을 모니터링 해야한다.</li>
+<li>볼륨을 수정하기 전에 스냅샷을 생성하여 예상하지 못한 상태에 대비하자.</li>
+</ul>
+<hr>
+<p>그동안 볼륨 크기를 변경하고 확장하는 작업이 자주 일어나지 않았으나 시간이 된다면 AWS CLI 또는 Lambda 를 이용하여 볼륨 임계치에 따라 자동으로 볼륨의 크기가 조정되는 방법을 적용해봐도 좋을 것 같다. GPT에 물어보니 대충 아래와 같이 배시 스크립트를 작성할 수 있나보다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token assign-left variable">INSTANCE_ID</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">cat</span> /var/lib/cloud/data/instance-id<span class="token variable">)</span></span>
+<span class="token assign-left variable">VOLUME_ID</span><span class="token operator">=</span><span class="token string">"vol-xxxxxxxxxxxxx"</span>
+<span class="token assign-left variable">VOLUME_PATH</span><span class="token operator">=</span><span class="token string">"/data"</span>
+<span class="token assign-left variable">USAGE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">df</span> <span class="token parameter variable">-h</span> $VOLUME_PATH <span class="token operator">|</span> <span class="token function">grep</span> / <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'&#123; print $5 &#125;'</span> <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'s/%//g'</span><span class="token variable">)</span></span>
+
+<span class="token assign-left variable">THRESHOLD</span><span class="token operator">=</span><span class="token number">80</span> <span class="token comment"># %</span>
+<span class="token assign-left variable">EXPAND_SIZE</span><span class="token operator">=</span><span class="token number">100</span> <span class="token comment"># GB</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$USAGE</span>"</span> <span class="token parameter variable">-gt</span> <span class="token string">"<span class="token variable">$THRESHOLD</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] USAGE: <span class="token variable">$USAGE</span>"</span>
+
+  <span class="token assign-left variable">CURRENT_SIZE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>aws ec2 describe-volumes --volume-ids $VOLUME_ID <span class="token parameter variable">--query</span> <span class="token string">"Volumes[0].Size"</span><span class="token variable">)</span></span>
+  <span class="token assign-left variable">NEW_SIZE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>$CURRENT_SIZE <span class="token operator">+</span> $EXPAND_SIZE<span class="token variable">))</span></span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] CURRENT: <span class="token variable">$CURRENT_SIZE</span>, NEW: <span class="token variable">$NEW_SIZE</span>"</span>
+
+  aws ec2 modify-volume --volume-id <span class="token variable">$VOLUME_ID</span> <span class="token parameter variable">--size</span> <span class="token variable">$NEW_SIZE</span>
+  <span class="token function">sudo</span> xfs_growfs <span class="token parameter variable">-d</span> <span class="token variable">$VOLUME_PATH</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] completed"</span>
+<span class="token keyword">fi</span></code></pre>
+]]></content>
+      <tags>
+        <tag>AWS</tag>
+        <tag>Elastic Block Storage</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>AWS EC2 인스턴스 메타데이터</title>
     <url>/aws-ec2-instance-metadata/</url>
     <content><![CDATA[<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># IMDSv1</span>
@@ -807,177 +854,6 @@ xxxxxx.execute-api.ap-northeast-2.amazonaws.com could not be resolved <span clas
       <tags>
         <tag>IMDSv1</tag>
         <tag>IMDSv2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>AWS EC2 볼륨 크기 확장하기</title>
-    <url>/aws-ebs-volume-expand/</url>
-    <content><![CDATA[<p>Amazon Aurora PostgreSQL 처럼 관리형 데이터베이스 서비스를 이용하지 않고 데이터베이스와 같이 대량의 데이터를 저장하기 위한 서버를 EC2 인스턴스에서 직접 운용하는 경우에는 데이터를 저장할 볼륨의 사용량을 모니터링하고 임계치를 넘어서는 경우 디스크 볼륨의 크기를 변경하고 파일 시스템을 확장하여야 한다.</p>
-<p>시계열 데이터를 저장하기 위해 KDB+ 시계열 데이터베이스를 EC2 인스턴스에 직접 설치하여 운용하고 있어 데이터가 저장되는 규모에 따라 볼륨에 대한 모니터링을 주기적으로 수행하고 볼륨 크기를 관리하는 작업을 수행해야 한다. 최근에는 <a href="https://aws.amazon.com/ko/finspace/features/managed-kdb-insights/">Amazon FinSpace를 통해 관리형 KDB Insight를 지원</a>하기는 합니다만 라이센스와 인프라 비용 문제로 관리형 서비스로 전환하여 사용중이지는 않는다.</p>
-<p>아무튼, Amazon EBS의 탄력적 볼륨은 서버에 연결된 볼륨을 해제하거나 EC2 서버를 재시작하지 않고도 변경된 볼륨을 반영할 수 있게 제공해주지만 AWS CLI 또는 웹 콘솔에서 볼륨의 크기를 변경하더라도 리눅스 파일 시스템에서 사용중인 볼륨을 자동으로 확장해주지는 않는다.</p>
-<h4 id="XFS-파일-시스템-확장"><a href="#XFS-파일-시스템-확장" class="headerlink" title="XFS 파일 시스템 확장"></a>XFS 파일 시스템 확장</h4><p>볼륨의 파일 시스템에 따라 xfs_growsfs 또는 resize2fs 명령어를 사용해서 볼륨의 크기만큼 확장할 수 있다. KDB+ 시계열 데이터베이스에서 사용하는 데이터 볼륨을 &#x2F;data 경로로 마운트되어있어 아래와 같이 파일 시스템을 확장할 수 있다.</p>
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token function">sudo</span> <span class="token function">df</span> <span class="token parameter variable">-hT</span> /data
-Filesystem     Type  Size  Used Avail Use% Mounted on
-/dev/nvme2n1   xfs   500G  349G  152G  <span class="token number">70</span>% /data
-
-<span class="token function">sudo</span> xfs_growfs <span class="token parameter variable">-d</span> /data</code></pre>
-
-<h4 id="EBS-볼륨-수정-시-주의사항"><a href="#EBS-볼륨-수정-시-주의사항" class="headerlink" title="EBS 볼륨 수정 시 주의사항"></a>EBS 볼륨 수정 시 주의사항</h4><ul>
-<li>볼륨 크기를 변경하고나서 최소한 6시간 이내에 재수정이 불가능하다.</li>
-<li>볼륨 수정 후에도 optimizing 상태와 같은 볼륨 수정 상황을 모니터링 해야한다.</li>
-<li>볼륨을 수정하기 전에 스냅샷을 생성하여 예상하지 못한 상태에 대비하자.</li>
-</ul>
-<hr>
-<p>그동안 볼륨 크기를 변경하고 확장하는 작업이 자주 일어나지 않았으나 시간이 된다면 AWS CLI 또는 Lambda 를 이용하여 볼륨 임계치에 따라 자동으로 볼륨의 크기가 조정되는 방법을 적용해봐도 좋을 것 같다. GPT에 물어보니 대충 아래와 같이 배시 스크립트를 작성할 수 있나보다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
-
-<span class="token assign-left variable">INSTANCE_ID</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">cat</span> /var/lib/cloud/data/instance-id<span class="token variable">)</span></span>
-<span class="token assign-left variable">VOLUME_ID</span><span class="token operator">=</span><span class="token string">"vol-xxxxxxxxxxxxx"</span>
-<span class="token assign-left variable">VOLUME_PATH</span><span class="token operator">=</span><span class="token string">"/data"</span>
-<span class="token assign-left variable">USAGE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">df</span> <span class="token parameter variable">-h</span> $VOLUME_PATH <span class="token operator">|</span> <span class="token function">grep</span> / <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'&#123; print $5 &#125;'</span> <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'s/%//g'</span><span class="token variable">)</span></span>
-
-<span class="token assign-left variable">THRESHOLD</span><span class="token operator">=</span><span class="token number">80</span> <span class="token comment"># %</span>
-<span class="token assign-left variable">EXPAND_SIZE</span><span class="token operator">=</span><span class="token number">100</span> <span class="token comment"># GB</span>
-
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$USAGE</span>"</span> <span class="token parameter variable">-gt</span> <span class="token string">"<span class="token variable">$THRESHOLD</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] USAGE: <span class="token variable">$USAGE</span>"</span>
-
-  <span class="token assign-left variable">CURRENT_SIZE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>aws ec2 describe-volumes --volume-ids $VOLUME_ID <span class="token parameter variable">--query</span> <span class="token string">"Volumes[0].Size"</span><span class="token variable">)</span></span>
-  <span class="token assign-left variable">NEW_SIZE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>$CURRENT_SIZE <span class="token operator">+</span> $EXPAND_SIZE<span class="token variable">))</span></span>
-  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] CURRENT: <span class="token variable">$CURRENT_SIZE</span>, NEW: <span class="token variable">$NEW_SIZE</span>"</span>
-
-  aws ec2 modify-volume --volume-id <span class="token variable">$VOLUME_ID</span> <span class="token parameter variable">--size</span> <span class="token variable">$NEW_SIZE</span>
-  <span class="token function">sudo</span> xfs_growfs <span class="token parameter variable">-d</span> <span class="token variable">$VOLUME_PATH</span>
-  <span class="token builtin class-name">echo</span> <span class="token string">"[EBS] completed"</span>
-<span class="token keyword">fi</span></code></pre>
-]]></content>
-      <tags>
-        <tag>AWS</tag>
-        <tag>Elastic Block Storage</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Amazon ECS 스케줄링</title>
-    <url>/aws-ecs-scheduling/</url>
-    <content><![CDATA[<p>Amazon EventBrdige 스케줄러를 사용하여 Amazon ECS 클러스터로 운용되는 서비스와 EC2 인스턴스의 규모를 조정할 수 있다. 예를 들어, <a href="https://www.youtube.com/watch?v=amL-kQOV0Go">AWS Instance Scheduler 솔루션</a>로 스테이징이나 테스트 환경에 대한 EC2 인스턴스들을 평일 업무 시간에만 실행되도록 시작, 종료 스케줄링을 수행할 수 있다. Amazon ECS의 <a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">예약된 작업</a>으로는 특정 태스크를 일정 시간에 시작할 순 있으나 종료할 순 없다. 이러한 경우 <a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/service-auto-scaling.html">Application Auto Scaling</a>을 활용해야하고 AWS CLI를 대신하여 일정 기반으로 실행하기 위한 방법이 바로 Amazon EventBridge 스케줄러 이다.</p>
-<h4 id="오토스케일링-그룹의-예약된-작업"><a href="#오토스케일링-그룹의-예약된-작업" class="headerlink" title="오토스케일링 그룹의 예약된 작업"></a>오토스케일링 그룹의 예약된 작업</h4><p>Amazon EventBridge 스케줄러로 오토스케일링 그룹의 EC2 인스턴스 용량을 조정할 수 있다. 그전에 오토스케일링 그룹에 대한 콘솔에서 자체적으로 제공하는 예약된 작업에 대해서 알아보자. EC2 용량 공급자로 사용중인 오토스케일링 그룹의 자동 확장 기능으로 <a href="https://docs.aws.amazon.com/ko_kr/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html">예약된 작업을 정의</a>하면 크론 표현식에 의해 평일 업무 시간을 위한 서비스 환경을 실행할 수 있다. 스테이징 또는 테스트 환경은 개발자 또는 테스트 엔지니어가 필요하지 않은 시간에는 종료하여 잉여 시간에 대한 요금을 줄여갈 수 있다.</p>
-<p><img data-src="/images/posts/aws-ecs-scheduling/01.png"></p>
-<p>다만, 오토스케일링 그룹 콘솔에서 제공하는 예약된 작업으로 만들어지는 스케줄은 일시적으로 비활성화하지 못하는 단점이 있고, ECS 클러스터에서 EC2 인스턴스에 실행되고 있는 서비스가 있는 경우 ecs-managed-draining-termination-hook 수명 주기 후크의 제한 시간(기본값 3,600초)으로 인해 오토스케일링 그룹의 예약된 작업에 의해 종료되지 않고 기다릴 수 있다. </p>
-<h5 id="🔥-TaskFailedToStart-EMPTY-CAPACITY-PROVIDER"><a href="#🔥-TaskFailedToStart-EMPTY-CAPACITY-PROVIDER" class="headerlink" title="🔥 TaskFailedToStart: EMPTY CAPACITY PROVIDER"></a>🔥 TaskFailedToStart: EMPTY CAPACITY PROVIDER</h5><p>오토스케일링 그룹의 예약된 작업으로 EC2 인스턴스가 강제로 종료된 경우 서비스로 실행되는 태스크는 새롭게 만들어지며 지속적으로 프로비저닝을 수행할 수 있다. </p>
-<h4 id="Amazon-EventBridge-스케줄러로-오토스케일링-그룹-조정"><a href="#Amazon-EventBridge-스케줄러로-오토스케일링-그룹-조정" class="headerlink" title="Amazon EventBridge 스케줄러로 오토스케일링 그룹 조정"></a>Amazon EventBridge 스케줄러로 오토스케일링 그룹 조정</h4><p><img data-src="/images/posts/aws-ecs-scheduling/02.png"></p>
-<p>Amazon EventBridge 스케줄러에서 <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/autoscaling/set-desired-capacity.html">EC2 Auto Scaling 서비스의 SetDesiredCapacity</a> 를 사용하여 오토스케일링 그룹에 대해 원하는 용량을 설정할 수 있다. 만약, EC2 인스턴스를 종료한 상태로 유지하고 싶다면 아래와 같이 원하는 용량이 0 이 되도록 페이로드를 작성하면 된다.</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-  <span class="token property">"AutoScalingGroupName"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster-asg"</span><span class="token punctuation">,</span>
-  <span class="token property">"DesiredCapacity"</span><span class="token operator">:</span> <span class="token number">0</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Amazon-EventBridge-스케줄러에-대한-이벤트-로그"><a href="#Amazon-EventBridge-스케줄러에-대한-이벤트-로그" class="headerlink" title="Amazon EventBridge 스케줄러에 대한 이벤트 로그"></a>Amazon EventBridge 스케줄러에 대한 이벤트 로그</h4><p><img data-src="/images/posts/aws-ecs-scheduling/04.png"></p>
-<p>만약, 앞선 Amazon EventBridge 스케줄러에 의해 EC2 Auto Scaling 서비스로 오토스케일링 그룹의 용량을 줄이고자 하는데 이벤트가 동작하는지를 알기 어려운 경우 <a href="https://docs.aws.amazon.com/scheduler/latest/UserGuide/logging-using-cloudtrail.html">CloudTrail의 이벤트 기록에서 확인</a>해야 한다. 예를 들어, 아래와 같이 오토스케일링 그룹에 대한 이벤트 대상을 ECS 클러스터 이름으로 잘못 지정해서 <code>ValidationException</code> 이 발생한 결과를 볼 수 있다.</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token property">"eventVersion"</span><span class="token operator">:</span> <span class="token string">"1.08"</span><span class="token punctuation">,</span>
-    <span class="token property">"userIdentity"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"AssumedRole"</span><span class="token punctuation">,</span>
-        <span class="token property">"principalId"</span><span class="token operator">:</span> <span class="token string">"xxxxx:xxxxx"</span><span class="token punctuation">,</span>
-        <span class="token property">"arn"</span><span class="token operator">:</span> <span class="token string">"arn:aws:sts::xxxxx:assumed-role/ecsEventsRole/xxxxx"</span><span class="token punctuation">,</span>
-        <span class="token property">"accountId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
-        <span class="token property">"accessKeyId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
-        <span class="token property">"sessionContext"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-            <span class="token property">"sessionIssuer"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-                <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Role"</span><span class="token punctuation">,</span>
-                <span class="token property">"principalId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
-                <span class="token property">"arn"</span><span class="token operator">:</span> <span class="token string">"arn:aws:iam::xxxxx:role/ecsEventsRole"</span><span class="token punctuation">,</span>
-                <span class="token property">"accountId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
-                <span class="token property">"userName"</span><span class="token operator">:</span> <span class="token string">"ecsEventsRole"</span>
-            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-            <span class="token property">"webIdFederationData"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-            <span class="token property">"attributes"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-                <span class="token property">"creationDate"</span><span class="token operator">:</span> <span class="token string">"2024-11-15T15:57:59Z"</span><span class="token punctuation">,</span>
-                <span class="token property">"mfaAuthenticated"</span><span class="token operator">:</span> <span class="token string">"false"</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-    <span class="token property">"eventTime"</span><span class="token operator">:</span> <span class="token string">"2024-11-15T15:57:59Z"</span><span class="token punctuation">,</span>
-    <span class="token property">"eventSource"</span><span class="token operator">:</span> <span class="token string">"autoscaling.amazonaws.com"</span><span class="token punctuation">,</span>
-    <span class="token property">"eventName"</span><span class="token operator">:</span> <span class="token string">"SetDesiredCapacity"</span><span class="token punctuation">,</span>
-    <span class="token property">"awsRegion"</span><span class="token operator">:</span> <span class="token string">"ap-northeast-2"</span><span class="token punctuation">,</span>
-    <span class="token property">"sourceIPAddress"</span><span class="token operator">:</span> <span class="token string">"3.34.11.70"</span><span class="token punctuation">,</span>
-    <span class="token property">"userAgent"</span><span class="token operator">:</span> <span class="token string">"AmazonEventBridgeScheduler aws-sdk-java/2.28.29 md/io#async md/http#NettyNio md/internal ua/2.0 os/Linux#5.10.226-214.880.amzn2.x86_64 lang/java#17.0.13 md/OpenJDK_64-Bit_Server_VM#17.0.13+11-LTS md/vendor#Amazon.com_Inc. md/en_US md/kotlin/1.6.21-release-334(1.6.21) exec-env/AWS_ECS_FARGATE cfg/retry-mode#legacy cfg/auth-source#stat"</span><span class="token punctuation">,</span>
-    <span class="token property">"errorCode"</span><span class="token operator">:</span> <span class="token string">"ValidationException"</span><span class="token punctuation">,</span>
-    <span class="token property">"errorMessage"</span><span class="token operator">:</span> <span class="token string">"AutoScalingGroup name not found - null"</span><span class="token punctuation">,</span>
-    <span class="token property">"requestParameters"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-        <span class="token property">"autoScalingGroupName"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster"</span><span class="token punctuation">,</span>
-        <span class="token property">"desiredCapacity"</span><span class="token operator">:</span> <span class="token number">1</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-    <span class="token property">"responseElements"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
-    <span class="token property">"requestID"</span><span class="token operator">:</span> <span class="token string">"1d4e8568-2303-48ee-a6fa-2c3ca5be257d"</span><span class="token punctuation">,</span>
-    <span class="token property">"eventID"</span><span class="token operator">:</span> <span class="token string">"99a3097c-96ce-43dd-8c97-1aa0985c701b"</span><span class="token punctuation">,</span>
-    <span class="token property">"readOnly"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
-    <span class="token property">"eventType"</span><span class="token operator">:</span> <span class="token string">"AwsApiCall"</span><span class="token punctuation">,</span>
-    <span class="token property">"managementEvent"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token property">"recipientAccountId"</span><span class="token operator">:</span> <span class="token string">"xxxx"</span><span class="token punctuation">,</span>
-    <span class="token property">"eventCategory"</span><span class="token operator">:</span> <span class="token string">"Management"</span><span class="token punctuation">,</span>
-    <span class="token property">"tlsDetails"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-        <span class="token property">"tlsVersion"</span><span class="token operator">:</span> <span class="token string">"TLSv1.3"</span><span class="token punctuation">,</span>
-        <span class="token property">"cipherSuite"</span><span class="token operator">:</span> <span class="token string">"TLS_AES_128_GCM_SHA256"</span><span class="token punctuation">,</span>
-        <span class="token property">"clientProvidedHostHeader"</span><span class="token operator">:</span> <span class="token string">"autoscaling.ap-northeast-2.amazonaws.com"</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>아무래도 Amazon ECS 에서 Amazon ECR에 대한 링크를 제공하는 것처럼 Amazon EventBridge 스케줄러 콘솔에서도 Amazon CloudTrail 에 대한 링크를 제공해주면 좋을 것 같습니다.</p>
-</blockquote>
-<h4 id="Amazon-EventBridge-스케줄러로-서비스-규모-조정"><a href="#Amazon-EventBridge-스케줄러로-서비스-규모-조정" class="headerlink" title="Amazon EventBridge 스케줄러로 서비스 규모 조정"></a>Amazon EventBridge 스케줄러로 서비스 규모 조정</h4><p><img data-src="/images/posts/aws-ecs-scheduling/03.png"></p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-  <span class="token property">"Cluster"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster"</span><span class="token punctuation">,</span>
-  <span class="token property">"Service"</span><span class="token operator">:</span> <span class="token string">"app-service"</span><span class="token punctuation">,</span>
-  <span class="token property">"DesiredCount"</span><span class="token operator">:</span> <span class="token number">0</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>EC2 인스턴스의 시작과 종료에 대한 일정을 구성했다면 이제 <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">Amazon EventBridge 스케줄러</a>에서 Amazon ECS 서비스 대상으로 UpdateService를 호출하여 특정 클러스터에 존재하는 서비스에 대해 DesiredCount를 설정하여 서비스에 대한 규모를 조정해보도록 하자.</p>
-<h5 id="Application-Auto-Scaling-로-서비스-규모-조정"><a href="#Application-Auto-Scaling-로-서비스-규모-조정" class="headerlink" title="Application Auto Scaling 로 서비스 규모 조정"></a>Application Auto Scaling 로 서비스 규모 조정</h5><p>Amazon ECS 서비스가 아닌 Application Auto Scaling 서비스의 <a href="https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli_application-auto-scaling_code_examples.html">register-scalable-target</a>를 호출하여 동일한 동작을 수행할 수 있다.</p>
-<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-  <span class="token property">"ResourceId"</span><span class="token operator">:</span> <span class="token string">"service/mambo-ecs-cluster/app-service"</span><span class="token punctuation">,</span>
-  <span class="token property">"ScalableDimension"</span><span class="token operator">:</span> <span class="token string">"ecs:service:DesiredCount"</span><span class="token punctuation">,</span>
-  <span class="token property">"ServiceNamespace"</span><span class="token operator">:</span> <span class="token string">"ecs"</span><span class="token punctuation">,</span>
-  <span class="token property">"MinCapacity"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-  <span class="token property">"MaxCapacity"</span><span class="token operator">:</span> <span class="token number">0</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Amazon-EventBridge-Scheduler-IAM-역할"><a href="#Amazon-EventBridge-Scheduler-IAM-역할" class="headerlink" title="Amazon EventBridge Scheduler IAM 역할"></a>Amazon EventBridge Scheduler IAM 역할</h4><p><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/CWE_IAM_role.html">Amazon ECS EventBridge IAM 역할</a>를 참고하여 Amazon EventBridge 스케줄러에서 Amazon ECS 와 EC2 Auto Scaling 에 대한 권한을 가지는 IAM 역할인 <code>ecsEventsRole</code> 을 구성한 예시이다. 일정에 대한 이벤트 기록에서 권한 문제가 발생한다면 IAM 역할의 신뢰 관계와 연결된 정책을 살펴보도록 하자.</p>
-<h5 id="신뢰할-수-있는-엔티티"><a href="#신뢰할-수-있는-엔티티" class="headerlink" title="신뢰할 수 있는 엔티티"></a>신뢰할 수 있는 엔티티</h5><pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token property">"Version"</span><span class="token operator">:</span> <span class="token string">"2012-10-17"</span><span class="token punctuation">,</span>
-    <span class="token property">"Statement"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token property">"Sid"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
-            <span class="token property">"Effect"</span><span class="token operator">:</span> <span class="token string">"Allow"</span><span class="token punctuation">,</span>
-            <span class="token property">"Principal"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-                <span class="token property">"Service"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-                    <span class="token string">"events.amazonaws.com"</span><span class="token punctuation">,</span>
-                    <span class="token string">"autoscaling.amazonaws.com"</span><span class="token punctuation">,</span>
-                    <span class="token string">"scheduler.amazonaws.com"</span>
-                <span class="token punctuation">]</span>
-            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-            <span class="token property">"Action"</span><span class="token operator">:</span> <span class="token string">"sts:AssumeRole"</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h5 id="연결된-정책"><a href="#연결된-정책" class="headerlink" title="연결된 정책"></a>연결된 정책</h5><ul>
-<li>AmazonECS_FullAccess</li>
-<li>AmazonEventBridgeSchedulerFullAccess</li>
-<li>AutoScalingFullAccess</li>
-</ul>
-<h4 id="참고-링크"><a href="#참고-링크" class="headerlink" title="참고 링크"></a>참고 링크</h4><ul>
-<li><a href="https://docs.aws.amazon.com/ko_kr/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html">Amazon EC2 Auto Scaling을 위한 스케일링 예약</a></li>
-<li><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/service-auto-scaling.html">Amazon ECS 서비스 자동 조정</a></li>
-<li><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">Amazon EventBridge Scheduler를 사용하여 Amazon ECS 태스크 예약</a></li>
-<li><a href="https://docs.aws.amazon.com/scheduler/latest/UserGuide/logging-using-cloudtrail.html">Logging Amazon EventBridge Scheduler API calls using AWS CloudTrail</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Amazon ECS</tag>
-        <tag>Amazon EC2 Auto Scaling</tag>
-        <tag>Amazon EventBridge Scheduler</tag>
       </tags>
   </entry>
   <entry>
@@ -1135,6 +1011,130 @@ Filesystem     Type  Size  Used Avail Use% Mounted on
 ]]></content>
       <tags>
         <tag>Amazon ECS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Amazon ECS 스케줄링</title>
+    <url>/aws-ecs-scheduling/</url>
+    <content><![CDATA[<p>Amazon EventBrdige 스케줄러를 사용하여 Amazon ECS 클러스터로 운용되는 서비스와 EC2 인스턴스의 규모를 조정할 수 있다. 예를 들어, <a href="https://www.youtube.com/watch?v=amL-kQOV0Go">AWS Instance Scheduler 솔루션</a>로 스테이징이나 테스트 환경에 대한 EC2 인스턴스들을 평일 업무 시간에만 실행되도록 시작, 종료 스케줄링을 수행할 수 있다. Amazon ECS의 <a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">예약된 작업</a>으로는 특정 태스크를 일정 시간에 시작할 순 있으나 종료할 순 없다. 이러한 경우 <a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/service-auto-scaling.html">Application Auto Scaling</a>을 활용해야하고 AWS CLI를 대신하여 일정 기반으로 실행하기 위한 방법이 바로 Amazon EventBridge 스케줄러 이다.</p>
+<h4 id="오토스케일링-그룹의-예약된-작업"><a href="#오토스케일링-그룹의-예약된-작업" class="headerlink" title="오토스케일링 그룹의 예약된 작업"></a>오토스케일링 그룹의 예약된 작업</h4><p>Amazon EventBridge 스케줄러로 오토스케일링 그룹의 EC2 인스턴스 용량을 조정할 수 있다. 그전에 오토스케일링 그룹에 대한 콘솔에서 자체적으로 제공하는 예약된 작업에 대해서 알아보자. EC2 용량 공급자로 사용중인 오토스케일링 그룹의 자동 확장 기능으로 <a href="https://docs.aws.amazon.com/ko_kr/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html">예약된 작업을 정의</a>하면 크론 표현식에 의해 평일 업무 시간을 위한 서비스 환경을 실행할 수 있다. 스테이징 또는 테스트 환경은 개발자 또는 테스트 엔지니어가 필요하지 않은 시간에는 종료하여 잉여 시간에 대한 요금을 줄여갈 수 있다.</p>
+<p><img data-src="/images/posts/aws-ecs-scheduling/01.png"></p>
+<p>다만, 오토스케일링 그룹 콘솔에서 제공하는 예약된 작업으로 만들어지는 스케줄은 일시적으로 비활성화하지 못하는 단점이 있고, ECS 클러스터에서 EC2 인스턴스에 실행되고 있는 서비스가 있는 경우 ecs-managed-draining-termination-hook 수명 주기 후크의 제한 시간(기본값 3,600초)으로 인해 오토스케일링 그룹의 예약된 작업에 의해 종료되지 않고 기다릴 수 있다. </p>
+<h5 id="🔥-TaskFailedToStart-EMPTY-CAPACITY-PROVIDER"><a href="#🔥-TaskFailedToStart-EMPTY-CAPACITY-PROVIDER" class="headerlink" title="🔥 TaskFailedToStart: EMPTY CAPACITY PROVIDER"></a>🔥 TaskFailedToStart: EMPTY CAPACITY PROVIDER</h5><p>오토스케일링 그룹의 예약된 작업으로 EC2 인스턴스가 강제로 종료된 경우 서비스로 실행되는 태스크는 새롭게 만들어지며 지속적으로 프로비저닝을 수행할 수 있다. </p>
+<h4 id="Amazon-EventBridge-스케줄러로-오토스케일링-그룹-조정"><a href="#Amazon-EventBridge-스케줄러로-오토스케일링-그룹-조정" class="headerlink" title="Amazon EventBridge 스케줄러로 오토스케일링 그룹 조정"></a>Amazon EventBridge 스케줄러로 오토스케일링 그룹 조정</h4><p><img data-src="/images/posts/aws-ecs-scheduling/02.png"></p>
+<p>Amazon EventBridge 스케줄러에서 <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/autoscaling/set-desired-capacity.html">EC2 Auto Scaling 서비스의 SetDesiredCapacity</a> 를 사용하여 오토스케일링 그룹에 대해 원하는 용량을 설정할 수 있다. 만약, EC2 인스턴스를 종료한 상태로 유지하고 싶다면 아래와 같이 원하는 용량이 0 이 되도록 페이로드를 작성하면 된다.</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"AutoScalingGroupName"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster-asg"</span><span class="token punctuation">,</span>
+  <span class="token property">"DesiredCapacity"</span><span class="token operator">:</span> <span class="token number">0</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Amazon-EventBridge-스케줄러에-대한-이벤트-로그"><a href="#Amazon-EventBridge-스케줄러에-대한-이벤트-로그" class="headerlink" title="Amazon EventBridge 스케줄러에 대한 이벤트 로그"></a>Amazon EventBridge 스케줄러에 대한 이벤트 로그</h4><p><img data-src="/images/posts/aws-ecs-scheduling/04.png"></p>
+<p>만약, 앞선 Amazon EventBridge 스케줄러에 의해 EC2 Auto Scaling 서비스로 오토스케일링 그룹의 용량을 줄이고자 하는데 이벤트가 동작하는지를 알기 어려운 경우 <a href="https://docs.aws.amazon.com/scheduler/latest/UserGuide/logging-using-cloudtrail.html">CloudTrail의 이벤트 기록에서 확인</a>해야 한다. 예를 들어, 아래와 같이 오토스케일링 그룹에 대한 이벤트 대상을 ECS 클러스터 이름으로 잘못 지정해서 <code>ValidationException</code> 이 발생한 결과를 볼 수 있다.</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+    <span class="token property">"eventVersion"</span><span class="token operator">:</span> <span class="token string">"1.08"</span><span class="token punctuation">,</span>
+    <span class="token property">"userIdentity"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"AssumedRole"</span><span class="token punctuation">,</span>
+        <span class="token property">"principalId"</span><span class="token operator">:</span> <span class="token string">"xxxxx:xxxxx"</span><span class="token punctuation">,</span>
+        <span class="token property">"arn"</span><span class="token operator">:</span> <span class="token string">"arn:aws:sts::xxxxx:assumed-role/ecsEventsRole/xxxxx"</span><span class="token punctuation">,</span>
+        <span class="token property">"accountId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
+        <span class="token property">"accessKeyId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
+        <span class="token property">"sessionContext"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token property">"sessionIssuer"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Role"</span><span class="token punctuation">,</span>
+                <span class="token property">"principalId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
+                <span class="token property">"arn"</span><span class="token operator">:</span> <span class="token string">"arn:aws:iam::xxxxx:role/ecsEventsRole"</span><span class="token punctuation">,</span>
+                <span class="token property">"accountId"</span><span class="token operator">:</span> <span class="token string">"xxxxx"</span><span class="token punctuation">,</span>
+                <span class="token property">"userName"</span><span class="token operator">:</span> <span class="token string">"ecsEventsRole"</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token property">"webIdFederationData"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token property">"attributes"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                <span class="token property">"creationDate"</span><span class="token operator">:</span> <span class="token string">"2024-11-15T15:57:59Z"</span><span class="token punctuation">,</span>
+                <span class="token property">"mfaAuthenticated"</span><span class="token operator">:</span> <span class="token string">"false"</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"eventTime"</span><span class="token operator">:</span> <span class="token string">"2024-11-15T15:57:59Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"eventSource"</span><span class="token operator">:</span> <span class="token string">"autoscaling.amazonaws.com"</span><span class="token punctuation">,</span>
+    <span class="token property">"eventName"</span><span class="token operator">:</span> <span class="token string">"SetDesiredCapacity"</span><span class="token punctuation">,</span>
+    <span class="token property">"awsRegion"</span><span class="token operator">:</span> <span class="token string">"ap-northeast-2"</span><span class="token punctuation">,</span>
+    <span class="token property">"sourceIPAddress"</span><span class="token operator">:</span> <span class="token string">"3.34.11.70"</span><span class="token punctuation">,</span>
+    <span class="token property">"userAgent"</span><span class="token operator">:</span> <span class="token string">"AmazonEventBridgeScheduler aws-sdk-java/2.28.29 md/io#async md/http#NettyNio md/internal ua/2.0 os/Linux#5.10.226-214.880.amzn2.x86_64 lang/java#17.0.13 md/OpenJDK_64-Bit_Server_VM#17.0.13+11-LTS md/vendor#Amazon.com_Inc. md/en_US md/kotlin/1.6.21-release-334(1.6.21) exec-env/AWS_ECS_FARGATE cfg/retry-mode#legacy cfg/auth-source#stat"</span><span class="token punctuation">,</span>
+    <span class="token property">"errorCode"</span><span class="token operator">:</span> <span class="token string">"ValidationException"</span><span class="token punctuation">,</span>
+    <span class="token property">"errorMessage"</span><span class="token operator">:</span> <span class="token string">"AutoScalingGroup name not found - null"</span><span class="token punctuation">,</span>
+    <span class="token property">"requestParameters"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">"autoScalingGroupName"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster"</span><span class="token punctuation">,</span>
+        <span class="token property">"desiredCapacity"</span><span class="token operator">:</span> <span class="token number">1</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"responseElements"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+    <span class="token property">"requestID"</span><span class="token operator">:</span> <span class="token string">"1d4e8568-2303-48ee-a6fa-2c3ca5be257d"</span><span class="token punctuation">,</span>
+    <span class="token property">"eventID"</span><span class="token operator">:</span> <span class="token string">"99a3097c-96ce-43dd-8c97-1aa0985c701b"</span><span class="token punctuation">,</span>
+    <span class="token property">"readOnly"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"eventType"</span><span class="token operator">:</span> <span class="token string">"AwsApiCall"</span><span class="token punctuation">,</span>
+    <span class="token property">"managementEvent"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"recipientAccountId"</span><span class="token operator">:</span> <span class="token string">"xxxx"</span><span class="token punctuation">,</span>
+    <span class="token property">"eventCategory"</span><span class="token operator">:</span> <span class="token string">"Management"</span><span class="token punctuation">,</span>
+    <span class="token property">"tlsDetails"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">"tlsVersion"</span><span class="token operator">:</span> <span class="token string">"TLSv1.3"</span><span class="token punctuation">,</span>
+        <span class="token property">"cipherSuite"</span><span class="token operator">:</span> <span class="token string">"TLS_AES_128_GCM_SHA256"</span><span class="token punctuation">,</span>
+        <span class="token property">"clientProvidedHostHeader"</span><span class="token operator">:</span> <span class="token string">"autoscaling.ap-northeast-2.amazonaws.com"</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>아무래도 Amazon ECS 에서 Amazon ECR에 대한 링크를 제공하는 것처럼 Amazon EventBridge 스케줄러 콘솔에서도 Amazon CloudTrail 에 대한 링크를 제공해주면 좋을 것 같습니다.</p>
+</blockquote>
+<h4 id="Amazon-EventBridge-스케줄러로-서비스-규모-조정"><a href="#Amazon-EventBridge-스케줄러로-서비스-규모-조정" class="headerlink" title="Amazon EventBridge 스케줄러로 서비스 규모 조정"></a>Amazon EventBridge 스케줄러로 서비스 규모 조정</h4><p><img data-src="/images/posts/aws-ecs-scheduling/03.png"></p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"Cluster"</span><span class="token operator">:</span> <span class="token string">"mambo-ecs-cluster"</span><span class="token punctuation">,</span>
+  <span class="token property">"Service"</span><span class="token operator">:</span> <span class="token string">"app-service"</span><span class="token punctuation">,</span>
+  <span class="token property">"DesiredCount"</span><span class="token operator">:</span> <span class="token number">0</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>EC2 인스턴스의 시작과 종료에 대한 일정을 구성했다면 이제 <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">Amazon EventBridge 스케줄러</a>에서 Amazon ECS 서비스 대상으로 UpdateService를 호출하여 특정 클러스터에 존재하는 서비스에 대해 DesiredCount를 설정하여 서비스에 대한 규모를 조정해보도록 하자.</p>
+<h5 id="Application-Auto-Scaling-로-서비스-규모-조정"><a href="#Application-Auto-Scaling-로-서비스-규모-조정" class="headerlink" title="Application Auto Scaling 로 서비스 규모 조정"></a>Application Auto Scaling 로 서비스 규모 조정</h5><p>Amazon ECS 서비스가 아닌 Application Auto Scaling 서비스의 <a href="https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli_application-auto-scaling_code_examples.html">register-scalable-target</a>를 호출하여 동일한 동작을 수행할 수 있다.</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"ResourceId"</span><span class="token operator">:</span> <span class="token string">"service/mambo-ecs-cluster/app-service"</span><span class="token punctuation">,</span>
+  <span class="token property">"ScalableDimension"</span><span class="token operator">:</span> <span class="token string">"ecs:service:DesiredCount"</span><span class="token punctuation">,</span>
+  <span class="token property">"ServiceNamespace"</span><span class="token operator">:</span> <span class="token string">"ecs"</span><span class="token punctuation">,</span>
+  <span class="token property">"MinCapacity"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"MaxCapacity"</span><span class="token operator">:</span> <span class="token number">0</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Amazon-EventBridge-Scheduler-IAM-역할"><a href="#Amazon-EventBridge-Scheduler-IAM-역할" class="headerlink" title="Amazon EventBridge Scheduler IAM 역할"></a>Amazon EventBridge Scheduler IAM 역할</h4><p><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/CWE_IAM_role.html">Amazon ECS EventBridge IAM 역할</a>를 참고하여 Amazon EventBridge 스케줄러에서 Amazon ECS 와 EC2 Auto Scaling 에 대한 권한을 가지는 IAM 역할인 <code>ecsEventsRole</code> 을 구성한 예시이다. 일정에 대한 이벤트 기록에서 권한 문제가 발생한다면 IAM 역할의 신뢰 관계와 연결된 정책을 살펴보도록 하자.</p>
+<h5 id="신뢰할-수-있는-엔티티"><a href="#신뢰할-수-있는-엔티티" class="headerlink" title="신뢰할 수 있는 엔티티"></a>신뢰할 수 있는 엔티티</h5><pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+    <span class="token property">"Version"</span><span class="token operator">:</span> <span class="token string">"2012-10-17"</span><span class="token punctuation">,</span>
+    <span class="token property">"Statement"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token property">"Sid"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+            <span class="token property">"Effect"</span><span class="token operator">:</span> <span class="token string">"Allow"</span><span class="token punctuation">,</span>
+            <span class="token property">"Principal"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                <span class="token property">"Service"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                    <span class="token string">"events.amazonaws.com"</span><span class="token punctuation">,</span>
+                    <span class="token string">"autoscaling.amazonaws.com"</span><span class="token punctuation">,</span>
+                    <span class="token string">"scheduler.amazonaws.com"</span>
+                <span class="token punctuation">]</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token property">"Action"</span><span class="token operator">:</span> <span class="token string">"sts:AssumeRole"</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="연결된-정책"><a href="#연결된-정책" class="headerlink" title="연결된 정책"></a>연결된 정책</h5><ul>
+<li>AmazonECS_FullAccess</li>
+<li>AmazonEventBridgeSchedulerFullAccess</li>
+<li>AutoScalingFullAccess</li>
+</ul>
+<h4 id="참고-링크"><a href="#참고-링크" class="headerlink" title="참고 링크"></a>참고 링크</h4><ul>
+<li><a href="https://docs.aws.amazon.com/ko_kr/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html">Amazon EC2 Auto Scaling을 위한 스케일링 예약</a></li>
+<li><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/service-auto-scaling.html">Amazon ECS 서비스 자동 조정</a></li>
+<li><a href="https://docs.aws.amazon.com/ko_kr/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">Amazon EventBridge Scheduler를 사용하여 Amazon ECS 태스크 예약</a></li>
+<li><a href="https://docs.aws.amazon.com/scheduler/latest/UserGuide/logging-using-cloudtrail.html">Logging Amazon EventBridge Scheduler API calls using AWS CloudTrail</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Amazon ECS</tag>
+        <tag>Amazon EC2 Auto Scaling</tag>
+        <tag>Amazon EventBridge Scheduler</tag>
       </tags>
   </entry>
   <entry>
@@ -3526,69 +3526,6 @@ configuration<span class="token punctuation">.</span><span class="token function
 ]]></content>
   </entry>
   <entry>
-    <title>Simple Java Mail 로 이메일 보내기</title>
-    <url>/gmail-smtp-with-simplejavamail/</url>
-    <content><![CDATA[<p><a href="/gmail-smtp/">Gmail SMTP</a> 을 작성하면서 구글 계정으로 이메일을 발송하는 것을 다룬 것도 1년이 넘게 지났다. 스프링 부트 기반의 프로젝트에서 spring-boot-starter-mail 모듈을 통해 JavaMailSender로 이메일을 보낼 수 있는 구현을 쉽게 찾아볼 수 있다. 우연히 알게된 <a href="https://www.simplejavamail.org/">Simple Java Mail</a> 라이브러리는 JavaMailSender 와 MimeMessageHelper와 같은 클래스에 익숙하지 않은 초보 개발자들에게 간단하게 메일 발송을 할 수 있도록 API를 제공해준다.</p>
-<h4 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h4><p>이메일 발송에 대한 설정을 깊게 들어가면 어려울 수 있으나 초보 개발자에게 적합한 특징은 아래와 같다.</p>
-<ul>
-<li><a href="https://www.simplejavamail.org/features.html#section-builder-api">Fluent API</a></li>
-<li><a href="https://www.simplejavamail.org/configuration.html#section-spring-support">Spring Support</a></li>
-<li><a href="https://www.simplejavamail.org/features.html#section-reusable-mailer">Thread-Safe</a></li>
-<li><a href="https://www.simplejavamail.org/features.html#section-email-validation">이메일 검증 지원</a></li>
-</ul>
-<h4 id="SSL-and-TLS-with-Google-mail"><a href="#SSL-and-TLS-with-Google-mail" class="headerlink" title="SSL and TLS with Google mail"></a>SSL and TLS with Google mail</h4><p>기존에 <a href="/sending-mail-with-freemarker-template/">프리마커 템플릿으로 이메일 발송하기</a> 에서 처럼 Gmail SMTP 서버를 이용할 때 STARTTLS 방식을 사용했었던 것처럼 어떻게 설정해야하는지를 <a href="https://www.simplejavamail.org/features.html#section-gmail">SSL and TLS with Google mail</a>에서 설명해주고 있다. STARTTLS 방식은 <a href="https://www.simplejavamail.org/security.html#section-transport-strategy-tls">SMTP_TLS</a>를 사용해야함을 알 수 있다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Import</span><span class="token punctuation">(</span><span class="token class-name">SimpleJavaMailSpringSupport</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@SpringBootApplication</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SimpleMailApplication</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">SimpleMailApplication</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">simplejavamail.javaxmail.debug</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
-<span class="token key atrule">simplejavamail.smtp.host</span><span class="token punctuation">:</span> smtp.gmail.com
-<span class="token key atrule">simplejavamail.smtp.port</span><span class="token punctuation">:</span> <span class="token number">587</span>
-<span class="token key atrule">simplejavamail.transportstrategy</span><span class="token punctuation">:</span> SMTP_TLS
-<span class="token key atrule">simplejavamail.smtp.username</span><span class="token punctuation">:</span> kdevkr@gmail.com
-<span class="token key atrule">simplejavamail.smtp.password</span><span class="token punctuation">:</span> <span class="token string">'앱 비밀번호'</span></code></pre>
-
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span><span class="token punctuation">(</span>webEnvironment <span class="token operator">=</span> <span class="token class-name">SpringBootTest<span class="token punctuation">.</span>WebEnvironment</span><span class="token punctuation">.</span><span class="token constant">NONE</span><span class="token punctuation">)</span>
-<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token class-name">Mailer</span> mailer<span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> mailer<span class="token punctuation">.</span><span class="token function">testConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">Email</span> email <span class="token operator">=</span> <span class="token class-name">EmailBuilder</span><span class="token punctuation">.</span><span class="token function">startingBlank</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr@gmail.com>"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token keyword">to</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">withSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test with simplejavamail"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">withPlainText</span><span class="token punctuation">(</span><span class="token string">"Hello world"</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">buildEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> mailer<span class="token punctuation">.</span><span class="token function">sendMail</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>앱 비밀번호 발급은 <a href="/gmail-smtp/">Gmail SMTP</a> 글을 참고하세요.</p>
-</blockquote>
-<h4 id="Convert-Email-to-MimeMessage"><a href="#Convert-Email-to-MimeMessage" class="headerlink" title="Convert Email to MimeMessage"></a>Convert Email to MimeMessage</h4><p>EmailConverter, MailerHelper, JMail 클래스를 통해 유용한 기능을 제공하는데 EmailConverter를 이용하면 Email 을 MimeMessage로 변환하는 것을 제공해주기 때문에 JavaMailSender와의 통합도 유용해보인다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Email</span> email <span class="token operator">=</span> <span class="token class-name">EmailBuilder</span><span class="token punctuation">.</span><span class="token function">startingBlank</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">buildEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> <span class="token class-name">EmailConverter</span><span class="token punctuation">.</span><span class="token function">emailToMimeMessage</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<blockquote>
-<p>더 자세히 spring-boot-starter-mail 과 비교해보고 싶다면 <a href="https://www.simplejavamail.org/feature-matrix.html">Feature Comparison Matrix</a> 문서를 참고해보세요.</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Gmail SMTP</tag>
-        <tag>Simple Java Mail</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>깃허브 풀 리퀘스트 상태 검사</title>
     <url>/github-pr-status-checks/</url>
     <content><![CDATA[<p>현재 회사에서 새해 목표는 빠른 업무 처리를 위해서 간단한 방식을 취함에 따라서 지속적인 성장을 이루어냈으나 제품에 대한 신뢰성의 문제를 경험하고나서는 제품 품질을 강화하기 위한 코드 품질 또는 테스트 자동화에 대한 환경 구축의 필요성을 느끼고 많은 것들을 시도하고 있다. 깃허브 풀 리퀘스트를 수행하고 있었으나 코드 리뷰가 주요 테크 기업이나 스타트업처럼 개발 문화로 정착되어있지 않음으로 인해서 단위 테스트 코드를 작성하도록 요구한다거나 정적 분석 도구를 통해 코드 품질에 대해서 분석하고 리팩토링을 수행하는 과정이 없다보니 개발자들이 스스로 편한 방식을 사용해서 작업 요건에 대해서 처리해왔다.</p>
@@ -3694,6 +3631,69 @@ configuration<span class="token punctuation">.</span><span class="token function
 <p>구글 체크스타일은 회사 코드에 적합하지 않다고 판단되어 가장 간단한 규칙으로 수행할 수 있도록 커스터마이징 된 체크스타일 파일을 추가했습니다.</p>
 </blockquote>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Simple Java Mail 로 이메일 보내기</title>
+    <url>/gmail-smtp-with-simplejavamail/</url>
+    <content><![CDATA[<p><a href="/gmail-smtp/">Gmail SMTP</a> 을 작성하면서 구글 계정으로 이메일을 발송하는 것을 다룬 것도 1년이 넘게 지났다. 스프링 부트 기반의 프로젝트에서 spring-boot-starter-mail 모듈을 통해 JavaMailSender로 이메일을 보낼 수 있는 구현을 쉽게 찾아볼 수 있다. 우연히 알게된 <a href="https://www.simplejavamail.org/">Simple Java Mail</a> 라이브러리는 JavaMailSender 와 MimeMessageHelper와 같은 클래스에 익숙하지 않은 초보 개발자들에게 간단하게 메일 발송을 할 수 있도록 API를 제공해준다.</p>
+<h4 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h4><p>이메일 발송에 대한 설정을 깊게 들어가면 어려울 수 있으나 초보 개발자에게 적합한 특징은 아래와 같다.</p>
+<ul>
+<li><a href="https://www.simplejavamail.org/features.html#section-builder-api">Fluent API</a></li>
+<li><a href="https://www.simplejavamail.org/configuration.html#section-spring-support">Spring Support</a></li>
+<li><a href="https://www.simplejavamail.org/features.html#section-reusable-mailer">Thread-Safe</a></li>
+<li><a href="https://www.simplejavamail.org/features.html#section-email-validation">이메일 검증 지원</a></li>
+</ul>
+<h4 id="SSL-and-TLS-with-Google-mail"><a href="#SSL-and-TLS-with-Google-mail" class="headerlink" title="SSL and TLS with Google mail"></a>SSL and TLS with Google mail</h4><p>기존에 <a href="/sending-mail-with-freemarker-template/">프리마커 템플릿으로 이메일 발송하기</a> 에서 처럼 Gmail SMTP 서버를 이용할 때 STARTTLS 방식을 사용했었던 것처럼 어떻게 설정해야하는지를 <a href="https://www.simplejavamail.org/features.html#section-gmail">SSL and TLS with Google mail</a>에서 설명해주고 있다. STARTTLS 방식은 <a href="https://www.simplejavamail.org/security.html#section-transport-strategy-tls">SMTP_TLS</a>를 사용해야함을 알 수 있다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Import</span><span class="token punctuation">(</span><span class="token class-name">SimpleJavaMailSpringSupport</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SimpleMailApplication</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">SimpleMailApplication</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">simplejavamail.javaxmail.debug</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">simplejavamail.smtp.host</span><span class="token punctuation">:</span> smtp.gmail.com
+<span class="token key atrule">simplejavamail.smtp.port</span><span class="token punctuation">:</span> <span class="token number">587</span>
+<span class="token key atrule">simplejavamail.transportstrategy</span><span class="token punctuation">:</span> SMTP_TLS
+<span class="token key atrule">simplejavamail.smtp.username</span><span class="token punctuation">:</span> kdevkr@gmail.com
+<span class="token key atrule">simplejavamail.smtp.password</span><span class="token punctuation">:</span> <span class="token string">'앱 비밀번호'</span></code></pre>
+
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span><span class="token punctuation">(</span>webEnvironment <span class="token operator">=</span> <span class="token class-name">SpringBootTest<span class="token punctuation">.</span>WebEnvironment</span><span class="token punctuation">.</span><span class="token constant">NONE</span><span class="token punctuation">)</span>
+<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token class-name">Mailer</span> mailer<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> mailer<span class="token punctuation">.</span><span class="token function">testConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Email</span> email <span class="token operator">=</span> <span class="token class-name">EmailBuilder</span><span class="token punctuation">.</span><span class="token function">startingBlank</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr@gmail.com>"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token keyword">to</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">withSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test with simplejavamail"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">withPlainText</span><span class="token punctuation">(</span><span class="token string">"Hello world"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">buildEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Assertions</span><span class="token punctuation">.</span><span class="token function">assertDoesNotThrow</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> mailer<span class="token punctuation">.</span><span class="token function">sendMail</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>앱 비밀번호 발급은 <a href="/gmail-smtp/">Gmail SMTP</a> 글을 참고하세요.</p>
+</blockquote>
+<h4 id="Convert-Email-to-MimeMessage"><a href="#Convert-Email-to-MimeMessage" class="headerlink" title="Convert Email to MimeMessage"></a>Convert Email to MimeMessage</h4><p>EmailConverter, MailerHelper, JMail 클래스를 통해 유용한 기능을 제공하는데 EmailConverter를 이용하면 Email 을 MimeMessage로 변환하는 것을 제공해주기 때문에 JavaMailSender와의 통합도 유용해보인다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Email</span> email <span class="token operator">=</span> <span class="token class-name">EmailBuilder</span><span class="token punctuation">.</span><span class="token function">startingBlank</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">buildEmail</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> <span class="token class-name">EmailConverter</span><span class="token punctuation">.</span><span class="token function">emailToMimeMessage</span><span class="token punctuation">(</span>email<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<blockquote>
+<p>더 자세히 spring-boot-starter-mail 과 비교해보고 싶다면 <a href="https://www.simplejavamail.org/feature-matrix.html">Feature Comparison Matrix</a> 문서를 참고해보세요.</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Gmail SMTP</tag>
+        <tag>Simple Java Mail</tag>
+      </tags>
   </entry>
   <entry>
     <title>Gmail SMTP</title>
@@ -3960,6 +3960,30 @@ gradle<span class="token punctuation">.</span>taskGraph<span class="token punctu
       <tags>
         <tag>Gradle</tag>
         <tag>Lifecycle</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>그래들 프로젝트의 멀티 모듈 충돌 이슈</title>
+    <url>/gradle-multi-module-issue/</url>
+    <content><![CDATA[<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Terminal</span></div><code class="language-powershell"><span class="token comment"># https://github.com/kdevkr/multi-module-demo</span>
+multi-module-demo
+├─backend
+│  ├─build<span class="token punctuation">.</span>gradle
+│  └─settings<span class="token punctuation">.</span>gradle
+└─module-common</code></pre>
+
+<p>위와 같이 <U>깃 서브 모듈로 관리되는 공통 모듈</U>을 상위 폴더로 바라보는 백엔드 모듈이 존재하는 프로젝트 구성일 때 인텔리제이로 프로젝트를 여는 경우 아래와 같이 <U>Gradle 빌드 스크립트를 찾았습니다</U> 팝업 메시지가 제공되고 로드 버튼을 선택하면 <U>backend 과 module-common 이 별도의 루트 모듈로 개별 등록</U>됩니다. </p>
+<p><img data-src="/images/posts/gradle-multi-module-issue/01.png" alt="Gradle build script found"></p>
+<p>그래들 프로젝트로 전환되었지만 <U>backend 모듈에서 module-common 모듈의 패키지를 찾을 수 없는 문제를 해결하기 위해서</U> 프로젝트 구조 설정을 변경하려는 경우 아래와 같이 <U>module-common 에 대한 충돌로 인해 변경된 설정을 적용할 수 없는 증상</U>이 생기게 됩니다. 이 문제를 해결하기 위해서 .idea 폴더 아래에 존재하는 modules.xml 파일을 수정해보았지만 프로젝트 구조에는 그대로 유지되었습니다. 따라서, .idea 폴더를 삭제하고 새롭게 프로젝트를 열어야 합니다.</p>
+<p><img data-src="/images/posts/gradle-multi-module-issue/02.png"></p>
+<p>인텔리제이를 종료한 후 <U>프로젝트 폴더에 존재하는 .idea 폴더를 삭제</U>하고 인텔리제이로 프로젝트 폴더를 여는 경우 Gradle 빌드 스크립트를 찾았습니다 메시지를 무시하고 다음과 같이 build.gradle 파일을 찾아 <U>Gradle 프로젝트 연결</U>을 선택하여 그래들 프로젝트로 전환하는 것이 좋습니다.</p>
+<p><img data-src="/images/posts/gradle-multi-module-issue/03.png" alt="build.gradle - Gradle 프로젝트 연결"></p>
+<p><img data-src="/images/posts/gradle-multi-module-issue/04.png" alt="설정 - 프로젝트 구조 - 모듈"></p>
+<p>이제 그래들 프로젝트로 전환된 상태의 module-common은 루트 모듈이 아닌 backend 모듈의 settings.gradle로 인해 자동으로 등록되므로 backend 하위에만 위치하는 것을 확인할 수 있습니다. 이와 같이 <U>프로젝트의 두 모듈은 동일한 콘텐츠 루트를 공유할 수 없습니다.</U> 를 경험하는 분들이 있다면 해결에 도움이 되기를 바랍니다.</p>
+]]></content>
+      <tags>
+        <tag>Gradle</tag>
+        <tag>Submodule</tag>
       </tags>
   </entry>
   <entry>
@@ -4806,39 +4830,6 @@ Installing to /usr/local/bin
       </tags>
   </entry>
   <entry>
-    <title>아이패드 에어에서 무선 네트워크가 표시되지 않은 이유</title>
-    <url>/ipad-air-not-found-wifi-network/</url>
-    <content><![CDATA[<blockquote>
-<p>개발 관련 트러블슈팅은 아니지만 오랜만에 경험하는 한글 인코딩 문제가 포함되어있어 공유하려고 합니다. 여자친구에게 선물해준 아이패드 에어 5세대에서 사용중인 공유기의 무선 네트워크가 와이파이 목록에 표시되지 않는다고 하여 원인을 찾아 해결하는 과정에서 일어난 이야기입니다.</p>
-</blockquote>
-<h4 id="공유기-와이파이가-아이패드에-표시되지-않는다"><a href="#공유기-와이파이가-아이패드에-표시되지-않는다" class="headerlink" title="공유기 와이파이가 아이패드에 표시되지 않는다"></a>공유기 와이파이가 아이패드에 표시되지 않는다</h4><p>아이패드 에어 5세대를 수령하고나서 생각보다 많은 불량 테스트를 해야한다고 영상을 공유해줬는데 별다른 문제는 없다고 했지만 뜬금없이 <code>사무실의 공유기가 와이파이 목록에 표시되지 않는다</code>는 이야기를 들었다. 조금은 이해되지 않는 문제이기도 하고 전자 장비의 네트워크 문제는 일개 웹 개발자가 해결할 수 있는 영역의 문제가 아닐 수도 있어서 ChatGTP 에도 물어보고 이리저리 검색을 해보았지만 네트워크 연결에 대한 이슈는 있어도 무선 네트워크 자체가 표시되지 않는다는 문의는 딱히 보이지 않았다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/07.jpg" alt="문제의 현상을 만난 아이패드 에어 5세대 핑크"></p>
-<h4 id="네트워크-이름-숨김의-문제는-아니다"><a href="#네트워크-이름-숨김의-문제는-아니다" class="headerlink" title="네트워크 이름 숨김의 문제는 아니다"></a>네트워크 이름 숨김의 문제는 아니다</h4><p>네트워크가 표시되지 않는다는 물음에 처음으로 생각했던 원인은 혹시나 <code>공유기의 무선 네트워크 이름(SSID)을 숨긴 상태</code>는 아닐까였다. 팀뷰어 프로그램으로 원격을 시도해서 공유기 설정(192.168.0.1)로 들어가 확인해보았지만 네트워크 이름 알림은 제대로 체크가 되어있는 상황이었다. 아이패드 이외에 갤럭시와 같은 휴대폰에서는 정상적으로 네트워크가 표시되고 연결할 수 있는 상황이었다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/08.png" alt="인터넷 속도 26Mbps?..."></p>
-<h4 id="와이파이-규격의-호환성-문제일까"><a href="#와이파이-규격의-호환성-문제일까" class="headerlink" title="와이파이 규격의 호환성 문제일까"></a>와이파이 규격의 호환성 문제일까</h4><p>아이패드 에어 5세대의 와이파이 규격은 <code>Wi-Fi 6</code>로 최신 와이파이 규격이기에 혹시나 사무실에서 사용중인 <code>공유기가 오래되어 지원하지 않는 와이파이 규격인가</code>를 의심했다. 공유기의 제품명을 확인해보니 <a href="https://namu.wiki/w/ipTIME%20N704BCM">ipTIME N704BCM</a> 이었고 무려 2012년에 출시해서 아직도 판매하는 업체가 존재하는 것을 확인할 수 있었다. 와이파이 지원 규격은 <code>Wi-Fi 4</code>이기 때문에 <a href="https://support.apple.com/ko-kr/guide/deployment/depf9bb7e412/web">아이패드 에어의 와이파이 호환성</a> 정보를 찾아본 결과 <code>802.11n(Wi-Fi 4)를 지원</code>하는 것으로 나타났다. 그러면 왜 나오지 않는건데?!</p>
-<h4 id="네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식"><a href="#네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식" class="headerlink" title="네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식"></a>네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식</h4><p>와이파이 목록에 표시되지 않는 원인을 찾아가기 위해 이리 저리 검색해보던 중에 <a href="https://support.apple.com/ko-kr/HT202068">라우터에서 피해야 할 취약한 보안 설정</a>으로 <code>WPA/WPA2 혼합 모드는 더이상 사용되지 않는 구형 보안 프로토콜에 속한다</code>는 것이다. 보안이 취약한 네트워크라는 경고가 표시되더라도 네트워크 목록에 나타나야하고 연결할 수는 있어야하는데 <a href="https://support.apple.com/ko-kr/guide/security/sec8a67fa93d/web">무선 네트워크에 대한 보안 연결</a> 정보에서 <code>전환형 WPA/WPA2 는 향후 소프트웨어 버전에서 제거될 수 있다</code>는 문구를 확인할 수 있어서 혹시 몰라 사용중이었던 공유기의 무선 설정을 확인해보니 <code>WPAPSK/WPA2PSK + AES</code>로 선택되어있어 권장 설정에 해당하는 <code>WPA2PSAK + AES</code>로 변경했다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/01.png" alt="WPA/WPA2 혼합 모드"></p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/02.png" alt="개인용 WPA2"></p>
-<blockquote>
-<p>인증 및 암호화 방식을 변경하고나서도 네트워크 목록에 표시되지 않는다고 했으나 알고보니 네트워크 이름의 한글이 깨진 상태로 표시되고 있어서 인지를 못했던 것이다. 여자친구는 개발자가 아닌 일반인에 해당하므로 평소에 알고 있는 한글로 된 이름을 찾고 있었던 것이다.</p>
-</blockquote>
-<h4 id="네트워크-이름의-한글이-깨지는-문제"><a href="#네트워크-이름의-한글이-깨지는-문제" class="headerlink" title="네트워크 이름의 한글이 깨지는 문제"></a>네트워크 이름의 한글이 깨지는 문제</h4><p><img data-src="/images/posts/ipad-air-not-found-wifi/04.jpg" alt="세모???로 표시되는 한글"></p>
-<p>웹 개발자 입장에서 오랜만에 경험하는 한글 인코딩 문제인데 공유기가 오래되고 펌웨어 업데이트를 수행하지 않은지 오래되다보니 <code>UTF-8</code> 인코딩이 아닌 <code>EUC-KR</code>로 되어있던 것 같다. 공유기의 펌웨어 버전은 9.26 이었는데 아이피타임 웹사이트에서 찾아보니 2014년 8월에 업데이트된 버전으로 무려 약 10년이나 지난 버전에 해당된다. 아이피타임 공유기 설정 상 네트워크 이름(SSID)의 인코딩을 설정할 수 있도록 제공하는 부분은 없으므로 한글을 제대로 표시하기 위해서는 최신의 펌웨어 버전으로 업그레이드하는 방법 뿐이다.</p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/04.png" alt="ipTIME N704BCM 펌웨어 업데이트 일자"></p>
-<blockquote>
-<p>해당 제품으로 지원하는 가장 최신 펌웨어 버전으로 업그레이드 해도 인코딩 문제가 해결되는지는 명확하지 않다. 또한, 원격으로 설정해주려고 하기 때문에 펌웨어 업데이트 실패에 대한 상황에 대비할 수 없어서 한글이 깨지는 것을 보완하기 위해 영어도 함께 이름에 표기하는 것으로 조치해주려고 한다.</p>
-</blockquote>
-<p>그럼에도 이상한 부분은 갤럭시와 아이폰에서도 네트워크와 한글이 정상적으로 표시된다고 하기에 아이폰은 EUC-KR에 대한 호환을 지원하지만 아이패드의 경우 UTF-8 인코딩만 지원한다고 생각하는 편이 좋을 것 같다. 아무래도 남자친구가 개발자이기에 어떻게든 해결하게 되었던 것 같은데 포기한 사람들도 꽤나 많을 것 같은 문제로 생각되어 정리했다.  </p>
-<p><img data-src="/images/posts/ipad-air-not-found-wifi/05.jpg" alt="아무튼 해결! &lt;span class=&quot;emoji&quot; alias=&quot;smile&quot; style=&quot;&quot; fallback-src=&quot;https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8&quot;&gt;&#x1f604;&lt;/span&gt;"></p>
-]]></content>
-      <tags>
-        <tag>아이패드 에어</tag>
-        <tag>ipTIME 공유기</tag>
-        <tag>WPA2PSK</tag>
-        <tag>EUC-KR</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>IP 대역 그리고 위치추적</title>
     <url>/ip-band-and-location-tracking/</url>
     <content><![CDATA[<p>안녕하세요 Mambo 입니다.</p>
@@ -4873,6 +4864,39 @@ Installing to /usr/local/bin
         <tag>IP Band</tag>
         <tag>NAT</tag>
         <tag>Location Tracking</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>아이패드 에어에서 무선 네트워크가 표시되지 않은 이유</title>
+    <url>/ipad-air-not-found-wifi-network/</url>
+    <content><![CDATA[<blockquote>
+<p>개발 관련 트러블슈팅은 아니지만 오랜만에 경험하는 한글 인코딩 문제가 포함되어있어 공유하려고 합니다. 여자친구에게 선물해준 아이패드 에어 5세대에서 사용중인 공유기의 무선 네트워크가 와이파이 목록에 표시되지 않는다고 하여 원인을 찾아 해결하는 과정에서 일어난 이야기입니다.</p>
+</blockquote>
+<h4 id="공유기-와이파이가-아이패드에-표시되지-않는다"><a href="#공유기-와이파이가-아이패드에-표시되지-않는다" class="headerlink" title="공유기 와이파이가 아이패드에 표시되지 않는다"></a>공유기 와이파이가 아이패드에 표시되지 않는다</h4><p>아이패드 에어 5세대를 수령하고나서 생각보다 많은 불량 테스트를 해야한다고 영상을 공유해줬는데 별다른 문제는 없다고 했지만 뜬금없이 <code>사무실의 공유기가 와이파이 목록에 표시되지 않는다</code>는 이야기를 들었다. 조금은 이해되지 않는 문제이기도 하고 전자 장비의 네트워크 문제는 일개 웹 개발자가 해결할 수 있는 영역의 문제가 아닐 수도 있어서 ChatGTP 에도 물어보고 이리저리 검색을 해보았지만 네트워크 연결에 대한 이슈는 있어도 무선 네트워크 자체가 표시되지 않는다는 문의는 딱히 보이지 않았다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/07.jpg" alt="문제의 현상을 만난 아이패드 에어 5세대 핑크"></p>
+<h4 id="네트워크-이름-숨김의-문제는-아니다"><a href="#네트워크-이름-숨김의-문제는-아니다" class="headerlink" title="네트워크 이름 숨김의 문제는 아니다"></a>네트워크 이름 숨김의 문제는 아니다</h4><p>네트워크가 표시되지 않는다는 물음에 처음으로 생각했던 원인은 혹시나 <code>공유기의 무선 네트워크 이름(SSID)을 숨긴 상태</code>는 아닐까였다. 팀뷰어 프로그램으로 원격을 시도해서 공유기 설정(192.168.0.1)로 들어가 확인해보았지만 네트워크 이름 알림은 제대로 체크가 되어있는 상황이었다. 아이패드 이외에 갤럭시와 같은 휴대폰에서는 정상적으로 네트워크가 표시되고 연결할 수 있는 상황이었다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/08.png" alt="인터넷 속도 26Mbps?..."></p>
+<h4 id="와이파이-규격의-호환성-문제일까"><a href="#와이파이-규격의-호환성-문제일까" class="headerlink" title="와이파이 규격의 호환성 문제일까"></a>와이파이 규격의 호환성 문제일까</h4><p>아이패드 에어 5세대의 와이파이 규격은 <code>Wi-Fi 6</code>로 최신 와이파이 규격이기에 혹시나 사무실에서 사용중인 <code>공유기가 오래되어 지원하지 않는 와이파이 규격인가</code>를 의심했다. 공유기의 제품명을 확인해보니 <a href="https://namu.wiki/w/ipTIME%20N704BCM">ipTIME N704BCM</a> 이었고 무려 2012년에 출시해서 아직도 판매하는 업체가 존재하는 것을 확인할 수 있었다. 와이파이 지원 규격은 <code>Wi-Fi 4</code>이기 때문에 <a href="https://support.apple.com/ko-kr/guide/deployment/depf9bb7e412/web">아이패드 에어의 와이파이 호환성</a> 정보를 찾아본 결과 <code>802.11n(Wi-Fi 4)를 지원</code>하는 것으로 나타났다. 그러면 왜 나오지 않는건데?!</p>
+<h4 id="네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식"><a href="#네트워크-표시가-되지-않은-원인은-인증-및-암호화-방식" class="headerlink" title="네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식"></a>네트워크 표시가 되지 않은 원인은 인증 및 암호화 방식</h4><p>와이파이 목록에 표시되지 않는 원인을 찾아가기 위해 이리 저리 검색해보던 중에 <a href="https://support.apple.com/ko-kr/HT202068">라우터에서 피해야 할 취약한 보안 설정</a>으로 <code>WPA/WPA2 혼합 모드는 더이상 사용되지 않는 구형 보안 프로토콜에 속한다</code>는 것이다. 보안이 취약한 네트워크라는 경고가 표시되더라도 네트워크 목록에 나타나야하고 연결할 수는 있어야하는데 <a href="https://support.apple.com/ko-kr/guide/security/sec8a67fa93d/web">무선 네트워크에 대한 보안 연결</a> 정보에서 <code>전환형 WPA/WPA2 는 향후 소프트웨어 버전에서 제거될 수 있다</code>는 문구를 확인할 수 있어서 혹시 몰라 사용중이었던 공유기의 무선 설정을 확인해보니 <code>WPAPSK/WPA2PSK + AES</code>로 선택되어있어 권장 설정에 해당하는 <code>WPA2PSAK + AES</code>로 변경했다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/01.png" alt="WPA/WPA2 혼합 모드"></p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/02.png" alt="개인용 WPA2"></p>
+<blockquote>
+<p>인증 및 암호화 방식을 변경하고나서도 네트워크 목록에 표시되지 않는다고 했으나 알고보니 네트워크 이름의 한글이 깨진 상태로 표시되고 있어서 인지를 못했던 것이다. 여자친구는 개발자가 아닌 일반인에 해당하므로 평소에 알고 있는 한글로 된 이름을 찾고 있었던 것이다.</p>
+</blockquote>
+<h4 id="네트워크-이름의-한글이-깨지는-문제"><a href="#네트워크-이름의-한글이-깨지는-문제" class="headerlink" title="네트워크 이름의 한글이 깨지는 문제"></a>네트워크 이름의 한글이 깨지는 문제</h4><p><img data-src="/images/posts/ipad-air-not-found-wifi/04.jpg" alt="세모???로 표시되는 한글"></p>
+<p>웹 개발자 입장에서 오랜만에 경험하는 한글 인코딩 문제인데 공유기가 오래되고 펌웨어 업데이트를 수행하지 않은지 오래되다보니 <code>UTF-8</code> 인코딩이 아닌 <code>EUC-KR</code>로 되어있던 것 같다. 공유기의 펌웨어 버전은 9.26 이었는데 아이피타임 웹사이트에서 찾아보니 2014년 8월에 업데이트된 버전으로 무려 약 10년이나 지난 버전에 해당된다. 아이피타임 공유기 설정 상 네트워크 이름(SSID)의 인코딩을 설정할 수 있도록 제공하는 부분은 없으므로 한글을 제대로 표시하기 위해서는 최신의 펌웨어 버전으로 업그레이드하는 방법 뿐이다.</p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/04.png" alt="ipTIME N704BCM 펌웨어 업데이트 일자"></p>
+<blockquote>
+<p>해당 제품으로 지원하는 가장 최신 펌웨어 버전으로 업그레이드 해도 인코딩 문제가 해결되는지는 명확하지 않다. 또한, 원격으로 설정해주려고 하기 때문에 펌웨어 업데이트 실패에 대한 상황에 대비할 수 없어서 한글이 깨지는 것을 보완하기 위해 영어도 함께 이름에 표기하는 것으로 조치해주려고 한다.</p>
+</blockquote>
+<p>그럼에도 이상한 부분은 갤럭시와 아이폰에서도 네트워크와 한글이 정상적으로 표시된다고 하기에 아이폰은 EUC-KR에 대한 호환을 지원하지만 아이패드의 경우 UTF-8 인코딩만 지원한다고 생각하는 편이 좋을 것 같다. 아무래도 남자친구가 개발자이기에 어떻게든 해결하게 되었던 것 같은데 포기한 사람들도 꽤나 많을 것 같은 문제로 생각되어 정리했다.  </p>
+<p><img data-src="/images/posts/ipad-air-not-found-wifi/05.jpg" alt="아무튼 해결! &lt;span class=&quot;emoji&quot; alias=&quot;smile&quot; style=&quot;&quot; fallback-src=&quot;https://github.githubassets.com/images/icons/emoji/unicode/1f604.png?v8&quot;&gt;&#x1f604;&lt;/span&gt;"></p>
+]]></content>
+      <tags>
+        <tag>아이패드 에어</tag>
+        <tag>ipTIME 공유기</tag>
+        <tag>WPA2PSK</tag>
+        <tag>EUC-KR</tag>
       </tags>
   </entry>
   <entry>
@@ -6347,68 +6371,6 @@ meter_with_attr<span class="token verb operator">:</span><span class="token keyw
       </tags>
   </entry>
   <entry>
-    <title>키바나에서 엘라스틱서치 클러스터로 연결할 수 없음</title>
-    <url>/kibana-cannot-connect-elasticsearch/</url>
-    <content><![CDATA[<p><img data-src="/images/posts/kibana-cannot-connect-elasticsearch/01.png"></p>
-<p>AWS EC2 인스턴스에 설치된 엘라스틱서치에 대해 키바나를 설치하고 실행하니 위와 같이 엘라스틱서치 클러스터에 연결할 수 없다는 화면이 노출되었습니다. 회사에서 이 문제에 대해 머리를 싸매면서 여러가지를 시도해보았으나 해결되지 않았고 집에와서 쉬는 김에 이와 관련된 정보를 검색해보면서 여러가지 확인 끝에 원인을 찾아내어 이 글을 작성합니다.</p>
-<h2 id="키바나-응답-페이로드"><a href="#키바나-응답-페이로드" class="headerlink" title="키바나 응답 페이로드"></a>키바나 응답 페이로드</h2><blockquote>
-<p>This Kibana installation has strict security requirements enabled that your current browser does not meet.</p>
-</blockquote>
-<p>먼저, 웹 페이지 화면에서는 엘라스틱서치 클러스터에 연결할 수 없다는 내용의 메시지였지만 실제로 키바나로부터 받은 응답 페이로드를 확인해보니 <a href="https://www.elastic.co/guide/en/kibana/current/Security-production-considerations.html#csp-strict-mode">Content Security Policy</a> 관련된 오류 내용이었습니다. 그리고 크롬 개발자 도구 콘솔에는 아래와 같은 오류 로그도 표시됨을 확인했습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">Refused to execute inline script because it violates the following Content Security Policy directive: <span class="token string">"script-src 'unsafe-eval' 'nonce-LQ+1u6/j7+lb3KNy'"</span><span class="token builtin class-name">.</span>
-Either the <span class="token string">'unsafe-inline'</span> keyword, a <span class="token builtin class-name">hash</span> <span class="token punctuation">(</span><span class="token string">'sha256-SHHSeLc0bp6xt4BoVVyUy+3IbVqp3ujLaR+s+kSP5UI='</span><span class="token punctuation">)</span>, or a nonce <span class="token punctuation">(</span><span class="token string">'nonce-...'</span><span class="token punctuation">)</span> is required to <span class="token builtin class-name">enable</span> inline execution.  </code></pre>
-
-<h3 id="CSP-비활성화-시도"><a href="#CSP-비활성화-시도" class="headerlink" title="CSP 비활성화 시도"></a>CSP 비활성화 시도</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">csp.strict</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre>
-
-<p>엘라스틱서치 클러스터에 연결할 수 없는 사유인지 다른 문제인지를 판단할 수 없어서 CSP를 비활성화 해보았습니다. 그러나, CSP 비활성화 후에도 키바나에서는 동일하게 엘라스틱서치 클러스터에 연결할 수 없다고 표시되었기에 이로 인한 문제는 아님을 확인할 수 있었습니다.</p>
-<h2 id="키바나-로그"><a href="#키바나-로그" class="headerlink" title="키바나 로그"></a>키바나 로그</h2><p>사실 키바나에서 엘라스틱서치 클러스터에 연결할 수 없다는 메시지를 보고나서는 엘라스틱서치와 키바나의 설정 파일의 문제가 아닐까 여러가지 살펴보았지만 다른 환경에서 사용중인 설정과 다를바가 없었기에 키바나 로그를 확인해야 했습니다.</p>
-<h3 id="Chromium-with-headless-shell"><a href="#Chromium-with-headless-shell" class="headerlink" title="Chromium with headless_shell"></a>Chromium with headless_shell</h3><blockquote>
-<p>Reporting plugin self-check generated a warning: Error: Could not close browser client handle</p>
-</blockquote>
-<p>가장 먼저 의심스러운 위 로그에 대해 검색해보니 <a href="https://github.com/elastic/kibana/issues/53829">kibana&#x2F;issues&#x2F;53829</a>에서 샌드박스 옵션을 설정한 것을 보고 시도해보았습니다.</p>
-<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">xpack.reporting.capture.browser.chromium.disableSandbox</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
-
-<p>위 조치와 함께 EC2에 노드와 크로미움 패키지를 직접 설치까지 해보았지만 위 문제가 해소되지 않았습니다.</p>
-<h3 id="플러그인-로그"><a href="#플러그인-로그" class="headerlink" title="플러그인 로그"></a>플러그인 로그</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>error<span class="token punctuation">]</span><span class="token punctuation">[</span>status<span class="token punctuation">]</span><span class="token punctuation">[</span>plugin:xpack_main@7.3.2<span class="token punctuation">]</span> Status changed from yellow to red - <span class="token punctuation">[</span>data<span class="token punctuation">]</span> Elasticsearch cluster did not respond with license information.</code></pre>
-
-<p>집에와서 키바나 로그를 좀 더 자세히 살펴보니 위와 같은 오류 로그가 발생하는 것을 확인하였습니다. 사실 회사에서는 플러그인 오류이므로 키바나에서 엘라스틱서치 클러스터에 연결할 수 없는 사유와는 상관없다고 판단했었습니다. 왜냐하면 엘라스틱서치에 키바나 관련 인덱스까지는 만들어지므로 엘라스틱서치 클러스터와 통신이 되는 상황이라고 생각할 수 밖에 없었을테니까요.</p>
-<p>아무튼 위 로그에 대해서 검색해보니 <a href="https://github.com/elastic/kibana/issues/36079">kibana&#x2F;issues&#x2F;36079</a>에 라이센스 정보를 확인하는 댓글이 눈에 들어왔고 라이센스 정보를 확인해보았습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> http://localhost:9200/_xpack/license?pretty
-<span class="token punctuation">&#123;</span> <span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>사실 라이센스가 없다고 생각하지는 않았고 혹시나 트라이얼 라이센스인데 만료되어서 그런 것인가라고 생각되 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/license-settings.html">License Settings</a>에 나와있는대로 베이직 라이센스 유형을 지정하고 클러스터를 다시 실행하였지만 증상을 동일했습니다. </p>
-</blockquote>
-<p>그러나, 정말로 엘라스틱서치에는 라이센스 정보가 없었고 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/start-basic.html">Start basic API</a>를 통해 베이직 라이센스를 시작할 수 있다고 하여 아래와 같이 라이센스를 추가하였습니다.</p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> <span class="token parameter variable">-X</span> POST http://localhost:9200/_license/start_basic?pretty
-<span class="token punctuation">&#123;</span>
-  <span class="token string">"acknowledged"</span> <span class="token builtin class-name">:</span> true,
-  <span class="token string">"basic_was_started"</span> <span class="token builtin class-name">:</span> <span class="token boolean">true</span>
-<span class="token punctuation">&#125;</span>
-<span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> http://localhost:9200/_xpack/license?pretty
-<span class="token punctuation">&#123;</span>
-  <span class="token string">"license"</span> <span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span>
-    <span class="token string">"status"</span> <span class="token builtin class-name">:</span> <span class="token string">"active"</span>,
-    <span class="token string">"uid"</span> <span class="token builtin class-name">:</span> <span class="token string">"fb6a45f5-4f26-45fe-9889-2380b9ec8801"</span>,
-    <span class="token string">"type"</span> <span class="token builtin class-name">:</span> <span class="token string">"basic"</span>,
-    <span class="token string">"issue_date"</span> <span class="token builtin class-name">:</span> <span class="token string">"2022-08-18T14:51:26.602Z"</span>,
-    <span class="token string">"issue_date_in_millis"</span> <span class="token builtin class-name">:</span> <span class="token number">1660834286602</span>,
-    <span class="token string">"max_nodes"</span> <span class="token builtin class-name">:</span> <span class="token number">1000</span>,
-    <span class="token string">"issued_to"</span> <span class="token builtin class-name">:</span> <span class="token string">"cluster"</span>,
-    <span class="token string">"issuer"</span> <span class="token builtin class-name">:</span> <span class="token string">"elasticsearch"</span>,
-    <span class="token string">"start_date_in_millis"</span> <span class="token builtin class-name">:</span> <span class="token parameter variable">-1</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p><img data-src="/images/posts/kibana-cannot-connect-elasticsearch/02.png"></p>
-<p>엘라스틱서치 클러스터에 베이직 라이센스 정보가 있으므로 키바나에서는 더이상 플러그인 오류가 발생하지 않았으며 키바나 주소로 다시 접속하니 엘라스틱서치 클러스터에 연결할 수 없다는 메시지는 더이상 표시되지 않았습니다. 이로써 키바나에서 엘라스틱서치 클러스터로 연결한다는 의미는 X-Pack 플러그인에 대한 라이센스 정보를 확인한다는 점으로 이해할 수 있을 것 같습니다. 엘라스틱서치 클러스터가 만료된 트라이얼 라이센스를 가지고 있더라도 키바나 또는 Start basic API를 통해 베이직 라이센스로 전환할 수 있습니다. 따라서, 키바나를 실행하고나서 엘라스틱서치 클러스터에 연결할 수 없다는 의미의 메시지를 확인하다면 클러스터에 라이센스 정보가 있는지 확인해보시기 바랍니다.</p>
-<p>감사합니다.</p>
-]]></content>
-      <tags>
-        <tag>Basic License</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Keycloak + Spring Security OAuth 2.0 Resource Server</title>
     <url>/keycloak-spring-security-oauth2-resource-server/</url>
     <content><![CDATA[<p>프론트엔드 채널에서 Keycloak 를 통해 발급하여 백엔드 요청으로 전달되는 JWT 토큰에 대한 검증을 위해 Spring Security의 <a href="https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html">OAuth 2.0 Resource Server</a>를 사용하여 JWT 토큰이 신뢰할 수 있는 곳에서 서명되었는지 확인하는 것을 알아보자. 본 글에서는 사용자 인증에 대한 Authorization Code Flow를 백엔드 채널로 전달하여 토큰을 교환하는 과정을 거치지 않고 <a href="https://www.keycloak.org/securing-apps/javascript-adapter">JavaScript Keycloak Adapter</a>를 사용하여 PKCE 기반으로 발급된 토큰을 전달받는다고 가정한다.</p>
@@ -6506,6 +6468,68 @@ Either the <span class="token string">'unsafe-inline'</span> keyword, a <span cl
         <tag>Keycloak</tag>
         <tag>Spring Security</tag>
         <tag>OAuth 2.0 Resource Server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>키바나에서 엘라스틱서치 클러스터로 연결할 수 없음</title>
+    <url>/kibana-cannot-connect-elasticsearch/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/kibana-cannot-connect-elasticsearch/01.png"></p>
+<p>AWS EC2 인스턴스에 설치된 엘라스틱서치에 대해 키바나를 설치하고 실행하니 위와 같이 엘라스틱서치 클러스터에 연결할 수 없다는 화면이 노출되었습니다. 회사에서 이 문제에 대해 머리를 싸매면서 여러가지를 시도해보았으나 해결되지 않았고 집에와서 쉬는 김에 이와 관련된 정보를 검색해보면서 여러가지 확인 끝에 원인을 찾아내어 이 글을 작성합니다.</p>
+<h2 id="키바나-응답-페이로드"><a href="#키바나-응답-페이로드" class="headerlink" title="키바나 응답 페이로드"></a>키바나 응답 페이로드</h2><blockquote>
+<p>This Kibana installation has strict security requirements enabled that your current browser does not meet.</p>
+</blockquote>
+<p>먼저, 웹 페이지 화면에서는 엘라스틱서치 클러스터에 연결할 수 없다는 내용의 메시지였지만 실제로 키바나로부터 받은 응답 페이로드를 확인해보니 <a href="https://www.elastic.co/guide/en/kibana/current/Security-production-considerations.html#csp-strict-mode">Content Security Policy</a> 관련된 오류 내용이었습니다. 그리고 크롬 개발자 도구 콘솔에는 아래와 같은 오류 로그도 표시됨을 확인했습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Refused to execute inline script because it violates the following Content Security Policy directive: <span class="token string">"script-src 'unsafe-eval' 'nonce-LQ+1u6/j7+lb3KNy'"</span><span class="token builtin class-name">.</span>
+Either the <span class="token string">'unsafe-inline'</span> keyword, a <span class="token builtin class-name">hash</span> <span class="token punctuation">(</span><span class="token string">'sha256-SHHSeLc0bp6xt4BoVVyUy+3IbVqp3ujLaR+s+kSP5UI='</span><span class="token punctuation">)</span>, or a nonce <span class="token punctuation">(</span><span class="token string">'nonce-...'</span><span class="token punctuation">)</span> is required to <span class="token builtin class-name">enable</span> inline execution.  </code></pre>
+
+<h3 id="CSP-비활성화-시도"><a href="#CSP-비활성화-시도" class="headerlink" title="CSP 비활성화 시도"></a>CSP 비활성화 시도</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">csp.strict</span><span class="token punctuation">:</span> <span class="token boolean important">false</span></code></pre>
+
+<p>엘라스틱서치 클러스터에 연결할 수 없는 사유인지 다른 문제인지를 판단할 수 없어서 CSP를 비활성화 해보았습니다. 그러나, CSP 비활성화 후에도 키바나에서는 동일하게 엘라스틱서치 클러스터에 연결할 수 없다고 표시되었기에 이로 인한 문제는 아님을 확인할 수 있었습니다.</p>
+<h2 id="키바나-로그"><a href="#키바나-로그" class="headerlink" title="키바나 로그"></a>키바나 로그</h2><p>사실 키바나에서 엘라스틱서치 클러스터에 연결할 수 없다는 메시지를 보고나서는 엘라스틱서치와 키바나의 설정 파일의 문제가 아닐까 여러가지 살펴보았지만 다른 환경에서 사용중인 설정과 다를바가 없었기에 키바나 로그를 확인해야 했습니다.</p>
+<h3 id="Chromium-with-headless-shell"><a href="#Chromium-with-headless-shell" class="headerlink" title="Chromium with headless_shell"></a>Chromium with headless_shell</h3><blockquote>
+<p>Reporting plugin self-check generated a warning: Error: Could not close browser client handle</p>
+</blockquote>
+<p>가장 먼저 의심스러운 위 로그에 대해 검색해보니 <a href="https://github.com/elastic/kibana/issues/53829">kibana&#x2F;issues&#x2F;53829</a>에서 샌드박스 옵션을 설정한 것을 보고 시도해보았습니다.</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">xpack.reporting.capture.browser.chromium.disableSandbox</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+
+<p>위 조치와 함께 EC2에 노드와 크로미움 패키지를 직접 설치까지 해보았지만 위 문제가 해소되지 않았습니다.</p>
+<h3 id="플러그인-로그"><a href="#플러그인-로그" class="headerlink" title="플러그인 로그"></a>플러그인 로그</h3><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>error<span class="token punctuation">]</span><span class="token punctuation">[</span>status<span class="token punctuation">]</span><span class="token punctuation">[</span>plugin:xpack_main@7.3.2<span class="token punctuation">]</span> Status changed from yellow to red - <span class="token punctuation">[</span>data<span class="token punctuation">]</span> Elasticsearch cluster did not respond with license information.</code></pre>
+
+<p>집에와서 키바나 로그를 좀 더 자세히 살펴보니 위와 같은 오류 로그가 발생하는 것을 확인하였습니다. 사실 회사에서는 플러그인 오류이므로 키바나에서 엘라스틱서치 클러스터에 연결할 수 없는 사유와는 상관없다고 판단했었습니다. 왜냐하면 엘라스틱서치에 키바나 관련 인덱스까지는 만들어지므로 엘라스틱서치 클러스터와 통신이 되는 상황이라고 생각할 수 밖에 없었을테니까요.</p>
+<p>아무튼 위 로그에 대해서 검색해보니 <a href="https://github.com/elastic/kibana/issues/36079">kibana&#x2F;issues&#x2F;36079</a>에 라이센스 정보를 확인하는 댓글이 눈에 들어왔고 라이센스 정보를 확인해보았습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> http://localhost:9200/_xpack/license?pretty
+<span class="token punctuation">&#123;</span> <span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>사실 라이센스가 없다고 생각하지는 않았고 혹시나 트라이얼 라이센스인데 만료되어서 그런 것인가라고 생각되 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/license-settings.html">License Settings</a>에 나와있는대로 베이직 라이센스 유형을 지정하고 클러스터를 다시 실행하였지만 증상을 동일했습니다. </p>
+</blockquote>
+<p>그러나, 정말로 엘라스틱서치에는 라이센스 정보가 없었고 <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/start-basic.html">Start basic API</a>를 통해 베이직 라이센스를 시작할 수 있다고 하여 아래와 같이 라이센스를 추가하였습니다.</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> <span class="token parameter variable">-X</span> POST http://localhost:9200/_license/start_basic?pretty
+<span class="token punctuation">&#123;</span>
+  <span class="token string">"acknowledged"</span> <span class="token builtin class-name">:</span> true,
+  <span class="token string">"basic_was_started"</span> <span class="token builtin class-name">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span>ec2-user ~<span class="token punctuation">]</span>$ <span class="token function">curl</span> http://localhost:9200/_xpack/license?pretty
+<span class="token punctuation">&#123;</span>
+  <span class="token string">"license"</span> <span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">"status"</span> <span class="token builtin class-name">:</span> <span class="token string">"active"</span>,
+    <span class="token string">"uid"</span> <span class="token builtin class-name">:</span> <span class="token string">"fb6a45f5-4f26-45fe-9889-2380b9ec8801"</span>,
+    <span class="token string">"type"</span> <span class="token builtin class-name">:</span> <span class="token string">"basic"</span>,
+    <span class="token string">"issue_date"</span> <span class="token builtin class-name">:</span> <span class="token string">"2022-08-18T14:51:26.602Z"</span>,
+    <span class="token string">"issue_date_in_millis"</span> <span class="token builtin class-name">:</span> <span class="token number">1660834286602</span>,
+    <span class="token string">"max_nodes"</span> <span class="token builtin class-name">:</span> <span class="token number">1000</span>,
+    <span class="token string">"issued_to"</span> <span class="token builtin class-name">:</span> <span class="token string">"cluster"</span>,
+    <span class="token string">"issuer"</span> <span class="token builtin class-name">:</span> <span class="token string">"elasticsearch"</span>,
+    <span class="token string">"start_date_in_millis"</span> <span class="token builtin class-name">:</span> <span class="token parameter variable">-1</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><img data-src="/images/posts/kibana-cannot-connect-elasticsearch/02.png"></p>
+<p>엘라스틱서치 클러스터에 베이직 라이센스 정보가 있으므로 키바나에서는 더이상 플러그인 오류가 발생하지 않았으며 키바나 주소로 다시 접속하니 엘라스틱서치 클러스터에 연결할 수 없다는 메시지는 더이상 표시되지 않았습니다. 이로써 키바나에서 엘라스틱서치 클러스터로 연결한다는 의미는 X-Pack 플러그인에 대한 라이센스 정보를 확인한다는 점으로 이해할 수 있을 것 같습니다. 엘라스틱서치 클러스터가 만료된 트라이얼 라이센스를 가지고 있더라도 키바나 또는 Start basic API를 통해 베이직 라이센스로 전환할 수 있습니다. 따라서, 키바나를 실행하고나서 엘라스틱서치 클러스터에 연결할 수 없다는 의미의 메시지를 확인하다면 클러스터에 라이센스 정보가 있는지 확인해보시기 바랍니다.</p>
+<p>감사합니다.</p>
+]]></content>
+      <tags>
+        <tag>Basic License</tag>
       </tags>
   </entry>
   <entry>
@@ -7748,6 +7772,27 @@ qrGenerator<span class="token punctuation">.</span><span class="token function">
       </tags>
   </entry>
   <entry>
+    <title>OpenFeign 도입을 고민해보자</title>
+    <url>/open-feign/</url>
+    <content><![CDATA[<p>마이크로서비스 개발에 있어서 OpenFeign 활용에 대한 부분이 아닌 작은 모놀리식으로 구성된 소규모 시스템에서도 <code>Apache HttpClient</code>를 직접적으로 사용하지 않고 어노테이션과 인터페이스 기반의 선언적으로 통신에 대한 로직을 작성하는 것을 고민하게 되는 부분을 적어보고자 한다.</p>
+<h4 id="통신-로직에-대한-반복적인-코드-작성"><a href="#통신-로직에-대한-반복적인-코드-작성" class="headerlink" title="통신 로직에 대한 반복적인 코드 작성"></a>통신 로직에 대한 반복적인 코드 작성</h4><p>RestTemplate와 HttpClient를 직접적으로 사용하여 통신에 대한 코드를 작성하는 경우 URI 구성과 쿼리 파라미터 그리고 폼 데이터 또는 요청 데이터 그리고 응답 결과에 대한 데이터 처리까지 아래와 같은 부분들이 강제화 되어버리는 경우가 많은 것 같다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">ObjectMapper</span> objectMapper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">LoginEntity</span> login <span class="token operator">=</span> objectMapper<span class="token punctuation">.</span><span class="token function">readValue</span><span class="token punctuation">(</span>json<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>통신해야하는 시스템에서 제공하는 REST API 규격에 따라 쿼리 파라미터 또는 요청 데이터를 직접 구성해야하고 전달받은 응답에 대하여 위와 같이 직접적으로 원하는 모델 클래스로 변환하는 코드를 작성해야만 한다. 이것은 스프링 백엔드 개발자가 Spring MVC의 컨트롤러를 작성하는 것과는 다른데 <a href="https://github.com/OpenFeign/feign">OpenFeign</a> 클라이언트는 <code>선언적인(Declarative) 방식을 통해 이러한 과정을 간소화</code>하고 Spring MVC와 비슷한 방식으로 작성됨에 따라서 시스템 간 연동을 위한 통신 로직을 작성하고 관리하기 용이한 장점을 가지고 있는 것 같다.</p>
+<h4 id="의존-시스템에-대한-장애-처리-부족"><a href="#의존-시스템에-대한-장애-처리-부족" class="headerlink" title="의존 시스템에 대한 장애 처리 부족"></a>의존 시스템에 대한 장애 처리 부족</h4><p>마이크로서비스 구성이 아닌 일반적인 소규모 시스템에서 RestTemplate와 HttpClient를 직접적으로 사용하다보면 <code>시스템 간 통신에 대한 오류와 재시도 방안에 대한 고민을 하지 않고 무시하게 되는 경우</code>가 많다. OpenFeign은 마이크로서비스 개발에 사용되어지는 만큼 마이크로서비스에서 중요시하게 되는 장애 전파 방지에 대한 부분을 고려할 수 있다.</p>
+<h4 id="마이크로서비스-구성-확장에-대한-고려"><a href="#마이크로서비스-구성-확장에-대한-고려" class="headerlink" title="마이크로서비스 구성 확장에 대한 고려"></a>마이크로서비스 구성 확장에 대한 고려</h4><p>모놀리식 아키텍처로 구성되는 소규모 시스템도 현재 시스템 규모와 요구사항을 넘어 대규모 트래픽 또는 데이터를 처리하기 위한 시스템으로 확장되는 것을 목표로 하는 경우가 대부분이다. 현재 신규 프로젝트도 마이크로서비스 구성을 목표로 초기 설계가 되어있음에 따라 Spring Cloud 모듈에 대한 의존성을 보유하고 있다. Spring Cloud OpenFeign 로 작성되어있는 경우 <code>서비스 디스커버리를 위한 Eureka와 장애 처리를 위한 Resilience4J 과의 통합이 용이하다</code>고 한다.</p>
+<p>이와 같이 마이크로서비스 아키텍처가 아니더라도 외부 시스템 또는 시스템 간 통신이 많은 시스템의 프로젝트라면 OpenFeign 클라이언트 도입을 고려해볼만하지 않을까? 물론, <a href="https://toss.tech/article/engineering-note-3">Feign 코드 분석과 서버 성능 개선</a> 에서처럼 문제가 내재되지 않는 건 아님을 감안하긴 해야겠지만 말이다.</p>
+<hr>
+<h4 id="🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유"><a href="#🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유" class="headerlink" title="🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유"></a>🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유</h4><p>FeignClient에 대한 간단한 예제 코드를 작성해보던 중에 GET 요청이 POST로 전환되어 요청되는 문제를 경험했다. GET 요청 시 쿼리 파라미터를 전달하기 위해서는 <code>@SpringQueryMap를 해당 파라미터에 선언해야</code>하더라. 쿼리 파라미터가 전달되지 않는 경우가 아닌 선언된 요청 함수가 바뀌어버리는 건 신기한 부분이다.</p>
+]]></content>
+      <tags>
+        <tag>OpenFeign</tag>
+        <tag>HttpClient</tag>
+        <tag>RestTemplate</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>엔진엑스 트래픽 미러링</title>
     <url>/nginx-mirror/</url>
     <content><![CDATA[<p>엔진엑스(Nginx)의 <code>ngx_http_mirror_module</code> 모듈을 사용하면 리버스 프록시로 애플리케이션에 전달하는 <a href="https://medium.com/gaurav-shukla/testing-your-code-against-production-using-nginx-mirroring-567b3c2f4921">일부 트래픽을 복제하여 다른 애플리케이션으로 전달</a>할 수 있다. 우리는 이것을 활용해서 애플리케이션에 전달하는 트래픽을 알 수 없는 상황이지만 어떠한 문제가 발생하고 있을때 테스트를 위한 애플리케이션을 만들어서 구동하고 디버그할 수 있는 환경을 만들 수 있다.</p>
@@ -7790,27 +7835,6 @@ qrGenerator<span class="token punctuation">.</span><span class="token function">
       <tags>
         <tag>nginx</tag>
         <tag>mirror</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>OpenFeign 도입을 고민해보자</title>
-    <url>/open-feign/</url>
-    <content><![CDATA[<p>마이크로서비스 개발에 있어서 OpenFeign 활용에 대한 부분이 아닌 작은 모놀리식으로 구성된 소규모 시스템에서도 <code>Apache HttpClient</code>를 직접적으로 사용하지 않고 어노테이션과 인터페이스 기반의 선언적으로 통신에 대한 로직을 작성하는 것을 고민하게 되는 부분을 적어보고자 한다.</p>
-<h4 id="통신-로직에-대한-반복적인-코드-작성"><a href="#통신-로직에-대한-반복적인-코드-작성" class="headerlink" title="통신 로직에 대한 반복적인 코드 작성"></a>통신 로직에 대한 반복적인 코드 작성</h4><p>RestTemplate와 HttpClient를 직접적으로 사용하여 통신에 대한 코드를 작성하는 경우 URI 구성과 쿼리 파라미터 그리고 폼 데이터 또는 요청 데이터 그리고 응답 결과에 대한 데이터 처리까지 아래와 같은 부분들이 강제화 되어버리는 경우가 많은 것 같다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">ObjectMapper</span> objectMapper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">LoginEntity</span> login <span class="token operator">=</span> objectMapper<span class="token punctuation">.</span><span class="token function">readValue</span><span class="token punctuation">(</span>json<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>통신해야하는 시스템에서 제공하는 REST API 규격에 따라 쿼리 파라미터 또는 요청 데이터를 직접 구성해야하고 전달받은 응답에 대하여 위와 같이 직접적으로 원하는 모델 클래스로 변환하는 코드를 작성해야만 한다. 이것은 스프링 백엔드 개발자가 Spring MVC의 컨트롤러를 작성하는 것과는 다른데 <a href="https://github.com/OpenFeign/feign">OpenFeign</a> 클라이언트는 <code>선언적인(Declarative) 방식을 통해 이러한 과정을 간소화</code>하고 Spring MVC와 비슷한 방식으로 작성됨에 따라서 시스템 간 연동을 위한 통신 로직을 작성하고 관리하기 용이한 장점을 가지고 있는 것 같다.</p>
-<h4 id="의존-시스템에-대한-장애-처리-부족"><a href="#의존-시스템에-대한-장애-처리-부족" class="headerlink" title="의존 시스템에 대한 장애 처리 부족"></a>의존 시스템에 대한 장애 처리 부족</h4><p>마이크로서비스 구성이 아닌 일반적인 소규모 시스템에서 RestTemplate와 HttpClient를 직접적으로 사용하다보면 <code>시스템 간 통신에 대한 오류와 재시도 방안에 대한 고민을 하지 않고 무시하게 되는 경우</code>가 많다. OpenFeign은 마이크로서비스 개발에 사용되어지는 만큼 마이크로서비스에서 중요시하게 되는 장애 전파 방지에 대한 부분을 고려할 수 있다.</p>
-<h4 id="마이크로서비스-구성-확장에-대한-고려"><a href="#마이크로서비스-구성-확장에-대한-고려" class="headerlink" title="마이크로서비스 구성 확장에 대한 고려"></a>마이크로서비스 구성 확장에 대한 고려</h4><p>모놀리식 아키텍처로 구성되는 소규모 시스템도 현재 시스템 규모와 요구사항을 넘어 대규모 트래픽 또는 데이터를 처리하기 위한 시스템으로 확장되는 것을 목표로 하는 경우가 대부분이다. 현재 신규 프로젝트도 마이크로서비스 구성을 목표로 초기 설계가 되어있음에 따라 Spring Cloud 모듈에 대한 의존성을 보유하고 있다. Spring Cloud OpenFeign 로 작성되어있는 경우 <code>서비스 디스커버리를 위한 Eureka와 장애 처리를 위한 Resilience4J 과의 통합이 용이하다</code>고 한다.</p>
-<p>이와 같이 마이크로서비스 아키텍처가 아니더라도 외부 시스템 또는 시스템 간 통신이 많은 시스템의 프로젝트라면 OpenFeign 클라이언트 도입을 고려해볼만하지 않을까? 물론, <a href="https://toss.tech/article/engineering-note-3">Feign 코드 분석과 서버 성능 개선</a> 에서처럼 문제가 내재되지 않는 건 아님을 감안하긴 해야겠지만 말이다.</p>
-<hr>
-<h4 id="🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유"><a href="#🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유" class="headerlink" title="🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유"></a>🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유</h4><p>FeignClient에 대한 간단한 예제 코드를 작성해보던 중에 GET 요청이 POST로 전환되어 요청되는 문제를 경험했다. GET 요청 시 쿼리 파라미터를 전달하기 위해서는 <code>@SpringQueryMap를 해당 파라미터에 선언해야</code>하더라. 쿼리 파라미터가 전달되지 않는 경우가 아닌 선언된 요청 함수가 바뀌어버리는 건 신기한 부분이다.</p>
-]]></content>
-      <tags>
-        <tag>OpenFeign</tag>
-        <tag>HttpClient</tag>
-        <tag>RestTemplate</tag>
       </tags>
   </entry>
   <entry>
@@ -8084,6 +8108,35 @@ qrGenerator<span class="token punctuation">.</span><span class="token function">
       <tags>
         <tag>Passkey</tag>
         <tag>WebAuthn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PWA 와 FCM 푸시 알림</title>
+    <url>/pwa-fcm-web-push/</url>
+    <content><![CDATA[<h4 id="PWA의-서비스-워커는-HTTPS를-요구"><a href="#PWA의-서비스-워커는-HTTPS를-요구" class="headerlink" title="PWA의 서비스 워커는 HTTPS를 요구"></a>PWA의 서비스 워커는 HTTPS를 요구</h4><p>PWA 앱에서 푸시 알림을 보내기 위해서는 사용자가 사이트 또는 앱에 대한 알림 권한을 허용해야하며 PWA 앱이 종료되어있어도 백그라운드 상태에서 동작하는 서비스 워커가 필요하다. Vite 기반으로 구성되어있는 프로젝트에서는 <a href="https://vite-pwa-org.netlify.app/">PWA Plugin for Vite</a>로 쉽게 PWA 설치 지원과 함께 서비스 워커를 등록할 수 있게 설정할 수 있다. 서비스 워커는 HTTPS 에서 동작해야하므로 개발 환경에서는 <a href="https://github.com/liuweiGL/vite-plugin-mkcert">vite-plugin-mkcert</a>가 도움이 될 수 있다.</p>
+<h4 id="서비스-워커의-상태-변경을-고려하기"><a href="#서비스-워커의-상태-변경을-고려하기" class="headerlink" title="서비스 워커의 상태 변경을 고려하기"></a>서비스 워커의 상태 변경을 고려하기</h4><p>서비스 워커의 생명 주기를 이해하고 새로 설치되거나 업데이트되는 서비스 워커로 인해 메시지 수신이 원활하지 않을 수 있다는 점을 인지해야한다. <a href="https://developer.mozilla.org/ko/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting">ServiceWorkerGlobalScope.skipWaiting</a> 이나 <a href="https://developer.mozilla.org/ko/docs/Web/API/Clients/claim">Clients::claim()</a>이 도움이 될 수도 있다.</p>
+<h5 id="서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다"><a href="#서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다" class="headerlink" title="서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다"></a>서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다</h5><pre class="language-javascript" data-language="javascript"><div class="caption"><span>main.js</span></div><code class="language-javascript"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">'serviceWorker'</span> <span class="token keyword">in</span> navigator<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    navigator<span class="token punctuation">.</span>serviceWorker<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>
+        <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'/sw.js'</span> <span class="token operator">:</span> <span class="token string">'/dev-sw.js?dev-sw'</span><span class="token punctuation">,</span>
+        <span class="token punctuation">&#123;</span><span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'classic'</span> <span class="token operator">:</span> <span class="token string">'module'</span><span class="token punctuation">&#125;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">registration</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'register service worker'</span><span class="token punctuation">,</span> registration<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>FCM 관련 일부 글에서 서비스 워커의 파일이 반드시 <code>firebase-messaing-sw.js</code> 이어야 한다고 언급하는데 잘못된 정보에 해당되며 FCM 메시지 수신을 위해서 PWA 앱에서 사용중인 <code>서비스 워커 내에 Firebase SDK를 초기화</code>하는게 중요한 부분이다. 위 코드와 같이 개발 환경에서는 <a href="https://vite-pwa-org.netlify.app/guide/development#injectmanifest-strategy">dev-sw.js</a>를 서비스 워커로 등록하여 사용할 수 있음을 보여준다.</p>
+<h4 id="FCM-푸시-알림이-여러번-표시되는-문제-🔥"><a href="#FCM-푸시-알림이-여러번-표시되는-문제-🔥" class="headerlink" title="FCM 푸시 알림이 여러번 표시되는 문제 🔥"></a>FCM 푸시 알림이 여러번 표시되는 문제 🔥</h4><p><a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2024-07-06.md">PWA 앱의 푸시 알림에서 FCM 메시지가 여러번 표시되는 문제</a>와 같이 백그라운드 상태에 있는 PWA 앱에서 푸시 알림이 여러번 표시되는 이유는 <a href="https://firebase.google.com/docs/cloud-messaging/js/receive?hl=ko">자바스크립트 클라이언트에서 메시지 수신</a>시 알림 메시지에 의한 기본 화면 표시에 대해 고려하지 않은 문제에 해당된다. 자바스크립트 클라이언트에서 커스텀 메시지로 푸시 알림을 제공하고 싶다면 서버에서는 알림 메시지가 포함되지 않은 데이터 메시지로 구성하여 전달해야한다.</p>
+<h4 id="자바스크립트-클라이언트-API-키는-안전하다"><a href="#자바스크립트-클라이언트-API-키는-안전하다" class="headerlink" title="자바스크립트 클라이언트 API 키는 안전하다"></a>자바스크립트 클라이언트 API 키는 안전하다</h4><p>일반적으로 자바스크립트로 동작하는 SDK에 대한 키는 외부에 노출될 수 밖에 없으므로 FCM 메시지를 수신할 수 있는 최소한의 권한을 보유한다. FCM 콘솔에서 <a href="https://developer.chrome.com/blog/web-push-interop-wins?hl=ko#introducing_vapid_for_server_identification">웹 푸시 인증서</a>는 <code>최대 2개까지 발급</code>할 수 있으므로 <code>VAPID</code>를 환경별로 나누어서 사용하는 것도 좋아보인다. 더 자세한 내용은 <a href="https://firebase.google.com/docs/projects/api-keys?hl=ko">Firebase용 API 키 사용 및 관리에 대해 알아보기</a>를 참고하여 고려해보도록 하자.</p>
+<h4 id="시스템-규모에-따른-토큰-관리-전략"><a href="#시스템-규모에-따른-토큰-관리-전략" class="headerlink" title="시스템 규모에 따른 토큰 관리 전략"></a>시스템 규모에 따른 토큰 관리 전략</h4><p><a href="https://firebase.google.com/docs/cloud-messaging/manage-tokens?hl=ko">FCM 등록 토큰 관리를 위한 권장사항</a>과 <a href="https://firebase.google.com/docs/cloud-messaging/scale-fcm?hl=ko">FCM 메시지를 대규모로 전송할 때의 권장사항</a>를 참고하여 시스템에 저장되어 메시지 전송 시 사용되는 토큰의 수를 관리하는게 필요하다. 서버에서는 사용자가 PWA 앱을 삭제하는지를 감지하여 더이상 토큰이 사용되지 않는지 알 수 없다. FCM 메시지 전송 시 무제한으로 발송할 수는 없으므로 오랫동안 사용되지 않거나 만료된 토큰은 주기적으로 삭제하는 작업이 있어야한다.</p>
+<h4 id="iOS의-PWA-앱-지원-여부"><a href="#iOS의-PWA-앱-지원-여부" class="headerlink" title="iOS의 PWA 앱 지원 여부"></a>iOS의 PWA 앱 지원 여부</h4><p>안드로이드와 크롬 브라우저와 달리 iOS 또는 사파리 브라우저에 따라 PWA 앱 설치 및 푸시 API를 지원하는지의 여부가 다름을 인지해야한다. 또한, 홈 화면으로 추가되는 앱은 반드시 기본으로 제공되는 사파리 브라우저로 실행되는 것도 중요한 부분에 해당된다.</p>
+<ul>
+<li><a href="https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers">Safari 16.1 and macOS 16.4 iOS &amp; iPadOS 부터 Push API 지원</a></li>
+<li><a href="https://developer.apple.com/support/dma-and-apps-in-the-eu/">유럽 연합의 국가에서 iOS 17.4 이상에서 PWA 지원 종료</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>FCM</tag>
+        <tag>PWA</tag>
       </tags>
   </entry>
   <entry>
@@ -8364,35 +8417,6 @@ Migrated <span class="token string">"local.dev+1.jks"</span> to PKCS12. The JKS 
         <tag>PKI</tag>
         <tag>PKCS#8</tag>
         <tag>PKCS#12</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PWA 와 FCM 푸시 알림</title>
-    <url>/pwa-fcm-web-push/</url>
-    <content><![CDATA[<h4 id="PWA의-서비스-워커는-HTTPS를-요구"><a href="#PWA의-서비스-워커는-HTTPS를-요구" class="headerlink" title="PWA의 서비스 워커는 HTTPS를 요구"></a>PWA의 서비스 워커는 HTTPS를 요구</h4><p>PWA 앱에서 푸시 알림을 보내기 위해서는 사용자가 사이트 또는 앱에 대한 알림 권한을 허용해야하며 PWA 앱이 종료되어있어도 백그라운드 상태에서 동작하는 서비스 워커가 필요하다. Vite 기반으로 구성되어있는 프로젝트에서는 <a href="https://vite-pwa-org.netlify.app/">PWA Plugin for Vite</a>로 쉽게 PWA 설치 지원과 함께 서비스 워커를 등록할 수 있게 설정할 수 있다. 서비스 워커는 HTTPS 에서 동작해야하므로 개발 환경에서는 <a href="https://github.com/liuweiGL/vite-plugin-mkcert">vite-plugin-mkcert</a>가 도움이 될 수 있다.</p>
-<h4 id="서비스-워커의-상태-변경을-고려하기"><a href="#서비스-워커의-상태-변경을-고려하기" class="headerlink" title="서비스 워커의 상태 변경을 고려하기"></a>서비스 워커의 상태 변경을 고려하기</h4><p>서비스 워커의 생명 주기를 이해하고 새로 설치되거나 업데이트되는 서비스 워커로 인해 메시지 수신이 원활하지 않을 수 있다는 점을 인지해야한다. <a href="https://developer.mozilla.org/ko/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting">ServiceWorkerGlobalScope.skipWaiting</a> 이나 <a href="https://developer.mozilla.org/ko/docs/Web/API/Clients/claim">Clients::claim()</a>이 도움이 될 수도 있다.</p>
-<h5 id="서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다"><a href="#서비스-워커-파일이-firebase-messaging-sw-js-일-필요는-없다" class="headerlink" title="서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다"></a>서비스 워커 파일이 firebase-messaging-sw.js 일 필요는 없다</h5><pre class="language-javascript" data-language="javascript"><div class="caption"><span>main.js</span></div><code class="language-javascript"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token string">'serviceWorker'</span> <span class="token keyword">in</span> navigator<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    navigator<span class="token punctuation">.</span>serviceWorker<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>
-        <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'/sw.js'</span> <span class="token operator">:</span> <span class="token string">'/dev-sw.js?dev-sw'</span><span class="token punctuation">,</span>
-        <span class="token punctuation">&#123;</span><span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">MODE</span> <span class="token operator">===</span> <span class="token string">'production'</span> <span class="token operator">?</span> <span class="token string">'classic'</span> <span class="token operator">:</span> <span class="token string">'module'</span><span class="token punctuation">&#125;</span>
-    <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">registration</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
-        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'register service worker'</span><span class="token punctuation">,</span> registration<span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>FCM 관련 일부 글에서 서비스 워커의 파일이 반드시 <code>firebase-messaing-sw.js</code> 이어야 한다고 언급하는데 잘못된 정보에 해당되며 FCM 메시지 수신을 위해서 PWA 앱에서 사용중인 <code>서비스 워커 내에 Firebase SDK를 초기화</code>하는게 중요한 부분이다. 위 코드와 같이 개발 환경에서는 <a href="https://vite-pwa-org.netlify.app/guide/development#injectmanifest-strategy">dev-sw.js</a>를 서비스 워커로 등록하여 사용할 수 있음을 보여준다.</p>
-<h4 id="FCM-푸시-알림이-여러번-표시되는-문제-🔥"><a href="#FCM-푸시-알림이-여러번-표시되는-문제-🔥" class="headerlink" title="FCM 푸시 알림이 여러번 표시되는 문제 🔥"></a>FCM 푸시 알림이 여러번 표시되는 문제 🔥</h4><p><a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2024-07-06.md">PWA 앱의 푸시 알림에서 FCM 메시지가 여러번 표시되는 문제</a>와 같이 백그라운드 상태에 있는 PWA 앱에서 푸시 알림이 여러번 표시되는 이유는 <a href="https://firebase.google.com/docs/cloud-messaging/js/receive?hl=ko">자바스크립트 클라이언트에서 메시지 수신</a>시 알림 메시지에 의한 기본 화면 표시에 대해 고려하지 않은 문제에 해당된다. 자바스크립트 클라이언트에서 커스텀 메시지로 푸시 알림을 제공하고 싶다면 서버에서는 알림 메시지가 포함되지 않은 데이터 메시지로 구성하여 전달해야한다.</p>
-<h4 id="자바스크립트-클라이언트-API-키는-안전하다"><a href="#자바스크립트-클라이언트-API-키는-안전하다" class="headerlink" title="자바스크립트 클라이언트 API 키는 안전하다"></a>자바스크립트 클라이언트 API 키는 안전하다</h4><p>일반적으로 자바스크립트로 동작하는 SDK에 대한 키는 외부에 노출될 수 밖에 없으므로 FCM 메시지를 수신할 수 있는 최소한의 권한을 보유한다. FCM 콘솔에서 <a href="https://developer.chrome.com/blog/web-push-interop-wins?hl=ko#introducing_vapid_for_server_identification">웹 푸시 인증서</a>는 <code>최대 2개까지 발급</code>할 수 있으므로 <code>VAPID</code>를 환경별로 나누어서 사용하는 것도 좋아보인다. 더 자세한 내용은 <a href="https://firebase.google.com/docs/projects/api-keys?hl=ko">Firebase용 API 키 사용 및 관리에 대해 알아보기</a>를 참고하여 고려해보도록 하자.</p>
-<h4 id="시스템-규모에-따른-토큰-관리-전략"><a href="#시스템-규모에-따른-토큰-관리-전략" class="headerlink" title="시스템 규모에 따른 토큰 관리 전략"></a>시스템 규모에 따른 토큰 관리 전략</h4><p><a href="https://firebase.google.com/docs/cloud-messaging/manage-tokens?hl=ko">FCM 등록 토큰 관리를 위한 권장사항</a>과 <a href="https://firebase.google.com/docs/cloud-messaging/scale-fcm?hl=ko">FCM 메시지를 대규모로 전송할 때의 권장사항</a>를 참고하여 시스템에 저장되어 메시지 전송 시 사용되는 토큰의 수를 관리하는게 필요하다. 서버에서는 사용자가 PWA 앱을 삭제하는지를 감지하여 더이상 토큰이 사용되지 않는지 알 수 없다. FCM 메시지 전송 시 무제한으로 발송할 수는 없으므로 오랫동안 사용되지 않거나 만료된 토큰은 주기적으로 삭제하는 작업이 있어야한다.</p>
-<h4 id="iOS의-PWA-앱-지원-여부"><a href="#iOS의-PWA-앱-지원-여부" class="headerlink" title="iOS의 PWA 앱 지원 여부"></a>iOS의 PWA 앱 지원 여부</h4><p>안드로이드와 크롬 브라우저와 달리 iOS 또는 사파리 브라우저에 따라 PWA 앱 설치 및 푸시 API를 지원하는지의 여부가 다름을 인지해야한다. 또한, 홈 화면으로 추가되는 앱은 반드시 기본으로 제공되는 사파리 브라우저로 실행되는 것도 중요한 부분에 해당된다.</p>
-<ul>
-<li><a href="https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers">Safari 16.1 and macOS 16.4 iOS &amp; iPadOS 부터 Push API 지원</a></li>
-<li><a href="https://developer.apple.com/support/dma-and-apps-in-the-eu/">유럽 연합의 국가에서 iOS 17.4 이상에서 PWA 지원 종료</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>FCM</tag>
-        <tag>PWA</tag>
       </tags>
   </entry>
   <entry>
@@ -9143,6 +9167,104 @@ docker compose exec nginx nginx -s reload
       </tags>
   </entry>
   <entry>
+    <title>프리마커 템플릿으로 이메일 발송하기</title>
+    <url>/sending-mail-with-freemarker-template/</url>
+    <content><![CDATA[<blockquote>
+<p>현재 조직에서는 스프링 부트의 기본 템플릿 엔진인 타임리프를 사용하지 않고 이메일 발송에는 프리마커 템플릿 엔진을 사용해서 변환한 HTML 형식의 이메일을 전달합니다. </p>
+</blockquote>
+<h2 id="프리마커-템플릿-엔진"><a href="#프리마커-템플릿-엔진" class="headerlink" title="프리마커 템플릿 엔진"></a>프리마커 템플릿 엔진</h2><p>일반적으로 많이 사용되는 템플릿 엔진은 <a href="https://www.thymeleaf.org/">타임리프</a>이기는 하지만 사용하기 어려운 문법과 다른 템플릿 엔진과의 렌더링 성능 문제로 인하여 이메일 발송처럼 대량으로 렌더링할 가능성이 있다면  <a href="https://freemarker.apache.org/">FreeMarker</a> 또는 <a href="https://mustache.github.io/">Mustache</a> 템플릿 엔진을 사용하는 것이 좋습니다. </p>
+<h3 id="프리마커-스타터"><a href="#프리마커-스타터" class="headerlink" title="프리마커 스타터"></a>프리마커 스타터</h3><p>스프링 부트 프리마커 스타터 의존성을 통해 프리마커 템플릿으로 이메일을 발송하기 위한 라이브러리들을 참조합니다.</p>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-freemarker'</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-mail'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="SMTP-메일-서버"><a href="#SMTP-메일-서버" class="headerlink" title="SMTP 메일 서버"></a>SMTP 메일 서버</h3><p>이메일을 발송하기 위해서는 SMTP 프로토콜을 사용하는 메일 서버가 필요합니다. 많은 무료 메일 서버 솔루션이 있으나 일반적으로 많이 사용하는 구글이나 네이버 이메일 계정의 몇가지 설정을 통해서 SMTP 메일 서버를 이용할 수 있습니다. </p>
+<h4 id="Gmail-SMTP"><a href="#Gmail-SMTP" class="headerlink" title="Gmail SMTP"></a>Gmail SMTP</h4><p>지메일 계정으로 발신 메일 서버를 이용하기 위해서는 다음과 같이 인증 옵션과 함께 SSL(465) 또는 TLS(587)용 포트를 사용해야합니다.</p>
+<pre class="language-.properties" data-language=".properties"><code class="language-.properties">spring.mail.protocol&#x3D;smtp
+spring.mail.host&#x3D;smtp.gmail.com
+spring.mail.port&#x3D;587
+spring.mail.username&#x3D;username@gmail.com
+spring.mail.password&#x3D;password
+spring.mail.properties.smtp.auth&#x3D;true
+spring.mail.properties.mail.smtp.starttls.enable&#x3D;true
+spring.mail.properties.mail.smtp.starttls.required&#x3D;true
+spring.mail.test-connection&#x3D;true</code></pre>
+
+<h5 id="지메일-계정-인증-오류"><a href="#지메일-계정-인증-오류" class="headerlink" title="지메일 계정 인증 오류"></a>지메일 계정 인증 오류</h5><p>메일 서버 연결 시 다음과 같이 인증 오류가 발생하는 경우 <a href="https://myaccount.google.com/u/0/lesssecureapps">보안 수준이 낮은 앱의 액세스</a>를 허용해야합니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Caused by: java.lang.IllegalStateException: Mail server is not available
+<span class="token punctuation">..</span>.
+Caused by: javax.mail.AuthenticationFailedException: <span class="token number">535</span>-5.7.8 Username and Password not accepted. Learn <span class="token function">more</span> at</code></pre>
+
+<blockquote>
+<p>보안 정책 변경에 따라 <a href="https://support.google.com/accounts/answer/6010255">2022년 5월 30일</a>부터는 지메일 계정으로 SMTP 서버를 이용할 수 없을 수 있습니다. </p>
+</blockquote>
+<h3 id="자바-이메일-발송"><a href="#자바-이메일-발송" class="headerlink" title="자바 이메일 발송"></a>자바 이메일 발송</h3><p>지메일 계정으로 SMTP 서버에 인증까지 완료했다면 실제로 이메일을 발송할 수 있는지 테스트 해보아야 합니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span>
+<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> <span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> javaMailSender<span class="token punctuation">.</span><span class="token function">createMimeMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">MimeMessageHelper</span> mimeMessageHelper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MimeMessageHelper</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span><span class="token constant">UTF_8</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr.gmail.com>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setTo</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span><span class="token string">"&lt;h5>Hello World&lt;/h5>"</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        javaMailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="프리마커-템플릿-적용하기"><a href="#프리마커-템플릿-적용하기" class="headerlink" title="프리마커 템플릿 적용하기"></a>프리마커 템플릿 적용하기</h4><p>프리마커 템플릿 파일을 작성하고 템플릿 엔진을 사용해서 HTML 형식의 문자열을 이메일 내용으로 전달하여 발송하도록 구현하면 됩니다. 저는 <a href="https://heropy.blog/2018/12/30/html-email-template/">HTML Email Template 만들기</a>라는 글을 참고하여 템플릿을 작성하였습니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span>
+<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> <span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> <span class="token class-name">FreeMarkerConfigurationFactoryBean</span> configurationFactoryBean<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"email.ftlh"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"title"</span><span class="token punctuation">,</span> <span class="token string">"Java Mail Test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"content"</span><span class="token punctuation">,</span> <span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">String</span> content <span class="token operator">=</span> <span class="token class-name">FreeMarkerTemplateUtils</span><span class="token punctuation">.</span><span class="token function">processTemplateIntoString</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> model<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> javaMailSender<span class="token punctuation">.</span><span class="token function">createMimeMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">MimeMessageHelper</span> mimeMessageHelper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MimeMessageHelper</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span><span class="token constant">UTF_8</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr.gmail.com>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setTo</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test with FreeMarker"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span>content<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        javaMailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>기본 프리마커 템플릿 폴더는 클래스패스의 <strong>templates</strong> 입니다.<br>spring.freemarker.template-loader-path&#x3D;classpath:&#x2F;templates&#x2F;</p>
+</blockquote>
+<p><img data-src="/images/posts/sending-mail-with-freemarker-template/example.png"></p>
+<p>감사합니다.</p>
+<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.template-engines">Spring Boot Docs - Template Engines</a></li>
+<li><a href="https://springhow.com/spring-boot-email-freemarker/">SpringHow - Send HTML emails with FreeMarker Templates</a></li>
+<li><a href="https://www.baeldung.com/freemarker-in-spring-mvc-tutorial">Introduction to Using FreeMarker in Spring MVC</a></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>Sentry</title>
     <url>/sentry/</url>
     <content><![CDATA[<p>Sentry는 오류 또는 예외를 추적하기 위한 도구로 회사에서 시스템을 구성하는 언어인 자바, 파이썬, Vue 등 다양한 언어 플랫폼과의 연동을 지원한다. Sentry를 도입하게 되는 이유는 개발자가 테스트하는 과정에서 발견되지 않고 QA 엔지니어가 테스트하는 과정 혹은 고객 테스트 환경에서 마지막으로 검수하는 과정에서 발견되지 않은 취약점을 알아채기 위함이다. 그동안 경험했던 대부분의 품질 이슈는 명확하지 않은 요구사항과 부족한 리뷰 과정으로 인해서 인프라 구성과 사용자의 동작에 따라 발생하는 상황이 대부분이었다고 생각한다.</p>
@@ -9316,102 +9438,51 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
-    <title>프리마커 템플릿으로 이메일 발송하기</title>
-    <url>/sending-mail-with-freemarker-template/</url>
-    <content><![CDATA[<blockquote>
-<p>현재 조직에서는 스프링 부트의 기본 템플릿 엔진인 타임리프를 사용하지 않고 이메일 발송에는 프리마커 템플릿 엔진을 사용해서 변환한 HTML 형식의 이메일을 전달합니다. </p>
-</blockquote>
-<h2 id="프리마커-템플릿-엔진"><a href="#프리마커-템플릿-엔진" class="headerlink" title="프리마커 템플릿 엔진"></a>프리마커 템플릿 엔진</h2><p>일반적으로 많이 사용되는 템플릿 엔진은 <a href="https://www.thymeleaf.org/">타임리프</a>이기는 하지만 사용하기 어려운 문법과 다른 템플릿 엔진과의 렌더링 성능 문제로 인하여 이메일 발송처럼 대량으로 렌더링할 가능성이 있다면  <a href="https://freemarker.apache.org/">FreeMarker</a> 또는 <a href="https://mustache.github.io/">Mustache</a> 템플릿 엔진을 사용하는 것이 좋습니다. </p>
-<h3 id="프리마커-스타터"><a href="#프리마커-스타터" class="headerlink" title="프리마커 스타터"></a>프리마커 스타터</h3><p>스프링 부트 프리마커 스타터 의존성을 통해 프리마커 템플릿으로 이메일을 발송하기 위한 라이브러리들을 참조합니다.</p>
-<pre class="language-groovy" data-language="groovy"><code class="language-groovy">dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-freemarker'</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-mail'</span>
+    <title>SHA-256</title>
+    <url>/sha-256/</url>
+    <content><![CDATA[<h2 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h2><p><a href="https://ko.wikipedia.org/wiki/SHA">SHA(Secure Hash Algorithm)</a>은 NIST에 의해서 관리되는 안전한 해시 표준 함수들의 모음이며 현재는 NIST FIPS 180-3 규격의 <a href="https://ko.wikipedia.org/wiki/SHA-2">SHA-2</a>를 권장해서 사용하고 있습니다. 해시 함수는 어떠한 문자열을 일정한 길이를 가진 임의의 문자열로 변환하는 것을 말합니다. 수 많은 연구에 의해 만들어진 여러가지 해시 함수 중에서 일반적으로 SHA-256을 사용하는 이유는 해시 함수를 사용하게 되는 목적에 있다고 볼 수 있습니다. 특정한 문자열에 대해서는 동일한 해시값(다이제스트)으로 변환되며 해시값을 기준으로는 동일한 패턴을 찾을 수 없어서 본래의 문자열을 유추할 수 없도록 하고자 하는 것에 있습니다.</p>
+<p>SHA-256 해시 함수의 동작 과정은 <a href="https://sha256algorithm.com/">Sha256 Algorithm Explained</a>를 이용하면 눈으로 확인할 수 있으니 참고해보면 좋을 것 같습니다.</p>
+<h3 id="메시지-다이제스트"><a href="#메시지-다이제스트" class="headerlink" title="메시지 다이제스트"></a>메시지 다이제스트</h3><p>해시 함수는 어떠한 입력에 대해서 일정한 길이의 비트로 이루어진 결과를 가져오기 위한 목적으로 사용됩니다. 메시지 다이제스트란 어떤 문자열 데이터를 일정한 길이의 다이제스트로 변환한 것을 말하며 단순하게 해시 함수로 처리된 해시값일 뿐입니다.</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"crypto/sha256"</span>
+	<span class="token string">"encoding/hex"</span>
+	<span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	plain <span class="token operator">:=</span> <span class="token string">"HelloWorld"</span>
+	hash <span class="token operator">:=</span> sha256<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	hash<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>plain<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	hashed <span class="token operator">:=</span> hash<span class="token punctuation">.</span><span class="token function">Sum</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"plain:"</span><span class="token punctuation">,</span> plain<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hashed:"</span><span class="token punctuation">,</span> hex<span class="token punctuation">.</span><span class="token function">EncodeToString</span><span class="token punctuation">(</span>hashed<span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h3 id="SMTP-메일-서버"><a href="#SMTP-메일-서버" class="headerlink" title="SMTP 메일 서버"></a>SMTP 메일 서버</h3><p>이메일을 발송하기 위해서는 SMTP 프로토콜을 사용하는 메일 서버가 필요합니다. 많은 무료 메일 서버 솔루션이 있으나 일반적으로 많이 사용하는 구글이나 네이버 이메일 계정의 몇가지 설정을 통해서 SMTP 메일 서버를 이용할 수 있습니다. </p>
-<h4 id="Gmail-SMTP"><a href="#Gmail-SMTP" class="headerlink" title="Gmail SMTP"></a>Gmail SMTP</h4><p>지메일 계정으로 발신 메일 서버를 이용하기 위해서는 다음과 같이 인증 옵션과 함께 SSL(465) 또는 TLS(587)용 포트를 사용해야합니다.</p>
-<pre class="language-.properties" data-language=".properties"><code class="language-.properties">spring.mail.protocol&#x3D;smtp
-spring.mail.host&#x3D;smtp.gmail.com
-spring.mail.port&#x3D;587
-spring.mail.username&#x3D;username@gmail.com
-spring.mail.password&#x3D;password
-spring.mail.properties.smtp.auth&#x3D;true
-spring.mail.properties.mail.smtp.starttls.enable&#x3D;true
-spring.mail.properties.mail.smtp.starttls.required&#x3D;true
-spring.mail.test-connection&#x3D;true</code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">plain: HelloWorld
+hashed: 872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4</code></pre>
 
-<h5 id="지메일-계정-인증-오류"><a href="#지메일-계정-인증-오류" class="headerlink" title="지메일 계정 인증 오류"></a>지메일 계정 인증 오류</h5><p>메일 서버 연결 시 다음과 같이 인증 오류가 발생하는 경우 <a href="https://myaccount.google.com/u/0/lesssecureapps">보안 수준이 낮은 앱의 액세스</a>를 허용해야합니다. </p>
-<pre class="language-bash" data-language="bash"><code class="language-bash">Caused by: java.lang.IllegalStateException: Mail server is not available
-<span class="token punctuation">..</span>.
-Caused by: javax.mail.AuthenticationFailedException: <span class="token number">535</span>-5.7.8 Username and Password not accepted. Learn <span class="token function">more</span> at</code></pre>
+<h3 id="파일-체크섬"><a href="#파일-체크섬" class="headerlink" title="파일 체크섬"></a>파일 체크섬</h3><p>위 메시지 다이제스트를 바이너리 파일에 활용한 부분이 파일 체크섬입니다. <a href="https://ubuntu.com/tutorials/how-to-verify-ubuntu#5-verify-the-sha256-checksum">how-to-verify-ubuntu</a>에서 처럼 다운로드 받은 파일의 위변조 여부를 검증하기 위해서 MD5 또는 SHA-256로 해시된 다이제스트를 제공하며 이를 통해 올바른 바이너리 파일임을 검증하고 안전하다고 판단할 수 있습니다. 아래의 예시는 윈도우 터미널에서 <a href="https://docs.microsoft.com/ko-kr/windows-server/administration/windows-commands/certutil">CertUtil</a>을 사용하여 파일 체크섬을 확인한 것이며 <a href="https://gtkhash.org/">GtkHash</a>와 같은 도구로도 확인할 수 있습니다.</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\> certutil <span class="token operator">-</span>hashfile orig<span class="token punctuation">.</span>txt sha256
+SHA256의 orig<span class="token punctuation">.</span>txt 해시:
+872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4
+CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으로 완료되었습니다<span class="token punctuation">.</span></code></pre>
 
-<blockquote>
-<p>보안 정책 변경에 따라 <a href="https://support.google.com/accounts/answer/6010255">2022년 5월 30일</a>부터는 지메일 계정으로 SMTP 서버를 이용할 수 없을 수 있습니다. </p>
-</blockquote>
-<h3 id="자바-이메일-발송"><a href="#자바-이메일-발송" class="headerlink" title="자바 이메일 발송"></a>자바 이메일 발송</h3><p>지메일 계정으로 SMTP 서버에 인증까지 완료했다면 실제로 이메일을 발송할 수 있는지 테스트 해보아야 합니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span>
-<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
-
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> <span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> javaMailSender<span class="token punctuation">.</span><span class="token function">createMimeMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">MimeMessageHelper</span> mimeMessageHelper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MimeMessageHelper</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span><span class="token constant">UTF_8</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr.gmail.com>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setTo</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span><span class="token string">"&lt;h5>Hello World&lt;/h5>"</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        javaMailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="프리마커-템플릿-적용하기"><a href="#프리마커-템플릿-적용하기" class="headerlink" title="프리마커 템플릿 적용하기"></a>프리마커 템플릿 적용하기</h4><p>프리마커 템플릿 파일을 작성하고 템플릿 엔진을 사용해서 HTML 형식의 문자열을 이메일 내용으로 전달하여 발송하도록 구현하면 됩니다. 저는 <a href="https://heropy.blog/2018/12/30/html-email-template/">HTML Email Template 만들기</a>라는 글을 참고하여 템플릿을 작성하였습니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span>
-<span class="token keyword">class</span> <span class="token class-name">GmailSmtpTests</span> <span class="token punctuation">&#123;</span>
-
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> <span class="token class-name">JavaMailSenderImpl</span> javaMailSender<span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> <span class="token class-name">FreeMarkerConfigurationFactoryBean</span> configurationFactoryBean<span class="token punctuation">;</span>
-
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">void</span> <span class="token function">sendMail</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"email.ftlh"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"title"</span><span class="token punctuation">,</span> <span class="token string">"Java Mail Test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"content"</span><span class="token punctuation">,</span> <span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">String</span> content <span class="token operator">=</span> <span class="token class-name">FreeMarkerTemplateUtils</span><span class="token punctuation">.</span><span class="token function">processTemplateIntoString</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> model<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        <span class="token class-name">MimeMessage</span> mimeMessage <span class="token operator">=</span> javaMailSender<span class="token punctuation">.</span><span class="token function">createMimeMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">MimeMessageHelper</span> mimeMessageHelper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MimeMessageHelper</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">,</span> <span class="token class-name">StandardCharsets</span><span class="token punctuation">.</span><span class="token constant">UTF_8</span><span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setFrom</span><span class="token punctuation">(</span><span class="token string">"Mambo &lt;kdevkr.gmail.com>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setTo</span><span class="token punctuation">(</span><span class="token string">"kdevkr@gmail.com"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setSubject</span><span class="token punctuation">(</span><span class="token string">"Java Mail Test with FreeMarker"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        mimeMessageHelper<span class="token punctuation">.</span><span class="token function">setText</span><span class="token punctuation">(</span>content<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-        javaMailSender<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>mimeMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>기본 프리마커 템플릿 폴더는 클래스패스의 <strong>templates</strong> 입니다.<br>spring.freemarker.template-loader-path&#x3D;classpath:&#x2F;templates&#x2F;</p>
-</blockquote>
-<p><img data-src="/images/posts/sending-mail-with-freemarker-template/example.png"></p>
-<p>감사합니다.</p>
-<h2 id="참고"><a href="#참고" class="headerlink" title="참고"></a>참고</h2><ul>
-<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.template-engines">Spring Boot Docs - Template Engines</a></li>
-<li><a href="https://springhow.com/spring-boot-email-freemarker/">SpringHow - Send HTML emails with FreeMarker Templates</a></li>
-<li><a href="https://www.baeldung.com/freemarker-in-spring-mvc-tutorial">Introduction to Using FreeMarker in Spring MVC</a></li>
+<h3 id="비밀번호-암호화"><a href="#비밀번호-암호화" class="headerlink" title="비밀번호 암호화"></a>비밀번호 암호화</h3><p>일반적으로 비밀번호를 암호화하여 저장할 때는 <a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a>에서 언급된 PBKDF2 또는 bcrypt를 사용하는 편인 것으로 알고 있습니다. bcrypt는 NIST 에서 권장하는 알고리즘에 속하지는 않았으나 OpenBSD나 스프링 프레임워크의 기본 패스워드 인코더로 지정된 비교적 안전한 알고리즘 중 하나입니다. 아무튼 시계열 데이터베이스 중 하나인 <a href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd-local">KDB+는 MD5 또는 SHA-1 알고리즘 방식으로 비밀번호를 지원</a>하기에 사용하는 시스템마다 지원하는 방식에 제한이 있을 수 있습니다.</p>
+<h4 id="비밀번호-암호화-관련-읽으면-좋은-글"><a href="#비밀번호-암호화-관련-읽으면-좋은-글" class="headerlink" title="비밀번호 암호화 관련 읽으면 좋은 글"></a>비밀번호 암호화 관련 읽으면 좋은 글</h4><ul>
+<li><a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a></li>
+<li><a href="https://lovejaco.github.io/posts/cryptographic-hash-function/">해시 함수, 암호화 해시 함수, 그리고 SHA</a></li>
+<li><a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/">Hashing in Action: Understanding bcrypt</a></li>
 </ul>
+<h3 id="키-서명-지문"><a href="#키-서명-지문" class="headerlink" title="키 서명 지문"></a>키 서명 지문</h3><p><a href="/ssh">SSH 키 페어 발급 및 원격 호스트 연결하기</a>에서처럼 SSH 키에 대해 지문(Fingerprint)을 생성해놓고 호스트에 대한 공개키가 변경되었는지를 판단하는데 사용되기도 합니다. 이러한 키 서명 지문은 아래의 이미지와 같이 SSL 인증서 정보에도 서명 해시 알고리즘으로도 사용하는 것을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/sha-256/01.png"></p>
 ]]></content>
+      <tags>
+        <tag>Hashing</tag>
+        <tag>Message Disgest</tag>
+        <tag>Checksum</tag>
+      </tags>
   </entry>
   <entry>
     <title>서버 시간 동기화</title>
@@ -9475,53 +9546,6 @@ server time.google.com iburst
       </tags>
   </entry>
   <entry>
-    <title>SHA-256</title>
-    <url>/sha-256/</url>
-    <content><![CDATA[<h2 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h2><p><a href="https://ko.wikipedia.org/wiki/SHA">SHA(Secure Hash Algorithm)</a>은 NIST에 의해서 관리되는 안전한 해시 표준 함수들의 모음이며 현재는 NIST FIPS 180-3 규격의 <a href="https://ko.wikipedia.org/wiki/SHA-2">SHA-2</a>를 권장해서 사용하고 있습니다. 해시 함수는 어떠한 문자열을 일정한 길이를 가진 임의의 문자열로 변환하는 것을 말합니다. 수 많은 연구에 의해 만들어진 여러가지 해시 함수 중에서 일반적으로 SHA-256을 사용하는 이유는 해시 함수를 사용하게 되는 목적에 있다고 볼 수 있습니다. 특정한 문자열에 대해서는 동일한 해시값(다이제스트)으로 변환되며 해시값을 기준으로는 동일한 패턴을 찾을 수 없어서 본래의 문자열을 유추할 수 없도록 하고자 하는 것에 있습니다.</p>
-<p>SHA-256 해시 함수의 동작 과정은 <a href="https://sha256algorithm.com/">Sha256 Algorithm Explained</a>를 이용하면 눈으로 확인할 수 있으니 참고해보면 좋을 것 같습니다.</p>
-<h3 id="메시지-다이제스트"><a href="#메시지-다이제스트" class="headerlink" title="메시지 다이제스트"></a>메시지 다이제스트</h3><p>해시 함수는 어떠한 입력에 대해서 일정한 길이의 비트로 이루어진 결과를 가져오기 위한 목적으로 사용됩니다. 메시지 다이제스트란 어떤 문자열 데이터를 일정한 길이의 다이제스트로 변환한 것을 말하며 단순하게 해시 함수로 처리된 해시값일 뿐입니다.</p>
-<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
-
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-	<span class="token string">"crypto/sha256"</span>
-	<span class="token string">"encoding/hex"</span>
-	<span class="token string">"fmt"</span>
-<span class="token punctuation">)</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	plain <span class="token operator">:=</span> <span class="token string">"HelloWorld"</span>
-	hash <span class="token operator">:=</span> sha256<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	hash<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>plain<span class="token punctuation">)</span><span class="token punctuation">)</span>
-	hashed <span class="token operator">:=</span> hash<span class="token punctuation">.</span><span class="token function">Sum</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
-	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"plain:"</span><span class="token punctuation">,</span> plain<span class="token punctuation">)</span>
-	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hashed:"</span><span class="token punctuation">,</span> hex<span class="token punctuation">.</span><span class="token function">EncodeToString</span><span class="token punctuation">(</span>hashed<span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash">plain: HelloWorld
-hashed: 872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4</code></pre>
-
-<h3 id="파일-체크섬"><a href="#파일-체크섬" class="headerlink" title="파일 체크섬"></a>파일 체크섬</h3><p>위 메시지 다이제스트를 바이너리 파일에 활용한 부분이 파일 체크섬입니다. <a href="https://ubuntu.com/tutorials/how-to-verify-ubuntu#5-verify-the-sha256-checksum">how-to-verify-ubuntu</a>에서 처럼 다운로드 받은 파일의 위변조 여부를 검증하기 위해서 MD5 또는 SHA-256로 해시된 다이제스트를 제공하며 이를 통해 올바른 바이너리 파일임을 검증하고 안전하다고 판단할 수 있습니다. 아래의 예시는 윈도우 터미널에서 <a href="https://docs.microsoft.com/ko-kr/windows-server/administration/windows-commands/certutil">CertUtil</a>을 사용하여 파일 체크섬을 확인한 것이며 <a href="https://gtkhash.org/">GtkHash</a>와 같은 도구로도 확인할 수 있습니다.</p>
-<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\> certutil <span class="token operator">-</span>hashfile orig<span class="token punctuation">.</span>txt sha256
-SHA256의 orig<span class="token punctuation">.</span>txt 해시:
-872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4
-CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으로 완료되었습니다<span class="token punctuation">.</span></code></pre>
-
-<h3 id="비밀번호-암호화"><a href="#비밀번호-암호화" class="headerlink" title="비밀번호 암호화"></a>비밀번호 암호화</h3><p>일반적으로 비밀번호를 암호화하여 저장할 때는 <a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a>에서 언급된 PBKDF2 또는 bcrypt를 사용하는 편인 것으로 알고 있습니다. bcrypt는 NIST 에서 권장하는 알고리즘에 속하지는 않았으나 OpenBSD나 스프링 프레임워크의 기본 패스워드 인코더로 지정된 비교적 안전한 알고리즘 중 하나입니다. 아무튼 시계열 데이터베이스 중 하나인 <a href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd-local">KDB+는 MD5 또는 SHA-1 알고리즘 방식으로 비밀번호를 지원</a>하기에 사용하는 시스템마다 지원하는 방식에 제한이 있을 수 있습니다.</p>
-<h4 id="비밀번호-암호화-관련-읽으면-좋은-글"><a href="#비밀번호-암호화-관련-읽으면-좋은-글" class="headerlink" title="비밀번호 암호화 관련 읽으면 좋은 글"></a>비밀번호 암호화 관련 읽으면 좋은 글</h4><ul>
-<li><a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a></li>
-<li><a href="https://lovejaco.github.io/posts/cryptographic-hash-function/">해시 함수, 암호화 해시 함수, 그리고 SHA</a></li>
-<li><a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/">Hashing in Action: Understanding bcrypt</a></li>
-</ul>
-<h3 id="키-서명-지문"><a href="#키-서명-지문" class="headerlink" title="키 서명 지문"></a>키 서명 지문</h3><p><a href="/ssh">SSH 키 페어 발급 및 원격 호스트 연결하기</a>에서처럼 SSH 키에 대해 지문(Fingerprint)을 생성해놓고 호스트에 대한 공개키가 변경되었는지를 판단하는데 사용되기도 합니다. 이러한 키 서명 지문은 아래의 이미지와 같이 SSL 인증서 정보에도 서명 해시 알고리즘으로도 사용하는 것을 확인할 수 있습니다.</p>
-<p><img data-src="/images/posts/sha-256/01.png"></p>
-]]></content>
-      <tags>
-        <tag>Hashing</tag>
-        <tag>Message Disgest</tag>
-        <tag>Checksum</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Spring AOP - Self Invocation</title>
     <url>/spring-aop-invocation/</url>
     <content><![CDATA[<blockquote>
@@ -9547,6 +9571,45 @@ CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으�
 </ul>
 <p>스프링 프레임워크 기반의 애플리케이션 서버를 작성하는 개발자라면 <a href="https://docs.spring.io/spring-framework/reference/core/aop/proxying.html">프록시 매커니즘</a>에 대해서 이해하고 있어야 합니다. 기본적인 프록시(CGLib) 또는 JDK 프록시가 무엇인지 알고있어야 왜 public 접근제어자가 아니거나 내부 호출인 경우 AOP를 수행할 수 없는지를 이해할 수 있습니다.</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Spring Boot 3.x Micrometer Tracing</title>
+    <url>/spring-boot-3-tracing/</url>
+    <content><![CDATA[<blockquote>
+<p>Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>.</p>
+</blockquote>
+<p>Spring Cloud Sleuth 프로젝트는 더이상 Spring Boot 3.x 와의 호환성을 지원하지 않는다. 분산 추적 데이터 모델을 적용하기 위한 자동 구성이 Spring Cloud Sleuth 에서 Spring Boot로 이동되어있기 때문이다. Spring Boot 3.x 에서는 더이상 Spring Cloud Sleuth는 필요하지 않으며 <code>Micrometer Tracing</code>에 대한 설정을 수행하면 된다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'org.springframework.boot'</span> version <span class="token string">'3.1.3'</span>
+    id <span class="token string">'io.spring.dependency-management'</span> version <span class="token string">'1.1.3'</span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-actuator'</span>
+    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
+    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
+    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span> <span class="token comment">// Optional</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="AutoConfigure-Micrometer-Tracing"><a href="#AutoConfigure-Micrometer-Tracing" class="headerlink" title="AutoConfigure Micrometer Tracing"></a>AutoConfigure Micrometer Tracing</h4><p>스프링 부트 자동 구성에 포함되어 있는 BraveAutoConfiguration과 ZipkinAutoConfiguration가 자동으로 적용되므로 아래와 같이 TracingProperties 속성을 원하는대로 적용하면 된다. 본 글에서는 Zipkin과의 연동을 위해서 기본적으로 사용되는 B3 방식을 지정하였다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">management.tracing</span><span class="token punctuation">:</span>
+  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> b3
+  <span class="token key atrule">sampling.probability</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
+  
+<span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
+
+<h4 id="Automatic-Context-Propagation-for-WebFlux"><a href="#Automatic-Context-Propagation-for-WebFlux" class="headerlink" title="Automatic Context Propagation for WebFlux"></a>Automatic Context Propagation for WebFlux</h4><p>Spring Cloud Gateway와 같이 WebFlux 기반으로 동작하는 애플리케이션에서는 Project Reactor 3의 Context Propagation에 대한 자동 구성을 위해서 아래와 같이 Hooks.enableAutomaticContextPropagation을 메인 함수에서 호출해야한다. 더 자세한 내용은 <a href="https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive">Context Propagation with Project Reactor 3 - Unified Bridging between Reactive and Imperative</a>를 참고하면 된다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">reactor<span class="token punctuation">.</span>core<span class="token punctuation">.</span>publisher<span class="token punctuation">.</span></span><span class="token class-name">Hooks</span></span><span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@SpringBootApplication</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Application</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">Hooks</span><span class="token punctuation">.</span><span class="token function">enableAutomaticContextPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>]]></content>
   </entry>
   <entry>
     <title>Spring Boot 3 Actuator Key Sanitize</title>
@@ -9735,43 +9798,57 @@ CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으�
       </tags>
   </entry>
   <entry>
-    <title>Spring Boot 3.x Micrometer Tracing</title>
-    <url>/spring-boot-3-tracing/</url>
+    <title>스프링 부트 빌드 정보</title>
+    <url>/spring-boot-build-info/</url>
     <content><![CDATA[<blockquote>
-<p>Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check <a href="https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide">Spring Cloud Sleuth 3.1 Migration Guide</a>.</p>
+<p>본 글에 대한 관련 코드는 <a href="https://github.com/kdevkr/spring-demo">https://github.com/kdevkr/spring-demo</a> 에서 참고할 수 있습니다.</p>
 </blockquote>
-<p>Spring Cloud Sleuth 프로젝트는 더이상 Spring Boot 3.x 와의 호환성을 지원하지 않는다. 분산 추적 데이터 모델을 적용하기 위한 자동 구성이 Spring Cloud Sleuth 에서 Spring Boot로 이동되어있기 때문이다. Spring Boot 3.x 에서는 더이상 Spring Cloud Sleuth는 필요하지 않으며 <code>Micrometer Tracing</code>에 대한 설정을 수행하면 된다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'org.springframework.boot'</span> version <span class="token string">'3.1.3'</span>
-    id <span class="token string">'io.spring.dependency-management'</span> version <span class="token string">'1.1.3'</span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token string">'org.springframework.boot:spring-boot-starter-actuator'</span>
-    implementation <span class="token string">'io.micrometer:micrometer-tracing-bridge-brave'</span>
-    implementation <span class="token string">'io.zipkin.reporter2:zipkin-reporter-brave'</span>
-    developmentOnly <span class="token string">'org.springframework.boot:spring-boot-docker-compose'</span> <span class="token comment">// Optional</span>
+<p>스프링 부트 프로젝트에서 빌드 정보를 가져오기 위해서는 그래들이나 메이븐 플러그인에 따라 아래와 같이 buildInfo()가 동작하도록 구성해야한다. 이렇게 구성하면 빌드 단계에서 클래스패스에 META-INF&#x2F;build.properties라는 파일에 빌드 정보가 포함된다.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">springBoot <span class="token punctuation">&#123;</span>
+    <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h4 id="AutoConfigure-Micrometer-Tracing"><a href="#AutoConfigure-Micrometer-Tracing" class="headerlink" title="AutoConfigure Micrometer Tracing"></a>AutoConfigure Micrometer Tracing</h4><p>스프링 부트 자동 구성에 포함되어 있는 BraveAutoConfiguration과 ZipkinAutoConfiguration가 자동으로 적용되므로 아래와 같이 TracingProperties 속성을 원하는대로 적용하면 된다. 본 글에서는 Zipkin과의 연동을 위해서 기본적으로 사용되는 B3 방식을 지정하였다.</p>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">management.tracing</span><span class="token punctuation">:</span>
-  <span class="token key atrule">propagation.type</span><span class="token punctuation">:</span> b3
-  <span class="token key atrule">sampling.probability</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
-  
-<span class="token key atrule">logging.pattern.level</span><span class="token punctuation">:</span> <span class="token string">"%5p [$&#123;spring.application.name:&#125;,%X&#123;traceId:-&#125;,%X&#123;spanId:-&#125;]"</span></code></pre>
+<p>클래스패스에 추가된 build-info.properties의 내용은 ProjectInfoAutoConfiguration 클래스에 의해서 BuildProperties 클래스가 빈으로 등록되게 된다. 그래서 우리는 아래와 같이 BuildProperties를 기반으로 빌드 정보를 제공하는 API를 작성할 수 있다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>BuildController.java</span></div><code class="language-java"><span class="token annotation punctuation">@RestController</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildController</span> <span class="token punctuation">&#123;</span>
 
-<h4 id="Automatic-Context-Propagation-for-WebFlux"><a href="#Automatic-Context-Propagation-for-WebFlux" class="headerlink" title="Automatic Context Propagation for WebFlux"></a>Automatic Context Propagation for WebFlux</h4><p>Spring Cloud Gateway와 같이 WebFlux 기반으로 동작하는 애플리케이션에서는 Project Reactor 3의 Context Propagation에 대한 자동 구성을 위해서 아래와 같이 Hooks.enableAutomaticContextPropagation을 메인 함수에서 호출해야한다. 더 자세한 내용은 <a href="https://spring.io/blog/2023/03/30/context-propagation-with-project-reactor-3-unified-bridging-between-reactive">Context Propagation with Project Reactor 3 - Unified Bridging between Reactive and Imperative</a>를 참고하면 된다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span></span><span class="token class-name">SpringApplication</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>boot<span class="token punctuation">.</span>autoconfigure<span class="token punctuation">.</span></span><span class="token class-name">SpringBootApplication</span></span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> <span class="token import"><span class="token namespace">reactor<span class="token punctuation">.</span>core<span class="token punctuation">.</span>publisher<span class="token punctuation">.</span></span><span class="token class-name">Hooks</span></span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">;</span>
 
-<span class="token annotation punctuation">@SpringBootApplication</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Application</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">SpringApplication</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Application</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token class-name">Hooks</span><span class="token punctuation">.</span><span class="token function">enableAutomaticContextPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token class-name">BuildController</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>buildProperties <span class="token operator">=</span> buildProperties<span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>]]></content>
+
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"build-info"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> buildProperties<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>하지만, 그래들 명령어에 의해 빌드된 애플리케이션 파일으로 실행된 것이 아니라 인텔리제이와 같은 IDE로 구동하는 경우라면 BuildProperties가 등록되지 않으므로 오류가 발생한다. 클래스패스에 있는 빌드 정보를 먼저 사용할 수 있도록 @AutoConfiguration을 통해 자동 구성 클래스를 만들고 ProjectInfoAutoConfiguration가 동작한 이후에 수행하도록 하면 된다.</p>
+<pre class="language-java" data-language="java"><div class="caption"><span>BuildConfiguration.java</span></div><code class="language-java"><span class="token comment">//@Import(ProjectInfoAutoConfiguration.class)</span>
+<span class="token annotation punctuation">@AutoConfiguration</span><span class="token punctuation">(</span>after <span class="token operator">=</span> <span class="token class-name">ProjectInfoAutoConfiguration</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildConfiguration</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">BuildProperties</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Properties</span> properties <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Properties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"time"</span><span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token constant">ISO_INSTANT</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token class-name">Instant</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"artifact"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"group"</span><span class="token punctuation">,</span> <span class="token string">"kr.kdev"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"version"</span><span class="token punctuation">,</span> <span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">BuildProperties</span><span class="token punctuation">(</span>properties<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>위 코드에서 @AutoConfiguration는 스프링 부트 2.7 에서 추가된 어노테이션이므로 이전 버전이라면 @Import를 통해 수동으로 동작하도록 해야한다.</p>
+</blockquote>
+<p>그러면 이제 개발 환경에서는 ProjectInfoAutoConfiguration에 의해 BuildProperties가 등록되지 않더라도 코드로 정의된 BuildProperties가 등록되어 오류가 발생하지 않는다. 빌드된 애플리케이션에서는 빌드 정보 API가 등록되므로 아래와 같이 빌드 정보를 확인할 수 있다.</p>
+<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token comment"># java -jar '-Dspring.profiles.active=prod' .\demo-1.0.0.jar</span>
+<span class="token comment"># /build-info</span>
+<span class="token punctuation">&#123;</span><span class="token string">"name"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"version"</span>:<span class="token string">"local"</span><span class="token punctuation">,</span><span class="token string">"time"</span>:<span class="token string">"2023-03-22T13:13:58.186Z"</span><span class="token punctuation">,</span><span class="token string">"artifact"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"group"</span>:<span class="token string">"kr.kdev"</span><span class="token punctuation">&#125;</span></code></pre>]]></content>
   </entry>
   <entry>
     <title>스프링 부트 액세스 로그를 엘라스틱서치에 기록하기</title>
@@ -9966,59 +10043,6 @@ dependencies <span class="token punctuation">&#123;</span>
         <tag>Elasticsearch</tag>
         <tag>Access Log</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>스프링 부트 빌드 정보</title>
-    <url>/spring-boot-build-info/</url>
-    <content><![CDATA[<blockquote>
-<p>본 글에 대한 관련 코드는 <a href="https://github.com/kdevkr/spring-demo">https://github.com/kdevkr/spring-demo</a> 에서 참고할 수 있습니다.</p>
-</blockquote>
-<p>스프링 부트 프로젝트에서 빌드 정보를 가져오기 위해서는 그래들이나 메이븐 플러그인에 따라 아래와 같이 buildInfo()가 동작하도록 구성해야한다. 이렇게 구성하면 빌드 단계에서 클래스패스에 META-INF&#x2F;build.properties라는 파일에 빌드 정보가 포함된다.</p>
-<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">springBoot <span class="token punctuation">&#123;</span>
-    <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>클래스패스에 추가된 build-info.properties의 내용은 ProjectInfoAutoConfiguration 클래스에 의해서 BuildProperties 클래스가 빈으로 등록되게 된다. 그래서 우리는 아래와 같이 BuildProperties를 기반으로 빌드 정보를 제공하는 API를 작성할 수 있다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>BuildController.java</span></div><code class="language-java"><span class="token annotation punctuation">@RestController</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildController</span> <span class="token punctuation">&#123;</span>
-
-    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token class-name">BuildController</span><span class="token punctuation">(</span><span class="token keyword">final</span> <span class="token class-name">BuildProperties</span> buildProperties<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>buildProperties <span class="token operator">=</span> buildProperties<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"build-info"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> buildProperties<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>하지만, 그래들 명령어에 의해 빌드된 애플리케이션 파일으로 실행된 것이 아니라 인텔리제이와 같은 IDE로 구동하는 경우라면 BuildProperties가 등록되지 않으므로 오류가 발생한다. 클래스패스에 있는 빌드 정보를 먼저 사용할 수 있도록 @AutoConfiguration을 통해 자동 구성 클래스를 만들고 ProjectInfoAutoConfiguration가 동작한 이후에 수행하도록 하면 된다.</p>
-<pre class="language-java" data-language="java"><div class="caption"><span>BuildConfiguration.java</span></div><code class="language-java"><span class="token comment">//@Import(ProjectInfoAutoConfiguration.class)</span>
-<span class="token annotation punctuation">@AutoConfiguration</span><span class="token punctuation">(</span>after <span class="token operator">=</span> <span class="token class-name">ProjectInfoAutoConfiguration</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@Configuration</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BuildConfiguration</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@ConditionalOnMissingBean</span><span class="token punctuation">(</span><span class="token class-name">BuildProperties</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> <span class="token class-name">BuildProperties</span> <span class="token function">buildProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token class-name">Properties</span> properties <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Properties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"time"</span><span class="token punctuation">,</span> <span class="token class-name">DateTimeFormatter</span><span class="token punctuation">.</span><span class="token constant">ISO_INSTANT</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token class-name">Instant</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"artifact"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"group"</span><span class="token punctuation">,</span> <span class="token string">"kr.kdev"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"demo"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        properties<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"version"</span><span class="token punctuation">,</span> <span class="token string">"local"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">BuildProperties</span><span class="token punctuation">(</span>properties<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>위 코드에서 @AutoConfiguration는 스프링 부트 2.7 에서 추가된 어노테이션이므로 이전 버전이라면 @Import를 통해 수동으로 동작하도록 해야한다.</p>
-</blockquote>
-<p>그러면 이제 개발 환경에서는 ProjectInfoAutoConfiguration에 의해 BuildProperties가 등록되지 않더라도 코드로 정의된 BuildProperties가 등록되어 오류가 발생하지 않는다. 빌드된 애플리케이션에서는 빌드 정보 API가 등록되므로 아래와 같이 빌드 정보를 확인할 수 있다.</p>
-<pre class="language-powershell" data-language="powershell"><div class="caption"><span>Windows Terminal</span></div><code class="language-powershell"><span class="token comment"># java -jar '-Dspring.profiles.active=prod' .\demo-1.0.0.jar</span>
-<span class="token comment"># /build-info</span>
-<span class="token punctuation">&#123;</span><span class="token string">"name"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"version"</span>:<span class="token string">"local"</span><span class="token punctuation">,</span><span class="token string">"time"</span>:<span class="token string">"2023-03-22T13:13:58.186Z"</span><span class="token punctuation">,</span><span class="token string">"artifact"</span>:<span class="token string">"demo"</span><span class="token punctuation">,</span><span class="token string">"group"</span>:<span class="token string">"kr.kdev"</span><span class="token punctuation">&#125;</span></code></pre>]]></content>
   </entry>
   <entry>
     <title>Spring Boot Commons-Logging Conflicts</title>

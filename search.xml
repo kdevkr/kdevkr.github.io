@@ -1315,6 +1315,41 @@ Total Objects: <span class="token number">4895</span>
       </tags>
   </entry>
   <entry>
+    <title>Base64</title>
+    <url>/base64/</url>
+    <content><![CDATA[<p><img data-src="/images/posts/base64/base64-01.png"></p>
+<p>위와 같이 어떤 서비스에 대한 회원가입을 수행하거나 비밀번호 찾기와 같은 기능을 수행했을경우 인증 관련 메일이 발송되는 것을 자주 확인할 수 있습니다. 그러나 위와 같이 인증확인 버튼을 클릭했을때 어떠한 동작을 하는지 궁금하시지 않으신가요? 위와 같은 인증 버튼은 링크 엘리먼트로 되어있으며 일반적인 GET 요청입니다. 그리고 그 URI에는 다음과 같은 어떠한 형태의 문자열이 포함되게 됩니다.</p>
+<blockquote>
+<p>a2RldmtyQGdtYWlsLmNvbTp5Rm5iTUtrblZrRW85ckdxTVlmTGtWNE03UUtMTldXWg&#x3D;&#x3D;</p>
+</blockquote>
+<p>위와 같이 구성된 문자열은 Base64로 인코딩된 데이터이며 크롬 개발자도구의 콘솔을 통해 이 아스키 문자열을 디코딩하면 다음과 같은 문자열 데이터를 확인할 수 있습니다.</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token function">atob</span><span class="token punctuation">(</span><span class="token string">"a2RldmtyQGdtYWlsLmNvbTp5Rm5iTUtrblZrRW85ckdxTVlmTGtWNE03UUtMTldXWg=="</span><span class="token punctuation">)</span>
+<span class="token string">'kdevkr@gmail.com:yFnbMKknVkEo9rGqMYfLkV4M7QKLNWWZ'</span></code></pre>
+
+<p>제 이메일 주소와 함께 어떠한 문자열을 포함하고 있습니다. 아마도 저 알수없는 문자열은 암호화된 인증 정보일 것입니다. 인증 정보와 GET 요청에 포함된 이메일 주소가 동일한지를 내부적으로 검증하겠죠. 이러한 인증 정보를 왜 Base64로 인코딩하여 전송하게 되는 것일까요? <strong>안전한 형태로 데이터를 전달하고자하는 목적</strong>에 있습니다.</p>
+<h2 id="아스키-코드"><a href="#아스키-코드" class="headerlink" title="아스키 코드"></a>아스키 코드</h2><p>사람들은 수 많은 문자의 형태를 읽고 구분할 수 있지만 0과 1로 이루어진 컴퓨터 시스템은 시스템에 따라 0과 1을 읽고 구분하는 방식이 다를 수 있습니다. 시스템의 발전에 따라 아스키 코드부터 유니코드 그리고 여러가지 문자 조합이 확장되고 있습니다. 대부분의 문자 형식은 아스키 코드를 기초로 만들어지기 때문에 아스키 코드 중 일부 문자 집합은 거의 모든 시스템에서 공통으로 사용되는 문자입니다. 그러한 문자들을 모아 만들어지는게 Base64 인코딩입니다.</p>
+<h3 id="Base64-이미지"><a href="#Base64-이미지" class="headerlink" title="Base64 이미지"></a>Base64 이미지</h3><p>브라우저에서는 바이너리 데이터 뿐만 아니라 Base64로 이루어진 이미지 데이터를 표현할 수 있습니다. </p>
+<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">data-src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=<span class="token punctuation">"</span></span> <span class="token attr-name">data-loaded</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
+
+<p><img data-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=" alt="Base64로 표시된 QR코드 이미지"></p>
+<blockquote>
+<p>웹팩의 <a href="https://v4.webpack.js.org/loaders/url-loader/">url-loader</a>는 위와 같은 Base64 형식의 URI로 변환합니다. </p>
+</blockquote>
+<h3 id="HTTP-기본-인증"><a href="#HTTP-기본-인증" class="headerlink" title="HTTP 기본 인증"></a>HTTP 기본 인증</h3><p>사용자 이름과 비밀번호를 Authorization 헤더에 포함하여 전달하는 HTTP 기본 인증의 경우에도 Base64 인코딩을 사용합니다. 이는 HTTP 헤더의 값이 <strong>아스키 코드</strong>로 인코딩되어야하기 때문입니다. 따라서, 아스키 코드로 표현할 수 없는 데이터도 전달할 수 있도록 Base64 인코딩을 사용하는 것입니다.</p>
+<blockquote>
+<p>Authorization: Basic bWFtYm86cGFzc3dvcmQ&#x3D;</p>
+</blockquote>
+<h3 id="JWT-Base64Url"><a href="#JWT-Base64Url" class="headerlink" title="JWT Base64Url"></a>JWT Base64Url</h3><p>최근 사용자 인증을 위해 많이 도입하는 JWT(JSON Web Token)는 페이로드와 시그니처 부분을 <strong>Base64Url(URL Safe Base64)</strong> 로 인코딩합니다. JWT를 Base64로 인코딩하는 이유는 토큰이 URL 파라미터로 전송될 수 있기 때문입니다. </p>
+<h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>Base64를 사용하는 이유에 대해서 간단하게 알아보았습니다. 초보 개발자분들 뿐만 아니라 저처럼 Base64에 대해서 인지하고 있었던 분들에게도 도움이 되었으면 합니다. 감사합니다.</p>
+<blockquote>
+<p>Base64에 대해서 자세한 내용을 알고 싶다면 <a href="https://datatracker.ietf.org/doc/html/rfc4648">RFC4648</a>을 참고하세요.</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Base64</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>AWS Elastic Beanstalk 로그 알아보기</title>
     <url>/beanstalk-logs/</url>
     <content><![CDATA[<p><img data-src="/images/posts/beanstalk-logs/01.png"></p>
@@ -1367,41 +1402,6 @@ Total Objects: <span class="token number">4895</span>
         <tag>Beanstalk</tag>
         <tag>TailLogs</tag>
         <tag>Bundlelogs</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Base64</title>
-    <url>/base64/</url>
-    <content><![CDATA[<p><img data-src="/images/posts/base64/base64-01.png"></p>
-<p>위와 같이 어떤 서비스에 대한 회원가입을 수행하거나 비밀번호 찾기와 같은 기능을 수행했을경우 인증 관련 메일이 발송되는 것을 자주 확인할 수 있습니다. 그러나 위와 같이 인증확인 버튼을 클릭했을때 어떠한 동작을 하는지 궁금하시지 않으신가요? 위와 같은 인증 버튼은 링크 엘리먼트로 되어있으며 일반적인 GET 요청입니다. 그리고 그 URI에는 다음과 같은 어떠한 형태의 문자열이 포함되게 됩니다.</p>
-<blockquote>
-<p>a2RldmtyQGdtYWlsLmNvbTp5Rm5iTUtrblZrRW85ckdxTVlmTGtWNE03UUtMTldXWg&#x3D;&#x3D;</p>
-</blockquote>
-<p>위와 같이 구성된 문자열은 Base64로 인코딩된 데이터이며 크롬 개발자도구의 콘솔을 통해 이 아스키 문자열을 디코딩하면 다음과 같은 문자열 데이터를 확인할 수 있습니다.</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token function">atob</span><span class="token punctuation">(</span><span class="token string">"a2RldmtyQGdtYWlsLmNvbTp5Rm5iTUtrblZrRW85ckdxTVlmTGtWNE03UUtMTldXWg=="</span><span class="token punctuation">)</span>
-<span class="token string">'kdevkr@gmail.com:yFnbMKknVkEo9rGqMYfLkV4M7QKLNWWZ'</span></code></pre>
-
-<p>제 이메일 주소와 함께 어떠한 문자열을 포함하고 있습니다. 아마도 저 알수없는 문자열은 암호화된 인증 정보일 것입니다. 인증 정보와 GET 요청에 포함된 이메일 주소가 동일한지를 내부적으로 검증하겠죠. 이러한 인증 정보를 왜 Base64로 인코딩하여 전송하게 되는 것일까요? <strong>안전한 형태로 데이터를 전달하고자하는 목적</strong>에 있습니다.</p>
-<h2 id="아스키-코드"><a href="#아스키-코드" class="headerlink" title="아스키 코드"></a>아스키 코드</h2><p>사람들은 수 많은 문자의 형태를 읽고 구분할 수 있지만 0과 1로 이루어진 컴퓨터 시스템은 시스템에 따라 0과 1을 읽고 구분하는 방식이 다를 수 있습니다. 시스템의 발전에 따라 아스키 코드부터 유니코드 그리고 여러가지 문자 조합이 확장되고 있습니다. 대부분의 문자 형식은 아스키 코드를 기초로 만들어지기 때문에 아스키 코드 중 일부 문자 집합은 거의 모든 시스템에서 공통으로 사용되는 문자입니다. 그러한 문자들을 모아 만들어지는게 Base64 인코딩입니다.</p>
-<h3 id="Base64-이미지"><a href="#Base64-이미지" class="headerlink" title="Base64 이미지"></a>Base64 이미지</h3><p>브라우저에서는 바이너리 데이터 뿐만 아니라 Base64로 이루어진 이미지 데이터를 표현할 수 있습니다. </p>
-<pre class="language-markup" data-language="markup"><code class="language-markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">data-src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=<span class="token punctuation">"</span></span> <span class="token attr-name">data-loaded</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></code></pre>
-
-<p><img data-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAA+VJREFUeF7tnclu4zAUBEf//9EeYG6SAhUKTdJUpnMV1663kbKd4/P5fP70bxsFjgLZhsW/hRTIXjwKZDMeBVIguymw2XqaQwpkMwU2Ww56yHEcS5d8PRZd56djU9p+9mZx/XQOKZCxiAoELiK+bXBX3A1ZXw7JMRByOevgFPNTC6b10vx2PzeBL8BxPTaH0IB2AyRIgVwUJcEsAGtBBVIgqY2d+luD1kmdzgm0G+pPIdF6jB2P1jd9f2kOSQXSFiSrogIBEyILtAJai52dw+L91UPOV0MkqDUAHQHeBsRaOAlIgi0PyQVSD4nKwnoIHP1Xu3SBfBkIxfgUEI2/2uC2PxiSYAVyeb8w24IKRN5lFchZMDrH4ME3LXupzqfn5AH2+XU+FEC+r6D9xCG0QJ7PIRZAgcBlYz1EmpQNSRSj/7uQJfXWzUnw2c/1gmUH9FibQ+T8uvlswWl8vWDZoUAG3zRI/W/NC+S3AUktIu1PST8tM9P1je6Pd1mjJ7TjFYhVbHL7ApkssB2+QOBykQTFKkKerNPLS8oxtJ/0oKn7jz6HFMjzF5xQnwJxPoKCyghw8+ACeTkQunqwFmTHG53kR49HOQv1sR5iBbQLJIHo+ej57Hhx+wJxL6hGG0ScQ+ohkwFaD6G62p4baDxKuWSxuz+PPYQELJDz78GRQRQIfK7MhmQSnJ4XyNuBUBlnQxjV4TZnUPt0Ptr/8PEpqdOCCmTsb4jqF1SUtG0MJgu3BkEGYuej+eshg7+FawHZJK3Hp5A1egGph5EH0Pir+1sPwpBVIM82PjpEF8ji77tQCCuQtwEhorOfz84JFOPT+a0+6CF2wNHtU0Gof4FIYiRoWjUVSIE8KoAhy1qo1PvWPLXYtAxN9xvPbw+GqeDUv0BAgdRiCADlALpLov72YJvutx5yIRILIu/KhhuEDVkUUqxHkAXTc/KgFNDy8QvEvc8gA6HnZLC6yqqHuB88s3oViPyvgeQB9Hy6h9iqZHVMtzkABQu/REoeE3tIgTx/DouqsJvBpEm9QArkZFQ2Ztv2NuSRgf66kDVaUAopJDDlHALw+pBVIGFVYS2QLKpACoSi0uNzMrDXhSyK4bRh8igaP6LxQ2dc7+5lLwmGGxzs4SkgXG+BfPc/mTZkhZ/D2t5D0gXaGD/6LowOfrQ/CkHUf7iH2AlJACs4AbXro5xFZbydr0BAsQKRVZD1IGuxrwNiN2jbW8GtgGnIsSFSt7dlrxXYti+QzT+XRRZWD7EmL9vXQ0YX0hJAm58VwHfqFWytAgWyVm+crUBQorUNCmSt3jhbgaBEaxsUyFq9cbYCQYnWNvgLqC4vPjN7siAAAAAASUVORK5CYII=" alt="Base64로 표시된 QR코드 이미지"></p>
-<blockquote>
-<p>웹팩의 <a href="https://v4.webpack.js.org/loaders/url-loader/">url-loader</a>는 위와 같은 Base64 형식의 URI로 변환합니다. </p>
-</blockquote>
-<h3 id="HTTP-기본-인증"><a href="#HTTP-기본-인증" class="headerlink" title="HTTP 기본 인증"></a>HTTP 기본 인증</h3><p>사용자 이름과 비밀번호를 Authorization 헤더에 포함하여 전달하는 HTTP 기본 인증의 경우에도 Base64 인코딩을 사용합니다. 이는 HTTP 헤더의 값이 <strong>아스키 코드</strong>로 인코딩되어야하기 때문입니다. 따라서, 아스키 코드로 표현할 수 없는 데이터도 전달할 수 있도록 Base64 인코딩을 사용하는 것입니다.</p>
-<blockquote>
-<p>Authorization: Basic bWFtYm86cGFzc3dvcmQ&#x3D;</p>
-</blockquote>
-<h3 id="JWT-Base64Url"><a href="#JWT-Base64Url" class="headerlink" title="JWT Base64Url"></a>JWT Base64Url</h3><p>최근 사용자 인증을 위해 많이 도입하는 JWT(JSON Web Token)는 페이로드와 시그니처 부분을 <strong>Base64Url(URL Safe Base64)</strong> 로 인코딩합니다. JWT를 Base64로 인코딩하는 이유는 토큰이 URL 파라미터로 전송될 수 있기 때문입니다. </p>
-<h2 id="끝마치며"><a href="#끝마치며" class="headerlink" title="끝마치며"></a>끝마치며</h2><p>Base64를 사용하는 이유에 대해서 간단하게 알아보았습니다. 초보 개발자분들 뿐만 아니라 저처럼 Base64에 대해서 인지하고 있었던 분들에게도 도움이 되었으면 합니다. 감사합니다.</p>
-<blockquote>
-<p>Base64에 대해서 자세한 내용을 알고 싶다면 <a href="https://datatracker.ietf.org/doc/html/rfc4648">RFC4648</a>을 참고하세요.</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Base64</tag>
       </tags>
   </entry>
   <entry>
@@ -2424,77 +2424,6 @@ total 12K
       </tags>
   </entry>
   <entry>
-    <title>Nginx로 Vite 프로젝트 배포하기</title>
-    <url>/deploy-vite/</url>
-    <content><![CDATA[<blockquote>
-<p>Q. 프론트엔드 애플리케이션은 어떻게 배포를 해야할까?</p>
-</blockquote>
-<p>오래전부터 기본적으로는 백엔드 애플리케이션에서 프론트 UI 구성을 위한 에셋들을 관리하고 함께 빌드되어 배포되는 방식을 취해왔다. 그러나, 백엔드 개발자와 프론트엔드 개발자로 나누어지더니 하나의 서비스를 구성하는 프론트엔드 애플리케이션과 백엔드 애플리케이션이 나누어지고 각 애플리케이션을 개발할 수 있는 환경이 만들어지고 있다. 보통 백엔드 애플리케이션을 빌드하면서 UI 에셋 파일들을 포함하므로 배포 과정은 백엔드 개발자가 담당했던 조직이 많았을 것 같다.</p>
-<p>만약, 조직 구성으로 인해 프론트엔드 애플리케이션 개발을 위한 프론트엔드 팀이 있는 곳이라면 프론트엔드 개발자가 배포를 직접 수행할 수도 있어보인다. 회사마다 일하는 방식은 다를 수 있기 때문에 릴리즈에 대한 부분은 QA 엔지니어가 담당하기도 한다. 아무튼 Vite 기반 프로젝트를 배포하는 방안에 대해서 정리해보자.</p>
-<blockquote>
-<p><a href="https://vitejs.dev/guide/static-deploy.html#deploying-a-static-site">Deploying a Static Site</a><br>It is important to note that vite preview is intended for previewing the build locally and not meant as a production server.</p>
-</blockquote>
-<p>로컬 환경에서 정적 페이지를 배포할 수 있는 웹 서버를 실행하는 preview 명령어를 제공하지만 위와 같이 프로덕션 환경을 위한 배포 서버는 아님에 주의해야한다. 기본적인 개념은 정적 배포를 위한 빌드 파일을 만들고나서 백엔드 서버 또는 웹 서버를 통해 정적 파일에 대한 응답을 처리하는 것이다.</p>
-<ul>
-<li><a href="https://ko.vitejs.dev/guide/build.html">Vite 프로덕션 버전으로 빌드하기</a></li>
-<li><a href="https://ko.vitejs.dev/guide/backend-integration.html">Vite 백엔드 프레임워크와 함께 사용하기</a></li>
-</ul>
-<p>두번째 방식은 일반적으로 많이 사용되는 편으로 백엔드 서버가 스프링 부트 프로젝트라면 <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/static-resources.html">정적 리소스 경로에 포함</a>될 수 있도록 하면 된다. 백엔드 애플리케이션 빌드 시 클래스패스에 포함되어도 되고 애플리케이션 프로퍼티를 통해 특정 파일 경로를 지정해도 된다. 본 글에서 정리하고자 하는 건 첫번째 방식으로 프로덕션 배포를 위한 정적 파일을 빌드하고나서 Nginx와 같은 웹서버를 통해 정적 파일을 배포하는 것이다.</p>
-<blockquote>
-<p>Nginx 웹서버에서 정적 파일을 배포하고 백엔드 API 요청에 대해서는 리버스 프록시 구성을 하면 된다. 리버스 프록시 구성의 장점은 백엔드 애플리케이션의 포트를 감출 수 있게 되어 조금은 보안적인 인프라 구성이 될 수 있다는 것이다. 참고로 Vite 개발 서버에서도 <a href="https://ko.vitejs.dev/config/server-options.html#server-proxy">프록시 구성</a>을 할 수 있게 제공한다.</p>
-</blockquote>
-<h4 id="Nginx-웹서버로-Vite-정적-파일-배포"><a href="#Nginx-웹서버로-Vite-정적-파일-배포" class="headerlink" title="Nginx 웹서버로 Vite 정적 파일 배포"></a>Nginx 웹서버로 Vite 정적 파일 배포</h4><pre class="language-javascript" data-language="javascript"><div class="caption"><span>vite.config.js</span></div><code class="language-javascript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> defineConfig <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"vite"</span><span class="token punctuation">;</span>
-<span class="token keyword">import</span> vue <span class="token keyword">from</span> <span class="token string">"@vitejs/plugin-vue"</span><span class="token punctuation">;</span>
-
-<span class="token comment">// https://vitejs.dev/config/</span>
-<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
-  <span class="token literal-property property">build</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-    <span class="token literal-property property">manifest</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-    <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">"esnext"</span><span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token function">vue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Windows Terminal</span></div><code class="language-bash">$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> <span class="token function">install</span>
-$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> run build <span class="token parameter variable">--mode</span> production
-vite v4.4.11 building <span class="token keyword">for</span> production<span class="token punctuation">..</span>.</code></pre>
-
-<p>빌드 명령어를 수행하면 아래와 같이 dist 폴더 아래에 정적 파일들이 생성된다.</p>
-<ul>
-<li>dist&#x2F;assets : 정적 에셋 모음</li>
-<li>dist&#x2F;index.html : 진입점(EntryPoint) 파일</li>
-<li>manifest.json : 매니페스트 파일</li>
-</ul>
-<p>생성된 정적 빌드 파일들을 <a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a> 의 static 폴더로 대체하여 테스트를 해보자. 제대로 동작하지 않을텐데 Nginx의 설정 파일의 구성이 백엔드 애플리케이션으로 기본적인 요청을 전달하도록 되어있기 때문이다. <code>/</code> 경로에 대해서는 index.html을 응답하도록 변경해야하고 백엔드에 대한 요청이 나중에 전달되도록 수정해야한다.</p>
-<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx-vite.conf</span></div><code class="language-conf">server &#123;
-  index index.html;
-  root &#x2F;etc&#x2F;nginx&#x2F;static;
-  try_files $uri &#x2F;index.html &#x3D;404;
-
-  # 리버스 프록시
-  location ~ ^&#x2F;(api|version) &#123;
-      proxy_pass http:&#x2F;&#x2F;backend;
-      proxy_redirect off;
-      proxy_buffering off;
-      proxy_set_header Host $host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-      access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log;
-  &#125;
-&#125;</code></pre>
-
-<p><img data-src="/images/posts/deploy-vite/01.png">  </p>
-<p>기본적인 요청에 대해서는 static 폴더 기준으로 정적 파일을 사용해 응답하며 &#x2F;api 및 &#x2F;version 에 대해서만 백엔드 애플리케이션 요청으로 처리되도록 수정했다. 이제 아래와 같이 데모 애플리케이션이 정상적으로 보이며 &#x2F;version에 대한 요청을 전달하면 백엔드 애플리케이션에서 해당 경로가 매핑되지 않아서 스프링 부트의 화이트라벨 페이지로 404 응답을 볼 수 있다. 프론트 요청과 백엔드 요청을 효율적으로 구분할 수 있는 방안은 더 연구하고 찾아보고 학습해야할 부분이다.  </p>
-<p>사실 상 백엔드 애플리케이션에 프론트엔드에 대한 정적 파일을 포함시키는 게 간단하지만 정적 파일을 배포하는 경량의 웹 서버를 두는 게 백엔드 애플리케이션의 부하를 줄일 수 있는 방안이다. 정적 파일에 대한 요청을 처리하기 위해서 스레드 풀에서 스레드를 사용하는 것은 생각보다 영향이 클 수도 있다. <code>선택은 여러분의 몫이다.</code></p>
-]]></content>
-      <tags>
-        <tag>Deployment</tag>
-        <tag>Nginx</tag>
-        <tag>Vite</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Elastic Beanstalk Java SE 플랫폼으로 스프링 부트 배포하기</title>
     <url>/deploy-spring-boot-with-beanstalk-java-se-platform/</url>
     <content><![CDATA[<blockquote>
@@ -2671,6 +2600,77 @@ tasks<span class="token punctuation">.</span><span class="token function">regist
       </tags>
   </entry>
   <entry>
+    <title>Nginx로 Vite 프로젝트 배포하기</title>
+    <url>/deploy-vite/</url>
+    <content><![CDATA[<blockquote>
+<p>Q. 프론트엔드 애플리케이션은 어떻게 배포를 해야할까?</p>
+</blockquote>
+<p>오래전부터 기본적으로는 백엔드 애플리케이션에서 프론트 UI 구성을 위한 에셋들을 관리하고 함께 빌드되어 배포되는 방식을 취해왔다. 그러나, 백엔드 개발자와 프론트엔드 개발자로 나누어지더니 하나의 서비스를 구성하는 프론트엔드 애플리케이션과 백엔드 애플리케이션이 나누어지고 각 애플리케이션을 개발할 수 있는 환경이 만들어지고 있다. 보통 백엔드 애플리케이션을 빌드하면서 UI 에셋 파일들을 포함하므로 배포 과정은 백엔드 개발자가 담당했던 조직이 많았을 것 같다.</p>
+<p>만약, 조직 구성으로 인해 프론트엔드 애플리케이션 개발을 위한 프론트엔드 팀이 있는 곳이라면 프론트엔드 개발자가 배포를 직접 수행할 수도 있어보인다. 회사마다 일하는 방식은 다를 수 있기 때문에 릴리즈에 대한 부분은 QA 엔지니어가 담당하기도 한다. 아무튼 Vite 기반 프로젝트를 배포하는 방안에 대해서 정리해보자.</p>
+<blockquote>
+<p><a href="https://vitejs.dev/guide/static-deploy.html#deploying-a-static-site">Deploying a Static Site</a><br>It is important to note that vite preview is intended for previewing the build locally and not meant as a production server.</p>
+</blockquote>
+<p>로컬 환경에서 정적 페이지를 배포할 수 있는 웹 서버를 실행하는 preview 명령어를 제공하지만 위와 같이 프로덕션 환경을 위한 배포 서버는 아님에 주의해야한다. 기본적인 개념은 정적 배포를 위한 빌드 파일을 만들고나서 백엔드 서버 또는 웹 서버를 통해 정적 파일에 대한 응답을 처리하는 것이다.</p>
+<ul>
+<li><a href="https://ko.vitejs.dev/guide/build.html">Vite 프로덕션 버전으로 빌드하기</a></li>
+<li><a href="https://ko.vitejs.dev/guide/backend-integration.html">Vite 백엔드 프레임워크와 함께 사용하기</a></li>
+</ul>
+<p>두번째 방식은 일반적으로 많이 사용되는 편으로 백엔드 서버가 스프링 부트 프로젝트라면 <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/static-resources.html">정적 리소스 경로에 포함</a>될 수 있도록 하면 된다. 백엔드 애플리케이션 빌드 시 클래스패스에 포함되어도 되고 애플리케이션 프로퍼티를 통해 특정 파일 경로를 지정해도 된다. 본 글에서 정리하고자 하는 건 첫번째 방식으로 프로덕션 배포를 위한 정적 파일을 빌드하고나서 Nginx와 같은 웹서버를 통해 정적 파일을 배포하는 것이다.</p>
+<blockquote>
+<p>Nginx 웹서버에서 정적 파일을 배포하고 백엔드 API 요청에 대해서는 리버스 프록시 구성을 하면 된다. 리버스 프록시 구성의 장점은 백엔드 애플리케이션의 포트를 감출 수 있게 되어 조금은 보안적인 인프라 구성이 될 수 있다는 것이다. 참고로 Vite 개발 서버에서도 <a href="https://ko.vitejs.dev/config/server-options.html#server-proxy">프록시 구성</a>을 할 수 있게 제공한다.</p>
+</blockquote>
+<h4 id="Nginx-웹서버로-Vite-정적-파일-배포"><a href="#Nginx-웹서버로-Vite-정적-파일-배포" class="headerlink" title="Nginx 웹서버로 Vite 정적 파일 배포"></a>Nginx 웹서버로 Vite 정적 파일 배포</h4><pre class="language-javascript" data-language="javascript"><div class="caption"><span>vite.config.js</span></div><code class="language-javascript"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> defineConfig <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"vite"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> vue <span class="token keyword">from</span> <span class="token string">"@vitejs/plugin-vue"</span><span class="token punctuation">;</span>
+
+<span class="token comment">// https://vitejs.dev/config/</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">build</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">manifest</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">"esnext"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token function">vue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Windows Terminal</span></div><code class="language-bash">$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> <span class="token function">install</span>
+$ <span class="token function">yarn</span> <span class="token parameter variable">--cwd</span> <span class="token string">'frontend'</span> run build <span class="token parameter variable">--mode</span> production
+vite v4.4.11 building <span class="token keyword">for</span> production<span class="token punctuation">..</span>.</code></pre>
+
+<p>빌드 명령어를 수행하면 아래와 같이 dist 폴더 아래에 정적 파일들이 생성된다.</p>
+<ul>
+<li>dist&#x2F;assets : 정적 에셋 모음</li>
+<li>dist&#x2F;index.html : 진입점(EntryPoint) 파일</li>
+<li>manifest.json : 매니페스트 파일</li>
+</ul>
+<p>생성된 정적 빌드 파일들을 <a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a> 의 static 폴더로 대체하여 테스트를 해보자. 제대로 동작하지 않을텐데 Nginx의 설정 파일의 구성이 백엔드 애플리케이션으로 기본적인 요청을 전달하도록 되어있기 때문이다. <code>/</code> 경로에 대해서는 index.html을 응답하도록 변경해야하고 백엔드에 대한 요청이 나중에 전달되도록 수정해야한다.</p>
+<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx-vite.conf</span></div><code class="language-conf">server &#123;
+  index index.html;
+  root &#x2F;etc&#x2F;nginx&#x2F;static;
+  try_files $uri &#x2F;index.html &#x3D;404;
+
+  # 리버스 프록시
+  location ~ ^&#x2F;(api|version) &#123;
+      proxy_pass http:&#x2F;&#x2F;backend;
+      proxy_redirect off;
+      proxy_buffering off;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+      access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log;
+  &#125;
+&#125;</code></pre>
+
+<p><img data-src="/images/posts/deploy-vite/01.png">  </p>
+<p>기본적인 요청에 대해서는 static 폴더 기준으로 정적 파일을 사용해 응답하며 &#x2F;api 및 &#x2F;version 에 대해서만 백엔드 애플리케이션 요청으로 처리되도록 수정했다. 이제 아래와 같이 데모 애플리케이션이 정상적으로 보이며 &#x2F;version에 대한 요청을 전달하면 백엔드 애플리케이션에서 해당 경로가 매핑되지 않아서 스프링 부트의 화이트라벨 페이지로 404 응답을 볼 수 있다. 프론트 요청과 백엔드 요청을 효율적으로 구분할 수 있는 방안은 더 연구하고 찾아보고 학습해야할 부분이다.  </p>
+<p>사실 상 백엔드 애플리케이션에 프론트엔드에 대한 정적 파일을 포함시키는 게 간단하지만 정적 파일을 배포하는 경량의 웹 서버를 두는 게 백엔드 애플리케이션의 부하를 줄일 수 있는 방안이다. 정적 파일에 대한 요청을 처리하기 위해서 스레드 풀에서 스레드를 사용하는 것은 생각보다 영향이 클 수도 있다. <code>선택은 여러분의 몫이다.</code></p>
+]]></content>
+      <tags>
+        <tag>Deployment</tag>
+        <tag>Nginx</tag>
+        <tag>Vite</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>DNS</title>
     <url>/dns/</url>
     <content><![CDATA[<p>국내 개발자 커뮤니티에 <a href="https://okky.kr/articles/1519036">자바 개발자가 알아야할 DNS</a>라는 지식을 공유했던 것을 이어서 DNS 실전 교과서라는 책을 읽어보고 조금 더 DNS에 대한 정보를 찾아서 정리해볼까 합니다. GeekNews 에 공유된 <a href="https://news.hada.io/topic?id=10062">DNS 학습이 왜 여전히 어려운가요?</a>라는 글처럼 <strong>웹 개발자로써 DNS에 대해서 무엇을 어디까지 알고 있어야 하는지</strong> 알기 어려운 것 같습니다. </p>
@@ -2679,13 +2679,13 @@ See cause <span class="token keyword">for</span> the exact endpoint that is fail
 If this is happening on an endpoint that previously worked,
 there may be a network connectivity issue or your DNS cache could be storing endpoints <span class="token keyword">for</span> too long.</code></pre>
 
-<p>Amazon SQS에 대한 DNS 캐시가 초기화되는 시점에 사내 네트워크 사용량의 과부하로 인하여 <U>사내 라우터를 통한 DNS 조회를 할 수 없어서</U> SQS에 대한 엔드포인트 주소를 알 수 없는 이슈가 발생한 경우가 있었습니다. 그리고 아래와 같이 DNS 이슈에 대한 대응에 대한 정보도 찾아볼 수 있었어요.</p>
+<p>Amazon SQS에 대한 DNS 캐시가 초기화되는 시점에 사내 네트워크 사용량의 과부하로 인하여  <u>사내 라우터를 통한 DNS 조회를 할 수 없어서</u> SQS에 대한 엔드포인트 주소를 알 수 없는 이슈가 발생한 경우가 있었습니다. 그리고 아래와 같이 DNS 이슈에 대한 대응에 대한 정보도 찾아볼 수 있었어요.</p>
 <ul>
 <li><a href="https://techblog.herrencorp.com/f1106801-e6a0-4e67-aeaf-bca603f191ff">캐시된 죽은 IP로 URL 프록시 장애 대응 회고</a></li>
 <li><a href="https://aws.amazon.com/ko/message/74876/">서울 리전의 Amazon EC2 DNS 확인 이슈 요약</a></li>
 <li><a href="https://www.44bits.io/ko/post/news--notion-outage-dns-issue">온라인 협업 도구 노션(Notion) 장애와 DNS 문제 대응</a></li>
 </ul>
-<h4 id="Amazon-Route53-레코드-관리"><a href="#Amazon-Route53-레코드-관리" class="headerlink" title="Amazon Route53 레코드 관리"></a>Amazon Route53 레코드 관리</h4><p>저는 주로 Amazon Route53에 서버에 대한 IP 주소 또는 별칭으로 A 레코드를 등록하고 이미 등록된 서버에 대해 별칭을 추가로 사용하기 위해서 CNAME 레코드를 등록하게 되는 것 같습니다. 개인적으로 GoDaddy에서 구매한 kdev.ing 도메인에 대한 네임 서버로 <U><a href="https://jryancanty.medium.com/domain-by-godaddy-dns-by-route53-fc7acf2f5580">Amazon Route53을 등록하게 되면</a>  1달러의 세금이 발생</U>하므로 변경하지 않은 상태로 Github Pages 를 연결해서 사용하고 있기도 합니다.</p>
+<h4 id="Amazon-Route53-레코드-관리"><a href="#Amazon-Route53-레코드-관리" class="headerlink" title="Amazon Route53 레코드 관리"></a>Amazon Route53 레코드 관리</h4><p>저는 주로 Amazon Route53에 서버에 대한 IP 주소 또는 별칭으로 A 레코드를 등록하고 이미 등록된 서버에 대해 별칭을 추가로 사용하기 위해서 CNAME 레코드를 등록하게 되는 것 같습니다. 개인적으로 GoDaddy에서 구매한 kdev.ing 도메인에 대한 네임 서버로  <u><a href="https://jryancanty.medium.com/domain-by-godaddy-dns-by-route53-fc7acf2f5580">Amazon Route53을 등록하게 되면</a>  1달러의 세금이 발생</u>하므로 변경하지 않은 상태로 Github Pages 를 연결해서 사용하고 있기도 합니다.</p>
 <h4 id="이메일-보안을-위한-SPF-DKIM-DMARC"><a href="#이메일-보안을-위한-SPF-DKIM-DMARC" class="headerlink" title="이메일 보안을 위한 SPF, DKIM, DMARC"></a>이메일 보안을 위한 SPF, DKIM, DMARC</h4><p>서버 엔지니어 혹은 인프라 팀이 별도로 존재하는 조직이 아니라면 개발자가 이메일 발송 시 <a href="/email-spf-dkim-dmarc/">신뢰할 수 있는 도메인을 설정</a>하는 작업을 진행해야할 수 있어요. 마찬가지로 저는 작은 규모에 속한 주니어 개발자였기에 사내 메일 서버에서 Amazon SES를 통해 이메일을 보내기 위해서 <a href="https://www.cloudflare.com/ko-kr/learning/email-security/dmarc-dkim-spf/">DMARC, DKIM, SPF</a>를 설정했었던 적이 있습니다. 만약, 이메일 보안을 위해서 DMARC를 적용하고자 한다면 아래와 같은 글들을 참고해도 좋을 것 같습니다.</p>
 <ul>
 <li><a href="https://help.emailoctopus.com/article/68-setting-up-dmarc-spf-dkim">Setting up DMARC, SPF, DKIM with Amazon SES</a></li>
@@ -2699,7 +2699,7 @@ there may be a network connectivity issue or your DNS cache could be storing end
 <span class="token comment"># sudo systemd-resolve --statistics</span>
 <span class="token function">sudo</span> resolvectl statistics</code></pre>
 
-<h4 id="Local-DNS-Resolver"><a href="#Local-DNS-Resolver" class="headerlink" title="Local DNS Resolver"></a>Local DNS Resolver</h4><p>대부분의 리눅스에서는 systemd-resolved 를 DNS Resolver로 사용하기 때문에 <a href="https://medium.com/@linuxadminhacks/dd-721dc2b25d1c">&#x2F;etc&#x2F;resolv.conf 에는 127.0.0.53 이 설정</a>되어 있습니다. 그리고 <a href="https://medium.com/@hsahu24/understanding-dns-resolution-and-resolv-conf-d17d1d64471c">DNS resolution 및 resolv.conf 에 대한 이해</a>라는 글을 통해 DNS 리졸버에서 IP 주소를 쿼리하기 위해서 사용할 <a href="https://www.baeldung.com/linux/etc-resolv-conf-file">DNS 서버를 설정</a>하는 것을 알 수 있습니다. AWS EC2는 <U>VPC의 게이트웨이(CIDR 대역에서 .2)</U>를 DNS Resolver로 사용하도록 설정되어 있네요.</p>
+<h4 id="Local-DNS-Resolver"><a href="#Local-DNS-Resolver" class="headerlink" title="Local DNS Resolver"></a>Local DNS Resolver</h4><p>대부분의 리눅스에서는 systemd-resolved 를 DNS Resolver로 사용하기 때문에 <a href="https://medium.com/@linuxadminhacks/dd-721dc2b25d1c">&#x2F;etc&#x2F;resolv.conf 에는 127.0.0.53 이 설정</a>되어 있습니다. 그리고 <a href="https://medium.com/@hsahu24/understanding-dns-resolution-and-resolv-conf-d17d1d64471c">DNS resolution 및 resolv.conf 에 대한 이해</a>라는 글을 통해 DNS 리졸버에서 IP 주소를 쿼리하기 위해서 사용할 <a href="https://www.baeldung.com/linux/etc-resolv-conf-file">DNS 서버를 설정</a>하는 것을 알 수 있습니다. AWS EC2는  <u>VPC의 게이트웨이(CIDR 대역에서 .2)</u>를 DNS Resolver로 사용하도록 설정되어 있네요.</p>
 <pre class="language-bash" data-language="bash"><div class="caption"><span>/etc/resolv.conf</span></div><code class="language-bash"><span class="token punctuation">[</span>ec2-user@tsdb ~<span class="token punctuation">]</span>$ <span class="token function">cat</span> /etc/resolv.conf
 nameserver <span class="token number">192.168</span>.0.2
 search ap-northeast-2.compute.internal</code></pre>
@@ -2782,42 +2782,6 @@ System clock synchronized: no
       </tags>
   </entry>
   <entry>
-    <title>AWS EC2 호스트이름</title>
-    <url>/ec2-hostname/</url>
-    <content><![CDATA[<p>최근 고객사의 시계열 데이터베이스 서버에 있는 데이터를 최적화하고 삭제되는 데이터의 일부를 CSV로 추출하여 S3 버킷에 백업하는 유지보수 작업을 수행하고 있습니다. 해당 시계열 데이터베이스는 상용 기술로 라이센스 확인을 위해 외부 통신을 수행하는데 이 과정에서 서버 호스트이름을 라이센스 발급 시 지정된 값으로 지정해야합니다.</p>
-<p>고객사 인프라팀에서 복제된 서버를 제공해주었지만 호스트이름이 임의로 설정되어있기 때문에 호스트이름을 <U>hostnamectl</U>을 통해 변경해야 했습니다. 고객사 환경에 접근 통제를 위해 <U>HIWARE(HI-TAM)</U>이 적용되어 있어 작업 진행 시 서버 호스트이름 변경이 접근 통제에 영향을 미치지 않음을 확인받았습니다.</p>
-<h4 id="hostnamectl-을-통한-호스트이름-변경"><a href="#hostnamectl-을-통한-호스트이름-변경" class="headerlink" title="hostnamectl 을 통한 호스트이름 변경"></a>hostnamectl 을 통한 호스트이름 변경</h4><pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token function">sudo</span> hostnamectl set-hostname tsdb.local
-
-<span class="token punctuation">[</span>ec2-user@tsdb ~<span class="token punctuation">]</span>$ <span class="token function">hostname</span> <span class="token parameter variable">-f</span>
-tsdb.local</code></pre>
-
-<p>EC2 인스턴스가 이미 만들어진 경우이므로 서버 접속 후에 hostnamectl 명령어를 통해 호스트이름을 변경할 수 있습니다. 서버 재부팅은 수행하지 않을 계획이므로 <a href="https://docs.aws.amazon.com/linux/al2/ug/set-hostname.html">서버 재부팅 시 호스트이름 고정을 위한 설정</a>은 진행하지 않았습니다.</p>
-<h4 id="사용자-데이터의-cloud-config-로-호스트이름-지정"><a href="#사용자-데이터의-cloud-config-로-호스트이름-지정" class="headerlink" title="사용자 데이터의 cloud-config 로 호스트이름 지정"></a>사용자 데이터의 cloud-config 로 호스트이름 지정</h4><pre class="language-yaml" data-language="yaml"><div class="caption"><span>user-data</span></div><code class="language-yaml"><span class="token comment">#cloud-config</span>
-<span class="token key atrule">hostname</span><span class="token punctuation">:</span> tsdb.local
-<span class="token key atrule">fqdn</span><span class="token punctuation">:</span> tsdb.local
-<span class="token key atrule">manage_etc_hosts</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
-
-<p>만약, 초기 인프라 구성 시 EC2 인스턴스를 생성하는 단계에서 호스트이름을 지정하고 싶다면 위와 같이 사용자 데이터 항목에 <U><a href="https://serverfault.com/a/787905">cloud-config</a></U> 설정을 포함하여 IP 주소 기반이 아닌 원하는 호스트이름을 적용할 수 있습니다. </p>
-<h4 id="호스트이름-변경을-위한-파일-목록"><a href="#호스트이름-변경을-위한-파일-목록" class="headerlink" title="호스트이름 변경을 위한 파일 목록"></a>호스트이름 변경을 위한 파일 목록</h4><p>이외의 방법을 찾아보면 EC2 인스턴스의 <U>OS 유형에 따라</U> 아래와 같은 파일을 수정해서 호스트이름을 변경할 수 있음을 알 수 있습니다.</p>
-<ul>
-<li>&#x2F;etc&#x2F;hostname</li>
-<li>&#x2F;etc&#x2F;hosts</li>
-<li>&#x2F;etc&#x2F;sysconfig&#x2F;network</li>
-<li>&#x2F;etc&#x2F;cloud&#x2F;cloud.cfg</li>
-</ul>
-<h4 id="참고-자료"><a href="#참고-자료" class="headerlink" title="참고 자료"></a>참고 자료</h4><ul>
-<li><a href="https://docs.aws.amazon.com/linux/al2/ug/set-hostname.html">Change the hostname of your AL2 instance - Amazon Linux 2</a></li>
-<li><a href="https://medium.com/@pratheekhegde/prettify-your-ec2-hostnames-1d89f4a7c76d">Prettify your EC2 Hostnames</a></li>
-<li><a href="https://docs.aws.amazon.com/linux/al2023/ug/cloud-init.html">Customized cloud-init - AL2023</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>EC2 Hostname</tag>
-        <tag>hostnamectl</tag>
-        <tag>/etc/hostname</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>E.164</title>
     <url>/e164/</url>
     <content><![CDATA[<h4 id="What-is-the-E-164-format"><a href="#What-is-the-E-164-format" class="headerlink" title="What is the E.164 format?"></a>What is the E.164 format?</h4><p><strong>E.164</strong>는 전세계적으로 사용되는 국제전화번호에 대한 표준 형식이다. 문자 메시지 또는 왓츠앱 그리고 카카오 알림톡을 보내기 위해서 <a href="https://docs.aws.amazon.com/ko_kr/sns/latest/dg/sms_publish-to-phone.html">발송 인터페이스 문서</a>를 확인해보면 휴대폰 번호 필드에 E.164 형식의 값을 요구하는 것을 확인할 수 있다. 글로벌 서비스나 솔루션을 준비한다면 프론트엔드에서도 <a href="https://github.com/jackocnr/intl-tel-input">국가별 전화번호를 입력할 수 있는 컴포넌트</a>를 준비하는 편이다.</p>
@@ -2835,6 +2799,42 @@ tsdb.local</code></pre>
 ]]></content>
       <tags>
         <tag>Phone Number</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>AWS EC2 호스트이름</title>
+    <url>/ec2-hostname/</url>
+    <content><![CDATA[<p>최근 고객사의 시계열 데이터베이스 서버에 있는 데이터를 최적화하고 삭제되는 데이터의 일부를 CSV로 추출하여 S3 버킷에 백업하는 유지보수 작업을 수행하고 있습니다. 해당 시계열 데이터베이스는 상용 기술로 라이센스 확인을 위해 외부 통신을 수행하는데 이 과정에서 서버 호스트이름을 라이센스 발급 시 지정된 값으로 지정해야합니다.</p>
+<p>고객사 인프라팀에서 복제된 서버를 제공해주었지만 호스트이름이 임의로 설정되어있기 때문에 호스트이름을  <u>hostnamectl</u>을 통해 변경해야 했습니다. 고객사 환경에 접근 통제를 위해  <u>HIWARE(HI-TAM)</u>이 적용되어 있어 작업 진행 시 서버 호스트이름 변경이 접근 통제에 영향을 미치지 않음을 확인받았습니다.</p>
+<h4 id="hostnamectl-을-통한-호스트이름-변경"><a href="#hostnamectl-을-통한-호스트이름-변경" class="headerlink" title="hostnamectl 을 통한 호스트이름 변경"></a>hostnamectl 을 통한 호스트이름 변경</h4><pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token function">sudo</span> hostnamectl set-hostname tsdb.local
+
+<span class="token punctuation">[</span>ec2-user@tsdb ~<span class="token punctuation">]</span>$ <span class="token function">hostname</span> <span class="token parameter variable">-f</span>
+tsdb.local</code></pre>
+
+<p>EC2 인스턴스가 이미 만들어진 경우이므로 서버 접속 후에 hostnamectl 명령어를 통해 호스트이름을 변경할 수 있습니다. 서버 재부팅은 수행하지 않을 계획이므로 <a href="https://docs.aws.amazon.com/linux/al2/ug/set-hostname.html">서버 재부팅 시 호스트이름 고정을 위한 설정</a>은 진행하지 않았습니다.</p>
+<h4 id="사용자-데이터의-cloud-config-로-호스트이름-지정"><a href="#사용자-데이터의-cloud-config-로-호스트이름-지정" class="headerlink" title="사용자 데이터의 cloud-config 로 호스트이름 지정"></a>사용자 데이터의 cloud-config 로 호스트이름 지정</h4><pre class="language-yaml" data-language="yaml"><div class="caption"><span>user-data</span></div><code class="language-yaml"><span class="token comment">#cloud-config</span>
+<span class="token key atrule">hostname</span><span class="token punctuation">:</span> tsdb.local
+<span class="token key atrule">fqdn</span><span class="token punctuation">:</span> tsdb.local
+<span class="token key atrule">manage_etc_hosts</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+
+<p>만약, 초기 인프라 구성 시 EC2 인스턴스를 생성하는 단계에서 호스트이름을 지정하고 싶다면 위와 같이 사용자 데이터 항목에  <u><a href="https://serverfault.com/a/787905">cloud-config</a></u> 설정을 포함하여 IP 주소 기반이 아닌 원하는 호스트이름을 적용할 수 있습니다. </p>
+<h4 id="호스트이름-변경을-위한-파일-목록"><a href="#호스트이름-변경을-위한-파일-목록" class="headerlink" title="호스트이름 변경을 위한 파일 목록"></a>호스트이름 변경을 위한 파일 목록</h4><p>이외의 방법을 찾아보면 EC2 인스턴스의  <u>OS 유형에 따라</u> 아래와 같은 파일을 수정해서 호스트이름을 변경할 수 있음을 알 수 있습니다.</p>
+<ul>
+<li>&#x2F;etc&#x2F;hostname</li>
+<li>&#x2F;etc&#x2F;hosts</li>
+<li>&#x2F;etc&#x2F;sysconfig&#x2F;network</li>
+<li>&#x2F;etc&#x2F;cloud&#x2F;cloud.cfg</li>
+</ul>
+<h4 id="참고-자료"><a href="#참고-자료" class="headerlink" title="참고 자료"></a>참고 자료</h4><ul>
+<li><a href="https://docs.aws.amazon.com/linux/al2/ug/set-hostname.html">Change the hostname of your AL2 instance - Amazon Linux 2</a></li>
+<li><a href="https://medium.com/@pratheekhegde/prettify-your-ec2-hostnames-1d89f4a7c76d">Prettify your EC2 Hostnames</a></li>
+<li><a href="https://docs.aws.amazon.com/linux/al2023/ug/cloud-init.html">Customized cloud-init - AL2023</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>EC2 Hostname</tag>
+        <tag>hostnamectl</tag>
+        <tag>/etc/hostname</tag>
       </tags>
   </entry>
   <entry>
@@ -3475,6 +3475,57 @@ grub2-efi-aa64-ec2.aarch64             <span class="token number">1</span>:2.06-
       </tags>
   </entry>
   <entry>
+    <title>프리마커 템플릿</title>
+    <url>/freemarker-template/</url>
+    <content><![CDATA[<p>스프링 부트 프로젝트에 대한 예제를 살펴보면 대부분 템플릿 엔진으로 타임리프를 선택하여 사용함을 알 수 있다. 대부분 타임리프에 대해서 설명하므로 프리마커 템플릿 엔진에 대해서 정리한 글은 생각보다 많지 않다. 나는 타임리프라는 템플릿 엔진 보다는 프리마커의 문법이 더 간단하고 느끼기에 더 선호하는 편이다. <a href="https://github.com/jreijn/spring-comparing-template-engines">여러가지 템플릿 엔진과 비교</a>해서도 준수한 렌더링 성능을 보여주고 있다.</p>
+<pre class="language-gradle" data-language="gradle"><code class="language-gradle"><span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-freemarker'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="FreeMarkerAutoConfiguration"><a href="#FreeMarkerAutoConfiguration" class="headerlink" title="FreeMarkerAutoConfiguration"></a>FreeMarkerAutoConfiguration</h4><p>스프링 부트의 자동 구성은 FreeMarkerAutoConfiguration로 시작되며 FreeMarkerServletWebConfiguration에서 뷰 리졸버가 등록되며 FreeMarkerNonWebConfiguration으로 FreeMarkerConfigurationFactoryBean가 등록되어 이메일 내용 처리와 같은 웹 요청과 관련되지 않은 곳에서도 템플릿 처리가 가능하도록 지원한다. 스프링 프레임워크에서는 SpringTemplateLoader로 클래스패스에 존재하는 템플릿을 불러올 수 있도록 지원하며 프리마커에서는 StringTemplateLoader를 통해 문자열로 정의된 템플릿을 만들 수 있게 제공한다.</p>
+<h4 id="Internationalization"><a href="#Internationalization" class="headerlink" title="Internationalization"></a>Internationalization</h4><p>스프링 프레임워크에서는 프리마커 템플릿을 사용해서 다국어 메시지를 처리할 수 있도록 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/resources/org/springframework/web/servlet/view/freemarker/spring.ftl">spring.ftl</a>라는 매크로가 포함된 템플릿 파일을 제공하고 있으며 아래와 같이 프리마커 템플릿에서 스프링 메시지를 처리할 수 있다. 프리마커 템플릿 파일에 직접 명시하거나 애플리케이션 프로퍼티로 auto_import 옵션을 사용해서 추가할 수도 있다.</p>
+<pre class="language-ftl" data-language="ftl"><div class="caption"><span>index.ftlh</span></div><code class="language-ftl"><span class="token ftl language-ftl"><span class="token ftl-directive"><span class="token punctuation">&lt;</span><span class="token directive keyword">#import</span><span class="token content ftl"> <span class="token string">"/spring.ftl"</span> <span class="token keyword">as</span> spring</span><span class="token punctuation">/></span></span></span>
+<span class="token ftl language-ftl"><span class="token ftl-directive"><span class="token punctuation">&lt;</span><span class="token directive keyword">@spring</span><span class="token content ftl"><span class="token punctuation">.</span>message <span class="token string">"messageKey"</span></span><span class="token punctuation">/></span></span></span></code></pre>
+
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
+  <span class="token key atrule">freemarker</span><span class="token punctuation">:</span>
+    <span class="token key atrule">settings</span><span class="token punctuation">:</span>
+      <span class="token key atrule">auto_import</span><span class="token punctuation">:</span> spring.ftl as spring</code></pre>
+
+<blockquote>
+<p>다만, 위 spring.ftl 파일에 정의된 메시지 처리는 웹 요청에 의한 스레드 내에서만 사용될 수 있기 때문에 이메일 내용 처리와 같이 웹 요청이 아닌 백그라운드 작업에서 사용할 순 없다.</p>
+</blockquote>
+<h4 id="백그라운드-작업-시-다국어-메시지-처리"><a href="#백그라운드-작업-시-다국어-메시지-처리" class="headerlink" title="백그라운드 작업 시 다국어 메시지 처리"></a>백그라운드 작업 시 다국어 메시지 처리</h4><p>사용자의 웹 요청에 의한 템플릿 처리가 아닌 백그라운드 작업에서 프리마커 템플릿 엔진을 사용하는 경우에 다국어 메시지를 제공하기 위해서는 프리마커 템플릿 엔진에서 리소스 번들을 모델로 메시지 보간을 처리할 수 있는 <strong>ResourceBundleModel</strong>를 사용해야 한다. 다음은 스프링 부트 자동 구성에 의해 등록되는 FreeMarkerConfigurationFactoryBean과 ResourceBundleModel을 통해 메시지를 처리할 수 있는 방법에 대한 예시이다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Locale</span> locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token constant">ROOT</span><span class="token punctuation">;</span>
+
+<span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">StringTemplateLoader</span> stringTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringTemplateLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> <span class="token string">"$&#123;bundle(\"application.name\")&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+configuration<span class="token punctuation">.</span><span class="token function">setTemplateLoader</span><span class="token punctuation">(</span>stringTemplateLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">ResourceBundle</span> resourceBundle <span class="token operator">=</span> <span class="token class-name">ResourceBundle</span><span class="token punctuation">.</span><span class="token function">getBundle</span><span class="token punctuation">(</span><span class="token string">"messages"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"bundle"</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">ResourceBundleModel</span><span class="token punctuation">(</span>resourceBundle<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">BeansWrapperBuilder</span><span class="token punctuation">(</span><span class="token class-name">Configuration</span><span class="token punctuation">.</span><span class="token constant">DEFAULT_INCOMPATIBLE_IMPROVEMENTS</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">String</span> content <span class="token operator">=</span> <span class="token class-name">FreeMarkerTemplateUtils</span><span class="token punctuation">.</span><span class="token function">processTemplateIntoString</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> model<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<h4 id="템플릿-체이닝"><a href="#템플릿-체이닝" class="headerlink" title="템플릿 체이닝"></a>템플릿 체이닝</h4><p>프리마커 템플릿 엔진에서 지원하는 <a href="https://freemarker.apache.org/docs/api/freemarker/cache/MultiTemplateLoader.html">MultiTemplateLoader</a>를 사용하면 여러가지 방식의 <a href="https://freemarker.apache.org/docs/pgui_config_templateloading.html">템플릿 로딩</a>을 통해 템플릿 로더에 의해 로드되는 템플릿을 함께 사용할 수 있다. 또한, MultiTemplateLoader에 전달되는 템플릿 로더의 순서에 따라 SpringTemplateLoader로 기본 템플릿 레이아웃을 만들고 실제 템플릿 내용은 StringTemplateLoader로 재정의하는 것도 가능하다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">StringTemplateLoader</span> stringTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringTemplateLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"email.ftlh"</span><span class="token punctuation">,</span> <span class="token string">"$&#123;bundle(\"application.name\")&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> <span class="token string">"&lt;#include \"email.ftlh\" >"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">SpringTemplateLoader</span> springTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SpringTemplateLoader</span><span class="token punctuation">(</span>resourceLoader<span class="token punctuation">,</span> <span class="token string">"classpath:/templates/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">MultiTemplateLoader</span> multiTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MultiTemplateLoader</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">TemplateLoader</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>stringTemplateLoader<span class="token punctuation">,</span> springTemplateLoader<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+configuration<span class="token punctuation">.</span><span class="token function">setTemplateLoader</span><span class="token punctuation">(</span>multiTemplateLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<blockquote>
+<p>MultiTemplateLoader의 생성자에 전달되는 템플릿 로더의 순서대로 템플릿을 찾도록 위임한다는 것에 주의해야한다.</p>
+</blockquote>
+]]></content>
+  </entry>
+  <entry>
     <title>깃허브 풀 리퀘스트 상태 검사</title>
     <url>/github-pr-status-checks/</url>
     <content><![CDATA[<p>현재 회사에서 새해 목표는 빠른 업무 처리를 위해서 간단한 방식을 취함에 따라서 지속적인 성장을 이루어냈으나 제품에 대한 신뢰성의 문제를 경험하고나서는 제품 품질을 강화하기 위한 코드 품질 또는 테스트 자동화에 대한 환경 구축의 필요성을 느끼고 많은 것들을 시도하고 있다. 깃허브 풀 리퀘스트를 수행하고 있었으나 코드 리뷰가 주요 테크 기업이나 스타트업처럼 개발 문화로 정착되어있지 않음으로 인해서 단위 테스트 코드를 작성하도록 요구한다거나 정적 분석 도구를 통해 코드 품질에 대해서 분석하고 리팩토링을 수행하는 과정이 없다보니 개발자들이 스스로 편한 방식을 사용해서 작업 요건에 대해서 처리해왔다.</p>
@@ -3578,57 +3629,6 @@ grub2-efi-aa64-ec2.aarch64             <span class="token number">1</span>:2.06-
 <p>처음에는 간단하게 풀 리퀘스트가 생성되고 커밋이 푸시되었을때 <strong>체크스타일</strong>과 <strong>ESLint</strong>가 동작하도록 작성하였으나 백엔드 작업시에도 불필요하게 ESLint를 수행하고 프론트엔드 작업시에도 불필요하게 자바 파일에 대한 체크스타일을 수행하는 비효율적인 동작을 수행하는 구조였다. 추가적인 개선을 통해 풀 리퀘스트 시 <a href="https://docs.github.com/ko/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore">paths</a> 문법을 활용해서 .java, .js, .vue 파일에 대한 변경사항이 있을때만 상태 검사에 대한 워크플로우가 실행될 수 있도록 변경했으며 <a href="https://github.com/dorny/paths-filter">dorny&#x2F;paths-filter</a>를 통해서 자바 파일에 대한 변경사항이 있다면 체크스타일을 수행하고 프론트 파일에 대한 변경사항이 있다면 ESLint가 개별적으로 수행할 수 있도록 하였다.</p>
 <blockquote>
 <p>구글 체크스타일은 회사 코드에 적합하지 않다고 판단되어 가장 간단한 규칙으로 수행할 수 있도록 커스터마이징 된 체크스타일 파일을 추가했습니다.</p>
-</blockquote>
-]]></content>
-  </entry>
-  <entry>
-    <title>프리마커 템플릿</title>
-    <url>/freemarker-template/</url>
-    <content><![CDATA[<p>스프링 부트 프로젝트에 대한 예제를 살펴보면 대부분 템플릿 엔진으로 타임리프를 선택하여 사용함을 알 수 있다. 대부분 타임리프에 대해서 설명하므로 프리마커 템플릿 엔진에 대해서 정리한 글은 생각보다 많지 않다. 나는 타임리프라는 템플릿 엔진 보다는 프리마커의 문법이 더 간단하고 느끼기에 더 선호하는 편이다. <a href="https://github.com/jreijn/spring-comparing-template-engines">여러가지 템플릿 엔진과 비교</a>해서도 준수한 렌더링 성능을 보여주고 있다.</p>
-<pre class="language-gradle" data-language="gradle"><code class="language-gradle"><span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-freemarker'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="FreeMarkerAutoConfiguration"><a href="#FreeMarkerAutoConfiguration" class="headerlink" title="FreeMarkerAutoConfiguration"></a>FreeMarkerAutoConfiguration</h4><p>스프링 부트의 자동 구성은 FreeMarkerAutoConfiguration로 시작되며 FreeMarkerServletWebConfiguration에서 뷰 리졸버가 등록되며 FreeMarkerNonWebConfiguration으로 FreeMarkerConfigurationFactoryBean가 등록되어 이메일 내용 처리와 같은 웹 요청과 관련되지 않은 곳에서도 템플릿 처리가 가능하도록 지원한다. 스프링 프레임워크에서는 SpringTemplateLoader로 클래스패스에 존재하는 템플릿을 불러올 수 있도록 지원하며 프리마커에서는 StringTemplateLoader를 통해 문자열로 정의된 템플릿을 만들 수 있게 제공한다.</p>
-<h4 id="Internationalization"><a href="#Internationalization" class="headerlink" title="Internationalization"></a>Internationalization</h4><p>스프링 프레임워크에서는 프리마커 템플릿을 사용해서 다국어 메시지를 처리할 수 있도록 <a href="https://github.com/spring-projects/spring-framework/blob/main/spring-webmvc/src/main/resources/org/springframework/web/servlet/view/freemarker/spring.ftl">spring.ftl</a>라는 매크로가 포함된 템플릿 파일을 제공하고 있으며 아래와 같이 프리마커 템플릿에서 스프링 메시지를 처리할 수 있다. 프리마커 템플릿 파일에 직접 명시하거나 애플리케이션 프로퍼티로 auto_import 옵션을 사용해서 추가할 수도 있다.</p>
-<pre class="language-ftl" data-language="ftl"><div class="caption"><span>index.ftlh</span></div><code class="language-ftl"><span class="token ftl language-ftl"><span class="token ftl-directive"><span class="token punctuation">&lt;</span><span class="token directive keyword">#import</span><span class="token content ftl"> <span class="token string">"/spring.ftl"</span> <span class="token keyword">as</span> spring</span><span class="token punctuation">/></span></span></span>
-<span class="token ftl language-ftl"><span class="token ftl-directive"><span class="token punctuation">&lt;</span><span class="token directive keyword">@spring</span><span class="token content ftl"><span class="token punctuation">.</span>message <span class="token string">"messageKey"</span></span><span class="token punctuation">/></span></span></span></code></pre>
-
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-  <span class="token key atrule">freemarker</span><span class="token punctuation">:</span>
-    <span class="token key atrule">settings</span><span class="token punctuation">:</span>
-      <span class="token key atrule">auto_import</span><span class="token punctuation">:</span> spring.ftl as spring</code></pre>
-
-<blockquote>
-<p>다만, 위 spring.ftl 파일에 정의된 메시지 처리는 웹 요청에 의한 스레드 내에서만 사용될 수 있기 때문에 이메일 내용 처리와 같이 웹 요청이 아닌 백그라운드 작업에서 사용할 순 없다.</p>
-</blockquote>
-<h4 id="백그라운드-작업-시-다국어-메시지-처리"><a href="#백그라운드-작업-시-다국어-메시지-처리" class="headerlink" title="백그라운드 작업 시 다국어 메시지 처리"></a>백그라운드 작업 시 다국어 메시지 처리</h4><p>사용자의 웹 요청에 의한 템플릿 처리가 아닌 백그라운드 작업에서 프리마커 템플릿 엔진을 사용하는 경우에 다국어 메시지를 제공하기 위해서는 프리마커 템플릿 엔진에서 리소스 번들을 모델로 메시지 보간을 처리할 수 있는 <strong>ResourceBundleModel</strong>를 사용해야 한다. 다음은 스프링 부트 자동 구성에 의해 등록되는 FreeMarkerConfigurationFactoryBean과 ResourceBundleModel을 통해 메시지를 처리할 수 있는 방법에 대한 예시이다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">Locale</span> locale <span class="token operator">=</span> <span class="token class-name">Locale</span><span class="token punctuation">.</span><span class="token constant">ROOT</span><span class="token punctuation">;</span>
-
-<span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">StringTemplateLoader</span> stringTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringTemplateLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> <span class="token string">"$&#123;bundle(\"application.name\")&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-configuration<span class="token punctuation">.</span><span class="token function">setTemplateLoader</span><span class="token punctuation">(</span>stringTemplateLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">ResourceBundle</span> resourceBundle <span class="token operator">=</span> <span class="token class-name">ResourceBundle</span><span class="token punctuation">.</span><span class="token function">getBundle</span><span class="token punctuation">(</span><span class="token string">"messages"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> model <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-model<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"bundle"</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">ResourceBundleModel</span><span class="token punctuation">(</span>resourceBundle<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">BeansWrapperBuilder</span><span class="token punctuation">(</span><span class="token class-name">Configuration</span><span class="token punctuation">.</span><span class="token constant">DEFAULT_INCOMPATIBLE_IMPROVEMENTS</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">String</span> content <span class="token operator">=</span> <span class="token class-name">FreeMarkerTemplateUtils</span><span class="token punctuation">.</span><span class="token function">processTemplateIntoString</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> model<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<h4 id="템플릿-체이닝"><a href="#템플릿-체이닝" class="headerlink" title="템플릿 체이닝"></a>템플릿 체이닝</h4><p>프리마커 템플릿 엔진에서 지원하는 <a href="https://freemarker.apache.org/docs/api/freemarker/cache/MultiTemplateLoader.html">MultiTemplateLoader</a>를 사용하면 여러가지 방식의 <a href="https://freemarker.apache.org/docs/pgui_config_templateloading.html">템플릿 로딩</a>을 통해 템플릿 로더에 의해 로드되는 템플릿을 함께 사용할 수 있다. 또한, MultiTemplateLoader에 전달되는 템플릿 로더의 순서에 따라 SpringTemplateLoader로 기본 템플릿 레이아웃을 만들고 실제 템플릿 내용은 StringTemplateLoader로 재정의하는 것도 가능하다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">StringTemplateLoader</span> stringTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringTemplateLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"email.ftlh"</span><span class="token punctuation">,</span> <span class="token string">"$&#123;bundle(\"application.name\")&#125;"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-stringTemplateLoader<span class="token punctuation">.</span><span class="token function">putTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> <span class="token string">"&lt;#include \"email.ftlh\" >"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token class-name">Configuration</span> configuration <span class="token operator">=</span> configurationFactoryBean<span class="token punctuation">.</span><span class="token function">createConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">SpringTemplateLoader</span> springTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SpringTemplateLoader</span><span class="token punctuation">(</span>resourceLoader<span class="token punctuation">,</span> <span class="token string">"classpath:/templates/"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">MultiTemplateLoader</span> multiTemplateLoader <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MultiTemplateLoader</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">TemplateLoader</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span>stringTemplateLoader<span class="token punctuation">,</span> springTemplateLoader<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-configuration<span class="token punctuation">.</span><span class="token function">setTemplateLoader</span><span class="token punctuation">(</span>multiTemplateLoader<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">Template</span> template <span class="token operator">=</span> configuration<span class="token punctuation">.</span><span class="token function">getTemplate</span><span class="token punctuation">(</span><span class="token string">"template"</span><span class="token punctuation">,</span> locale<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<blockquote>
-<p>MultiTemplateLoader의 생성자에 전달되는 템플릿 로더의 순서대로 템플릿을 찾도록 위임한다는 것에 주의해야한다.</p>
 </blockquote>
 ]]></content>
   </entry>
@@ -4459,6 +4459,37 @@ Ncat: <span class="token number">0</span> bytes sent, <span class="token number"
 ]]></content>
   </entry>
   <entry>
+    <title>Amazon Linux 2023 Docker Compose 플러그인 설치</title>
+    <url>/install-docker-compose-in-amazon-linux-2023/</url>
+    <content><![CDATA[<p>Amazon Linux 2023 에서는 Extra를 제공하지는 않지만 Docker는 기본적으로 포함되어있다. Amazon Linux 2 에서와 동일하게 Docker Compose Plugin 은 별도로 포함해주지 않으므로 직접 수동으로 설치해야한다. 다만, docker-compose 명령어로 별도로 사용하기 보다는 최신 버전에 맞춰 Docker <a href="https://docs.docker.com/compose/install/linux/#install-the-plugin-manually">Compose 플러그인</a>으로 설치해보도록 하자. <a href="https://github.com/docker/compose/releases">Docker Compose Releases</a> 사이트에서 다운로드 받은 docker-compose 를 cli-plugins 폴더 아래에 복사하면 된다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># Docker</span>
+<span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token parameter variable">-y</span> <span class="token function">docker</span>
+<span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> ec2-user
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> <span class="token function">docker</span>
+<span class="token builtin class-name">exec</span> <span class="token function">bash</span>
+
+<span class="token function">docker</span> <span class="token function">ps</span>
+
+<span class="token comment"># Compose Plugin</span>
+<span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /usr/local/lib/docker/cli-plugins/
+<span class="token function">sudo</span> <span class="token function">curl</span> <span class="token parameter variable">-SL</span> <span class="token string">"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-<span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> <span class="token parameter variable">-m</span><span class="token variable">)</span></span>"</span> <span class="token parameter variable">-o</span> /usr/local/lib/docker/cli-plugins/docker-compose
+<span class="token function">sudo</span> <span class="token function">chmod</span> +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+<span class="token function">docker</span> compose version</code></pre>
+
+<h4 id="Compose-플러그인을-docker-compose-명령어로-사용하기"><a href="#Compose-플러그인을-docker-compose-명령어로-사용하기" class="headerlink" title="Compose 플러그인을 docker-compose 명령어로 사용하기"></a>Compose 플러그인을 docker-compose 명령어로 사용하기</h4><p>Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 심볼릭 링크 또는 alias로 등록하면 된다.</p>
+<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># sudo ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose</span>
+<span class="token builtin class-name">alias</span> docker-compose<span class="token operator">=</span><span class="token string">'docker compose --compatibility "$@"'</span>
+
+<span class="token function">docker-compose</span> version</code></pre>
+]]></content>
+      <tags>
+        <tag>AL2023</tag>
+        <tag>Docker</tag>
+        <tag>Docker Compose</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>개발자를 위한 인프라 지식</title>
     <url>/infrastructure/</url>
     <content><![CDATA[<blockquote>
@@ -4601,37 +4632,6 @@ journalctl <span class="token parameter variable">-b</span>
       </tags>
   </entry>
   <entry>
-    <title>Amazon Linux 2023 Docker Compose 플러그인 설치</title>
-    <url>/install-docker-compose-in-amazon-linux-2023/</url>
-    <content><![CDATA[<p>Amazon Linux 2023 에서는 Extra를 제공하지는 않지만 Docker는 기본적으로 포함되어있다. Amazon Linux 2 에서와 동일하게 Docker Compose Plugin 은 별도로 포함해주지 않으므로 직접 수동으로 설치해야한다. 다만, docker-compose 명령어로 별도로 사용하기 보다는 최신 버전에 맞춰 Docker <a href="https://docs.docker.com/compose/install/linux/#install-the-plugin-manually">Compose 플러그인</a>으로 설치해보도록 하자. <a href="https://github.com/docker/compose/releases">Docker Compose Releases</a> 사이트에서 다운로드 받은 docker-compose 를 cli-plugins 폴더 아래에 복사하면 된다.</p>
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># Docker</span>
-<span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token parameter variable">-y</span> <span class="token function">docker</span>
-<span class="token function">sudo</span> <span class="token function">usermod</span> <span class="token parameter variable">-aG</span> <span class="token function">docker</span> ec2-user
-<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> <span class="token parameter variable">--now</span> <span class="token function">docker</span>
-<span class="token builtin class-name">exec</span> <span class="token function">bash</span>
-
-<span class="token function">docker</span> <span class="token function">ps</span>
-
-<span class="token comment"># Compose Plugin</span>
-<span class="token function">sudo</span> <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> /usr/local/lib/docker/cli-plugins/
-<span class="token function">sudo</span> <span class="token function">curl</span> <span class="token parameter variable">-SL</span> <span class="token string">"https://github.com/docker/compose/releases/latest/download/docker-compose-linux-<span class="token variable"><span class="token variable">$(</span><span class="token function">uname</span> <span class="token parameter variable">-m</span><span class="token variable">)</span></span>"</span> <span class="token parameter variable">-o</span> /usr/local/lib/docker/cli-plugins/docker-compose
-<span class="token function">sudo</span> <span class="token function">chmod</span> +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-<span class="token function">docker</span> compose version</code></pre>
-
-<h4 id="Compose-플러그인을-docker-compose-명령어로-사용하기"><a href="#Compose-플러그인을-docker-compose-명령어로-사용하기" class="headerlink" title="Compose 플러그인을 docker-compose 명령어로 사용하기"></a>Compose 플러그인을 docker-compose 명령어로 사용하기</h4><p>Docker Compose 플러그인을 설치했으나 기존 스크립트가 docker-compose로 되어있어서 명령어 호환성을 맞추고 싶다면 docker-compose를 심볼릭 링크 또는 alias로 등록하면 된다.</p>
-<pre class="language-bash" data-language="bash"><div class="caption"><span>Terminal</span></div><code class="language-bash"><span class="token comment"># sudo ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose</span>
-<span class="token builtin class-name">alias</span> docker-compose<span class="token operator">=</span><span class="token string">'docker compose --compatibility "$@"'</span>
-
-<span class="token function">docker-compose</span> version</code></pre>
-]]></content>
-      <tags>
-        <tag>AL2023</tag>
-        <tag>Docker</tag>
-        <tag>Docker Compose</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>뉴렐릭 인프라 에이전트 설치가 되지 않을때</title>
     <url>/install-newrelic-infra-agent/</url>
     <content><![CDATA[<p><img data-src="/images/posts/install-newrelic-infra-agent/01.png"></p>
@@ -4672,76 +4672,6 @@ Installing to /usr/local/bin
       <tags>
         <tag>SQL</tag>
         <tag>Code Style</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Invalid SockJS Path.</title>
-    <url>/invalid-sockjs-path/</url>
-    <content><![CDATA[<blockquote>
-<p>Invalid SockJS path ‘XXX’ required to have 3 path segments.</p>
-</blockquote>
-<p>구글에 <a href="https://www.google.com/search?q=Invalid+SockJS+path">Invalid SockJS path</a> 라는 키워드로 검색해보면 이와 같은 오류 로그에 대한 조치로 <a href="https://stackoverflow.com/a/64576478">Stomp 클라이언트를 사용하라는 답변</a>이나 <a href="https://github.com/spring-projects/spring-framework/issues/28103">스택 오버플로우에 질문하라는 답변</a>을 찾아볼 수 있다. 아무튼 위 상황에 대한 원인은 명확히 알 수 없는 상황에서 아래와 같은 구조에서 해당 오류가 발생했다.</p>
-<ol>
-<li>Nginx Websocket Proxy</li>
-<li>Spring WebSocket with Stomp + SockJS</li>
-<li><code>sockjs-client@1.6.1</code></li>
-<li><code>@stomp/stompjs@7.0.0</code></li>
-</ol>
-<h4 id="이슈-파악"><a href="#이슈-파악" class="headerlink" title="이슈 파악"></a>이슈 파악</h4><p><a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a>와 같이 엔진엑스에서 웹소켓 주소 패턴에 대해 백엔드 애플리케이션으로의 리버스 프록시 구성을 아래와 같이 해둔 상태였다. 그리고 Stomp 방식의 웹 소켓 연결을 수행하는 엔드포인트는 <code>/ws/stomp</code> 로 정의되어있었다. 본래 <code>/ws</code> 는 일반적인 웹 소켓 연결을 수행하고 <code>/ws/stmop</code>로 시작되는 것은 Stomp로 동작하는 것을 의도한 것이다.</p>
-<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx.conf</span></div><code class="language-conf">http &#123;
-    upstream backend &#123;
-        server app:8080;
-        keepalive 128;
-    &#125;
-
-    server &#123;
-        location &#x2F;ws&#x2F; &#123;
-            proxy_pass http:&#x2F;&#x2F;backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            # hop-by-hop
-            proxy_http_version 1.1;
-            proxy_set_header Connection &quot;upgrade&quot;;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_read_timeout 65s;
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<blockquote>
-<p>Vite 개발 서버에서의 Proxy 구성의 경우 올바르게 Stomp 방식의 웹소켓 연결을 수행된다.</p>
-</blockquote>
-<p>하지만, 엔진엑스와 함께 동작중인 배포 환경에서는 Stomp 클라이언트가 SockJS를 사용하여 연결을 수행하려고 할때 <code>/ws/stomp/info?t=0</code> 엔드포인트에 대해 404 응답을 받게되고 애플리케이션 로그에는 <code>Invalid SockJS path ...</code>가 출력되는 것을 확인했다.</p>
-<h4 id="솔루션"><a href="#솔루션" class="headerlink" title="솔루션"></a>솔루션</h4><p>이리저리 시도해본 결과 해결책은 일반적인 웹 소켓 연결과 Stomp 방식의 연결을 아예 분리하는 것이다. <code>/ws/</code> 이외에 <code>/ws-stomp/</code>로 Stomp 방식의 웹 소켓 연결을 위한 별도의 엔드포인트 패턴을 사용하고 리버스 프록시 구성을 하고나니 해당 증상은 발생하지 않았다.</p>
-<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx.conf</span></div><code class="language-conf">http &#123;
-    upstream backend &#123;
-        server app:8080;
-        keepalive 128;
-    &#125;
-
-    server &#123;
-        location ~ ^&#x2F;(ws|ws-stomp)&#x2F; &#123;
-            proxy_pass http:&#x2F;&#x2F;backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            # hop-by-hop
-            proxy_http_version 1.1;
-            proxy_set_header Connection &quot;upgrade&quot;;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_read_timeout 65s;
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-<p>아무튼 정확한 원인에 대해서는 별도로 찾아보아야겠지만 기록으로 남기고자 한다.</p>
-]]></content>
-      <tags>
-        <tag>Nginx</tag>
-        <tag>Spring</tag>
-        <tag>SockJS</tag>
-        <tag>Stomp</tag>
       </tags>
   </entry>
   <entry>
@@ -4827,6 +4757,76 @@ Installing to /usr/local/bin
         <tag>Code Style</tag>
         <tag>Checkstyle</tag>
         <tag>EditorConfig</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Invalid SockJS Path.</title>
+    <url>/invalid-sockjs-path/</url>
+    <content><![CDATA[<blockquote>
+<p>Invalid SockJS path ‘XXX’ required to have 3 path segments.</p>
+</blockquote>
+<p>구글에 <a href="https://www.google.com/search?q=Invalid+SockJS+path">Invalid SockJS path</a> 라는 키워드로 검색해보면 이와 같은 오류 로그에 대한 조치로 <a href="https://stackoverflow.com/a/64576478">Stomp 클라이언트를 사용하라는 답변</a>이나 <a href="https://github.com/spring-projects/spring-framework/issues/28103">스택 오버플로우에 질문하라는 답변</a>을 찾아볼 수 있다. 아무튼 위 상황에 대한 원인은 명확히 알 수 없는 상황에서 아래와 같은 구조에서 해당 오류가 발생했다.</p>
+<ol>
+<li>Nginx Websocket Proxy</li>
+<li>Spring WebSocket with Stomp + SockJS</li>
+<li><code>sockjs-client@1.6.1</code></li>
+<li><code>@stomp/stompjs@7.0.0</code></li>
+</ol>
+<h4 id="이슈-파악"><a href="#이슈-파악" class="headerlink" title="이슈 파악"></a>이슈 파악</h4><p><a href="https://github.com/kdevkr/nginx.conf">nginx.conf</a>와 같이 엔진엑스에서 웹소켓 주소 패턴에 대해 백엔드 애플리케이션으로의 리버스 프록시 구성을 아래와 같이 해둔 상태였다. 그리고 Stomp 방식의 웹 소켓 연결을 수행하는 엔드포인트는 <code>/ws/stomp</code> 로 정의되어있었다. 본래 <code>/ws</code> 는 일반적인 웹 소켓 연결을 수행하고 <code>/ws/stmop</code>로 시작되는 것은 Stomp로 동작하는 것을 의도한 것이다.</p>
+<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx.conf</span></div><code class="language-conf">http &#123;
+    upstream backend &#123;
+        server app:8080;
+        keepalive 128;
+    &#125;
+
+    server &#123;
+        location &#x2F;ws&#x2F; &#123;
+            proxy_pass http:&#x2F;&#x2F;backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            # hop-by-hop
+            proxy_http_version 1.1;
+            proxy_set_header Connection &quot;upgrade&quot;;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_read_timeout 65s;
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<blockquote>
+<p>Vite 개발 서버에서의 Proxy 구성의 경우 올바르게 Stomp 방식의 웹소켓 연결을 수행된다.</p>
+</blockquote>
+<p>하지만, 엔진엑스와 함께 동작중인 배포 환경에서는 Stomp 클라이언트가 SockJS를 사용하여 연결을 수행하려고 할때 <code>/ws/stomp/info?t=0</code> 엔드포인트에 대해 404 응답을 받게되고 애플리케이션 로그에는 <code>Invalid SockJS path ...</code>가 출력되는 것을 확인했다.</p>
+<h4 id="솔루션"><a href="#솔루션" class="headerlink" title="솔루션"></a>솔루션</h4><p>이리저리 시도해본 결과 해결책은 일반적인 웹 소켓 연결과 Stomp 방식의 연결을 아예 분리하는 것이다. <code>/ws/</code> 이외에 <code>/ws-stomp/</code>로 Stomp 방식의 웹 소켓 연결을 위한 별도의 엔드포인트 패턴을 사용하고 리버스 프록시 구성을 하고나니 해당 증상은 발생하지 않았다.</p>
+<pre class="language-conf" data-language="conf"><div class="caption"><span>nginx.conf</span></div><code class="language-conf">http &#123;
+    upstream backend &#123;
+        server app:8080;
+        keepalive 128;
+    &#125;
+
+    server &#123;
+        location ~ ^&#x2F;(ws|ws-stomp)&#x2F; &#123;
+            proxy_pass http:&#x2F;&#x2F;backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            # hop-by-hop
+            proxy_http_version 1.1;
+            proxy_set_header Connection &quot;upgrade&quot;;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_read_timeout 65s;
+        &#125;
+    &#125;
+&#125;</code></pre>
+
+<p>아무튼 정확한 원인에 대해서는 별도로 찾아보아야겠지만 기록으로 남기고자 한다.</p>
+]]></content>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>Spring</tag>
+        <tag>SockJS</tag>
+        <tag>Stomp</tag>
       </tags>
   </entry>
   <entry>
@@ -5122,63 +5122,6 @@ ubuntu@ubuntu:~$ <span class="token function">sudo</span> <span class="token fun
       </tags>
   </entry>
   <entry>
-    <title>자바에서 데이터 리스트를 피봇 테이블로 만들기</title>
-    <url>/java-list-to-pivot/</url>
-    <content><![CDATA[<pre class="language-java" data-language="java"><div class="caption"><span>Data</span></div><code class="language-java"><span class="token annotation punctuation">@Getter</span>
-<span class="token annotation punctuation">@Setter</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Data</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> date<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> report<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> sum<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> avg<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-java" data-language="java"><div class="caption"><span>PivotData</span></div><code class="language-java"><span class="token annotation punctuation">@ToString</span>
-<span class="token annotation punctuation">@Getter</span>
-<span class="token annotation punctuation">@Setter</span>
-<span class="token annotation punctuation">@JsonNaming</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token class-name">PropertyNamingStrategies<span class="token punctuation">.</span>UpperSnakeCaseStrategy</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string">"squid:S116"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PivotData</span> <span class="token punctuation">&#123;</span>
-    <span class="token annotation punctuation">@JsonProperty</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">)</span>
-    <span class="token keyword">private</span> <span class="token class-name">String</span> date<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">POWER</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">ENERGY</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">TEMP</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">HERTZ</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-java" data-language="java"><div class="caption"><span>PivotDataConverter</span></div><code class="language-java"><span class="token annotation punctuation">@UtilityClass</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PivotDataConverter</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">ObjectMapper</span> <span class="token constant">MAPPER</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token constant">AVG_REPORTS</span> <span class="token operator">=</span> <span class="token class-name">Set</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token string">"POWER"</span><span class="token punctuation">,</span> <span class="token string">"TEMP"</span><span class="token punctuation">,</span> <span class="token string">"HERTZ"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-            <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token class-name">Collectors</span><span class="token punctuation">.</span><span class="token function">toUnmodifiableMap</span><span class="token punctuation">(</span>s <span class="token operator">-></span> s<span class="token punctuation">,</span> s <span class="token operator">-></span> s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">PivotData</span><span class="token punctuation">></span></span> <span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Data</span><span class="token punctuation">></span></span> list<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token constant">MAPPER</span><span class="token punctuation">.</span><span class="token function">convertValue</span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token class-name">Collectors</span><span class="token punctuation">.</span><span class="token function">groupingBy</span><span class="token punctuation">(</span><span class="token class-name">Data</span><span class="token operator">::</span><span class="token function">getDate</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">parallelStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-                <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>entry <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
-                    <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> row <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedHashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    row<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">,</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>data <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
-                        <span class="token class-name">Double</span> value <span class="token operator">=</span> <span class="token constant">AVG_REPORTS</span><span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span><span class="token function">getReport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> data<span class="token punctuation">.</span><span class="token function">getAvg</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> data<span class="token punctuation">.</span><span class="token function">getSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        row<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span><span class="token function">getReport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    <span class="token keyword">return</span> row<span class="token punctuation">;</span>
-                <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>날짜와 리포트 항목으로 이루어진 <strong>시계열 데이터의 통계 정보</strong>를 날짜와 리포트 항목별 값 형태로 이루어지는 <strong>피봇 테이블 리스트</strong>로 바꿔보았습니다. 날짜를 포함한 하나 이상의 필드로 그룹핑 되면서 리포트 항목에 따라  <strong>합계</strong> 또는  <strong>평균값</strong>을 사용해야 합니다. <a href="https://www.baeldung.com/java-groupingby-collector">Collectors.groupingBy</a> 를 사용해서 데이터 리스트를 날짜 기준으로 그룹핑하고 각 리포트 항목을 하나의 Map 으로 생성하고나서 <strong>ObjectMapper</strong>를 사용해 피봇된 형태의 클래스를 가진 리스트로 변환했습니다. 위 예시에서 전력량에 대해서만 합계를 사용하지만 실제로는 대부분의 리포트 항목에 대해 합계값을 사용하게 되므로 평균값을 사용해야하는 리포트 항목만을 별도로 관리하도록 코드를 작성했습니다.</p>
-]]></content>
-      <tags>
-        <tag>List</tag>
-        <tag>Pivot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>자바 날짜 및 시간 포맷</title>
     <url>/java-datetime-format/</url>
     <content><![CDATA[<p>여러 국가를 대상으로 해야하는 서비스를 만들어가게 되는 경우 언어 뿐만 아니라 시간을 다루는 것도 중요합니다. 단순하게 말해서 한국에서 서비스를 제공한다고해서 한국 시간으로 모든 시간 데이터를 다루는 것은 좋은 방식이 아닙니다. 기본적으로는 UTC라고 하는 세계 협정 시간을 기준으로 시간을 저장해야합니다. PostgreSQL과 같은 데이터베이스에서도 Timestamp를 저장하게 되는 경우 내부적으로는 UTC로 저장됩니다. 따라서, 2022년 3월 19일 12시 라는 시간은 <code>2022년 3월 19일 03시</code>로 저장되는것이죠.</p>
@@ -5276,6 +5219,63 @@ ubuntu@ubuntu:~$ <span class="token function">sudo</span> <span class="token fun
         <tag>Instant</tag>
         <tag>ZonedDateTime</tag>
         <tag>DateTimeFormatter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>자바에서 데이터 리스트를 피봇 테이블로 만들기</title>
+    <url>/java-list-to-pivot/</url>
+    <content><![CDATA[<pre class="language-java" data-language="java"><div class="caption"><span>Data</span></div><code class="language-java"><span class="token annotation punctuation">@Getter</span>
+<span class="token annotation punctuation">@Setter</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Data</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> date<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> report<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> sum<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> avg<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-java" data-language="java"><div class="caption"><span>PivotData</span></div><code class="language-java"><span class="token annotation punctuation">@ToString</span>
+<span class="token annotation punctuation">@Getter</span>
+<span class="token annotation punctuation">@Setter</span>
+<span class="token annotation punctuation">@JsonNaming</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token class-name">PropertyNamingStrategies<span class="token punctuation">.</span>UpperSnakeCaseStrategy</span><span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@SuppressWarnings</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string">"squid:S116"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PivotData</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@JsonProperty</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">)</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> date<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">POWER</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">ENERGY</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">TEMP</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token class-name">Double</span> <span class="token constant">HERTZ</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-java" data-language="java"><div class="caption"><span>PivotDataConverter</span></div><code class="language-java"><span class="token annotation punctuation">@UtilityClass</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PivotDataConverter</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">ObjectMapper</span> <span class="token constant">MAPPER</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> <span class="token constant">AVG_REPORTS</span> <span class="token operator">=</span> <span class="token class-name">Set</span><span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span><span class="token string">"POWER"</span><span class="token punctuation">,</span> <span class="token string">"TEMP"</span><span class="token punctuation">,</span> <span class="token string">"HERTZ"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token class-name">Collectors</span><span class="token punctuation">.</span><span class="token function">toUnmodifiableMap</span><span class="token punctuation">(</span>s <span class="token operator">-></span> s<span class="token punctuation">,</span> s <span class="token operator">-></span> s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">PivotData</span><span class="token punctuation">></span></span> <span class="token function">from</span><span class="token punctuation">(</span><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Data</span><span class="token punctuation">></span></span> list<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token constant">MAPPER</span><span class="token punctuation">.</span><span class="token function">convertValue</span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span><span class="token class-name">Collectors</span><span class="token punctuation">.</span><span class="token function">groupingBy</span><span class="token punctuation">(</span><span class="token class-name">Data</span><span class="token operator">::</span><span class="token function">getDate</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">parallelStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>entry <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">Object</span><span class="token punctuation">></span></span> row <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedHashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    row<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"date"</span><span class="token punctuation">,</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>data <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+                        <span class="token class-name">Double</span> value <span class="token operator">=</span> <span class="token constant">AVG_REPORTS</span><span class="token punctuation">.</span><span class="token function">containsKey</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span><span class="token function">getReport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> data<span class="token punctuation">.</span><span class="token function">getAvg</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> data<span class="token punctuation">.</span><span class="token function">getSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        row<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span><span class="token function">getReport</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span> row<span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>날짜와 리포트 항목으로 이루어진 <strong>시계열 데이터의 통계 정보</strong>를 날짜와 리포트 항목별 값 형태로 이루어지는 <strong>피봇 테이블 리스트</strong>로 바꿔보았습니다. 날짜를 포함한 하나 이상의 필드로 그룹핑 되면서 리포트 항목에 따라  <strong>합계</strong> 또는  <strong>평균값</strong>을 사용해야 합니다. <a href="https://www.baeldung.com/java-groupingby-collector">Collectors.groupingBy</a> 를 사용해서 데이터 리스트를 날짜 기준으로 그룹핑하고 각 리포트 항목을 하나의 Map 으로 생성하고나서 <strong>ObjectMapper</strong>를 사용해 피봇된 형태의 클래스를 가진 리스트로 변환했습니다. 위 예시에서 전력량에 대해서만 합계를 사용하지만 실제로는 대부분의 리포트 항목에 대해 합계값을 사용하게 되므로 평균값을 사용해야하는 리포트 항목만을 별도로 관리하도록 코드를 작성했습니다.</p>
+]]></content>
+      <tags>
+        <tag>List</tag>
+        <tag>Pivot</tag>
       </tags>
   </entry>
   <entry>
@@ -5889,106 +5889,6 @@ Caused by: com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unr
       </tags>
   </entry>
   <entry>
-    <title>KDB Connection Pool</title>
-    <url>/kdb-connection-pool/</url>
-    <content><![CDATA[<blockquote>
-<p>TCP 소켓이 연결된 상태로 남아있는 <a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2022-12-08.md">TCP 커넥션 누수 문제</a>를 경험하고나서 커넥션 풀 기능 구현에 대해서 다시한번 학습해보고 정리하는 글입니다.</p>
-</blockquote>
-<p>아마도 관계형 데이터베이스와 자주 사용되는 일부 데이터베이스들에 대한 커넥션 풀 기능은 직접 구현하지 않아도 되는 경우가 많습니다. 시스템에서 사용중인 시계열 데이터베이스는 <a href="https://github.com/KxSystems/javakdb/blob/master/javakdb/src/main/java/com/kx/c.java">자바 클라이언트 라이브러리</a>를 제공하고 있지만 시계열 데이터베이스가 단일 요청을 순차적으로 처리하는 싱글 스레드 방식임에 따라서 커넥션 풀 기능은 자체적으로 내장하고 있지 않습니다. 커넥션 풀 기능이 반드시 필요한 것은 아니지만 TCP 연결에 대한 부하를 생각한다면 자주 TCP 소켓을 연결하므로 발생할 수 있는 레이턴시를 및 자원 낭비를 무시할 수 없습니다.</p>
-<h4 id="자바-커넥션-풀-라이브러리"><a href="#자바-커넥션-풀-라이브러리" class="headerlink" title="자바 커넥션 풀 라이브러리"></a>자바 커넥션 풀 라이브러리</h4><p>자바 애플리케이션은 대부분 <a href="https://commons.apache.org/proper/commons-pool/">Apache Commons Pool2</a> 라이브러리를 활용해서 커넥션 풀 기능을 구현하는 경우가 많습니다. 대표적으로 레디스 클라이언트로 많이 사용중인 <a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java">Lettuce의 커넥션 풀 지원</a>을 확인할 수 있으며 <a href="https://commons.apache.org/proper/commons-dbcp/">Apache Commons DBCP2</a>라고 하는 관계형 데이터베이스에 대한 대표적인 커넥션 풀 라이브러리도 Commons Pool로 구현되어있음을 확인할 수 있습니다.</p>
-<blockquote>
-<p>Apache Commons Pool2에서는 <a href="https://commons.apache.org/proper/commons-pool/examples.html">간단한 PooledObjectFactory 예제</a>를 제공하고 있지만 자세한 설명이 없습니다.</p>
-</blockquote>
-<p>커넥션 풀 구현 예제를 검색해보면 생각보다 관련된 글이 없었기에 직접적으로 커넥션 풀 기능을 구현하는 개발자는 많지 않을 것이라 생각됩니다. 커넥션 오브젝트에 대한 라이프 사이클을 관리하는 것은 PooledObjectFactory 인터페이스가 담당하므로 원하는 커넥션 풀 동작을 BasePooledObjectFactory를 상속하여 구현하면 됩니다. 다만, 커네션 풀 구현 시 중요하게 생각해야할 부분은 BasePooledObjectFactory에서 기본적으로 구현해두어서 구현을 강제하지 않는 함수 중 커넥션 풀에서 관리하는 오브젝트가 삭제되는 대상이 되는 경우 호출되는 destoryObject 함수 동작을 생략해버릴 수 있다는 점 입니다.</p>
-<h4 id="CPooledObjectFactory"><a href="#CPooledObjectFactory" class="headerlink" title="CPooledObjectFactory"></a>CPooledObjectFactory</h4><p>커넥션 풀 기능을 처음 구현했을 당시에 고려하지 못한 미흡한 점을 인지하고 KDB 프로세스에 대한 커넥션의 라이프 사이클을 관리하는 CPooledObjectFactory를 다시 작성해보았습니다. </p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CPooledObjectFactory</span> <span class="token keyword">extends</span> <span class="token class-name">BasePooledObjectFactory</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
-
-    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> host<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> port<span class="token punctuation">;</span>
-
-    <span class="token keyword">public</span> <span class="token class-name">CPooledObjectFactory</span><span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token keyword">int</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>host <span class="token operator">=</span> host<span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> c <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token function">c</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token function">wrap</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DefaultPooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validateObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-            c c <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>s <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>s<span class="token punctuation">.</span><span class="token function">isConnected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            c<span class="token punctuation">.</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">c<span class="token punctuation">.</span></span>KException</span> <span class="token operator">|</span> <span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroyObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
-        <span class="token function">close</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
-                c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                <span class="token comment">// ignored</span>
-            <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>더 자세하게 PooledObjectFactory 구현에 대해서 고민하고 싶은 분들이라면 아래의 오픈소스들을 참고해보시기 바랍니다.</p>
-<ul>
-<li><a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java#L201">RedisPooledObjectFactory</a></li>
-<li><a href="https://github.com/apache/commons-dbcp/blob/master/src/main/java/org/apache/commons/dbcp2/PoolableConnectionFactory.java">PoolableConnectionFactory</a></li>
-</ul>
-<h4 id="CObjectPool"><a href="#CObjectPool" class="headerlink" title="CObjectPool"></a>CObjectPool</h4><p>이제는 커넥션 오브젝트를 관리할 방식에 대해서 설정하는 것을 고민해보아야 합니다. Apache Commons Pool에서 커넥션 오브젝트 라이프사이클에 따라 어떻게 관리할지 결정하기 위해서는 GenericObjectPoolConfig를 사용해야 합니다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CObjectPoolConfig</span> <span class="token keyword">extends</span> <span class="token class-name">GenericObjectPoolConfig</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">public</span> <span class="token class-name">CObjectPoolConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxTotal</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxIdle</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMinIdle</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxWait</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTimeBetweenEvictionRuns</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTestWhileIdle</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setJmxEnabled</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<p>커넥션 풀 라이브러리에서 제공하는 기본값 중에서 JMX 모니터링 기능을 사용하지 않으므로 비활성화 해두었으며 유휴 상태로 관리중인 커넥션에 대해서도 미리 커넥션 상태를 확인할 수 있도록 TestWhileIdle 옵션을 활성화하였습니다. MaxWait의 경우 사용중인 각 커넥션이 최대로 소요할 수 있는 임계치에 따라 3분 까지 기다릴 수 있도록 해두었습니다. </p>
-<blockquote>
-<p>By default, kdb+ is single-threaded, and processes incoming queries sequentially.</p>
-</blockquote>
-<p>커넥션 라이프 사이클에 따라서 커넥션 풀에서 커넥션 오브젝트가 삭제되는 사유에는 대표적으로 두가지가 있는데요. 하나는 유휴 상태에 있는 커넥션이 벨리데이션 쿼리를 수행하는 과정에서 소켓 통신 오류가 발생하거나 너무 오랬동안 커넥션이 사용되지 않아서 버려지고 새로운 커넥션을 만들어서 풀을 유지하는 상황입니다. 위 문구 내용처럼 시계열 데이터베이스는 빠르게 요청을 처리하기 위해서 싱글 스레드 방식을 통해서 단일 요청을 순차적으로 처리하는게 기본적인 기술 관점입니다. 이는 레디스에서 동시성을 구현하기 위해서 채택한 방법이기도 하므로 단순히 싱글 스레드여서 문제가 있다고 바라보면 안됩니다. </p>
-<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">exec</span> <span class="token number">0</span> ms <span class="token punctuation">(</span><span class="token number">481900</span> ns<span class="token punctuation">)</span></code></pre>
-
-<p>시계열 데이터베이스가 아무리 빠르다고 해도 긴 범위의 시계열 데이터를 조회하고 연산을 한다거나 TCP 소켓을 통해 전달해야할 데이터가 상당히 많은 경우라면 싱글 스레드의 단점으로 인하여 선행 요청에 의해 후행 요청이 기다리는 시간으로 인해 병목 현상이 발생할 수 있다는 점을 고려해야합니다. 만약, 그러한 상황이 자주 발생한다면 빠른 성능을 위해 싱글 스레드를 채택한 시계열 데이터베이스를 활용하는 방법이 잘못된 것일 수 있습니다.</p>
-<p>KDB 시계열 데이터베이스와 커넥션 풀 동작에 대해서 확인하고 싶다면 아래의 링크들을 참고하시기 바랍니다.</p>
-<ul>
-<li><a href="https://github.com/kdevkr/kdb">Learning KDB+</a></li>
-<li><a href="https://github.com/kdevkr/spring-demo-kdb">Spring Demo KDB</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>TCP</tag>
-        <tag>Connection Pool</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JSON Web Token</title>
     <url>/jwt/</url>
     <content><![CDATA[<p>최근 시스템에서 발송되는 특정 이메일에 포함되는 링크를 통해서 사용자가 관련된 페이지에 접근할 수 있도록 해달라는 요구사항이 있었습니다. 일반적으로 사용자가 이메일을 통해서 시스템에 접속하는 경우에는 자신의 계정과 비밀번호를 사용하여 시스템에 인증하기 전인 경우가 많습니다. 따라서, 이메일에 포함된 링크를 통해서 접근할 때 사용자 인증을 일시적으로 제공하는 방안을 도입해야합니다.</p>
@@ -6378,6 +6278,106 @@ openssl pkcs8 <span class="token parameter variable">-topk8</span> <span class="
 ]]></content>
   </entry>
   <entry>
+    <title>KDB Connection Pool</title>
+    <url>/kdb-connection-pool/</url>
+    <content><![CDATA[<blockquote>
+<p>TCP 소켓이 연결된 상태로 남아있는 <a href="https://github.com/kdevkr/mambo-box/blob/main/errors/2022-12-08.md">TCP 커넥션 누수 문제</a>를 경험하고나서 커넥션 풀 기능 구현에 대해서 다시한번 학습해보고 정리하는 글입니다.</p>
+</blockquote>
+<p>아마도 관계형 데이터베이스와 자주 사용되는 일부 데이터베이스들에 대한 커넥션 풀 기능은 직접 구현하지 않아도 되는 경우가 많습니다. 시스템에서 사용중인 시계열 데이터베이스는 <a href="https://github.com/KxSystems/javakdb/blob/master/javakdb/src/main/java/com/kx/c.java">자바 클라이언트 라이브러리</a>를 제공하고 있지만 시계열 데이터베이스가 단일 요청을 순차적으로 처리하는 싱글 스레드 방식임에 따라서 커넥션 풀 기능은 자체적으로 내장하고 있지 않습니다. 커넥션 풀 기능이 반드시 필요한 것은 아니지만 TCP 연결에 대한 부하를 생각한다면 자주 TCP 소켓을 연결하므로 발생할 수 있는 레이턴시를 및 자원 낭비를 무시할 수 없습니다.</p>
+<h4 id="자바-커넥션-풀-라이브러리"><a href="#자바-커넥션-풀-라이브러리" class="headerlink" title="자바 커넥션 풀 라이브러리"></a>자바 커넥션 풀 라이브러리</h4><p>자바 애플리케이션은 대부분 <a href="https://commons.apache.org/proper/commons-pool/">Apache Commons Pool2</a> 라이브러리를 활용해서 커넥션 풀 기능을 구현하는 경우가 많습니다. 대표적으로 레디스 클라이언트로 많이 사용중인 <a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java">Lettuce의 커넥션 풀 지원</a>을 확인할 수 있으며 <a href="https://commons.apache.org/proper/commons-dbcp/">Apache Commons DBCP2</a>라고 하는 관계형 데이터베이스에 대한 대표적인 커넥션 풀 라이브러리도 Commons Pool로 구현되어있음을 확인할 수 있습니다.</p>
+<blockquote>
+<p>Apache Commons Pool2에서는 <a href="https://commons.apache.org/proper/commons-pool/examples.html">간단한 PooledObjectFactory 예제</a>를 제공하고 있지만 자세한 설명이 없습니다.</p>
+</blockquote>
+<p>커넥션 풀 구현 예제를 검색해보면 생각보다 관련된 글이 없었기에 직접적으로 커넥션 풀 기능을 구현하는 개발자는 많지 않을 것이라 생각됩니다. 커넥션 오브젝트에 대한 라이프 사이클을 관리하는 것은 PooledObjectFactory 인터페이스가 담당하므로 원하는 커넥션 풀 동작을 BasePooledObjectFactory를 상속하여 구현하면 됩니다. 다만, 커네션 풀 구현 시 중요하게 생각해야할 부분은 BasePooledObjectFactory에서 기본적으로 구현해두어서 구현을 강제하지 않는 함수 중 커넥션 풀에서 관리하는 오브젝트가 삭제되는 대상이 되는 경우 호출되는 destoryObject 함수 동작을 생략해버릴 수 있다는 점 입니다.</p>
+<h4 id="CPooledObjectFactory"><a href="#CPooledObjectFactory" class="headerlink" title="CPooledObjectFactory"></a>CPooledObjectFactory</h4><p>커넥션 풀 기능을 처음 구현했을 당시에 고려하지 못한 미흡한 점을 인지하고 KDB 프로세스에 대한 커넥션의 라이프 사이클을 관리하는 CPooledObjectFactory를 다시 작성해보았습니다. </p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CPooledObjectFactory</span> <span class="token keyword">extends</span> <span class="token class-name">BasePooledObjectFactory</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> host<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token keyword">int</span> port<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">CPooledObjectFactory</span><span class="token punctuation">(</span><span class="token class-name">String</span> host<span class="token punctuation">,</span> <span class="token keyword">int</span> port<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>host <span class="token operator">=</span> host<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>port <span class="token operator">=</span> port<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> c <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token function">c</span><span class="token punctuation">(</span>host<span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token function">wrap</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">DefaultPooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">validateObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            c c <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>s <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> <span class="token operator">!</span>c<span class="token punctuation">.</span>s<span class="token punctuation">.</span><span class="token function">isConnected</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            c<span class="token punctuation">.</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name"><span class="token namespace">c<span class="token punctuation">.</span></span>KException</span> <span class="token operator">|</span> <span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroyObject</span><span class="token punctuation">(</span><span class="token class-name">PooledObject</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> p<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span><span class="token function">getObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span>c c<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                c<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IOException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// ignored</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>더 자세하게 PooledObjectFactory 구현에 대해서 고민하고 싶은 분들이라면 아래의 오픈소스들을 참고해보시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/lettuce-io/lettuce-core/blob/main/src/main/java/io/lettuce/core/support/ConnectionPoolSupport.java#L201">RedisPooledObjectFactory</a></li>
+<li><a href="https://github.com/apache/commons-dbcp/blob/master/src/main/java/org/apache/commons/dbcp2/PoolableConnectionFactory.java">PoolableConnectionFactory</a></li>
+</ul>
+<h4 id="CObjectPool"><a href="#CObjectPool" class="headerlink" title="CObjectPool"></a>CObjectPool</h4><p>이제는 커넥션 오브젝트를 관리할 방식에 대해서 설정하는 것을 고민해보아야 합니다. Apache Commons Pool에서 커넥션 오브젝트 라이프사이클에 따라 어떻게 관리할지 결정하기 위해서는 GenericObjectPoolConfig를 사용해야 합니다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CObjectPoolConfig</span> <span class="token keyword">extends</span> <span class="token class-name">GenericObjectPoolConfig</span><span class="token generics"><span class="token punctuation">&lt;</span>c<span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">CObjectPoolConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxTotal</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxIdle</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMinIdle</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setMaxWait</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTimeBetweenEvictionRuns</span><span class="token punctuation">(</span><span class="token class-name">Duration</span><span class="token punctuation">.</span><span class="token function">ofMinutes</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setTestWhileIdle</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setJmxEnabled</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>커넥션 풀 라이브러리에서 제공하는 기본값 중에서 JMX 모니터링 기능을 사용하지 않으므로 비활성화 해두었으며 유휴 상태로 관리중인 커넥션에 대해서도 미리 커넥션 상태를 확인할 수 있도록 TestWhileIdle 옵션을 활성화하였습니다. MaxWait의 경우 사용중인 각 커넥션이 최대로 소요할 수 있는 임계치에 따라 3분 까지 기다릴 수 있도록 해두었습니다. </p>
+<blockquote>
+<p>By default, kdb+ is single-threaded, and processes incoming queries sequentially.</p>
+</blockquote>
+<p>커넥션 라이프 사이클에 따라서 커넥션 풀에서 커넥션 오브젝트가 삭제되는 사유에는 대표적으로 두가지가 있는데요. 하나는 유휴 상태에 있는 커넥션이 벨리데이션 쿼리를 수행하는 과정에서 소켓 통신 오류가 발생하거나 너무 오랬동안 커넥션이 사용되지 않아서 버려지고 새로운 커넥션을 만들어서 풀을 유지하는 상황입니다. 위 문구 내용처럼 시계열 데이터베이스는 빠르게 요청을 처리하기 위해서 싱글 스레드 방식을 통해서 단일 요청을 순차적으로 처리하는게 기본적인 기술 관점입니다. 이는 레디스에서 동시성을 구현하기 위해서 채택한 방법이기도 하므로 단순히 싱글 스레드여서 문제가 있다고 바라보면 안됩니다. </p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">exec</span> <span class="token number">0</span> ms <span class="token punctuation">(</span><span class="token number">481900</span> ns<span class="token punctuation">)</span></code></pre>
+
+<p>시계열 데이터베이스가 아무리 빠르다고 해도 긴 범위의 시계열 데이터를 조회하고 연산을 한다거나 TCP 소켓을 통해 전달해야할 데이터가 상당히 많은 경우라면 싱글 스레드의 단점으로 인하여 선행 요청에 의해 후행 요청이 기다리는 시간으로 인해 병목 현상이 발생할 수 있다는 점을 고려해야합니다. 만약, 그러한 상황이 자주 발생한다면 빠른 성능을 위해 싱글 스레드를 채택한 시계열 데이터베이스를 활용하는 방법이 잘못된 것일 수 있습니다.</p>
+<p>KDB 시계열 데이터베이스와 커넥션 풀 동작에 대해서 확인하고 싶다면 아래의 링크들을 참고하시기 바랍니다.</p>
+<ul>
+<li><a href="https://github.com/kdevkr/kdb">Learning KDB+</a></li>
+<li><a href="https://github.com/kdevkr/spring-demo-kdb">Spring Demo KDB</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>TCP</tag>
+        <tag>Connection Pool</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>KDB+ 시계열 데이터베이스</title>
     <url>/kdb-plus/</url>
     <content><![CDATA[<p>KDB+는 벡터 기반의 언어를 제공하며 높은 성능을 제공하는 시계열 데이터베이스를 조금 더 활용할 수 있는 방안을 알아보자.</p>
@@ -6516,13 +6516,13 @@ meter_with_attr<span class="token verb operator">:</span><span class="token keyw
   <entry>
     <title>Keycloak - Kakao Identity Provider</title>
     <url>/keycloak-kakao-idp/</url>
-    <content><![CDATA[<p>통합 인증을 위한 IAM 오픈소스인 키클록(Keycloak)에서 카카오 소셜 프로바이더를 IdP(Identity Provider)로 렐름(Realm)에 추가하고 카카오 계정으로 로그인하여 사용자를 인증해보도록 하자. 우선 카카오 소셜 프로바이더는 <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc">OpenID Connect</a> 규격을 지원하고 있으므로 키클록에서 기본적으로 제공해주고 있는 <U>OpenID Connect v1.0</U> 프로바이더 방식으로 추가하여 로그인 화면에 선택 옵션으로 노출시킬 수 있다.</p>
+    <content><![CDATA[<p>통합 인증을 위한 IAM 오픈소스인 키클록(Keycloak)에서 카카오 소셜 프로바이더를 IdP(Identity Provider)로 렐름(Realm)에 추가하고 카카오 계정으로 로그인하여 사용자를 인증해보도록 하자. 우선 카카오 소셜 프로바이더는 <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/utilize#oidc">OpenID Connect</a> 규격을 지원하고 있으므로 키클록에서 기본적으로 제공해주고 있는  <u>OpenID Connect v1.0</u> 프로바이더 방식으로 추가하여 로그인 화면에 선택 옵션으로 노출시킬 수 있다.</p>
 <h4 id="카카오-로그인을-위한-REST-API-키와-클라이언트-시크릿"><a href="#카카오-로그인을-위한-REST-API-키와-클라이언트-시크릿" class="headerlink" title="카카오 로그인을 위한 REST API 키와 클라이언트 시크릿"></a>카카오 로그인을 위한 REST API 키와 클라이언트 시크릿</h4><p>우선, <a href="https://developers.kakao.com/">카카오 디펠로퍼스</a>에 카카오 계정으로 로그인한 후 애플리케이션을 만들고 카카오 로그인에 대한 설정을 진행하자. 키클록에서 OpenID Connect Provider 설정에 입력할 클라이언트 아이디와 클라이언트 시크릿 정보를 다음의 메뉴에서 확인하도록 하자. 클라이언트 시크릿은 코드 교환 과정에서는 노출되지 않으며 사용자 인증 후 코드를 통해 ID 토큰을 발급받기 위해서 사용된다.</p>
 <ul>
 <li>Client ID : 내 애플리케이션 → 앱 설정 → 앱 키 (REST API 키)</li>
 <li>Client Secret : 내 애플리케이션 → 제품 설정 → 카카오 로그인 → 보안 (Client Secret)</li>
 </ul>
-<h4 id="키클록에-카카오-OpenID-Connect-Provider-추가"><a href="#키클록에-카카오-OpenID-Connect-Provider-추가" class="headerlink" title="키클록에 카카오 OpenID Connect Provider 추가"></a>키클록에 카카오 OpenID Connect Provider 추가</h4><p>Identity Providers 목록에서 <U>OpenID Connect v1.0</U>을 선택하고 <U>Discovery endpoint</U> 에 카카오 로그인의 <a href="https://kauth.kakao.com/.well-known/openid-configuration">OpenID Connect Discovery Metadata</a> 주소를 입력하게 되면 키클록에서는 OpenID Connect 메타데이터를 불러와서 자동으로 입력해준다. 그리고 앞서 카카오 디펠로퍼스에서 확인해두었던 REST API 키와 클라이언트 시크릿을 입력하도록 하자.</p>
+<h4 id="키클록에-카카오-OpenID-Connect-Provider-추가"><a href="#키클록에-카카오-OpenID-Connect-Provider-추가" class="headerlink" title="키클록에 카카오 OpenID Connect Provider 추가"></a>키클록에 카카오 OpenID Connect Provider 추가</h4><p>Identity Providers 목록에서  <u>OpenID Connect v1.0</u>을 선택하고  <u>Discovery endpoint</u> 에 카카오 로그인의 <a href="https://kauth.kakao.com/.well-known/openid-configuration">OpenID Connect Discovery Metadata</a> 주소를 입력하게 되면 키클록에서는 OpenID Connect 메타데이터를 불러와서 자동으로 입력해준다. 그리고 앞서 카카오 디펠로퍼스에서 확인해두었던 REST API 키와 클라이언트 시크릿을 입력하도록 하자.</p>
 <ul>
 <li>Client ID : 내 애플리케이션 → 앱 설정 → 앱 키 (REST API 키)</li>
 <li>Client Secret : 내 애플리케이션 → 제품 설정 → 카카오 로그인 → 보안 (Client Secret)</li>
@@ -6532,13 +6532,13 @@ meter_with_attr<span class="token verb operator">:</span><span class="token keyw
 <p>카카오에서는 서명 알고리즘으로 RS256 한가지를 지원하므로 굳이 선택할 필요는 없습니다.</p>
 </blockquote>
 <p><img data-src="/images/posts/keycloak-kakao-idp/01.png"></p>
-<h4 id="카카오-로그인-OpenID-Connect-활성화-설정-및-Redirect-URI-추가"><a href="#카카오-로그인-OpenID-Connect-활성화-설정-및-Redirect-URI-추가" class="headerlink" title="카카오 로그인 OpenID Connect 활성화 설정 및 Redirect URI 추가"></a>카카오 로그인 OpenID Connect 활성화 설정 및 Redirect URI 추가</h4><p>애플리케이션의 제품 설정에서 카카오 로그인과 OpenID Connect 옵션을 활성화하고 키클록에 추가한 IdP 브로커에 표시되는 <U>Redirect URI</U> 주소를 카카오 로그인의 Redirect URI 목록에 추가하면 된다. </p>
+<h4 id="카카오-로그인-OpenID-Connect-활성화-설정-및-Redirect-URI-추가"><a href="#카카오-로그인-OpenID-Connect-활성화-설정-및-Redirect-URI-추가" class="headerlink" title="카카오 로그인 OpenID Connect 활성화 설정 및 Redirect URI 추가"></a>카카오 로그인 OpenID Connect 활성화 설정 및 Redirect URI 추가</h4><p>애플리케이션의 제품 설정에서 카카오 로그인과 OpenID Connect 옵션을 활성화하고 키클록에 추가한 IdP 브로커에 표시되는  <u>Redirect URI</u> 주소를 카카오 로그인의 Redirect URI 목록에 추가하면 된다. </p>
 <p><img data-src="/images/posts/keycloak-kakao-idp/02.png"></p>
-<h4 id="코드-교환-과정에서-PKCE-사용하기"><a href="#코드-교환-과정에서-PKCE-사용하기" class="headerlink" title="코드 교환 과정에서 PKCE 사용하기"></a>코드 교환 과정에서 PKCE 사용하기</h4><p>카카오 소셜 프로바이더는 <U>S256 방식의 PKCE</U>를 지원하므로 코드 교환 과정(Authorization Code Flow)에서 PKCE를 사용할 수 있다. </p>
+<h4 id="코드-교환-과정에서-PKCE-사용하기"><a href="#코드-교환-과정에서-PKCE-사용하기" class="headerlink" title="코드 교환 과정에서 PKCE 사용하기"></a>코드 교환 과정에서 PKCE 사용하기</h4><p>카카오 소셜 프로바이더는  <u>S256 방식의 PKCE</u>를 지원하므로 코드 교환 과정(Authorization Code Flow)에서 PKCE를 사용할 수 있다. </p>
 <p><img data-src="/images/posts/keycloak-kakao-idp/03.png"></p>
-<h4 id="사용자-콘솔-로그인-화면에서-카카오-계정으로-로그인"><a href="#사용자-콘솔-로그인-화면에서-카카오-계정으로-로그인" class="headerlink" title="사용자 콘솔 로그인 화면에서 카카오 계정으로 로그인"></a>사용자 콘솔 로그인 화면에서 카카오 계정으로 로그인</h4><p>카카오 로그인을 위한 IdP를 추가했으므로 <U>사용자 콘솔(account-console)</U>의 로그인 화면에 카카오 프로바이더가 옵션으로 표시된다.  사용자 콘솔의 로그인 화면에서 카카오 프로바이더 이름을 선택하면 카카오 계정 로그인 화면으로 리다이렉트되며 카카오 계정으로 로그인하고 동의 항목에 따라 진행하면 키클록 사용자로 추가된다. 만약, 아래와 같이 <U>카카오 계정(이메일)에 대한 수집 항목</U>에 동의했다면 사용자 이름과 이메일이 모두 이메일로 설정되며 사용자 정보 입력 단계없이 사용자가 만들어지고 사용자 콘솔 화면이 보인다.</p>
+<h4 id="사용자-콘솔-로그인-화면에서-카카오-계정으로-로그인"><a href="#사용자-콘솔-로그인-화면에서-카카오-계정으로-로그인" class="headerlink" title="사용자 콘솔 로그인 화면에서 카카오 계정으로 로그인"></a>사용자 콘솔 로그인 화면에서 카카오 계정으로 로그인</h4><p>카카오 로그인을 위한 IdP를 추가했으므로  <u>사용자 콘솔(account-console)</u>의 로그인 화면에 카카오 프로바이더가 옵션으로 표시된다.  사용자 콘솔의 로그인 화면에서 카카오 프로바이더 이름을 선택하면 카카오 계정 로그인 화면으로 리다이렉트되며 카카오 계정으로 로그인하고 동의 항목에 따라 진행하면 키클록 사용자로 추가된다. 만약, 아래와 같이  <u>카카오 계정(이메일)에 대한 수집 항목</u>에 동의했다면 사용자 이름과 이메일이 모두 이메일로 설정되며 사용자 정보 입력 단계없이 사용자가 만들어지고 사용자 콘솔 화면이 보인다.</p>
 <p><img data-src="/images/posts/keycloak-kakao-idp/04.png"></p>
-<h4 id="Add-Identity-Provider-Mapper"><a href="#Add-Identity-Provider-Mapper" class="headerlink" title="Add Identity Provider Mapper"></a>Add Identity Provider Mapper</h4><p>카카오 <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-response-id-token">ID 토큰 페이로드</a>에는 수집 동의 항목에 따라 클레임이 포함되어 있는데 이것을 <U>User Attribute</U> 에 추가하기 위해서는 Mapper 설정이 필요하다. </p>
+<h4 id="Add-Identity-Provider-Mapper"><a href="#Add-Identity-Provider-Mapper" class="headerlink" title="Add Identity Provider Mapper"></a>Add Identity Provider Mapper</h4><p>카카오 <a href="https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-token-response-id-token">ID 토큰 페이로드</a>에는 수집 동의 항목에 따라 클레임이 포함되어 있는데 이것을  <u>User Attribute</u> 에 추가하기 위해서는 Mapper 설정이 필요하다. </p>
 <ul>
 <li>username : sub</li>
 <li>nickname : nickname</li>
@@ -7222,6 +7222,47 @@ WantedBy=multi-user.target</code></pre>
       </tags>
   </entry>
   <entry>
+    <title>Mapstruct (Feat. Gradle)</title>
+    <url>/mapstruct/</url>
+    <content><![CDATA[<p>자바 진영에서 오브젝트 간 변환을 위해서 사용할 수 있는 오브젝트 매핑 라이브러리에는 ModelMapper와 MapStruct가 있다. 현재 시스템에서는 일반적으로 사용하는 ModelMapper로도 충분했기 때문에 MapStruct를 굳이 도입하여 사용하지는 않았다. 오브젝트 변환이 반복적으로 많이 이루어지는 케이스가 있을때 리플렉션으로 인한 단점을 보완하기 위해서 직접적으로 오브젝트 변환을 수행하도록 하는 코드를 작성하거나 빌드 과정에서 매퍼에 대한 인터페이스 구현체를 만드는 <a href="https://mapstruct.org/">Mapstruct</a>가 요구되기 때문에 도입하게 된다. 현재 시스템에서 특정 데이터를 조회하는 과정에서 꽤나 많은 변환이 이루어질 수 있는 가능성이 발생했기 때문에 (예를 들어 약 2~300명의 개별 통계 데이터를 한번에 조회) 도입을 고려하게 되었다.</p>
+<h4 id="Mapstruct에-대해-알아보기"><a href="#Mapstruct에-대해-알아보기" class="headerlink" title="Mapstruct에 대해 알아보기"></a>Mapstruct에 대해 알아보기</h4><ul>
+<li><a href="https://meetup.nhncloud.com/posts/213">Object Mapping 어디까지 해봤니?</a></li>
+<li><a href="https://medium.com/naver-cloud-platform/%EA%B8%B0%EC%88%A0-%EC%BB%A8%ED%85%90%EC%B8%A0-%EB%AC%B8%EC%9E%90-%EC%95%8C%EB%A6%BC-%EB%B0%9C%EC%86%A1-%EC%84%9C%EB%B9%84%EC%8A%A4-sens%EC%9D%98-mapstruct-%EC%A0%81%EC%9A%A9%EA%B8%B0-8fd2bc2bc33b">편리한 객체 간 매핑을 위한 MapStruct 적용기 (feat. SENS)</a></li>
+<li><a href="https://www.baeldung.com/java-performance-mapping-frameworks">Performance of Java Mapping Frameworks</a></li>
+</ul>
+<blockquote>
+<p>※ MapStruct에 대한 예제는 <a href="https://github.com/mapstruct/mapstruct-examples">github.com&#x2F;mapstruct&#x2F;mapsturct-examples</a>에서 확인할 수 있다.</p>
+</blockquote>
+<h4 id="개별-디펜던시-추가"><a href="#개별-디펜던시-추가" class="headerlink" title="개별 디펜던시 추가"></a>개별 디펜던시 추가</h4><p>Mapstruct를 적용하는 방법에 대한 글에서 살펴보면 디펜던시 순서를 중요하게 정의해야한다고 되어있지만 상관없어진지 오래되었다. 아무튼 Lombok 그래들 플러그인을 사용하고 있을 경우에도 <code>lombok-mapstruct-binding</code>를 아래와 같이 나열하면 된다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+<span class="token punctuation">&#125;</span>
+
+ext <span class="token punctuation">&#123;</span>
+    mapstructVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.5.5.Final"</span></span>
+    lombokVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.18.26"</span></span>
+    lombokMapstructBindingVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"0.2.0"</span></span>
+<span class="token punctuation">&#125;</span>
+
+dependencies <span class="token punctuation">&#123;</span>
+    implementation <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
+    annotationProcessor <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct-processor:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> <span class="token interpolation-string"><span class="token string">"org.projectlombok:lombok-mapstruct-binding:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">lombokMapstructBindingVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="Gradle-플러그인을-이용하는-방법-Recommanded"><a href="#Gradle-플러그인을-이용하는-방법-Recommanded" class="headerlink" title="Gradle 플러그인을 이용하는 방법 (Recommanded)"></a>Gradle 플러그인을 이용하는 방법 (Recommanded)</h4><p><a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a> 그래들 플러그인을 사용하고 있는 경우라면 위의 개별적으로 디펜던시를 나열하기보다는 <a href="https://github.com/AkaZver/mapstruct-plugin">Gradle Mapstruct Plugin</a>을 사용하는 게 더 간단하기 때문에 롬복과 동일하게 그래들 플러그인 방식을 추천한다.</p>
+<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+    id <span class="token string">'com.github.akazver.mapstruct'</span> version <span class="token string">'1.0.5'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<blockquote>
+<p>Plugin will add mapstruct with mapstruct-processor by default<br>If you are using lombok it will add lombok-mapstruct-binding, if spring - mapstruct-spring-extensions</p>
+</blockquote>
+<h4 id="깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA"><a href="#깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA" class="headerlink" title="깃에서 src/main/generated 디렉토리 무시하기 (Intellij IDEA)"></a>깃에서 <code>src/main/generated</code> 디렉토리 무시하기 (Intellij IDEA)</h4><p>기본적으로 그래들 빌드 과정에서 <code>build/generated/sources/annotationProcessor</code> 경로에 인터페이스 구현체가 만들어지고 <code>build/classes</code> 경로로 복사된다. 하지만, 인텔리제이에서 Gradle이 아닌 <code>Intellij IDEA</code>로 선택하여 구동되도록 변경하는 경우에는 <code>src/main/generated</code> 경로에 만들어지게 되므로 <code>.gitignore</code> 파일에 빌드 과정에서 MapStruct에 의해 만들어지는 인터페이스 구현체를 제외하는 것이 필요하다.</p>
+<pre class="language-ignore" data-language="ignore"><div class="caption"><span>.gitignore</span></div><code class="language-ignore"><span class="token entry string">src<span class="token punctuation">/</span>main<span class="token punctuation">/</span>generated<span class="token punctuation">/</span></span></code></pre>
+
+]]></content>
+  </entry>
+  <entry>
     <title>XML로 다국어 메시지 관리하기</title>
     <url>/managing-i18n-messages-with-xml/</url>
     <content><![CDATA[<blockquote>
@@ -7538,47 +7579,6 @@ WantedBy=multi-user.target</code></pre>
 <li><a href="https://firstboos.tistory.com/entry/XML-%EA%B8%B0%EB%B0%98%EC%9D%98-Resource-Bundle-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0">XML 기반의 Resource Bundle, PropertyPlaceHolder 사용하기</a></li>
 <li><a href="http://www.fun25.co.kr/blog/java-xml-parser-example-documentbuilder">[자바] XML 파싱 예제 - DocumentBuilder</a></li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Mapstruct (Feat. Gradle)</title>
-    <url>/mapstruct/</url>
-    <content><![CDATA[<p>자바 진영에서 오브젝트 간 변환을 위해서 사용할 수 있는 오브젝트 매핑 라이브러리에는 ModelMapper와 MapStruct가 있다. 현재 시스템에서는 일반적으로 사용하는 ModelMapper로도 충분했기 때문에 MapStruct를 굳이 도입하여 사용하지는 않았다. 오브젝트 변환이 반복적으로 많이 이루어지는 케이스가 있을때 리플렉션으로 인한 단점을 보완하기 위해서 직접적으로 오브젝트 변환을 수행하도록 하는 코드를 작성하거나 빌드 과정에서 매퍼에 대한 인터페이스 구현체를 만드는 <a href="https://mapstruct.org/">Mapstruct</a>가 요구되기 때문에 도입하게 된다. 현재 시스템에서 특정 데이터를 조회하는 과정에서 꽤나 많은 변환이 이루어질 수 있는 가능성이 발생했기 때문에 (예를 들어 약 2~300명의 개별 통계 데이터를 한번에 조회) 도입을 고려하게 되었다.</p>
-<h4 id="Mapstruct에-대해-알아보기"><a href="#Mapstruct에-대해-알아보기" class="headerlink" title="Mapstruct에 대해 알아보기"></a>Mapstruct에 대해 알아보기</h4><ul>
-<li><a href="https://meetup.nhncloud.com/posts/213">Object Mapping 어디까지 해봤니?</a></li>
-<li><a href="https://medium.com/naver-cloud-platform/%EA%B8%B0%EC%88%A0-%EC%BB%A8%ED%85%90%EC%B8%A0-%EB%AC%B8%EC%9E%90-%EC%95%8C%EB%A6%BC-%EB%B0%9C%EC%86%A1-%EC%84%9C%EB%B9%84%EC%8A%A4-sens%EC%9D%98-mapstruct-%EC%A0%81%EC%9A%A9%EA%B8%B0-8fd2bc2bc33b">편리한 객체 간 매핑을 위한 MapStruct 적용기 (feat. SENS)</a></li>
-<li><a href="https://www.baeldung.com/java-performance-mapping-frameworks">Performance of Java Mapping Frameworks</a></li>
-</ul>
-<blockquote>
-<p>※ MapStruct에 대한 예제는 <a href="https://github.com/mapstruct/mapstruct-examples">github.com&#x2F;mapstruct&#x2F;mapsturct-examples</a>에서 확인할 수 있다.</p>
-</blockquote>
-<h4 id="개별-디펜던시-추가"><a href="#개별-디펜던시-추가" class="headerlink" title="개별 디펜던시 추가"></a>개별 디펜던시 추가</h4><p>Mapstruct를 적용하는 방법에 대한 글에서 살펴보면 디펜던시 순서를 중요하게 정의해야한다고 되어있지만 상관없어진지 오래되었다. 아무튼 Lombok 그래들 플러그인을 사용하고 있을 경우에도 <code>lombok-mapstruct-binding</code>를 아래와 같이 나열하면 된다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
-<span class="token punctuation">&#125;</span>
-
-ext <span class="token punctuation">&#123;</span>
-    mapstructVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.5.5.Final"</span></span>
-    lombokVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"1.18.26"</span></span>
-    lombokMapstructBindingVersion <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">"0.2.0"</span></span>
-<span class="token punctuation">&#125;</span>
-
-dependencies <span class="token punctuation">&#123;</span>
-    implementation <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
-    annotationProcessor <span class="token interpolation-string"><span class="token string">"org.mapstruct:mapstruct-processor:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">mapstructVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">,</span> <span class="token interpolation-string"><span class="token string">"org.projectlombok:lombok-mapstruct-binding:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">lombokMapstructBindingVersion</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"</span></span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="Gradle-플러그인을-이용하는-방법-Recommanded"><a href="#Gradle-플러그인을-이용하는-방법-Recommanded" class="headerlink" title="Gradle 플러그인을 이용하는 방법 (Recommanded)"></a>Gradle 플러그인을 이용하는 방법 (Recommanded)</h4><p><a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a> 그래들 플러그인을 사용하고 있는 경우라면 위의 개별적으로 디펜던시를 나열하기보다는 <a href="https://github.com/AkaZver/mapstruct-plugin">Gradle Mapstruct Plugin</a>을 사용하는 게 더 간단하기 때문에 롬복과 동일하게 그래들 플러그인 방식을 추천한다.</p>
-<pre class="language-groovy" data-language="groovy"><div class="caption"><span>build.gradle</span></div><code class="language-groovy">plugins <span class="token punctuation">&#123;</span>
-    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
-    id <span class="token string">'com.github.akazver.mapstruct'</span> version <span class="token string">'1.0.5'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-<blockquote>
-<p>Plugin will add mapstruct with mapstruct-processor by default<br>If you are using lombok it will add lombok-mapstruct-binding, if spring - mapstruct-spring-extensions</p>
-</blockquote>
-<h4 id="깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA"><a href="#깃에서-src-main-generated-디렉토리-무시하기-Intellij-IDEA" class="headerlink" title="깃에서 src/main/generated 디렉토리 무시하기 (Intellij IDEA)"></a>깃에서 <code>src/main/generated</code> 디렉토리 무시하기 (Intellij IDEA)</h4><p>기본적으로 그래들 빌드 과정에서 <code>build/generated/sources/annotationProcessor</code> 경로에 인터페이스 구현체가 만들어지고 <code>build/classes</code> 경로로 복사된다. 하지만, 인텔리제이에서 Gradle이 아닌 <code>Intellij IDEA</code>로 선택하여 구동되도록 변경하는 경우에는 <code>src/main/generated</code> 경로에 만들어지게 되므로 <code>.gitignore</code> 파일에 빌드 과정에서 MapStruct에 의해 만들어지는 인터페이스 구현체를 제외하는 것이 필요하다.</p>
-<pre class="language-ignore" data-language="ignore"><div class="caption"><span>.gitignore</span></div><code class="language-ignore"><span class="token entry string">src<span class="token punctuation">/</span>main<span class="token punctuation">/</span>generated<span class="token punctuation">/</span></span></code></pre>
-
 ]]></content>
   </entry>
   <entry>
@@ -8002,6 +8002,27 @@ qrGenerator<span class="token punctuation">.</span><span class="token function">
       </tags>
   </entry>
   <entry>
+    <title>OpenFeign 도입을 고민해보자</title>
+    <url>/open-feign/</url>
+    <content><![CDATA[<p>마이크로서비스 개발에 있어서 OpenFeign 활용에 대한 부분이 아닌 작은 모놀리식으로 구성된 소규모 시스템에서도 <code>Apache HttpClient</code>를 직접적으로 사용하지 않고 어노테이션과 인터페이스 기반의 선언적으로 통신에 대한 로직을 작성하는 것을 고민하게 되는 부분을 적어보고자 한다.</p>
+<h4 id="통신-로직에-대한-반복적인-코드-작성"><a href="#통신-로직에-대한-반복적인-코드-작성" class="headerlink" title="통신 로직에 대한 반복적인 코드 작성"></a>통신 로직에 대한 반복적인 코드 작성</h4><p>RestTemplate와 HttpClient를 직접적으로 사용하여 통신에 대한 코드를 작성하는 경우 URI 구성과 쿼리 파라미터 그리고 폼 데이터 또는 요청 데이터 그리고 응답 결과에 대한 데이터 처리까지 아래와 같은 부분들이 강제화 되어버리는 경우가 많은 것 같다.</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">ObjectMapper</span> objectMapper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name">LoginEntity</span> login <span class="token operator">=</span> objectMapper<span class="token punctuation">.</span><span class="token function">readValue</span><span class="token punctuation">(</span>json<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<p>통신해야하는 시스템에서 제공하는 REST API 규격에 따라 쿼리 파라미터 또는 요청 데이터를 직접 구성해야하고 전달받은 응답에 대하여 위와 같이 직접적으로 원하는 모델 클래스로 변환하는 코드를 작성해야만 한다. 이것은 스프링 백엔드 개발자가 Spring MVC의 컨트롤러를 작성하는 것과는 다른데 <a href="https://github.com/OpenFeign/feign">OpenFeign</a> 클라이언트는 <code>선언적인(Declarative) 방식을 통해 이러한 과정을 간소화</code>하고 Spring MVC와 비슷한 방식으로 작성됨에 따라서 시스템 간 연동을 위한 통신 로직을 작성하고 관리하기 용이한 장점을 가지고 있는 것 같다.</p>
+<h4 id="의존-시스템에-대한-장애-처리-부족"><a href="#의존-시스템에-대한-장애-처리-부족" class="headerlink" title="의존 시스템에 대한 장애 처리 부족"></a>의존 시스템에 대한 장애 처리 부족</h4><p>마이크로서비스 구성이 아닌 일반적인 소규모 시스템에서 RestTemplate와 HttpClient를 직접적으로 사용하다보면 <code>시스템 간 통신에 대한 오류와 재시도 방안에 대한 고민을 하지 않고 무시하게 되는 경우</code>가 많다. OpenFeign은 마이크로서비스 개발에 사용되어지는 만큼 마이크로서비스에서 중요시하게 되는 장애 전파 방지에 대한 부분을 고려할 수 있다.</p>
+<h4 id="마이크로서비스-구성-확장에-대한-고려"><a href="#마이크로서비스-구성-확장에-대한-고려" class="headerlink" title="마이크로서비스 구성 확장에 대한 고려"></a>마이크로서비스 구성 확장에 대한 고려</h4><p>모놀리식 아키텍처로 구성되는 소규모 시스템도 현재 시스템 규모와 요구사항을 넘어 대규모 트래픽 또는 데이터를 처리하기 위한 시스템으로 확장되는 것을 목표로 하는 경우가 대부분이다. 현재 신규 프로젝트도 마이크로서비스 구성을 목표로 초기 설계가 되어있음에 따라 Spring Cloud 모듈에 대한 의존성을 보유하고 있다. Spring Cloud OpenFeign 로 작성되어있는 경우 <code>서비스 디스커버리를 위한 Eureka와 장애 처리를 위한 Resilience4J 과의 통합이 용이하다</code>고 한다.</p>
+<p>이와 같이 마이크로서비스 아키텍처가 아니더라도 외부 시스템 또는 시스템 간 통신이 많은 시스템의 프로젝트라면 OpenFeign 클라이언트 도입을 고려해볼만하지 않을까? 물론, <a href="https://toss.tech/article/engineering-note-3">Feign 코드 분석과 서버 성능 개선</a> 에서처럼 문제가 내재되지 않는 건 아님을 감안하긴 해야겠지만 말이다.</p>
+<hr>
+<h4 id="🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유"><a href="#🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유" class="headerlink" title="🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유"></a>🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유</h4><p>FeignClient에 대한 간단한 예제 코드를 작성해보던 중에 GET 요청이 POST로 전환되어 요청되는 문제를 경험했다. GET 요청 시 쿼리 파라미터를 전달하기 위해서는 <code>@SpringQueryMap를 해당 파라미터에 선언해야</code>하더라. 쿼리 파라미터가 전달되지 않는 경우가 아닌 선언된 요청 함수가 바뀌어버리는 건 신기한 부분이다.</p>
+]]></content>
+      <tags>
+        <tag>OpenFeign</tag>
+        <tag>HttpClient</tag>
+        <tag>RestTemplate</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>패스키 로그인 고도화</title>
     <url>/passkey-login-advanced/</url>
     <content><![CDATA[<h4 id="패스키-생성-알고리즘"><a href="#패스키-생성-알고리즘" class="headerlink" title="패스키 생성 알고리즘"></a>패스키 생성 알고리즘</h4><p>패스키 등록 시 PublicKeyCredentialCreationOptions의 pubKeyCredParams 를 통해 RP 서버에서 선호하는 공개키 알고리즘 목록을 제공할 수 있는데요. 이때 공개키 알고리즘 목록에는 ES256과 RS256은 반드시 포함하는게 좋습니다. 그 이유는 <a href="https://github.com/w3c/webauthn/issues/1757#issuecomment-1169035781">대부분 ES256를 지원하고 일부는 RS256를 지원</a>한다고 하기 때문입니다.</p>
@@ -8048,27 +8069,6 @@ qrGenerator<span class="token punctuation">.</span><span class="token function">
       <tags>
         <tag>Passkey</tag>
         <tag>WebAuthn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>OpenFeign 도입을 고민해보자</title>
-    <url>/open-feign/</url>
-    <content><![CDATA[<p>마이크로서비스 개발에 있어서 OpenFeign 활용에 대한 부분이 아닌 작은 모놀리식으로 구성된 소규모 시스템에서도 <code>Apache HttpClient</code>를 직접적으로 사용하지 않고 어노테이션과 인터페이스 기반의 선언적으로 통신에 대한 로직을 작성하는 것을 고민하게 되는 부분을 적어보고자 한다.</p>
-<h4 id="통신-로직에-대한-반복적인-코드-작성"><a href="#통신-로직에-대한-반복적인-코드-작성" class="headerlink" title="통신 로직에 대한 반복적인 코드 작성"></a>통신 로직에 대한 반복적인 코드 작성</h4><p>RestTemplate와 HttpClient를 직접적으로 사용하여 통신에 대한 코드를 작성하는 경우 URI 구성과 쿼리 파라미터 그리고 폼 데이터 또는 요청 데이터 그리고 응답 결과에 대한 데이터 처리까지 아래와 같은 부분들이 강제화 되어버리는 경우가 많은 것 같다.</p>
-<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">ObjectMapper</span> objectMapper <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token class-name">LoginEntity</span> login <span class="token operator">=</span> objectMapper<span class="token punctuation">.</span><span class="token function">readValue</span><span class="token punctuation">(</span>json<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">TypeReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-
-<p>통신해야하는 시스템에서 제공하는 REST API 규격에 따라 쿼리 파라미터 또는 요청 데이터를 직접 구성해야하고 전달받은 응답에 대하여 위와 같이 직접적으로 원하는 모델 클래스로 변환하는 코드를 작성해야만 한다. 이것은 스프링 백엔드 개발자가 Spring MVC의 컨트롤러를 작성하는 것과는 다른데 <a href="https://github.com/OpenFeign/feign">OpenFeign</a> 클라이언트는 <code>선언적인(Declarative) 방식을 통해 이러한 과정을 간소화</code>하고 Spring MVC와 비슷한 방식으로 작성됨에 따라서 시스템 간 연동을 위한 통신 로직을 작성하고 관리하기 용이한 장점을 가지고 있는 것 같다.</p>
-<h4 id="의존-시스템에-대한-장애-처리-부족"><a href="#의존-시스템에-대한-장애-처리-부족" class="headerlink" title="의존 시스템에 대한 장애 처리 부족"></a>의존 시스템에 대한 장애 처리 부족</h4><p>마이크로서비스 구성이 아닌 일반적인 소규모 시스템에서 RestTemplate와 HttpClient를 직접적으로 사용하다보면 <code>시스템 간 통신에 대한 오류와 재시도 방안에 대한 고민을 하지 않고 무시하게 되는 경우</code>가 많다. OpenFeign은 마이크로서비스 개발에 사용되어지는 만큼 마이크로서비스에서 중요시하게 되는 장애 전파 방지에 대한 부분을 고려할 수 있다.</p>
-<h4 id="마이크로서비스-구성-확장에-대한-고려"><a href="#마이크로서비스-구성-확장에-대한-고려" class="headerlink" title="마이크로서비스 구성 확장에 대한 고려"></a>마이크로서비스 구성 확장에 대한 고려</h4><p>모놀리식 아키텍처로 구성되는 소규모 시스템도 현재 시스템 규모와 요구사항을 넘어 대규모 트래픽 또는 데이터를 처리하기 위한 시스템으로 확장되는 것을 목표로 하는 경우가 대부분이다. 현재 신규 프로젝트도 마이크로서비스 구성을 목표로 초기 설계가 되어있음에 따라 Spring Cloud 모듈에 대한 의존성을 보유하고 있다. Spring Cloud OpenFeign 로 작성되어있는 경우 <code>서비스 디스커버리를 위한 Eureka와 장애 처리를 위한 Resilience4J 과의 통합이 용이하다</code>고 한다.</p>
-<p>이와 같이 마이크로서비스 아키텍처가 아니더라도 외부 시스템 또는 시스템 간 통신이 많은 시스템의 프로젝트라면 OpenFeign 클라이언트 도입을 고려해볼만하지 않을까? 물론, <a href="https://toss.tech/article/engineering-note-3">Feign 코드 분석과 서버 성능 개선</a> 에서처럼 문제가 내재되지 않는 건 아님을 감안하긴 해야겠지만 말이다.</p>
-<hr>
-<h4 id="🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유"><a href="#🔥-FeignClient-에서-GET-대신에-POST-요청이-되는-이유" class="headerlink" title="🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유"></a>🔥 FeignClient 에서 GET 대신에 POST 요청이 되는 이유</h4><p>FeignClient에 대한 간단한 예제 코드를 작성해보던 중에 GET 요청이 POST로 전환되어 요청되는 문제를 경험했다. GET 요청 시 쿼리 파라미터를 전달하기 위해서는 <code>@SpringQueryMap를 해당 파라미터에 선언해야</code>하더라. 쿼리 파라미터가 전달되지 않는 경우가 아닌 선언된 요청 함수가 바뀌어버리는 건 신기한 부분이다.</p>
-]]></content>
-      <tags>
-        <tag>OpenFeign</tag>
-        <tag>HttpClient</tag>
-        <tag>RestTemplate</tag>
       </tags>
   </entry>
   <entry>
@@ -9647,53 +9647,6 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
-    <title>SHA-256</title>
-    <url>/sha-256/</url>
-    <content><![CDATA[<h2 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h2><p><a href="https://ko.wikipedia.org/wiki/SHA">SHA(Secure Hash Algorithm)</a>은 NIST에 의해서 관리되는 안전한 해시 표준 함수들의 모음이며 현재는 NIST FIPS 180-3 규격의 <a href="https://ko.wikipedia.org/wiki/SHA-2">SHA-2</a>를 권장해서 사용하고 있습니다. 해시 함수는 어떠한 문자열을 일정한 길이를 가진 임의의 문자열로 변환하는 것을 말합니다. 수 많은 연구에 의해 만들어진 여러가지 해시 함수 중에서 일반적으로 SHA-256을 사용하는 이유는 해시 함수를 사용하게 되는 목적에 있다고 볼 수 있습니다. 특정한 문자열에 대해서는 동일한 해시값(다이제스트)으로 변환되며 해시값을 기준으로는 동일한 패턴을 찾을 수 없어서 본래의 문자열을 유추할 수 없도록 하고자 하는 것에 있습니다.</p>
-<p>SHA-256 해시 함수의 동작 과정은 <a href="https://sha256algorithm.com/">Sha256 Algorithm Explained</a>를 이용하면 눈으로 확인할 수 있으니 참고해보면 좋을 것 같습니다.</p>
-<h3 id="메시지-다이제스트"><a href="#메시지-다이제스트" class="headerlink" title="메시지 다이제스트"></a>메시지 다이제스트</h3><p>해시 함수는 어떠한 입력에 대해서 일정한 길이의 비트로 이루어진 결과를 가져오기 위한 목적으로 사용됩니다. 메시지 다이제스트란 어떤 문자열 데이터를 일정한 길이의 다이제스트로 변환한 것을 말하며 단순하게 해시 함수로 처리된 해시값일 뿐입니다.</p>
-<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
-
-<span class="token keyword">import</span> <span class="token punctuation">(</span>
-	<span class="token string">"crypto/sha256"</span>
-	<span class="token string">"encoding/hex"</span>
-	<span class="token string">"fmt"</span>
-<span class="token punctuation">)</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	plain <span class="token operator">:=</span> <span class="token string">"HelloWorld"</span>
-	hash <span class="token operator">:=</span> sha256<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	hash<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>plain<span class="token punctuation">)</span><span class="token punctuation">)</span>
-	hashed <span class="token operator">:=</span> hash<span class="token punctuation">.</span><span class="token function">Sum</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
-	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"plain:"</span><span class="token punctuation">,</span> plain<span class="token punctuation">)</span>
-	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hashed:"</span><span class="token punctuation">,</span> hex<span class="token punctuation">.</span><span class="token function">EncodeToString</span><span class="token punctuation">(</span>hashed<span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<pre class="language-bash" data-language="bash"><code class="language-bash">plain: HelloWorld
-hashed: 872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4</code></pre>
-
-<h3 id="파일-체크섬"><a href="#파일-체크섬" class="headerlink" title="파일 체크섬"></a>파일 체크섬</h3><p>위 메시지 다이제스트를 바이너리 파일에 활용한 부분이 파일 체크섬입니다. <a href="https://ubuntu.com/tutorials/how-to-verify-ubuntu#5-verify-the-sha256-checksum">how-to-verify-ubuntu</a>에서 처럼 다운로드 받은 파일의 위변조 여부를 검증하기 위해서 MD5 또는 SHA-256로 해시된 다이제스트를 제공하며 이를 통해 올바른 바이너리 파일임을 검증하고 안전하다고 판단할 수 있습니다. 아래의 예시는 윈도우 터미널에서 <a href="https://docs.microsoft.com/ko-kr/windows-server/administration/windows-commands/certutil">CertUtil</a>을 사용하여 파일 체크섬을 확인한 것이며 <a href="https://gtkhash.org/">GtkHash</a>와 같은 도구로도 확인할 수 있습니다.</p>
-<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\> certutil <span class="token operator">-</span>hashfile orig<span class="token punctuation">.</span>txt sha256
-SHA256의 orig<span class="token punctuation">.</span>txt 해시:
-872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4
-CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으로 완료되었습니다<span class="token punctuation">.</span></code></pre>
-
-<h3 id="비밀번호-암호화"><a href="#비밀번호-암호화" class="headerlink" title="비밀번호 암호화"></a>비밀번호 암호화</h3><p>일반적으로 비밀번호를 암호화하여 저장할 때는 <a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a>에서 언급된 PBKDF2 또는 bcrypt를 사용하는 편인 것으로 알고 있습니다. bcrypt는 NIST 에서 권장하는 알고리즘에 속하지는 않았으나 OpenBSD나 스프링 프레임워크의 기본 패스워드 인코더로 지정된 비교적 안전한 알고리즘 중 하나입니다. 아무튼 시계열 데이터베이스 중 하나인 <a href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd-local">KDB+는 MD5 또는 SHA-1 알고리즘 방식으로 비밀번호를 지원</a>하기에 사용하는 시스템마다 지원하는 방식에 제한이 있을 수 있습니다.</p>
-<h4 id="비밀번호-암호화-관련-읽으면-좋은-글"><a href="#비밀번호-암호화-관련-읽으면-좋은-글" class="headerlink" title="비밀번호 암호화 관련 읽으면 좋은 글"></a>비밀번호 암호화 관련 읽으면 좋은 글</h4><ul>
-<li><a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a></li>
-<li><a href="https://lovejaco.github.io/posts/cryptographic-hash-function/">해시 함수, 암호화 해시 함수, 그리고 SHA</a></li>
-<li><a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/">Hashing in Action: Understanding bcrypt</a></li>
-</ul>
-<h3 id="키-서명-지문"><a href="#키-서명-지문" class="headerlink" title="키 서명 지문"></a>키 서명 지문</h3><p><a href="/ssh">SSH 키 페어 발급 및 원격 호스트 연결하기</a>에서처럼 SSH 키에 대해 지문(Fingerprint)을 생성해놓고 호스트에 대한 공개키가 변경되었는지를 판단하는데 사용되기도 합니다. 이러한 키 서명 지문은 아래의 이미지와 같이 SSL 인증서 정보에도 서명 해시 알고리즘으로도 사용하는 것을 확인할 수 있습니다.</p>
-<p><img data-src="/images/posts/sha-256/01.png"></p>
-]]></content>
-      <tags>
-        <tag>Hashing</tag>
-        <tag>Message Disgest</tag>
-        <tag>Checksum</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>서버 시간 동기화</title>
     <url>/server-time-sync/</url>
     <content><![CDATA[<p>오늘은 개발자에게도 중요한 서버 시간에 대한 동기화를 알아보도록 하자. AWS 클라우드에 의존하는 개발자들은 <a href="https://aws.amazon.com/ko/blogs/korea/keeping-time-with-amazon-time-sync-service/">Amazon Time Sync Service</a>를 참조하도록 설정된 EC2 인스턴스를 활용하고 있기 때문에 시간 동기화에 대해 신경써야할 부분은 적다. 하지만, 클라우드 시대에 살고 있지만 많은 이유로 인하여 온-프레미스 환경에서 동작해야하는 시스템은 상당히 많다. 온-프레미스 인프라 구성에서는 인터넷 통신이 제한되는 경우가 많기 때문에 자체적인 타임 서버를 구성하고 의존하도록 되어있을 것이다.</p>
@@ -9755,6 +9708,53 @@ server time.google.com iburst
       </tags>
   </entry>
   <entry>
+    <title>SHA-256</title>
+    <url>/sha-256/</url>
+    <content><![CDATA[<h2 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h2><p><a href="https://ko.wikipedia.org/wiki/SHA">SHA(Secure Hash Algorithm)</a>은 NIST에 의해서 관리되는 안전한 해시 표준 함수들의 모음이며 현재는 NIST FIPS 180-3 규격의 <a href="https://ko.wikipedia.org/wiki/SHA-2">SHA-2</a>를 권장해서 사용하고 있습니다. 해시 함수는 어떠한 문자열을 일정한 길이를 가진 임의의 문자열로 변환하는 것을 말합니다. 수 많은 연구에 의해 만들어진 여러가지 해시 함수 중에서 일반적으로 SHA-256을 사용하는 이유는 해시 함수를 사용하게 되는 목적에 있다고 볼 수 있습니다. 특정한 문자열에 대해서는 동일한 해시값(다이제스트)으로 변환되며 해시값을 기준으로는 동일한 패턴을 찾을 수 없어서 본래의 문자열을 유추할 수 없도록 하고자 하는 것에 있습니다.</p>
+<p>SHA-256 해시 함수의 동작 과정은 <a href="https://sha256algorithm.com/">Sha256 Algorithm Explained</a>를 이용하면 눈으로 확인할 수 있으니 참고해보면 좋을 것 같습니다.</p>
+<h3 id="메시지-다이제스트"><a href="#메시지-다이제스트" class="headerlink" title="메시지 다이제스트"></a>메시지 다이제스트</h3><p>해시 함수는 어떠한 입력에 대해서 일정한 길이의 비트로 이루어진 결과를 가져오기 위한 목적으로 사용됩니다. 메시지 다이제스트란 어떤 문자열 데이터를 일정한 길이의 다이제스트로 변환한 것을 말하며 단순하게 해시 함수로 처리된 해시값일 뿐입니다.</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"crypto/sha256"</span>
+	<span class="token string">"encoding/hex"</span>
+	<span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	plain <span class="token operator">:=</span> <span class="token string">"HelloWorld"</span>
+	hash <span class="token operator">:=</span> sha256<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	hash<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>plain<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	hashed <span class="token operator">:=</span> hash<span class="token punctuation">.</span><span class="token function">Sum</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"plain:"</span><span class="token punctuation">,</span> plain<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"hashed:"</span><span class="token punctuation">,</span> hex<span class="token punctuation">.</span><span class="token function">EncodeToString</span><span class="token punctuation">(</span>hashed<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<pre class="language-bash" data-language="bash"><code class="language-bash">plain: HelloWorld
+hashed: 872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4</code></pre>
+
+<h3 id="파일-체크섬"><a href="#파일-체크섬" class="headerlink" title="파일 체크섬"></a>파일 체크섬</h3><p>위 메시지 다이제스트를 바이너리 파일에 활용한 부분이 파일 체크섬입니다. <a href="https://ubuntu.com/tutorials/how-to-verify-ubuntu#5-verify-the-sha256-checksum">how-to-verify-ubuntu</a>에서 처럼 다운로드 받은 파일의 위변조 여부를 검증하기 위해서 MD5 또는 SHA-256로 해시된 다이제스트를 제공하며 이를 통해 올바른 바이너리 파일임을 검증하고 안전하다고 판단할 수 있습니다. 아래의 예시는 윈도우 터미널에서 <a href="https://docs.microsoft.com/ko-kr/windows-server/administration/windows-commands/certutil">CertUtil</a>을 사용하여 파일 체크섬을 확인한 것이며 <a href="https://gtkhash.org/">GtkHash</a>와 같은 도구로도 확인할 수 있습니다.</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> C:\> certutil <span class="token operator">-</span>hashfile orig<span class="token punctuation">.</span>txt sha256
+SHA256의 orig<span class="token punctuation">.</span>txt 해시:
+872e4e50ce9990d8b041330c47c9ddd11bec6b503ae9386a99da8584e9bb12c4
+CertUtil: <span class="token operator">-</span>hashfile 명령이 성공적으로 완료되었습니다<span class="token punctuation">.</span></code></pre>
+
+<h3 id="비밀번호-암호화"><a href="#비밀번호-암호화" class="headerlink" title="비밀번호 암호화"></a>비밀번호 암호화</h3><p>일반적으로 비밀번호를 암호화하여 저장할 때는 <a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a>에서 언급된 PBKDF2 또는 bcrypt를 사용하는 편인 것으로 알고 있습니다. bcrypt는 NIST 에서 권장하는 알고리즘에 속하지는 않았으나 OpenBSD나 스프링 프레임워크의 기본 패스워드 인코더로 지정된 비교적 안전한 알고리즘 중 하나입니다. 아무튼 시계열 데이터베이스 중 하나인 <a href="https://code.kx.com/q/basics/cmdline/#-u-usr-pwd-local">KDB+는 MD5 또는 SHA-1 알고리즘 방식으로 비밀번호를 지원</a>하기에 사용하는 시스템마다 지원하는 방식에 제한이 있을 수 있습니다.</p>
+<h4 id="비밀번호-암호화-관련-읽으면-좋은-글"><a href="#비밀번호-암호화-관련-읽으면-좋은-글" class="headerlink" title="비밀번호 암호화 관련 읽으면 좋은 글"></a>비밀번호 암호화 관련 읽으면 좋은 글</h4><ul>
+<li><a href="https://d2.naver.com/helloworld/318732">안전한 패스워드 저장</a></li>
+<li><a href="https://lovejaco.github.io/posts/cryptographic-hash-function/">해시 함수, 암호화 해시 함수, 그리고 SHA</a></li>
+<li><a href="https://auth0.com/blog/hashing-in-action-understanding-bcrypt/">Hashing in Action: Understanding bcrypt</a></li>
+</ul>
+<h3 id="키-서명-지문"><a href="#키-서명-지문" class="headerlink" title="키 서명 지문"></a>키 서명 지문</h3><p><a href="/ssh">SSH 키 페어 발급 및 원격 호스트 연결하기</a>에서처럼 SSH 키에 대해 지문(Fingerprint)을 생성해놓고 호스트에 대한 공개키가 변경되었는지를 판단하는데 사용되기도 합니다. 이러한 키 서명 지문은 아래의 이미지와 같이 SSL 인증서 정보에도 서명 해시 알고리즘으로도 사용하는 것을 확인할 수 있습니다.</p>
+<p><img data-src="/images/posts/sha-256/01.png"></p>
+]]></content>
+      <tags>
+        <tag>Hashing</tag>
+        <tag>Message Disgest</tag>
+        <tag>Checksum</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring AOP - Self Invocation</title>
     <url>/spring-aop-invocation/</url>
     <content><![CDATA[<blockquote>
@@ -9800,7 +9800,7 @@ server time.google.com iburst
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>스프링 부트 2에서 액추에이터 엔드포인트에 대해 민감한 데이터가 노출되는 것을 방지하기 위해서 <U>keys-to-sanitize</U> 속성을 통해 특정 키 패턴에 대한 데이터가 마스킹 되도록 지원했습니다. 그러나, 스프링 부트 3 부터는 키 기반이 아닌 <U>인증 및 역할(Role) 기반의 Sanitize를 수행</U>하는 것으로 변경되었습니다. 이에 대한 정보는 마이그레이션 가이드의 <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#actuator-endpoints-sanitization">Actuator Endpoints Sanitization</a>로 기재되어 있으며 <strong>EnvironmentEndpointProperties</strong> 는 아래와 같이 변경되었습니다.</p>
+<p>스프링 부트 2에서 액추에이터 엔드포인트에 대해 민감한 데이터가 노출되는 것을 방지하기 위해서  <u>keys-to-sanitize</u> 속성을 통해 특정 키 패턴에 대한 데이터가 마스킹 되도록 지원했습니다. 그러나, 스프링 부트 3 부터는 키 기반이 아닌  <u>인증 및 역할(Role) 기반의 Sanitize를 수행</u>하는 것으로 변경되었습니다. 이에 대한 정보는 마이그레이션 가이드의 <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#actuator-endpoints-sanitization">Actuator Endpoints Sanitization</a>로 기재되어 있으며 <strong>EnvironmentEndpointProperties</strong> 는 아래와 같이 변경되었습니다.</p>
 <pre class="language-java" data-language="java"><div class="caption"><span>Spring Boot 3</span></div><code class="language-java"><span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span><span class="token string">"management.endpoint.env"</span><span class="token punctuation">)</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">EnvironmentEndpointProperties</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">private</span> <span class="token class-name">Show</span> showValues<span class="token punctuation">;</span>
@@ -9836,7 +9836,7 @@ server time.google.com iburst
       <span class="token key atrule">show-values</span><span class="token punctuation">:</span> when_authorized
       <span class="token key atrule">roles</span><span class="token punctuation">:</span> ADMIN</code></pre>
 
-<h4 id="Customizing-Sanitization"><a href="#Customizing-Sanitization" class="headerlink" title="Customizing Sanitization"></a>Customizing Sanitization</h4><p>스프링 부트 3 에서 기존의 키 패턴 기반의 Sanitize 를 적용하고자 한다면 공식 문서의 <a href="https://docs.spring.io/spring-boot/how-to/actuator.html#howto.actuator.customizing-sanitization">Customizing Sanitization</a>에 따라 <U>SanitizingFunction</U> 인터페이스의 구현체를 빈으로 등록해야 합니다. 스프링 부트 2.7 버전의 <a href="https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/endpoint/Sanitizer.java">Sanitizer</a> 코드를 참고하여 구현하면 될 것 같습니다.</p>
+<h4 id="Customizing-Sanitization"><a href="#Customizing-Sanitization" class="headerlink" title="Customizing Sanitization"></a>Customizing Sanitization</h4><p>스프링 부트 3 에서 기존의 키 패턴 기반의 Sanitize 를 적용하고자 한다면 공식 문서의 <a href="https://docs.spring.io/spring-boot/how-to/actuator.html#howto.actuator.customizing-sanitization">Customizing Sanitization</a>에 따라  <u>SanitizingFunction</u> 인터페이스의 구현체를 빈으로 등록해야 합니다. 스프링 부트 2.7 버전의 <a href="https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/endpoint/Sanitizer.java">Sanitizer</a> 코드를 참고하여 구현하면 될 것 같습니다.</p>
 <pre class="language-java" data-language="java"><div class="caption"><span>ActuatorSanitizingFunction</span></div><code class="language-java"><span class="token annotation punctuation">@Component</span>
 <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ActuatorSanitizingFunction</span> <span class="token keyword">implements</span> <span class="token class-name">SanitizingFunction</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token constant">REGEX_PARTS</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">"*"</span><span class="token punctuation">,</span> <span class="token string">"$"</span><span class="token punctuation">,</span> <span class="token string">"^"</span><span class="token punctuation">,</span> <span class="token string">"+"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
@@ -9929,7 +9929,7 @@ server time.google.com iburst
 
 <span class="token punctuation">&#125;</span></code></pre>
 
-<p>위와 같이 SanitizingFunction 인터페이스를 구현하게 되면 관리자(ADMIN)로 인증된 사용자가 <U>&#x2F;actuator&#x2F;env 엔드포인트</U>를 호출해도 아래와 같이 <U>민감한 정보는 마스킹되어 처리된 것</U>을 확인할 수 있습니다. 이처럼 시스템에서 사용되는 민감한 정보는 보호될 수 있도록 보완합시다.</p>
+<p>위와 같이 SanitizingFunction 인터페이스를 구현하게 되면 관리자(ADMIN)로 인증된 사용자가  <u>&#x2F;actuator&#x2F;env 엔드포인트</u>를 호출해도 아래와 같이  <u>민감한 정보는 마스킹되어 처리된 것</u>을 확인할 수 있습니다. 이처럼 시스템에서 사용되는 민감한 정보는 보호될 수 있도록 보완합시다.</p>
 <pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
     <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Config resource 'class path resource [application.yml]' via location 'optional:classpath:'"</span><span class="token punctuation">,</span>
     <span class="token property">"properties"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
@@ -11060,6 +11060,44 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
+    <title>스프링 부트 프로젝트를 만들고나서</title>
+    <url>/spring-boot-project/</url>
+    <content><![CDATA[<p>스프링 이니셜라이저를 통해서 스프링 부트 기반의 프로젝트 폴더를 구성하더라도 회사마다 혹은 개발자마다 너무나도 당연하게 하는 것들이 조금씩 있기 마련이다. 스프링 부트 프로젝트를 만들고나서 너무나도 당연하게 습과적으로 매번 하는 것들에 대해서 정리해보고자 한다. </p>
+<h4 id="1-Properties가-아닌-YAML-방식으로-변경하기"><a href="#1-Properties가-아닌-YAML-방식으로-변경하기" class="headerlink" title="1. Properties가 아닌 YAML 방식으로 변경하기"></a>1. Properties가 아닌 YAML 방식으로 변경하기</h4><p>스프링 이니셜라이저를 통해서 만들어진 기본적인 프로젝트 폴더에는 application.properties 파일이 존재한다. 스프링 부트에서는 Java Properties, YAML 그리고 환경 변수를 통해서 애플리케이션 프로퍼티 속성 값을 적용하여 활용할 수 있게 지원한다. 하지만, ISO-8859-1 인코딩으로 강제되는 자바 프로퍼티 파일에는 한계가 있고 대부분의 애플리케이션에서 UTF-8을 사용하는 편이므로 YAML 방식으로 변경하는 것이 편리하다.</p>
+<blockquote>
+<p>It is recommended to stick with one format for your entire application. If you have configuration files with both .properties and .yml format in the same location, .properties takes precedence.</p>
+</blockquote>
+<p>위와 같이 공식 문서에 나와있는 것처럼 프로퍼티와 야믈 파일을 동시에 사용하는 경우 자바 프로퍼티 파일을 우선하여 적용하므로 주의하자.</p>
+<h4 id="2-스프링-부트-기본-배너-옵션-끄기"><a href="#2-스프링-부트-기본-배너-옵션-끄기" class="headerlink" title="2. 스프링 부트 기본 배너 옵션 끄기"></a>2. 스프링 부트 기본 배너 옵션 끄기</h4><p>두번째로 하는 일은 스프링 부트에서 제공하여 콘솔에 표시되는 기본 배너 로그를 비활성화하는 것이다. 대부분의 애플리케이션에서 스프링 배너를 통해서 버전을 확인할 필요성은 굉장히 적으며 중요시 해야하는 것은 빌드 정보일 뿐이기에 불필요하다.</p>
+<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.main.banner-mode</span><span class="token punctuation">:</span> off</code></pre>
+
+<h4 id="3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기"><a href="#3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기" class="headerlink" title="3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기"></a>3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기</h4><p>그래들 기반으로 스프링 부트 프로젝트를 만드는 경우 그래들 롬복 플러그인이 아닌 직접 패키지를 디펜던시에 지정하는 방식으로 되어있다. <a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a>을 플러그인으로 등록하여 사용하는 것이 더 효율적이다.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle"><span class="token keyword">plugins</span> <span class="token punctuation">&#123;</span>
+    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="4-기본-톰캣-컨테이너를-언더토우로-대체하기"><a href="#4-기본-톰캣-컨테이너를-언더토우로-대체하기" class="headerlink" title="4. 기본 톰캣 컨테이너를 언더토우로 대체하기"></a>4. 기본 톰캣 컨테이너를 언더토우로 대체하기</h4><p>스프링 부트 프로젝트에서 기본적으로 의존하는 임베디드 톰캣도 준수한 성능을 보여주지만 자바를 사용하여 NIO 기반으로 작성된 경량의 웹 서버 애플리케이션인 언더토우를 사용하고 있다. 웹 스타터 모듈에는 톰캣에 대한 의존성이 포함되어있으므로 아래와 같이 톰캣에 대한 모듈은 제외되도록 하자.</p>
+<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">configurations<span class="token punctuation">.</span>configureEach <span class="token punctuation">&#123;</span>
+    exclude group<span class="token punctuation">:</span> <span class="token string">'org.springframework.boot'</span><span class="token punctuation">,</span> module<span class="token punctuation">:</span> <span class="token string">'spring-boot-starter-tomcat'</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-web'</span>
+    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-undertow'</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>스프링 프레임워크 6.1 에서는 JDK 21과 Virtual Threads를 우선적으로 톰캣에서 지원할 예정인 것 같아 언더토우가 아닌 톰캣을 선택해야할 경우가 될 가능성도 보인다. 관련 프로젝트: <a href="https://github.com/mp911de/spring-boot-virtual-threads-experiment">mp911de&#x2F;spring-boot-virtual-threads-experiment</a></p>
+</blockquote>
+<h4 id="5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기"><a href="#5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기" class="headerlink" title="5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기"></a>5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기</h4><p>마지막으로 인텔리제이 IDEA를 통해서 스프링 부트 프로젝트를 빌드하고 실행하는 경우 컴파일러와 그래들에 대한 옵션을 변경하는 것이 더 효율적으로 프로젝트를 개발하고 실행하는 환경이 되므로 적용하는 편이다.</p>
+<ul>
+<li>Build, Execution, Deployment &gt; Build Tools &gt; Gradle &gt; Build and run using Intellij IDEA</li>
+<li>Build, Execution, Deployment &gt; Build Tools &gt; Compiler &gt; Build project automatically</li>
+</ul>
+<p>기본 Gradle이 아닌 Intellij IDEA로 빌드 및 실행을 하도록 설정한다면 프로젝트 루트 폴더에 out 이라는 이름의 폴더에 현재 실행중인 애플리케이션에 대한 클래스 파일과 정적 리소스 파일들이 이동되어 어떠한 문제가 발생했을 때 곧바로 살펴볼 수 있다.</p>
+]]></content>
+  </entry>
+  <entry>
     <title>레디스 웹소켓 알람 동기화</title>
     <url>/spring-boot-redis-websocket-sync/</url>
     <content><![CDATA[<h4 id="웹소켓-알람-갱신-동기화"><a href="#웹소켓-알람-갱신-동기화" class="headerlink" title="웹소켓 알람 갱신 동기화"></a>웹소켓 알람 갱신 동기화</h4><p>대부분의 예제는 채팅으로 공유되고 있지만 일반적인 웹 애플리케이션에서의 웹소켓 기능은 서버에서 클라이언트로의 알람과 이벤트를 즉시 전달하기 위해서 사용하고 있을 것이다. 단일 애플리케이션에서는 고려하지 않아도 될 부분이지만 스케일 아웃되어 분산 처리되는 애플리케이션에 각각 연결된 웹소켓으로 특정 서버에서 발생하여 만들어지는 알람 정보를 즉시 전달하기 위해서는 전파하고 동기화하는 방안이 필요하다. <a href="https://pompitzz.github.io/blog/Redis/LocalCacheSyncWithRedisPubSub.html">Redis(Pub&#x2F;Sub)로 로컬 캐시 동기화하기</a>와 비슷하다.</p>
@@ -11118,44 +11156,6 @@ module<span class="token punctuation">.</span>exports <span class="token operato
         <tag>Redis</tag>
         <tag>Websocket</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>스프링 부트 프로젝트를 만들고나서</title>
-    <url>/spring-boot-project/</url>
-    <content><![CDATA[<p>스프링 이니셜라이저를 통해서 스프링 부트 기반의 프로젝트 폴더를 구성하더라도 회사마다 혹은 개발자마다 너무나도 당연하게 하는 것들이 조금씩 있기 마련이다. 스프링 부트 프로젝트를 만들고나서 너무나도 당연하게 습과적으로 매번 하는 것들에 대해서 정리해보고자 한다. </p>
-<h4 id="1-Properties가-아닌-YAML-방식으로-변경하기"><a href="#1-Properties가-아닌-YAML-방식으로-변경하기" class="headerlink" title="1. Properties가 아닌 YAML 방식으로 변경하기"></a>1. Properties가 아닌 YAML 방식으로 변경하기</h4><p>스프링 이니셜라이저를 통해서 만들어진 기본적인 프로젝트 폴더에는 application.properties 파일이 존재한다. 스프링 부트에서는 Java Properties, YAML 그리고 환경 변수를 통해서 애플리케이션 프로퍼티 속성 값을 적용하여 활용할 수 있게 지원한다. 하지만, ISO-8859-1 인코딩으로 강제되는 자바 프로퍼티 파일에는 한계가 있고 대부분의 애플리케이션에서 UTF-8을 사용하는 편이므로 YAML 방식으로 변경하는 것이 편리하다.</p>
-<blockquote>
-<p>It is recommended to stick with one format for your entire application. If you have configuration files with both .properties and .yml format in the same location, .properties takes precedence.</p>
-</blockquote>
-<p>위와 같이 공식 문서에 나와있는 것처럼 프로퍼티와 야믈 파일을 동시에 사용하는 경우 자바 프로퍼티 파일을 우선하여 적용하므로 주의하자.</p>
-<h4 id="2-스프링-부트-기본-배너-옵션-끄기"><a href="#2-스프링-부트-기본-배너-옵션-끄기" class="headerlink" title="2. 스프링 부트 기본 배너 옵션 끄기"></a>2. 스프링 부트 기본 배너 옵션 끄기</h4><p>두번째로 하는 일은 스프링 부트에서 제공하여 콘솔에 표시되는 기본 배너 로그를 비활성화하는 것이다. 대부분의 애플리케이션에서 스프링 배너를 통해서 버전을 확인할 필요성은 굉장히 적으며 중요시 해야하는 것은 빌드 정보일 뿐이기에 불필요하다.</p>
-<pre class="language-yaml" data-language="yaml"><div class="caption"><span>application.yml</span></div><code class="language-yaml"><span class="token key atrule">spring.main.banner-mode</span><span class="token punctuation">:</span> off</code></pre>
-
-<h4 id="3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기"><a href="#3-그래들-롬복-패키지-구성을-롬복-플러그인으로-변경하기" class="headerlink" title="3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기"></a>3. 그래들 롬복 패키지 구성을 롬복 플러그인으로 변경하기</h4><p>그래들 기반으로 스프링 부트 프로젝트를 만드는 경우 그래들 롬복 플러그인이 아닌 직접 패키지를 디펜던시에 지정하는 방식으로 되어있다. <a href="https://plugins.gradle.org/plugin/io.freefair.lombok">io.freefair.lombok</a>을 플러그인으로 등록하여 사용하는 것이 더 효율적이다.</p>
-<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle"><span class="token keyword">plugins</span> <span class="token punctuation">&#123;</span>
-    id <span class="token string">'io.freefair.lombok'</span> version <span class="token string">'8.0.1'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<h4 id="4-기본-톰캣-컨테이너를-언더토우로-대체하기"><a href="#4-기본-톰캣-컨테이너를-언더토우로-대체하기" class="headerlink" title="4. 기본 톰캣 컨테이너를 언더토우로 대체하기"></a>4. 기본 톰캣 컨테이너를 언더토우로 대체하기</h4><p>스프링 부트 프로젝트에서 기본적으로 의존하는 임베디드 톰캣도 준수한 성능을 보여주지만 자바를 사용하여 NIO 기반으로 작성된 경량의 웹 서버 애플리케이션인 언더토우를 사용하고 있다. 웹 스타터 모듈에는 톰캣에 대한 의존성이 포함되어있으므로 아래와 같이 톰캣에 대한 모듈은 제외되도록 하자.</p>
-<pre class="language-gradle" data-language="gradle"><div class="caption"><span>build.gradle</span></div><code class="language-gradle">configurations<span class="token punctuation">.</span>configureEach <span class="token punctuation">&#123;</span>
-    exclude group<span class="token punctuation">:</span> <span class="token string">'org.springframework.boot'</span><span class="token punctuation">,</span> module<span class="token punctuation">:</span> <span class="token string">'spring-boot-starter-tomcat'</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">dependencies</span> <span class="token punctuation">&#123;</span>
-    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-web'</span>
-    <span class="token keyword">implementation</span> <span class="token string">'org.springframework.boot:spring-boot-starter-undertow'</span>
-<span class="token punctuation">&#125;</span></code></pre>
-
-<blockquote>
-<p>스프링 프레임워크 6.1 에서는 JDK 21과 Virtual Threads를 우선적으로 톰캣에서 지원할 예정인 것 같아 언더토우가 아닌 톰캣을 선택해야할 경우가 될 가능성도 보인다. 관련 프로젝트: <a href="https://github.com/mp911de/spring-boot-virtual-threads-experiment">mp911de&#x2F;spring-boot-virtual-threads-experiment</a></p>
-</blockquote>
-<h4 id="5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기"><a href="#5-인텔리제이-IDEA의-빌드-및-실행-옵션-변경하기" class="headerlink" title="5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기"></a>5. 인텔리제이 IDEA의 빌드 및 실행 옵션 변경하기</h4><p>마지막으로 인텔리제이 IDEA를 통해서 스프링 부트 프로젝트를 빌드하고 실행하는 경우 컴파일러와 그래들에 대한 옵션을 변경하는 것이 더 효율적으로 프로젝트를 개발하고 실행하는 환경이 되므로 적용하는 편이다.</p>
-<ul>
-<li>Build, Execution, Deployment &gt; Build Tools &gt; Gradle &gt; Build and run using Intellij IDEA</li>
-<li>Build, Execution, Deployment &gt; Build Tools &gt; Compiler &gt; Build project automatically</li>
-</ul>
-<p>기본 Gradle이 아닌 Intellij IDEA로 빌드 및 실행을 하도록 설정한다면 프로젝트 루트 폴더에 out 이라는 이름의 폴더에 현재 실행중인 애플리케이션에 대한 클래스 파일과 정적 리소스 파일들이 이동되어 어떠한 문제가 발생했을 때 곧바로 살펴볼 수 있다.</p>
-]]></content>
   </entry>
   <entry>
     <title>Cross Site Request Forgery (CSRF)</title>

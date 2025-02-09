@@ -11,11 +11,11 @@ tags:
 
 #### OpenVPN
 
-<U>SSL VPN</U>으로 구글에 __임직원 VPN__ 키워드로 검색을 해보면 [현대자동차 그룹](https://vpn.hyundai.net), [LG화학](https://global.lgchem.com/), [LG헬로비전](https://intravpn.lghv.net/) 그리고 [고려대학교](https://vpn.korea.ac.kr/) 등에서 사외 접속을 위한 VPN 사이트를 임직원을 위해 제공하는 것을 알 수 있습니다. 개인적인 경험으로는 맥에서 OpenVPN 클라이언트로 [Tunnelblick](https://tunnelblick.net/)를 사용했던 것으로 기억합니다. AWS 인프라에서는 SSL VPN으로 AWS Client VPN을 제공하고 있으나 비용적인 문제로 인하여 대부분의 기업에서는 도입을 포기하지 않을까 생각됩니다.
+<u>SSL VPN</u>으로 구글에 __임직원 VPN__ 키워드로 검색을 해보면 [현대자동차 그룹](https://vpn.hyundai.net), [LG화학](https://global.lgchem.com/), [LG헬로비전](https://intravpn.lghv.net/) 그리고 [고려대학교](https://vpn.korea.ac.kr/) 등에서 사외 접속을 위한 VPN 사이트를 임직원을 위해 제공하는 것을 알 수 있습니다. 개인적인 경험으로는 맥에서 OpenVPN 클라이언트로 [Tunnelblick](https://tunnelblick.net/)를 사용했던 것으로 기억합니다. AWS 인프라에서는 SSL VPN으로 AWS Client VPN을 제공하고 있으나 비용적인 문제로 인하여 대부분의 기업에서는 도입을 포기하지 않을까 생각됩니다.
 
 #### IPSec/IKEv2
 
-IKEv2 기반 VPN은 고객사 사이트 접근을 위하여 허용된 아이피를 위해서 사용했던 경험은 있으나 <U>사이트 간 연결(Site to Site)을 위한 VPN</U>은 사용해본 적이 없습니다. IKEv2 VPN 에서는 사설 인증서 등록 과정이 필요하므로 신입 개발자 입장에서는 설정이 생각보다 어려웠지 않았나 싶습니다. AWS 인프라에서는 VPC 에서 온프레미스 네트워크 접근을 위해서 <U>AWS Site to Site VPN</U>을 제공하는 것 같은데 아무래도 사용해볼 기회는 없을 것 같습니다.
+IKEv2 기반 VPN은 고객사 사이트 접근을 위하여 허용된 아이피를 위해서 사용했던 경험은 있으나  <u>사이트 간 연결(Site to Site)을 위한 VPN</u>은 사용해본 적이 없습니다. IKEv2 VPN 에서는 사설 인증서 등록 과정이 필요하므로 신입 개발자 입장에서는 설정이 생각보다 어려웠지 않았나 싶습니다. AWS 인프라에서는 VPC 에서 온프레미스 네트워크 접근을 위해서  <u>AWS Site to Site VPN</u>을 제공하는 것 같은데 아무래도 사용해볼 기회는 없을 것 같습니다.
 
 #### WireGuard
 
@@ -36,7 +36,7 @@ PersistentKeepalive = 25
 
 ##### Split Tunnel
 
-WireGuard VPN 설정 시 전체 터널링(Full Tunnel)과 스플릿 터널링(Split Tunnel)으로 나누어지는데 재택 근무 시에는 <U>전체 트래픽(0.0.0.0/0)</U>을 VPN으로 경유하는 것보다는 사내 서버 네트워크 접근을 위해 <U>필요한 IP 대역만을 CIDR로 설정하여 트래픽이 분리되도록</U> 하는게 좋다고 합니다. 현재 회사에서도 재택 근무를 하지 않아도 사내에서 와이파이가 연결된 상태에서 특정 서버 대역 접근을 위해서 VPN 설정을 하여 접근하고 있습니다.
+WireGuard VPN 설정 시 전체 터널링(Full Tunnel)과 스플릿 터널링(Split Tunnel)으로 나누어지는데 재택 근무 시에는  <u>전체 트래픽(0.0.0.0/0)</u>을 VPN으로 경유하는 것보다는 사내 서버 네트워크 접근을 위해  <u>필요한 IP 대역만을 CIDR로 설정하여 트래픽이 분리되도록</u> 하는게 좋다고 합니다. 현재 회사에서도 재택 근무를 하지 않아도 사내에서 와이파이가 연결된 상태에서 특정 서버 대역 접근을 위해서 VPN 설정을 하여 접근하고 있습니다.
 
-이렇게 개발자 입장에서 여러가지 VPN에 대해서 간단하게나마 알아보았는데 다양한 VPN 프로토콜 중에서 <U>OpenVPN, IPSec/IKEv2, WireGuard 만 알아도 충분할 것</U>이라 생각됩니다.
+이렇게 개발자 입장에서 여러가지 VPN에 대해서 간단하게나마 알아보았는데 다양한 VPN 프로토콜 중에서  <u>OpenVPN, IPSec/IKEv2, WireGuard 만 알아도 충분할 것</u>이라 생각됩니다.
 

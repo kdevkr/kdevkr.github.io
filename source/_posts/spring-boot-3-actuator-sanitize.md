@@ -24,7 +24,7 @@ public class EnvironmentEndpointProperties {
 }
 ```
 
-스프링 부트 2에서 액추에이터 엔드포인트에 대해 민감한 데이터가 노출되는 것을 방지하기 위해서 <U>keys-to-sanitize</U> 속성을 통해 특정 키 패턴에 대한 데이터가 마스킹 되도록 지원했습니다. 그러나, 스프링 부트 3 부터는 키 기반이 아닌 <U>인증 및 역할(Role) 기반의 Sanitize를 수행</U>하는 것으로 변경되었습니다. 이에 대한 정보는 마이그레이션 가이드의 [Actuator Endpoints Sanitization](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#actuator-endpoints-sanitization)로 기재되어 있으며 **EnvironmentEndpointProperties** 는 아래와 같이 변경되었습니다.
+스프링 부트 2에서 액추에이터 엔드포인트에 대해 민감한 데이터가 노출되는 것을 방지하기 위해서  <u>keys-to-sanitize</u> 속성을 통해 특정 키 패턴에 대한 데이터가 마스킹 되도록 지원했습니다. 그러나, 스프링 부트 3 부터는 키 기반이 아닌  <u>인증 및 역할(Role) 기반의 Sanitize를 수행</u>하는 것으로 변경되었습니다. 이에 대한 정보는 마이그레이션 가이드의 [Actuator Endpoints Sanitization](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide#actuator-endpoints-sanitization)로 기재되어 있으며 **EnvironmentEndpointProperties** 는 아래와 같이 변경되었습니다.
 
 ```java Spring Boot 3
 @ConfigurationProperties("management.endpoint.env")
@@ -67,7 +67,7 @@ management:
 
 #### Customizing Sanitization
 
-스프링 부트 3 에서 기존의 키 패턴 기반의 Sanitize 를 적용하고자 한다면 공식 문서의 [Customizing Sanitization](https://docs.spring.io/spring-boot/how-to/actuator.html#howto.actuator.customizing-sanitization)에 따라 <U>SanitizingFunction</U> 인터페이스의 구현체를 빈으로 등록해야 합니다. 스프링 부트 2.7 버전의 [Sanitizer](https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/endpoint/Sanitizer.java) 코드를 참고하여 구현하면 될 것 같습니다.
+스프링 부트 3 에서 기존의 키 패턴 기반의 Sanitize 를 적용하고자 한다면 공식 문서의 [Customizing Sanitization](https://docs.spring.io/spring-boot/how-to/actuator.html#howto.actuator.customizing-sanitization)에 따라  <u>SanitizingFunction</u> 인터페이스의 구현체를 빈으로 등록해야 합니다. 스프링 부트 2.7 버전의 [Sanitizer](https://github.com/spring-projects/spring-boot/blob/2.7.x/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/endpoint/Sanitizer.java) 코드를 참고하여 구현하면 될 것 같습니다.
 
 ```java ActuatorSanitizingFunction
 @Component
@@ -163,7 +163,7 @@ public class ActuatorSanitizingFunction implements SanitizingFunction {
 }
 ```
 
-위와 같이 SanitizingFunction 인터페이스를 구현하게 되면 관리자(ADMIN)로 인증된 사용자가 <U>/actuator/env 엔드포인트</U>를 호출해도 아래와 같이 <U>민감한 정보는 마스킹되어 처리된 것</U>을 확인할 수 있습니다. 이처럼 시스템에서 사용되는 민감한 정보는 보호될 수 있도록 보완합시다.
+위와 같이 SanitizingFunction 인터페이스를 구현하게 되면 관리자(ADMIN)로 인증된 사용자가  <u>/actuator/env 엔드포인트</u>를 호출해도 아래와 같이  <u>민감한 정보는 마스킹되어 처리된 것</u>을 확인할 수 있습니다. 이처럼 시스템에서 사용되는 민감한 정보는 보호될 수 있도록 보완합시다.
 
 ```json
 {

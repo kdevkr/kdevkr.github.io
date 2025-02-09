@@ -1,6 +1,6 @@
 ---
 title: 자바에서 데이터 리스트를 피봇 테이블로 만들기
-date: 2025-02-09T19:00+09:00
+date: 2025-02-09T23:00+09:00
 tags:
 - List
 - Pivot
@@ -11,6 +11,7 @@ tags:
 @Setter
 public class Data {
     private String date;
+    private String id;
     private String report;
     private Double sum;
     private Double avg;
@@ -26,6 +27,8 @@ public class Data {
 public class PivotData {
     @JsonProperty("date")
     private String date;
+    @JsonProperty("id")
+    private String id;
     private Double POWER;
     private Double ENERGY;
     private Double TEMP;

@@ -11,7 +11,7 @@ tags:
 회사에서 프로젝트 리파지토리 내 존재하는 환경별 속성 파일을 제거하고 환경 변수를 이용하기로 요구되었습니다. 개발 과정에서는 인텔리제이의 [EnvFile 플러그인](https://plugins.jetbrains.com/plugin/7861-envfile)을 이용해 로컬에 만든 .env 파일을 환경 변수로 적용할 수 있었지만 단위 테스트 코드를 실행할 때에는 매번 실행 환경을 수정하는게 불편해서 단위 테스트 시 환경 변수를 적용하기 위한 방법에 대해서 찾아봤습니다.
 
 #### spring-dotenv
-[spring-dotenv](https://github.com/paulschwarz/spring-dotenv)를 사용하면 애플리케이션 속성 파일에 환경 변수 형태로 적용할 수 있지만 <U>애플리케이션 속성 파일에 따라 자동으로 적용되지는 않는다</U>는 단점이 있습니다. 예를 들어, 스프링 부트 애플리케이션의 배너를 제외하기 위해서 SPRING_MAIN_BANNERMODE이 dotenv 파일에 정의되어 있어도 애플리케이션 속성 파일에 <U>SPRING_MAIN_BANNERMODE를 사용하도록 별도로 지정하지 않으면</U> 사용할 수 없습니다.
+[spring-dotenv](https://github.com/paulschwarz/spring-dotenv)를 사용하면 애플리케이션 속성 파일에 환경 변수 형태로 적용할 수 있지만  <u>애플리케이션 속성 파일에 따라 자동으로 적용되지는 않는다</u>는 단점이 있습니다. 예를 들어, 스프링 부트 애플리케이션의 배너를 제외하기 위해서 SPRING_MAIN_BANNERMODE이 dotenv 파일에 정의되어 있어도 애플리케이션 속성 파일에  <u>SPRING_MAIN_BANNERMODE를 사용하도록 별도로 지정하지 않으면</u> 사용할 수 없습니다.
 
 ```properties
 # dev.env
@@ -33,7 +33,7 @@ spring.main.banner-mode=${SPRING_MAIN_BANNERMODE:console}
 
 #### 스프링 배너 출력은 Environment로 동작하지 않는다?
 
-이 글을 작성하기 위해서 테스트를 해보던 중 스프링 배너 출력에 대한 속성값은 TestPropertySource와 DotenvPropertySource 모두 Environment에 반영되어 테스트는 통과했으나 실제 스프링 배너 출력은 변경되기 이전의 값으로 동작했고 TestPropertyValues 또는 EnvironmentPostProcessor 에서 <U>시스템 프로퍼티로 등록해야만</U> 제대로 반영되어 출력되지 않는 것을 확인할 수 있었습니다.
+이 글을 작성하기 위해서 테스트를 해보던 중 스프링 배너 출력에 대한 속성값은 TestPropertySource와 DotenvPropertySource 모두 Environment에 반영되어 테스트는 통과했으나 실제 스프링 배너 출력은 변경되기 이전의 값으로 동작했고 TestPropertyValues 또는 EnvironmentPostProcessor 에서  <u>시스템 프로퍼티로 등록해야만</u> 제대로 반영되어 출력되지 않는 것을 확인할 수 있었습니다.
 
 ```java
 @ActiveProfiles("test")

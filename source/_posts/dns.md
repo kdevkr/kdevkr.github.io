@@ -17,7 +17,7 @@ If this is happening on an endpoint that previously worked,
 there may be a network connectivity issue or your DNS cache could be storing endpoints for too long.
 ```
 
-Amazon SQS에 대한 DNS 캐시가 초기화되는 시점에 사내 네트워크 사용량의 과부하로 인하여 <U>사내 라우터를 통한 DNS 조회를 할 수 없어서</U> SQS에 대한 엔드포인트 주소를 알 수 없는 이슈가 발생한 경우가 있었습니다. 그리고 아래와 같이 DNS 이슈에 대한 대응에 대한 정보도 찾아볼 수 있었어요.
+Amazon SQS에 대한 DNS 캐시가 초기화되는 시점에 사내 네트워크 사용량의 과부하로 인하여  <u>사내 라우터를 통한 DNS 조회를 할 수 없어서</u> SQS에 대한 엔드포인트 주소를 알 수 없는 이슈가 발생한 경우가 있었습니다. 그리고 아래와 같이 DNS 이슈에 대한 대응에 대한 정보도 찾아볼 수 있었어요.
 
 - [캐시된 죽은 IP로 URL 프록시 장애 대응 회고](https://techblog.herrencorp.com/f1106801-e6a0-4e67-aeaf-bca603f191ff)
 - [서울 리전의 Amazon EC2 DNS 확인 이슈 요약](https://aws.amazon.com/ko/message/74876/)
@@ -25,7 +25,7 @@ Amazon SQS에 대한 DNS 캐시가 초기화되는 시점에 사내 네트워크
 
 #### Amazon Route53 레코드 관리
 
-저는 주로 Amazon Route53에 서버에 대한 IP 주소 또는 별칭으로 A 레코드를 등록하고 이미 등록된 서버에 대해 별칭을 추가로 사용하기 위해서 CNAME 레코드를 등록하게 되는 것 같습니다. 개인적으로 GoDaddy에서 구매한 kdev.ing 도메인에 대한 네임 서버로 <U>[Amazon Route53을 등록하게 되면](https://jryancanty.medium.com/domain-by-godaddy-dns-by-route53-fc7acf2f5580)  1달러의 세금이 발생</U>하므로 변경하지 않은 상태로 Github Pages 를 연결해서 사용하고 있기도 합니다.
+저는 주로 Amazon Route53에 서버에 대한 IP 주소 또는 별칭으로 A 레코드를 등록하고 이미 등록된 서버에 대해 별칭을 추가로 사용하기 위해서 CNAME 레코드를 등록하게 되는 것 같습니다. 개인적으로 GoDaddy에서 구매한 kdev.ing 도메인에 대한 네임 서버로  <u>[Amazon Route53을 등록하게 되면](https://jryancanty.medium.com/domain-by-godaddy-dns-by-route53-fc7acf2f5580)  1달러의 세금이 발생</u>하므로 변경하지 않은 상태로 Github Pages 를 연결해서 사용하고 있기도 합니다.
 
 #### 이메일 보안을 위한 SPF, DKIM, DMARC
 
@@ -52,7 +52,7 @@ sudo resolvectl statistics
 
 #### Local DNS Resolver
 
-대부분의 리눅스에서는 systemd-resolved 를 DNS Resolver로 사용하기 때문에 [/etc/resolv.conf 에는 127.0.0.53 이 설정](https://medium.com/@linuxadminhacks/dd-721dc2b25d1c)되어 있습니다. 그리고 [DNS resolution 및 resolv.conf 에 대한 이해](https://medium.com/@hsahu24/understanding-dns-resolution-and-resolv-conf-d17d1d64471c)라는 글을 통해 DNS 리졸버에서 IP 주소를 쿼리하기 위해서 사용할 [DNS 서버를 설정](https://www.baeldung.com/linux/etc-resolv-conf-file)하는 것을 알 수 있습니다. AWS EC2는 <U>VPC의 게이트웨이(CIDR 대역에서 .2)</U>를 DNS Resolver로 사용하도록 설정되어 있네요.
+대부분의 리눅스에서는 systemd-resolved 를 DNS Resolver로 사용하기 때문에 [/etc/resolv.conf 에는 127.0.0.53 이 설정](https://medium.com/@linuxadminhacks/dd-721dc2b25d1c)되어 있습니다. 그리고 [DNS resolution 및 resolv.conf 에 대한 이해](https://medium.com/@hsahu24/understanding-dns-resolution-and-resolv-conf-d17d1d64471c)라는 글을 통해 DNS 리졸버에서 IP 주소를 쿼리하기 위해서 사용할 [DNS 서버를 설정](https://www.baeldung.com/linux/etc-resolv-conf-file)하는 것을 알 수 있습니다. AWS EC2는  <u>VPC의 게이트웨이(CIDR 대역에서 .2)</u>를 DNS Resolver로 사용하도록 설정되어 있네요.
 
 ```sh /etc/resolv.conf
 [ec2-user@tsdb ~]$ cat /etc/resolv.conf

@@ -8,9 +8,9 @@ tags:
 - TemporalAdjusters
 ---
 
-자바에서 날짜 및 시간을 다루는 경우 Instant, OffsetDateTime 또는 ZonedDateTime과 같이 타임존 오프셋이 포함되는 것을 활용하는 것이 좋습니다. 그런데, 가끔은 <U>연,월,일 통계와 같은 요구사항으로 인해</U> YearMonth 또는 LocalDate를 사용해야하는 경우가 있습니다. 예를 들어, 2025년 2월에 대한 통계를 위해서 2025년 2월의 <U>첫번째 날짜와 마지막 날짜의 범위를 알아야</U> 합니다. 첫번째 날짜는 명확하므로 간단하지만 마지막 날짜는 월마다 다른데 특히나, 2월의 마지막 날짜는 28일이기도 합니다.
+자바에서 날짜 및 시간을 다루는 경우 Instant, OffsetDateTime 또는 ZonedDateTime과 같이 타임존 오프셋이 포함되는 것을 활용하는 것이 좋습니다. 그런데, 가끔은  <u>연,월,일 통계와 같은 요구사항으로 인해</u> YearMonth 또는 LocalDate를 사용해야하는 경우가 있습니다. 예를 들어, 2025년 2월에 대한 통계를 위해서 2025년 2월의  <u>첫번째 날짜와 마지막 날짜의 범위를 알아야</u> 합니다. 첫번째 날짜는 명확하므로 간단하지만 마지막 날짜는 월마다 다른데 특히나, 2월의 마지막 날짜는 28일이기도 합니다.
 
-자바에서 연 또는 월에 대한 마지막 날짜를 가져오는 방법을 여러가지가 있습니다. Year 또는 YearMonth의 lengthXXX 함수를 통해 마지막 날짜를 가져와서 지정할 수 있으며 YearMonth 에는 더 직관적인 atEndOfMonth 함수를 포함하고 있습니다. 또한, <U>[TemporalAdjusters](https://www.baeldung.com/java-temporal-adjuster)</U>를 통해 날짜를 변환하는 것도 가능하죠.
+자바에서 연 또는 월에 대한 마지막 날짜를 가져오는 방법을 여러가지가 있습니다. Year 또는 YearMonth의 lengthXXX 함수를 통해 마지막 날짜를 가져와서 지정할 수 있으며 YearMonth 에는 더 직관적인 atEndOfMonth 함수를 포함하고 있습니다. 또한,  <u>[TemporalAdjusters](https://www.baeldung.com/java-temporal-adjuster)</u>를 통해 날짜를 변환하는 것도 가능하죠.
 
 #### 월 누적을 위한 첫번째 날짜와 마지막 날짜 가져오기
 
@@ -84,4 +84,4 @@ public class SampleApi {
 }
 ```
 
-스프링 컨트롤러의 핸들러 함수를 작성할 때 연도와 월에 대한 파라미터를 int 가 아닌 <U>Year와 YearMonth</U>를 그대로 활용할 수 있도록 바인딩이 가능합니다. 단, <U>Month</U>의 경우 클래스가 아닌 Enum 이기 때문에 별도의 <U>PropertyEditor</U>를 작성하여 <U>WebDataBinder</U>에 등록해야합니다. 파라미터 바인딩으로 변환하는 과정을 공통적으로 적용하므로 더 효율적이고 직관적인 코드를 작성할 수 있음을 알았습니다.
+스프링 컨트롤러의 핸들러 함수를 작성할 때 연도와 월에 대한 파라미터를 int 가 아닌  <u>Year와 YearMonth</u>를 그대로 활용할 수 있도록 바인딩이 가능합니다. 단,  <u>Month</u>의 경우 클래스가 아닌 Enum 이기 때문에 별도의  <u>PropertyEditor</u>를 작성하여  <u>WebDataBinder</u>에 등록해야합니다. 파라미터 바인딩으로 변환하는 과정을 공통적으로 적용하므로 더 효율적이고 직관적인 코드를 작성할 수 있음을 알았습니다.

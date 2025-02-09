@@ -11,7 +11,7 @@ tags:
 
 #### 개별 CSV 파일을 GZIP 으로 압축하기
 
-시계열 데이터베이스로부터 CSV 파일들은 `/data/main/prepare` 폴더 하위에 <U>{app_name}/{yyyyMM}/{yyyyMMdd}.csv</U> 패턴으로 저장되도록 추출되도록 미리 작업했는데요. 쉘 스크립트를 작성해야하나 싶었으나 ChatGPT의 도움을 받아 아래와 같이 find 명령어로 찾은 CSV 파일들을 gzip 명령어를 수행하였습니다.
+시계열 데이터베이스로부터 CSV 파일들은 `/data/main/prepare` 폴더 하위에  <u>{app_name}/{yyyyMM}/{yyyyMMdd}.csv</u> 패턴으로 저장되도록 추출되도록 미리 작업했는데요. 쉘 스크립트를 작성해야하나 싶었으나 ChatGPT의 도움을 받아 아래와 같이 find 명령어로 찾은 CSV 파일들을 gzip 명령어를 수행하였습니다.
 
 ```sh prepare.sh
 find /data/main/prepare -type f -name "*.csv" -exec gzip {} +
@@ -20,11 +20,11 @@ find /data/main/prepare -type f -name "*.csv" -exec gzip {} +
 find /data/main -type f -name "*.csv" | xargs -P "$(nproc)" gzip
 ```
 
-압축을 진행할 때 `-exec gzip {} \;` 를 사용했었는데 <U>파일이 많은 경우에는</U> `-exec gzip {} +` 로 수행하는것이 더 효율적이라고 합니다. 이 글을 작성하기 위해서 정리하다보니 Bash 쉘에서는 CPU 코어를 최대한 활용해서 압축할 수 있는 두번째 방법도 있음을 알게되었네요. 
+압축을 진행할 때 `-exec gzip {} \;` 를 사용했었는데  <u>파일이 많은 경우에는</u> `-exec gzip {} +` 로 수행하는것이 더 효율적이라고 합니다. 이 글을 작성하기 위해서 정리하다보니 Bash 쉘에서는 CPU 코어를 최대한 활용해서 압축할 수 있는 두번째 방법도 있음을 알게되었네요. 
 
 #### 압축된 CSV 파일을 S3 버킷으로 보내기
 
-GZIP 으로 압축된 CSV 파일들을 고객사에서 제공해준 S3 버킷으로 업로드해야하는 작업을 진행해야 합니다. <U>압축된 CSV 파일의 총 크기는 약 256GB이며 업로드해야할 파일의 개수는 4800개 이상</U>이었습니다.  이때 [sync 명령어를 수행할 때 업로드 성능을 위해](https://repost.aws/ko/knowledge-center/s3-improve-transfer-sync-command)  <U>max_concurrent_requests 설정값을 변경</U>할수도 있으나 복제된 서버의 인스턴스 사양의 네트워크 속도가 준수하여 굳이 변경하지 않아도  <U>30분 이내에 업로드가 완료</U>되었습니다.
+GZIP 으로 압축된 CSV 파일들을 고객사에서 제공해준 S3 버킷으로 업로드해야하는 작업을 진행해야 합니다.  <u>압축된 CSV 파일의 총 크기는 약 256GB이며 업로드해야할 파일의 개수는 4800개 이상</u>이었습니다.  이때 [sync 명령어를 수행할 때 업로드 성능을 위해](https://repost.aws/ko/knowledge-center/s3-improve-transfer-sync-command)   <u>max_concurrent_requests 설정값을 변경</u>할수도 있으나 복제된 서버의 인스턴스 사양의 네트워크 속도가 준수하여 굳이 변경하지 않아도   <u>30분 이내에 업로드가 완료</u>되었습니다.
 
 ```sh upload.sh
 aws s3 sync /data/main/ s3://bucket_name/ --exclude "*" --include "*.gz"
@@ -34,7 +34,7 @@ aws s3 sync /data/main/ s3://bucket_name/ --exclude "*" --include "*.gz"
 
 #### AWS S3 호출 시 인증서 발급자 이슈 🔥 
 
-고객사 인프라 팀에서 유지보수 작업을 위해 시계열 데이터베이스에 대한 복제 서버를 제공해주었지만 AWS S3를 호출할 수 있기까지 생각보다 시간이 많이 소요된 정보를 공유해볼까 합니다. AWS S3 CLI 명령어를 수행하려고 보니 아래와 같이 <U>SSL CERTIFICATE_VERIFY_FAILED 오류</U>가 발생했었는데요. openssl 명령어를 통해 인증서 체인을 확인해보니 [Troubleshooting errors for the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-troubleshooting.html)에 나와있는 것처럼 인증서 체인이  `Fortinet` 이라고 하는 WAF에 사용되는 보안 솔루션이 발급자인 것을 알게되었고 이에 대한 정보를 고객사 담당자를 통해 인프라팀으로 전달했지만 <U>복제된 서버에서 S3 간 통신은 WAF 방화벽에서 제외된다</U>는 답변을 받았습니다.
+고객사 인프라 팀에서 유지보수 작업을 위해 시계열 데이터베이스에 대한 복제 서버를 제공해주었지만 AWS S3를 호출할 수 있기까지 생각보다 시간이 많이 소요된 정보를 공유해볼까 합니다. AWS S3 CLI 명령어를 수행하려고 보니 아래와 같이  <u>SSL CERTIFICATE_VERIFY_FAILED 오류</u>가 발생했었는데요. openssl 명령어를 통해 인증서 체인을 확인해보니 [Troubleshooting errors for the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-troubleshooting.html)에 나와있는 것처럼 인증서 체인이  `Fortinet` 이라고 하는 WAF에 사용되는 보안 솔루션이 발급자인 것을 알게되었고 이에 대한 정보를 고객사 담당자를 통해 인프라팀으로 전달했지만  <u>복제된 서버에서 S3 간 통신은 WAF 방화벽에서 제외된다</u>는 답변을 받았습니다.
 
 ```sh Terminal
 ubuntu@hostname:/data$ aws s3 ls s3://[bucketname]
@@ -51,7 +51,7 @@ depth=0 CN = *.s3.ap-northeast-2.amazonaws.com
 verify return:1
 ```
 
->  AWS S3 CLI 명령어 수행 시 <U>--no-verify-ssl 옵션</U>을 통해 인증서 검증을 무시해본 결과 전달받은 <U>액세스 키가 S3 버킷에 대한 권한(ListObject, GetObject, PutObject)이 없는 것으로 확인</U>되었으며, 고객사 인프라팀으로부터 해결되었다는 답변을 받았을 때 정확한 원인은 공유되지 않았기에 어떠한 사유로 포티넷의 인증서가 전달되었는지는 알 수 없습니다.
+>  AWS S3 CLI 명령어 수행 시  <u>--no-verify-ssl 옵션</u>을 통해 인증서 검증을 무시해본 결과 전달받은  <u>액세스 키가 S3 버킷에 대한 권한(ListObject, GetObject, PutObject)이 없는 것으로 확인</u>되었으며, 고객사 인프라팀으로부터 해결되었다는 답변을 받았을 때 정확한 원인은 공유되지 않았기에 어떠한 사유로 포티넷의 인증서가 전달되었는지는 알 수 없습니다.
 
 #### S3 버킷 동기화 결과 확인하기
 

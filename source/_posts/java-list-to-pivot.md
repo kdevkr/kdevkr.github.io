@@ -42,16 +42,16 @@ public class PivotDataConverter {
 
     public static List<PivotData> from(List<Data> list) {
         return MAPPER.convertValue(list.stream()
-                .collect(Collectors.groupingBy(Data::getDate))
+                .collect(Collectors.groupingByConcurrent(data -> Pair.of(data.getDate(), data.getId())))
                 .entrySet()
                 .parallelStream()
                 .map(entry -> {
-                    Map<String, Object> row = new LinkedHashMap<>();
-                    row.put("date", entry.getKey());
-                    entry.getValue().forEach(data -> {
-                        Double value = AVG_REPORTS.containsKey(data.getReport()) ? data.getAvg() : data.getSum();
-                        row.put(data.getReport(), value);
-                    });
+                    Map<String, Object> row = entry.getValue()
+                            .stream()
+                            .collect(Collectors.toMap(Data::getReport,
+                                    data -> AVG_REPORTS.containsKey(data.getReport()) ? data.getAvg() : data.getSum()));
+                    row.put("date", entry.getKey().getLeft());
+                    row.put("id", entry.getKey().getRight());
                     return row;
                 }).toList(), new TypeReference<>() {
         });

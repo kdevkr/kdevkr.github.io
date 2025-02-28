@@ -1,0 +1,185 @@
+---
+title: AWS IoT Core
+date: 2025-03-01T00:00+09:00
+tags:
+- IoT
+- SDK
+- v2
+---
+
+[AWS IoT Core](https://aws.amazon.com/ko/iot-core/)는 스마트 홈 또는 공장, 에너지 시스템에서 발생하는 다양한 시계열 데이터를 수집할 수 있는 방법을 지원하는 IoT 디바이스 관리형 서비스입니다. 기존 디바이스 연동을 위한 AWS IoT Core 관련 기능은 `AWS SDK for Java v1` 버전으로 작성되어 있기 때문에 [v1 버전 지원 종료](https://aws.amazon.com/ko/blogs/developer/announcing-end-of-support-for-aws-sdk-for-java-v1-x-on-december-31-2025/) 예정으로 인해 [AWS SDK for Java 2.x](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/get-started.html) 로 조금씩 마이그레이션 해야합니다. 따라서, AWS IoT Core에 대해 알아보면서 `AWS SDK for Java 2.x` 기반의 코드를 작성해보려고 합니다. 본 글에서는 IoT 디바이스 입장에서 AWS IoT 엔드포인트로의 연결을 수행하는 것이 아닌 시스템에서 IoT 디바이스를 위한 인증서를 발급하기 위한 일련의 과정을 알아봅니다.
+
+#### 테스트를 위한 IAM 사용자 생성
+
+먼저, AWS IoT Core에 대한 테스트를 위해 [AWSIoTFullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSIoTFullAccess.html) 권한 정책을 가지는 사용자를 만들고 AWS CLI 또는 로컬 코드에서 사용하기 위해 액세스 키를 발급합니다. 인텔리제이의 `AWS Toolkit 플러그인의 Open AWS Local Terminal` 을 사용하면 선택한 AWS 프로파일(AWS_PROFILE)이 환경변수로 적용된 터미널을 열 수 있습니다.
+
+![](/images/posts/aws-iot-core/01.png)
+
+#### AWS IoT Core 엔드포인트
+
+AWS IoT Core의 엔드포인트는 컨트롤 플레인과 데이터 영역을 위한 엔드포인트로 구분되어 사용되는데 AWS 클라우드로 데이터를 전송해야하는 IoT 디바이스는 `iot:Data-ATS` 엔드포인트에 X.509 클라이언트 인증서로 인증을 수행하고 연결하게 됩니다. iot:Data-ATS 에서 ATS는 [Amazon Trust Services](https://www.amazontrust.com/repository/)를 의미합니다.
+
+```powershell Terminal
+PS> aws iot describe-endpoint --endpoint-type iot:Data-ATS
+{
+    "endpointAddress": "[account-specific-prefix]-ats.iot.ap-northeast-2.amazonaws.com"
+}
+```
+
+#### X.509 클라이언트 인증서에 대한 CA 인증서
+
+AWS 에서 발급해주는 X.509 클라이언트 인증서는 Amazon Trust Services로 [교차 검증되는 루트 CA 인증서](https://docs.aws.amazon.com/iot/latest/developerguide/server-authentication.html#server-authentication-certs)로 서명되어 발급됩니다. 대부분 루트 CA 인증서가 필요없지만 CA 인증서가 필요한 IoT 디바이스 환경이 있을 수 있으므로 이에 대한 [서버 인증 가이드](https://docs.aws.amazon.com/iot/latest/developerguide/server-authentication.html#server-authentication-guidelines)는 알아둘 필요가 있습니다. 웹 콘솔의 도메인 구성에서 데이터 ATS 엔드포인트에서 사용중인 [보안 정책도 확인](https://docs.aws.amazon.com/iot/latest/developerguide/transport-security.html#tls-policy-table)해보면 좋습니다.
+
+#### Data-ATS 엔드포인트에 연결하기 위한 X.509 인증서 발급
+
+`CreateKeysAndCertificate` 명령으로 2048 비트 길이의 RSA 키 페어와 X.509 클라이언트 인증서를 생성할 수 있습니다. 이때, `setAsActive` 파라미터로 `비활성화 상태인 인증서`를 만들 수 있으므로 사물에 인증서를 연결하고나서 실제로 IoT 디바이스에서 인증을 수행하기 전에 시스템 화면을 통해 인증서 상태를 활성화할 수 있도록 제공하는게 보안 상 더 좋을 순 있겠네요.
+
+```
+aws iot create-keys-and-certificate --no-set-as-active --certificate-pem-outfile cert.pem --public-key-outfile pub.key --private-key-outfile priv.key
+{
+   "certificateArn": "The ARN of the certificate",
+   "certificateId": "The ID of the certificate",
+   "certificatePem": "The certificate data, in PEM format.",
+   "keyPair": { 
+      "PrivateKey": "The private key",
+      "PublicKey": "The public key"
+   }
+}
+```
+
+#### IoT 레지스트리 사물 유형 • 사물 생성
+
+디바이스에 대한 사물 유형을 생성하고 사물 유형과 함께 사물을 등록합니다. 사물 유형이 설정된 사물은 [속성을 3개 이상 지정](https://aws.amazon.com/ko/blogs/iot/how-to-improve-device-discoverability-by-unlocking-50-aws-iot-thing-type-attributes/)할 수 있으므로 `사물과 사물 유형을 함께 생성`하는 것이 좋습니다. [CreateThingType](https://docs.aws.amazon.com/iot/latest/apireference/API_CreateThingType.html) 명령으로 사물 유형을 생성할 수 있고 [CreateThing](https://docs.aws.amazon.com/iot/latest/apireference/API_CreateThing.html) 명령을 호출할 때 사물 유형을 함께 지정할 수 있습니다.
+
+```powershell Terminal
+PS> aws iot create-thing-type --thing-type-name Computer
+{
+    "thingTypeName": "Computer",
+    "thingTypeArn": "arn:aws:iot:ap-northeast-2:[account-id]:thingtype/Computer",
+    "thingTypeId": "5c6a1c6c-93e6-4d57-82d3-047f1c267ea6"
+}
+
+PS> aws iot create-thing --thing-name PC --thing-type-name Computer
+{
+    "thingName": "PC",
+    "thingArn": "arn:aws:iot:ap-northeast-2:[account-id]:thing/PC",
+    "thingId": "2439524c-278c-486d-b74b-1af1acc8fd63"
+}
+```
+
+> 생성된 사물 이름은 변경할 수 없으므로 사물을 생성할 때에는 디바이스에 대해 UUID와 같은 별도의 식별자를 발급하고 생성하는 것이 좋습니다. 
+
+#### 사물에 X.509 클라이언트 인증서 주체 등록
+
+X.509 인증서를 사물에 연결할 때에는 보안 상 사물과 인증서 간 관계를 유일하게 유지하여 독점하도록 구성하는게 좋다고 하나 스마트 홈이나 공장처럼 하나의 시스템을 구성하는 디바이스가 여러개인 경우 사이트에 대한 인증서를 서로 다른 디바이스의 사물이 공유할 수도 있습니다. 따라서, 인증서 관리 기준에 대한 부분은 시스템 목적에 따라 선택하면 됩니다. [AttachThingPrincipal](https://docs.aws.amazon.com/iot/latest/apireference/API_AttachThingPrincipal.html) 명령을 호출할 때 `thingPrincipalType`을 EXCLUSIVE_THING로 지정하면 인증서는 사물에 유일한 인증서로 활용되는 것으로 지정되어 이 인증서를 다른 사물을 위한 보안 주체로 등록할 수 없습니다.
+
+```powershell Terminal
+PS> aws iot create-keys-and-certificate 
+{
+    "certificateArn": "arn:aws:iot:ap-northeast-2:[account-id]:cert/8f8538927603f4dfe5fb374fc383211a966cc6f74a1ba70121ef185f9cdf67f3",
+    "certificateId": "8f8538927603f4dfe5fb374fc383211a966cc6f74a1ba70121ef185f9cdf67f3",
+    ...
+}
+
+PS> aws iot attach-thing-principal --thing-name PC --principal arn:aws:iot:ap-northeast-2:[account-id]:cert/8f8538927603f4dfe5fb374fc383211a966cc6f74a1ba70121ef185f9cdf67f3
+```
+
+> 사물에 대한 보안 주체는 Amazon Cognito ID 또는 X.509 인증서가 되며 위 경우 인증서 ARN을 보안 주체로 입력해야 합니다.
+
+#### 사물에 등록된 인증서 해제 및 회수
+
+보안적인 이슈 또는 주기적인 관리 일정에 의하여 사물에 연결된 인증서를 교체를 위해 기존 인증서를 회수하려면 [DetachThingPrincipal](https://docs.aws.amazon.com/iot/latest/apireference/API_DetachThingPrincipal.html) 명령을 수행하여 사물에 연결된 인증서를 먼저 해제합니다. 그리고나서 [UpdateCertificate](https://docs.aws.amazon.com/ko_kr/iot/latest/developerguide/revoke-ca-cert.html#revoke-device-cert-cli) 명령으로 인증서의 상태를 `취소(REVOKED)`로 변경하면 됩니다.
+
+```powershell Terminal
+PS> aws iot update-certificate --certificate-id 8f8538927603f4dfe5fb374fc383211a966cc6f74a1ba70121ef185f9cdf67f3 --new-status REVOKED
+```
+
+#### AWS IoT SDK v2 기반 예제 코드
+
+AWS IoT 디바이스를 위한 일련의 과정을 [AWS IoT examples using AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli_iot_code_examples.html)를 참고하여 정리해보았습니다. 이번에는 [AWS IoT SDK for Java 2.x를 사용한 예제](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/java_iot_code_examples.html)를 참고해서 AWS IoT SDK for Java 2.x 기반의 코드를 작성해서 수행해보도록 하겠습니다. 먼저, IotClient 인스턴스를 생성할 때 직접 사용해야하는 프로파일을 지정했지만 실제로 운영되는 애플리케이션 코드에서는 여러가지 방식으로 크레덴셜을 조회해서 사용하도록 크레덴셜 프로바이더 체인을 구성하는게 좋습니다.
+
+```java Application
+public class Application {
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
+
+    public static void main(String[] args) {
+
+        try (IotClient iotClient = IotClient.builder()
+                .credentialsProvider(ProfileCredentialsProvider.create("iot-core"))
+                .region(Region.AP_NORTHEAST_2)
+                .build()) {
+
+            // 데이터 ATS 엔드포인트 확인
+            String endpointAddress = iotClient.describeEndpoint(
+                            DescribeEndpointRequest.builder()
+                                    .endpointType("iot:Data-ATS").build())
+                    .endpointAddress();
+            log.info("endpointAddress: {}", endpointAddress);
+
+            // 사물 유형 발급
+            CreateThingTypeResponse thingType = iotClient.createThingType(
+                    CreateThingTypeRequest.builder()
+                            .thingTypeName("Computer").build());
+            log.info("thingType: {}", thingType.thingTypeName());
+
+            // 사물 생성
+            CreateThingResponse thing = iotClient.createThing(CreateThingRequest.builder()
+                    .thingName("PC")
+                    .thingTypeName(thingType.thingTypeName())
+                    .build());
+
+            log.info("thing: {}", thing.thingName());
+
+            // 사물에 연결할 인증서 발급
+            CreateKeysAndCertificateResponse keysAndCertificate = iotClient.createKeysAndCertificate(CreateKeysAndCertificateRequest.builder()
+                    .setAsActive(false)
+                    .build());
+
+            log.info("certificateArn: {}", keysAndCertificate.certificateArn());
+
+            // 사물에 X.509 클라이언트 인증서 연결
+            AttachThingPrincipalResponse attachThingPrincipal = iotClient.attachThingPrincipal(AttachThingPrincipalRequest.builder()
+                    .thingName(thing.thingName())
+                    .principal(keysAndCertificate.certificateArn())
+                    .build());
+
+            log.info("attachThingPrincipal: {}", attachThingPrincipal);
+
+            // 사물에 연결된 X.509 인증서 활성화 상태로 변경
+            UpdateCertificateResponse updateCertificate = iotClient.updateCertificate(UpdateCertificateRequest.builder()
+                    .certificateId(keysAndCertificate.certificateId())
+                    .newStatus(CertificateStatus.ACTIVE)
+                    .build());
+
+            log.info("updateCertificate: {}", updateCertificate);
+
+            // 사물에 연결된 X.509 인증서 연결 해제
+            DetachThingPrincipalResponse detachThingPrincipal = iotClient.detachThingPrincipal(DetachThingPrincipalRequest.builder()
+                    .thingName(thing.thingName())
+                    .principal(keysAndCertificate.certificateArn())
+                    .build());
+            log.info("detachThingPrincipal: {}", detachThingPrincipal.sdkHttpResponse().isSuccessful());
+
+            // 더이상 사용되지 않는 인증서라 가정하고 회수(취소) 상태로 변경
+            UpdateCertificateResponse revokedCertificate = iotClient.updateCertificate(UpdateCertificateRequest.builder()
+                    .certificateId(keysAndCertificate.certificateId())
+                    .newStatus(CertificateStatus.REVOKED)
+                    .build());
+            log.info("revokedCertificate: {}", revokedCertificate.sdkHttpResponse().isSuccessful());
+
+            // X.509 인증서 삭제
+            DeleteCertificateResponse deleteCertificate = iotClient.deleteCertificate(DeleteCertificateRequest.builder()
+                    .certificateId(keysAndCertificate.certificateId())
+                    .forceDelete(true)
+                    .build());
+            log.info("deleteCertificate: {}", deleteCertificate.sdkHttpResponse().isSuccessful());
+
+            // 사용되지 않는 사물 삭제
+            DeleteThingResponse deleteThing = iotClient.deleteThing(DeleteThingRequest.builder()
+                    .thingName(thing.thingName())
+                    .build());
+            log.info("deleteThing: {}", deleteThing.sdkHttpResponse().isSuccessful());
+        }
+    }
+}
+```

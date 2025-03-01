@@ -96,90 +96,10 @@ PS> aws iot update-certificate --certificate-id 8f8538927603f4dfe5fb374fc383211a
 
 #### AWS IoT SDK v2 기반 예제 코드
 
-AWS IoT 디바이스를 위한 일련의 과정을 [AWS IoT examples using AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli_iot_code_examples.html)를 참고하여 정리해보았습니다. 이번에는 [AWS IoT SDK for Java 2.x를 사용한 예제](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/java_iot_code_examples.html)를 참고해서 AWS IoT SDK for Java 2.x 기반의 코드를 작성해서 수행해보도록 하겠습니다. 먼저, IotClient 인스턴스를 생성할 때 직접 사용해야하는 프로파일을 지정했지만 실제로 운영되는 애플리케이션 코드에서는 여러가지 방식으로 크레덴셜을 조회해서 사용하도록 크레덴셜 프로바이더 체인을 구성하는게 좋습니다.
+AWS IoT 디바이스를 위한 일련의 과정을 [AWS IoT examples using AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli_iot_code_examples.html)를 참고하여 정리해보았습니다. 이번에는 [AWS IoT SDK for Java 2.x를 사용한 예제](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/java_iot_code_examples.html)를 참고해서 AWS IoT SDK for Java 2.x 기반의 코드를 작성해보도록 하겠습니다. 예제 코드는 [kdevkr/aws-iot-core-demo](https://github.com/kdevkr/aws-iot-core-demo)에서 확인할 수 있습니다.
 
-```java Application
-public class Application {
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+![](/images/posts/aws-iot-core/02.png)
 
-    public static void main(String[] args) {
+먼저, 예제 코드에서 IotClient 인스턴스를 생성할 때 `ProfileCredentialsProvider` 를 사용하여 [iot-core 프로파일을 직접 설정](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/credentials-profiles.html)할 수 있지만 프로덕션 기준에서는 크레덴셜 프로바이더 체인 방식으로 다양한 방법으로 크레덴셜을 조회해서 사용할 수 있도록 하는 것이 좋습니다.  인텔리제이의 Run Configuration 에서 환경 변수에 AWS_PROFILE을 설정하면 `iot-core` 프로파일을 쉽게 적용할 수 있습니다. 
 
-        try (IotClient iotClient = IotClient.builder()
-                .credentialsProvider(ProfileCredentialsProvider.create("iot-core"))
-                .region(Region.AP_NORTHEAST_2)
-                .build()) {
-
-            // 데이터 ATS 엔드포인트 확인
-            String endpointAddress = iotClient.describeEndpoint(
-                            DescribeEndpointRequest.builder()
-                                    .endpointType("iot:Data-ATS").build())
-                    .endpointAddress();
-            log.info("endpointAddress: {}", endpointAddress);
-
-            // 사물 유형 발급
-            CreateThingTypeResponse thingType = iotClient.createThingType(
-                    CreateThingTypeRequest.builder()
-                            .thingTypeName("Computer").build());
-            log.info("thingType: {}", thingType.thingTypeName());
-
-            // 사물 생성
-            CreateThingResponse thing = iotClient.createThing(CreateThingRequest.builder()
-                    .thingName("PC")
-                    .thingTypeName(thingType.thingTypeName())
-                    .build());
-
-            log.info("thing: {}", thing.thingName());
-
-            // 사물에 연결할 인증서 발급
-            CreateKeysAndCertificateResponse keysAndCertificate = iotClient.createKeysAndCertificate(CreateKeysAndCertificateRequest.builder()
-                    .setAsActive(false)
-                    .build());
-
-            log.info("certificateArn: {}", keysAndCertificate.certificateArn());
-
-            // 사물에 X.509 클라이언트 인증서 연결
-            AttachThingPrincipalResponse attachThingPrincipal = iotClient.attachThingPrincipal(AttachThingPrincipalRequest.builder()
-                    .thingName(thing.thingName())
-                    .principal(keysAndCertificate.certificateArn())
-                    .build());
-
-            log.info("attachThingPrincipal: {}", attachThingPrincipal);
-
-            // 사물에 연결된 X.509 인증서 활성화 상태로 변경
-            UpdateCertificateResponse updateCertificate = iotClient.updateCertificate(UpdateCertificateRequest.builder()
-                    .certificateId(keysAndCertificate.certificateId())
-                    .newStatus(CertificateStatus.ACTIVE)
-                    .build());
-
-            log.info("updateCertificate: {}", updateCertificate);
-
-            // 사물에 연결된 X.509 인증서 연결 해제
-            DetachThingPrincipalResponse detachThingPrincipal = iotClient.detachThingPrincipal(DetachThingPrincipalRequest.builder()
-                    .thingName(thing.thingName())
-                    .principal(keysAndCertificate.certificateArn())
-                    .build());
-            log.info("detachThingPrincipal: {}", detachThingPrincipal.sdkHttpResponse().isSuccessful());
-
-            // 더이상 사용되지 않는 인증서라 가정하고 회수(취소) 상태로 변경
-            UpdateCertificateResponse revokedCertificate = iotClient.updateCertificate(UpdateCertificateRequest.builder()
-                    .certificateId(keysAndCertificate.certificateId())
-                    .newStatus(CertificateStatus.REVOKED)
-                    .build());
-            log.info("revokedCertificate: {}", revokedCertificate.sdkHttpResponse().isSuccessful());
-
-            // X.509 인증서 삭제
-            DeleteCertificateResponse deleteCertificate = iotClient.deleteCertificate(DeleteCertificateRequest.builder()
-                    .certificateId(keysAndCertificate.certificateId())
-                    .forceDelete(true)
-                    .build());
-            log.info("deleteCertificate: {}", deleteCertificate.sdkHttpResponse().isSuccessful());
-
-            // 사용되지 않는 사물 삭제
-            DeleteThingResponse deleteThing = iotClient.deleteThing(DeleteThingRequest.builder()
-                    .thingName(thing.thingName())
-                    .build());
-            log.info("deleteThing: {}", deleteThing.sdkHttpResponse().isSuccessful());
-        }
-    }
-}
-```
+> 회사에서 일할때는 [AWS Toolkit for IntelliJ IDEA](https://aws.amazon.com/ko/intellij/) 플러그인으로 `AWS Connection` 설정으로 애플리케이션 환경에 맞는 [IAM 프로파일로 실행](https://docs.aws.amazon.com/ko_kr/toolkit-for-jetbrains/latest/userguide/setup-credentials.html)하고 있는데 윈도우에서는 선택한 프로파일이 반영되지 않는 문제가 확인되어 `AWS_PROFILE` 환경 변수를 사용했습니다.

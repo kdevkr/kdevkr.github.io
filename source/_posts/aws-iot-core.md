@@ -1,6 +1,6 @@
 ---
 title: AWS IoT Core
-date: 2025-03-01T00:00+09:00
+date: 2025-03-01T20:00+09:00
 tags:
 - IoT
 - SDK
@@ -100,6 +100,31 @@ AWS IoT 디바이스를 위한 일련의 과정을 [AWS IoT examples using AWS C
 
 ![](/images/posts/aws-iot-core/02.png)
 
-먼저, 예제 코드에서 IotClient 인스턴스를 생성할 때 `ProfileCredentialsProvider` 를 사용하여 [iot-core 프로파일을 직접 설정](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/credentials-profiles.html)할 수 있지만 프로덕션 기준에서는 크레덴셜 프로바이더 체인 방식으로 다양한 방법으로 크레덴셜을 조회해서 사용할 수 있도록 하는 것이 좋습니다.  인텔리제이의 Run Configuration 에서 환경 변수에 AWS_PROFILE을 설정하면 `iot-core` 프로파일을 쉽게 적용할 수 있습니다. 
+먼저, 예제 코드에서 IotClient 인스턴스를 생성할 때 `ProfileCredentialsProvider` 를 사용하여 [iot-core 프로파일을 직접 설정](https://docs.aws.amazon.com/ko_kr/sdk-for-java/latest/developer-guide/credentials-profiles.html)할 수 있지만 프로덕션 기준에서는 크레덴셜 프로바이더 체인 방식으로 다양한 방법으로 크레덴셜을 조회해서 사용할 수 있도록 하는 것이 좋습니다.  인텔리제이의 Run Configuration 에서 환경 변수에 AWS_PROFILE을 설정하면 `iot-core` 프로파일을 쉽게 적용할 수 있습니다.  [AWS Toolkit for IntelliJ IDEA](https://aws.amazon.com/ko/intellij/) 플러그인으로 `AWS Connection` 설정으로 애플리케이션 환경에 맞는 [IAM 프로파일로 실행](https://docs.aws.amazon.com/ko_kr/toolkit-for-jetbrains/latest/userguide/setup-credentials.html)하고 있는데 윈도우에서는 선택한 프로파일이 반영되지 않는 문제가 확인되어 `AWS_PROFILE` 환경 변수를 사용했습니다.
 
-> 회사에서 일할때는 [AWS Toolkit for IntelliJ IDEA](https://aws.amazon.com/ko/intellij/) 플러그인으로 `AWS Connection` 설정으로 애플리케이션 환경에 맞는 [IAM 프로파일로 실행](https://docs.aws.amazon.com/ko_kr/toolkit-for-jetbrains/latest/userguide/setup-credentials.html)하고 있는데 윈도우에서는 선택한 프로파일이 반영되지 않는 문제가 확인되어 `AWS_PROFILE` 환경 변수를 사용했습니다.
+#### IoT 디바이스 인증서 보안 정책
+
+IoT 디바이스에 IAM 권한 정책처럼 별도로 제공하는 [AWS IoT Core Policy](https://docs.aws.amazon.com/iot/latest/developerguide/iot-policies.html)을 설정하여 MQTT 연결부터 메시지 송수신 등에 대한 보안 정책을 수립할 수 있습니다. 예를 들어, 사물에 연결된 X.509 인증서를 사용하는 IoT 디바이스가 [올바른 클라이언트 아이디로 연결을 할 수 있게 제한](https://docs.aws.amazon.com/iot/latest/developerguide/basic-policy-variables.html#basic-policy-variables-example)하거나 허용된 아이피 대역에서 접근할 수 있도록 제한할 수 있습니다.
+
+- aws:SourceIp - 메시지 브로커에 연결되는 클라이언트 아이피에 대한 정책 변수
+- iot:ClientId - MQTT 클라이언트 아이디에 대한 정책 변수
+- iot:CertificateId - X.509 인증서에 대한 정책 변수
+- [IoT Core 작업 리소스의 Amazon Resource Names (ARNs)](https://docs.aws.amazon.com/iot/latest/developerguide/iot-action-resources.html)
+
+#### IoT 디바이스 연결 상태
+
+![](/images/posts/aws-iot-core/03.png)
+
+AWS IoT 플릿 인덱싱(Fleet Indexing)에서 `사물 연결에 대한 인덱싱을 활성화`하면 IoT 디바이스의 개별 연결 상태를 [GetThingConnectivityData](https://docs.aws.amazon.com/iot/latest/apireference/API_GetThingConnectivityData.html) 명령으로 확인할 수 있습니다. 다음은 사물을 만들고 나서 연결을 시도한 적이 없는 경우의 상태를 보여주는데 만약, 디바이스 플릿 인덱싱을 활성화하지 않은 상태라면 [AWS_Things 인덱스](https://docs.aws.amazon.com/iot/latest/developerguide/managing-fleet-index.html?icmpid=docs_iot_hp_settings)를 찾을 수 없는 오류가 발생합니다. 또한, AWS CLI 에 `get-thing-connectivity-data` 하위 명령이 없는 경우 2.23 이상의 버전으로 업데이트 하세요.
+
+```sh
+PS> aws iot get-thing-connectivity-data --thing-name PC
+{
+    "thingName": "PC",
+    "connected": false,
+    "timestamp": "1970-01-01T09:00:00+09:00",
+    "disconnectReason": "UNKNOWN"
+}
+```
+
+다음에는 IoT 디바이스 입장에서 [AWS IoT Device SDK for Java v2](https://github.com/aws/aws-iot-device-sdk-java-v2)를 알아보도록 하겠습니다.

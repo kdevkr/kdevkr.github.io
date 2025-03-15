@@ -11,7 +11,7 @@ tags:
 
 #### 폴트와 트립
 
-먼저, `폴트(Fault)`는 설비 또는 시스템에서 발생한  <u>오류 또는 고장</u>을 말합니다. 일반적으로 폴트 항목에는 오류 또는 장애 이외의 항목이 포함되는데 일부 설비에서 시스템의 고장을 일으키는 상황을 보호하기 위해서 동작하는 차단기 또는 릴레이와 같은 장치가 동작한 상태를 `트립(Trip)`이라고 합니다. Trip은 설비에 따라서 과부하, 과열 센서 검출, 지락(누전) 등이 있습니다. 또한, 폴트에는 트립 이외에 경고(Warning) 상태인 경보(Alarm)도 포함하고 있습니다.
+먼저, `폴트(Fault)`는 설비 또는 시스템에서 발생한  <u>오류 또는 고장</u>을 말합니다. 일반적으로 폴트 항목에는 오류 또는 장애 이외의 항목이 포함되는데 일부 설비에서 시스템의 고장을 일으키는 상황을 보호하기 위해서 동작하는 차단기 또는 릴레이와 같은 장치가 동작한 상태를 `트립(Trip)`이라고 합니다. 트립은 설비에 따라서 과부하, 과열 센서 검출, 지락(누전) 등이 있습니다. 또한, 폴트에는 트립 이외에 경고(Warning) 상태인 경보(Alarm)도 포함하고 있습니다.
 
 #### 이상 감지
 
@@ -19,34 +19,36 @@ tags:
 
 #### 이상치 데이터를 감지하는 방법
 
-이상치 데이터를 감지하는 방법은 `통계학적 근거에 의한 판별`부터 `AI 머신 러닝의 학습 및 예측 모델` 기반의 방법으로 확장됩니다. [시계열 데이터 속에 숨어있는 이상 징후를 찾는 딥 러닝 기술](https://www.youtube.com/watch?v=bg2e60IZ40Q)에서 이상 탐지에 대한 부분을 소개해주고 있습니다.
+이상치 데이터를 감지하는 방법은 `통계학적 근거에 의한 판별`부터 `AI 머신 러닝의 학습 및 예측 모델` 기반의 방법으로 확장됩니다. [시계열 데이터 속에 숨어있는 이상 징후를 찾는 딥 러닝 기술](https://www.youtube.com/watch?v=bg2e60IZ40Q)에서 이상 탐지에 대한 부분을 소개해주고 있습니다. 데이터 분석 및 데이터 마이닝에 대한 지식은 부족하므로 제대로 이해되진 않지만 다음의 방법들이 존재합니다.
 
 ■ Z-Score based Anomaly Detection
 
-먼저, Z-Score는 통계학적으로 정상적인 데이터는 3표준편차 일정 범위에 속한다는 [3시그마 규칙(3-sigma Rule)](https://ko.wikipedia.org/wiki/68-95-99.7_%EA%B7%9C%EC%B9%99)에 의한 경험적인 추정을 근거로 이상치 데이터를 판별합니다. 그외 통계학적 방식에는 [ARIMA 시계열 예측 모델 기반 이상 탐지](https://medium.com/aimonks/anomaly-detection-for-time-series-analysis-eeecd6282f53)도 있는데 자기회귀(Auto Regressive)와 이동 평균(Moving Average)으로 추론된 예측된 값을 기반으로 이상치를 판별합니다.
+먼저, Z-Score는 통계학적으로 정상적인 데이터는 3표준편차 일정 범위에 속한다는 [3시그마 규칙(3-sigma Rule)](https://ko.wikipedia.org/wiki/68-95-99.7_%EA%B7%9C%EC%B9%99)에 의한 경험적인 추정을 근거로 이상치 데이터를 판별합니다. 그외 통계학적 방식에는 [ARIMA 시계열 예측 모델 기반 이상 탐지](https://medium.com/aimonks/anomaly-detection-for-time-series-analysis-eeecd6282f53)도 있는데 자기회귀(Auto Regressive)와 이동 평균(Moving Average)으로 추론된 예측된 값을 기반으로 이상치를 확인한다고 합니다.
 
 ■ IF based Anomaly Detection
 
-[IF(Isolation Forest)](https://www.youtube.com/watch?v=puVdwi5PjVA) 기반 이상 탐지는 의사결정 트리(Decision Tree)를 통해 루트 노드와 근접하고 경로 길이가 작은 데이터를 이상치로 판별하게 됩니다. 이와 같은 이상 탐지를 [앙상블 기반 이상 탐지](https://scikit-learn.org/stable/api/sklearn.ensemble.html)라고도 하는 것 같습니다.
+의사결정 트리(Decision Tree) 또는 [앙상블 기반 이상 탐지](https://scikit-learn.org/stable/api/sklearn.ensemble.html)에 해당하는 [IF(Isolation Forest)](https://www.youtube.com/watch?v=puVdwi5PjVA) 이상탐지는 데이터 밀도에 의한 트리를 통해 비정상적인 데이터는 루트 노드와 근접하고 경로 길이가 작은 데이터임을 근거로하여 이상치로 판별하게 됩니다. 
 
-■ k-NN based Anomaly Detection
+■ Distance based Anomaly Detection
 
-k-NN(K-Nearest Neighbor) 기반 이상 탐지는 이웃 데이터 간 거리(Distance)가 먼 데이터를 이상치로 판별하는 방법으로 다른 거리 기반 이상 탐지 방법에는 k-NN 거리와 함께 밀집도를 기반으로 하는 LOF(Local outlier factors) 이상 탐지도 있습니다.
+`유사도를 측정하는 거리(Distance) 공식`으로 이상치 데이터를 판별하는 방법에는 k-NN(K-Nearest Neighbor), LOF(Local outlier factors), 마할라노비스 거리 (Mahalanobis Distance) 기반의 이상 탐지가 있습니다. 유클리드 거리 공식 이외에 마할라노비스 거리는 처음 들어보는데  [공분산 행렬](https://ko.wikipedia.org/wiki/%EA%B3%B5%EB%B6%84%EC%82%B0_%ED%96%89%EB%A0%AC)이 추가된 것이라고 합니다.
 
 ■ Clustering based Anomaly Detection
 
-클러스터링 기반 이상 탐지에는 K-means 및 DBScan 군집화 알고리즘이 활용됩니다. 
+클러스터링 기반 이상 탐지는 `정상적인 데이터의 군집을 분석`하고 정상적인 패턴으로 파악된 군집에서 사전 정의된 임계치(Threshold)를 얼마나 벗어나는가로 이상치 데이터를 판별합니다. 군집화 알고리즘은 여러가지가 있지만 대표적으로 K-Means, GMM(Gaussian Mixture Model), DBSCAN이 활용되는 것 같습니다.
 
 ■ Kernal based Anomaly Detection
 
-[OCSVM(One-class Support Vector Machine)](https://www.youtube.com/watch?v=CjvMZmMTmQc)와 Deep SVDD(Support Vector Data Description)은 정상적인 데이터에 대한 반지도 학습이 필요한 커널 기반 이상 탐지 기법입니다. OCSVM(1-SVM)은 정상적인 데이터를 통해 이상치를 예측할 때 많이 사용되는 모델이라고 합니다.
+[OCSVM(One-class Support Vector Machine)](https://www.youtube.com/watch?v=CjvMZmMTmQc)와 Deep SVDD(Support Vector Data Description)은 `정상적인 데이터에 대한 반지도 학습이 필요`한 커널 기반 이상 탐지 기법입니다. OCSVM(1-SVM)은 가장 많이 사용되는 커널 기반 이상 탐지라고 하며 Deep SVDD는 DNN(Deep Neural Network)으로 확장한 모델입니다.
 
 ■ Reconstruction error based Anomaly Detection
 
-[AE(AutoEncoder)](https://www.youtube.com/watch?v=v8dzXskvF6c)와 [PCA(Principal Component Analysis)](https://www.youtube.com/watch?v=TXESAGRF1Hc)는 압축된 데이터를 원본 데이터로 재구성할 때 발생하는 오차를 통해 이상치를 판별하는 이상 탐지 기법입니다. 또다른 재구성 오차 기반 이상 감지에는 가상의 데이터를 생성하는 [GAN(Generative Adversarial Network)](https://www.youtube.com/watch?v=cd-kj1ysqOc)이 있습니다. 
+[AE(AutoEncoder)](https://www.youtube.com/watch?v=v8dzXskvF6c)와 [PCA(Principal Component Analysis)](https://www.youtube.com/watch?v=TXESAGRF1Hc) 그리고 [GAN(Generative Adversarial Network)](https://www.youtube.com/watch?v=cd-kj1ysqOc)은 압축된 데이터를 `원본 데이터로 재구성할 때 발생하는 오차`를 통해 이상치를 판별하는 이상 탐지 기법입니다.
 
 ■ Transformer based Anomaly Detection
 
-[Anomaly Transformer](https://www.youtube.com/watch?v=BFVyLL2HXGQ)는 시계열 데이터에 Transformer를 접목한 모델로 연관성 학습으로 다변량 시계열 데이터에 대해 개선된 이상 탐지가 가능합니다.
+[Anomaly Transformer](https://www.youtube.com/watch?v=BFVyLL2HXGQ)는 시계열 데이터에 Transformer를 접목한 모델로 `Self Attention에 의한 연관성 학습`으로 다변량 시계열 데이터에 대해 개선된 이상 탐지가 가능하다고하니 여러가지 IoT 디바이스의 시계열 데이터에 대한 이상 탐지에 유용할 것으로 보입니다.
 
-이상 탐지에 대한 정보를 살펴보다보니 대부분의 글이 판교어처럼 보이는 것 같습니다. 시간이 된다면 파이썬을 배워보면서 [사이킷 런(scikit-learn)](https://scikit-learn.org/stable/) 라이브러리로 [이상 감지를 해보는것](https://medium.com/mlthinkbox/anomaly-detection-with-isolation-forest-in-scikit-learn-99417dcc3971)도 좋을 것 같습니다.
+#### 내가 선택해보는 이상 감지 기법
+
+실제로는 데이터에 따라 직접 여러가지 방법으로 이상 감지를 수행해보고 결정해야하지만 Z-Score, DBSCAN, Anomaly Transformer를 선택할 가능성이 높다고 생각합니다. 현재 프로젝트에서 이상 감지 결과는 분석 팀에서 전달할 가능성이 높으므로 어떤 방법이 선택되었는지 살펴보아야할 것 같습니다. 끝으로, 이상 탐지에 대한 정보를 살펴보다보니 대부분의 글이 잘 이해되지 않는 판교어처럼 보이게 되어버리는 것 같습니다. 나중에 파이썬을 배워보는 시간을 가지면서 [사이킷 런(scikit-learn)](https://scikit-learn.org/stable/) 라이브러리로 시계열 데이터에 대한 [이상 감지를 직접 해보려고](https://medium.com/mlthinkbox/anomaly-detection-with-isolation-forest-in-scikit-learn-99417dcc3971) 합니다.

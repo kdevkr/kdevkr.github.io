@@ -1,5 +1,5 @@
 ---
-title: 개발자 알아보는 이상 감지
+title: 개발자가 알아보는 이상 감지
 date: 2025-03-16T21:00+09:00
 tags:
 - Anomaly Detection

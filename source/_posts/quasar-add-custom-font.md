@@ -1,5 +1,6 @@
 ---
 title: Quasar 프로젝트에서 프리텐다드 폰트 사용하기
+date: 2025-09-08T23:00+09:00
 tags:
 - Quasar
 - Pretendard

@@ -1,0 +1,52 @@
+---
+title: 깃허브로 일하는 방법
+date: 2025-09-19T21:00+09:00
+tags:
+- Github
+- Github Projects
+- Github Issues
+---
+
+IT 조직에서 이슈 트래킹을 위한 협업 도구로 아틀라시안에서 제공하는 Jira를 도입하는 경우가 많습니다. 그만큼 분명 지라는 좋은 소프트웨어 중 하나이지만  [지랄같다는](https://news.hada.io/topic?id=16960) 의견을 이야기하는 사용자도 꽤나 많습니다. 현재 회사도 과거에는 지라를 사용해왔지만 지금은 깃허브 이슈로 완전히 전환하여 **코드와 이슈를 함께 관리**하고 있습니다. 오늘은 깃허브를 이슈 트래킹 및 프로젝트 관리 도구로 사용해서 동료와 함께 일하는 방법에 대해서 이야기 해볼까 합니다.
+
+#### Github Projects
+
+[깃허브 프로젝트](https://github.com/projects)는 이슈에 대한 진행사항을 관리하고 워크플로우 자동화를 적용할 수 있는 프로젝트 관리 기능입니다. 깃허브 프로젝트에서는 기본적인 테이블 레이아웃부터 칸반 보드를 만들 수 있는 보드 레이아웃, 마일스톤을 관리할 수 있는 로드맵 레이아웃을 만들 수 있게 지원하면서 각 레이아웃은 언제든지 쉽게 변경이 가능합니다. 그리고 Feature release 와 Bug tracker 와 같은 추천(Featured) 템플릿도 제공하고 있죠. 또한, 기본으로 제공하는 메타데이터 이외에도 마감 기한이나 작업에 대한 우선순위를 커스텀 필드로 추가할 수 있어요.
+
+깃허브 프로젝트를 생성하여 각 리파지토리에 등록되는 이슈를 연결해두면 개발자가 아닌 동료들도 각 이슈와 진행 사항과 완료 여부를 한눈에 파악할 수 있습니다. 애자일이라면서 매주 스프린트라는 작업 단위로 업무를 진행하는 조직에게 적합한 방법을 지원하고 있는거죠.
+
+##### Make a copy 로 프로젝트 시작하기
+
+![](/images/posts/github/01.png)
+
+깃허브 프로젝트에서는 Make a copy 기능으로 [프로젝트 복제](https://docs.github.com/ko/issues/planning-and-tracking-with-projects/creating-projects/copying-an-existing-project)를 지원합니다. Make a copy 로 프로젝트를 시작하면 현재 사용중인 레이아웃, 워크플로우와 같은 프로젝트 설정들을 템플릿처럼 적용하여 프로젝트를 시작할 수 있습니다.  조직이 관리해야할 제품이나 서비스가 많거나 다양한 정부 과제를 수행한다면 미리 프로젝트에 대한 설정을 템플릿으로 만들어두면 됩니다.
+
+#### GitHub 이슈는 프로젝트에 연결하세요
+
+깃허브 이슈는 리파지토리 별로 구별되는 작업에 대한 단위라고 볼 수 있습니다. 깃허브 프로젝트를 사용중이라면 마일스톤이나 스프린트 진행사항을 관리할 수 있으므로 스프린트 내에 수행하게 될 작업을 이슈로 정의하면서 깃허브 프로젝트에 연결하면 됩니다. 깃허브 프로젝트에 이슈를 연결해두면 [기본 워크플로우에 의해](https://docs.github.com/ko/enterprise-cloud@latest/issues/planning-and-tracking-with-projects/automating-your-project/using-the-built-in-automations) 상태가 완료(Done)로 변경되면 연결된 이슈는 자동으로 닫히도록 되어있습니다. 
+
+##### 이슈 템플릿은 쓰고 있나요?
+
+깃허브 이슈를 작성할 때에는 리파지토리에서 사용될 이슈 템플릿을 미리 정의해두고 프로젝트를 지정하는 것을 권장합니다. 오픈소스 프로젝트인 [uptime-kuma의 이슈 템플릿](https://github.com/louislam/uptime-kuma/tree/master/.github/ISSUE_TEMPLATE)처럼 [폼 양식](https://docs.github.com/ko/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)으로 구성할 수도 있습니다. 다음은 빈 이슈 작성을 제한하는 설정으로 미리 정의된 템플릿 사용하여 이슈를 작성하는 것을 강제할 수 있습니다.
+
+```yaml .github/ISSUE_TEMPLATE/config.yml
+blank_issues_enabled: false
+```
+
+##### 이슈에서 리파지토리 코드를 공유할 수 있어요
+
+리파지토리 이슈 내에서는 코드를 [코드 조각에 대한 고정 링크](https://docs.github.com/ko/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet)로 첨부해서 볼 수 있습니다. 또한, 다른 리파지토리 이슈는 [github-linguist/linguist#4039](https://docs.github.com/ko/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls#issues-and-pull-requests)와 같은 형태로 단축되어 표시해줍니다.
+
+##### Github Team 을 멘션 하시나요?
+
+조직내에 프로젝트 또는 리파지토리에 대한 팀을 구성해두면 이슈에서 깃허브 팀을 멘션할 수 있습니다. 해당 프로젝트에 관련된 사람들이 많은 경우 일일이 멘션하기에는 불편함이 있는 경우 효율적입니다. 현재 조직에서는 특정 제품에 대하여 일본 사업과 관련된 사람들을 하나의 팀으로 구성하고 멘션에 활용하고 있습니다.
+
+##### 이슈 라벨링 자동화는 필요하지 않아요
+
+깃허브 액션(Github Actions)을 통해 이슈 또는 PR 에 적합한 라벨을 추가해주는 [IssueOps](https://github.blog/engineering/issueops-automate-ci-cd-and-more-with-github-issues-and-actions/)를 도입해볼 수 있습니다. 관심이 있다면 [GitHub Actions Labeler로 Label 자동화](https://blog.huns.site/blog/posts/dev/research/github-labeler-automation#issue_labeleryml) 라는 글을 참고해보면 좋을 것 같습니다. 이슈 템플릿에 미리 정의한 라벨로 충분할 수 있으며 이슈에 대한 라벨 대신에 조직에서 사용할 수 있는 [이슈 유형](https://docs.github.com/ko/issues/tracking-your-work-with-issues/using-issues/managing-issue-types-in-an-organization)도 관리하도록 합시다.
+
+#### GitHub Discussions 와 Wiki
+
+마지막으로, [GitHub Discussions](https://github.com/features/discussions?locale=ko-KR)은 프로젝트 커뮤니티를 위해 서로 대화할 수 있는 공간을 제공하는 것으로 조직내에서는 어떤 문제에 대해 이슈로 등록하기 전에 질문 또는 토론하기 위해 사용할 수 있습니다. 또 다른 기능으로 문서화를 위한 [Wiki](https://docs.github.com/ko/communities/documenting-your-project-with-wikis/about-wikis)도 있는데 제품에 대한 스펙이나 주요 정보 등을 적어두는데 사용할 수 있습니다. 참고로, 위키에서는 이슈와 다르게 보안상의 이유로 일부 구문은 지원하지 않아 답답한 부분이 있을 수 있습니다.
+
+깃허브를 업무에 활용할 때 가장 중요한 건 마크다운 문법을 이해하고 최대한 상세하게 이슈를 작성하는 겁니다. 정확한 업무는 상세한 히스토리 파악에서부터 시작된다고 생각하기 합니다. 따라서, 언제든지 비슷한 이슈를 검색하고 찾을 수 있는 상태를 만들어야 합니다.

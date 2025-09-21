@@ -98,7 +98,9 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
       font-weight: bold;
       padding: 0;
       background: inherit;
-      text-decoration-line: underline;
+      background-image: linear-gradient(transparent 70%, $lowlight 70%);
+    //   text-decoration-line: underline;
+      
     }
     
     a {
@@ -140,6 +142,12 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
 
     hr {
         background-image: repeating-linear-gradient(45deg, #fefefe, #efefef, #fefefe); !important
+    }
+
+    p > mark {
+        color: var(--text-color);
+        background-color: var(--content-bg-color);
+        background-image: linear-gradient(transparent 70%, $lowlight 70%);
     }
 }
 

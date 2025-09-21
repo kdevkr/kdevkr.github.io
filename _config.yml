@@ -66,7 +66,11 @@ sitemap:
   tag: false
   category: false
 
-markdown: "default"
+markdown:
+  preset: default
+  plugins:
+    - markdown-it-mark
+    - markdown-it-anchor
 
 # https://hexo.io/docs/syntax-highlight#Configuration
 syntax_highlighter: prismjs # v7.0.0+

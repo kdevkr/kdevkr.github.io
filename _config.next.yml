@@ -75,12 +75,12 @@ font:
   # Font settings for site title (.site-title).
   title:
     external: true
-    family: Pretendard-Bold
+    family: Pretendard
 
   # Font settings for headlines (<h1> to <h6>).
   headings:
     external: true
-    family: Pretendard-Medium
+    family: Pretendard
 
   # Font settings for posts (.post-body).
   posts:

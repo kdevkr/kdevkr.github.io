@@ -1,11 +1,12 @@
-$font-famaily-post-title = 'Pretendard-Medium';
-$font-famaily-post-headings = 'Pretendard-Medium';
-$font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
+$font-famaily-post-title = 'Pretendard Variable';
+$font-famaily-post-headings = 'Pretendard Variable';
+$font-famaily-post-content = 'Pretendard Variable', 'Noto Sans KR';
 
 /* archive */
 .archive {
   .post-block {
     .collection-year {
+      font-size: 3rem;
       margin-top: 0.8rem;
       margin-bottom: 0;
 
@@ -14,8 +15,12 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
       }
 
       .collection-year-count {
-            font-size: 1em;
+            font-size: 1rem;
             background-color: $green;
+            vertical-align: middle;
+            position: static;
+            top: -4px;
+            border-radius: 0.5rem;
         }
     }
 
@@ -126,17 +131,19 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
       }
     }
 
-    blockquote {
-      background-color: darken($snorlax-toenail, 1%);
-      border-left: none;
-      padding: 20px 40px;
-      word-break: keep-all;
-      margin-bottom: 20px;
-      border-radius: 1rem;
+   @css{
+         blockquote {
+        background-color: darken($snorlax-toenail, 1%);
+        border-left: none;
+        padding: 20px 40px;
+        word-break: keep-all;
+        margin-bottom: 20px;
+        border-radius: 1rem;
 
-      p {
-        margin: 0;
-      }
+            p {
+                margin: 0;
+            }
+        }
     }
 
     pre {
@@ -145,7 +152,7 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
     pre[class*="language-"] {
       margin-bottom: 1em;
       border-radius: 0.5rem;
-      width: 100%;
+      width: 100;
     }
 
     hr {
@@ -179,7 +186,7 @@ $font-famaily-post-content = 'Pretendard-Regular', 'Noto Sans KR';
 
       time {
         color: $snorlax-tongue;
-        padding: 2px;
+        font-size: 1rem;
       }
     }
   }

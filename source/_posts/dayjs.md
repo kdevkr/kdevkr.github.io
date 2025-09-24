@@ -1,5 +1,6 @@
 ---
 title: Day.js
+date: 2025-08-23T22:00+09:00
 tags:
 - Day.js
 - JavaScript Date

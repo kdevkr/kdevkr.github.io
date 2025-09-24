@@ -23,11 +23,21 @@
             // background-color: var(--content-bg-color);
             border-bottom: 1px solid var(--body-bg-color);
 
-            .sidebar-nav,.sidebar-panel {
+            .sidebar-nav {
                 border-top: 1px solid var(--body-bg-color);
+                display: none;
             }
         }
     }
+
+    .post-title {
+        .post-title-link {
+            &:hover {
+                color: #eee;
+            }
+        }
+    }
+
     .post-body {
         blockquote {
             background-color: #444;
@@ -60,10 +70,16 @@
         }    
     }
     .comments {
-        border-top: none;    
+        border-top: none;
+        border-radius: 0.5rem;
+        background-color: ghostwhite;
     }
 }
 
 .darkmode-toggle {
     top: 15px;  
+}
+
+.column, .darkmode--activated .header  {
+    border-right: none;
 }

@@ -1,1 +1,1 @@
-!function(){CONFIG.chatra.embed&&(window.ChatraSetup={mode:"frame",injectTo:CONFIG.chatra.embed}),window.ChatraID=CONFIG.chatra.id;const t=document.querySelector(".sidebar-button button");t&&t.addEventListener("click",()=>{Chatra("openChat",!0)})}();
+(()=>{CONFIG.chatra.embed&&(window.ChatraSetup={mode:"frame",injectTo:CONFIG.chatra.embed}),window.ChatraID=CONFIG.chatra.id;var a=document.querySelector(".sidebar-button button");a&&a.addEventListener("click",()=>{Chatra("openChat",!0)})})();

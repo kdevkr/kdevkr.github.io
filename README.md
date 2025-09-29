@@ -1,10 +1,10 @@
 # Mambo Blog
 
 ## Static Site Generator
-노드 기반의 블로그 프레임워크인 Hexo를 사용하여 블로그 구축
+Vite 기반의 VitePress를 사용하여 블로그 구축
 
-- Hexo
-- hexo-theme-next
+- VitePress
+- TailwindCSS
 
 ## Build and Deploy
 Github Action 워크플로우를 통해 사이트 정적 파일을 생성하고 Github Pages를 통해 블로그를 배포

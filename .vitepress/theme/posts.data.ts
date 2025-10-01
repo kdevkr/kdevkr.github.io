@@ -24,7 +24,6 @@ export default createContentLoader('posts/*.md', {
         date: formatDate(frontmatter.date)
       }))
       .sort((a, b) => {
-        console.log( b.date, a.date, a.title)
         return isNaN(b.date.time) ? -1 : b.date.time - a.date.time
       })
   }

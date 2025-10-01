@@ -48,8 +48,8 @@ jobs:
         run: npm run build
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GP_TOKEN }}
-          publish_dir: ./vitepress/dist # build output directory
+          publish_dir: ./.vitepress/dist # build output directory
           publish_branch: gh-pages # deploying branch

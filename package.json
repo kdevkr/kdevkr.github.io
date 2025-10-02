@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource-variable/noto-sans-mono": "^5.2.10",
     "@fontsource/pretendard": "^5.2.5",
     "dayjs": "^1.11.18",
     "es-toolkit": "^1.39.10",

@@ -5,5 +5,16 @@
     "strict": true,
     "jsx": "preserve"
   },
-  "include": ["./.vitepress/**/*"]
+  "include": [
+    "./.vitepress/**/*",
+    "**/*.ts",
+    "**/*.vue",
+    "**/*.md",
+  ],
+  "vueCompilerOptions": {
+    "vitePressExtensions": [".md"],
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

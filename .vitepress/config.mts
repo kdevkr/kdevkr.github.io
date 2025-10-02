@@ -8,13 +8,14 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
+  lang: 'ko-KR',
   title: "Mambo",
   description: "Today I Learned 🔥",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Posts', link: '/posts' },
+      { text: 'Posts', link: '/posts', activeMatch: '^/posts/' },
       { text: 'About', link: 'https://kdev.ing/about/' }
     ],
 
@@ -22,8 +23,30 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/kdevkr' }
     ],
 
+    search: {
+      provider: 'local'
+    },
+
+    sidebar: {
+      '/posts/': [
+        {
+          text: 'Posts',
+          items: [
+            { text: '전체 보기', link: '/posts' }
+          ]
+        }
+      ]
+    },
+
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2017-present Mambo'
+    }
+    
   },
 
+
+  /** markdown-it + shiki */
   markdown: {
     config: (md) => {
       md.use(mark)

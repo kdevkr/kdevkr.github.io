@@ -1,8 +1,11 @@
 @import "@fontsource/pretendard";
 @import "@fontsource/pretendard/400.css";
 @import "@fontsource/pretendard/800.css";
+@import "@fontsource-variable/jetbrains-mono";
+@import '@fontsource-variable/noto-sans-mono';
 
 :root {
-  --vp-font-family-base: "Pretendard", -apple-system, BlinkMacSystemFont,
+  --vp-font-family-base: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --vp-font-family-mono: 'Noto Sans Mono Variable', 'JetBrains Mono Variable', ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
 }

@@ -3,10 +3,21 @@ import { withSidebar } from 'vitepress-sidebar';
 
 import tailwindcss from "@tailwindcss/vite";
 import mark from 'markdown-it-mark';
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
 const vitePressOptions = {
   vite: {
-    plugins: [tailwindcss()],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: "modern-compiler",
+            },
+        },
+    },
+    plugins: [
+      tailwindcss(),
+      groupIconVitePlugin(),
+    ],
   },
 
   lang: 'ko-KR',
@@ -51,6 +62,7 @@ const vitePressOptions = {
   markdown: {
     config: (md) => {
       md.use(mark)
+      md.use(groupIconMdPlugin)
     },
     languageAlias: {
       // 'q': 'plaintext'

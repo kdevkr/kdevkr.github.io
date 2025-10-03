@@ -1,9 +1,10 @@
 import { defineConfig } from 'vitepress'
+import { withSidebar } from 'vitepress-sidebar';
+
 import tailwindcss from "@tailwindcss/vite";
 import mark from 'markdown-it-mark'
 
-// https://vitepress.dev/reference/site-config
-export default defineConfig({
+const vitePressOptions = {
   vite: {
     plugins: [tailwindcss()],
   },
@@ -64,4 +65,23 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
     ['script', { async: true, src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }]
   ]
-})
+}
+
+const vitePressSideBarOptions = {
+  // sidebar options
+  documentRootPath: '/',
+  collapsed: true,
+  capitalizeFirst: true,
+
+  scanStartPath: '/posts',
+  resolvePath: '/posts',
+
+  useTitleFromFrontmatter: true,
+  sortMenusByFrontmatterDate: true,
+  sortMenusOrderByDescending: true,
+
+  excludeByGlobPattern: ['README.md', 'archive/**'],
+}
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig(withSidebar(vitePressOptions, vitePressSideBarOptions));

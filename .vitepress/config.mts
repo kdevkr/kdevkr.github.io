@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 import { withSidebar } from 'vitepress-sidebar';
 
 import tailwindcss from "@tailwindcss/vite";
-import mark from 'markdown-it-mark'
+import mark from 'markdown-it-mark';
 
 const vitePressOptions = {
   vite: {
@@ -63,7 +63,9 @@ const vitePressOptions = {
 
   head: [
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
-    ['script', { async: true, src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }]
+    ['script', { async: true, src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }],
+    ["script", { async: true, src: "https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF" }],
+    ["script", {}, "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-V8LF04VMBF');"],
   ]
 }
 

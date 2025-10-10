@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 import { withSidebar } from 'vitepress-sidebar';
 
 import tailwindcss from "@tailwindcss/vite";
-import mark from 'markdown-it-mark';
-import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
+import { mark } from '@mdit/plugin-mark';
+import { groupIconMdPlugin, groupIconVitePlugin, localIconLoader } from 'vitepress-plugin-group-icons'
 
 const vitePressOptions = {
   vite: {
@@ -16,7 +16,11 @@ const vitePressOptions = {
     },
     plugins: [
       tailwindcss(),
-      groupIconVitePlugin(),
+      groupIconVitePlugin({
+        customIcon: {
+          'terminal': 'https://raw.githubusercontent.com/microsoft/terminal/refs/heads/main/res/terminal/Terminal.svg',
+        }
+      }),
     ],
   },
 

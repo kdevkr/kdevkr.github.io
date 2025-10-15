@@ -10,7 +10,7 @@ Quasar 프레임워크의 [QInput](https://quasar.dev/vue-components/input) 컴�
 
 #### 첫번째 레슨 - Template Refs
 
-```html
+```html [Vue SFC]
 <template>
     <q-input ref="input" v-model="text" />
 </template>
@@ -28,7 +28,7 @@ Quasar 에서 제공하는 QInput 컴포넌트에서는 @Input 이벤트를 지�
 
 #### 두번째 레슨 - Field 컴포넌트
 
-```html
+```html [Vue SFC]
 <template>
     <q-field v-model="text">
       <template v-slot:control>

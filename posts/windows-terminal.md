@@ -23,7 +23,7 @@ tags:
 
 [Oh My Posh](https://ohmyposh.dev/)는 파워쉘 스크립트(ps1)를 제공하기 때문에 윈도우 터미널에서 쉽게 설치할 수 있습니다. 윈도우 터미널에서 사용중인 Microsoft.PowerShell_profile.ps1 파일을 열고 윈도우 터미널을 시작할 때 실행할 스크립트를 적어두는 방식으로 설정하게 됩니다. 그래서 아래와 같이 메모장으로 프로파일 설정 파일을 열고나서 마지막 라인에 oh-my-posh init pwsh 명령어를 추가하면 Oh My Posh 가 자동으로 초기화 되도록 실행하게 됩니다.
 
-```ps Windows Terminal
+```ps [Windows Terminal]
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ohmyposh.dev/install.ps1'))
 
@@ -31,18 +31,18 @@ $PROFILE
 C:\Users\Mambo\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
 ```
 
-```ps1 Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)
+```ps [Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)]
 oh-my-posh init pwsh | Invoke-Expression
 ```
 
-```ps Windows Terminal
+```ps [Windows Terminal]
 # 터미널을 다시 시작하지 않고 변경사항 반영하기
 . $PROFILE
 ```
 
 #### 심플한 테마로 변경하기
 
-```ps1 Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)
+```ps [Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)]
 oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\pure.omp.json" | Invoke-Expression
 ```
 
@@ -54,7 +54,7 @@ Oh My Posh 는 jandedobbeleer 테마를 기본으로 사용하고 [내장된 테
 
 반드시 필요한 건 아니지만 Oh My Posh 에서 아이콘을 표시하는 테마를 사용하고자 하는 경우에는 [Nerd Font를 설치하고 설정해야](https://ohmyposh.dev/docs/installation/fonts)합니다. 그래서 에디터에서 주로 사용되는 폰트에 글리프 아이콘을 포함해놓은 폰트인 [Nerd Font](https://www.nerdfonts.com/) 설치를 기본으로 진행하게 됩니다. Nerd Font 를 설치했다면 윈도우 터미널 설정에 들어가서 사용중인 프로파일의 추가 설정 → 모양 메뉴에서 글꼴을 ==MesloLGM Nerd Font== 로 변경합니다. 이제 윈도우 터미널을 다시 열면 알수없는 문자로 깨지던 글리프 아이콘이 정상적으로 표시될 겁니다.
 
-```ps Windows Terminal
+```ps [Windows Terminal]
 oh-my-posh font install meslo
 ```
 
@@ -66,13 +66,13 @@ oh-my-posh font install meslo
 
 Oh My Posh 스크립트를 추가했던 것처럼 파워셀에서는 [PSGallery](https://www.powershellgallery.com/) 에 등록된 모듈이나 스크립트를 가져와서 설치하고 실행할 수 있습니다. 윈도우 터미널을 관리자 권한으로 실행하고나서 Install-Module 명령어를 사용하면 모듈을 설치할 수 있게 되고, 파워쉘에서 참조하는 Microsoft.PowerShell_profile.ps1 파일에서 Import-Module 명령어를 사용해서 포함시킬 수 있어요.
 
-```ps Windows Terminal
+```ps [Windows Terminal]
 Install-Module -Name PSReadLine -Repository PSGallery
 Install-Module -Name Terminal-Icons -Repository PSGallery
 Install-Module -Name Posh-Git -Repository PSGallery
 ```
 
-```ps1 Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)
+```ps [Microsoft.PowerShell_profile.ps1 (notepad $PROFILE)]
 Import-Module -Name PSReadLine
 Import-Module -Name Terminal-Icons
 Import-Module -Name Posh-Git

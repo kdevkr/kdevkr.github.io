@@ -47,7 +47,7 @@ ORDER BY
 
 #### KDB+ 시계열 데이터베이스에서 빠진 날짜를 채우기
 
-```txt
+```sql
 n:11;
 dates: ([] bill_date: {x +til y-x}[2025.07.10;2025.08.09]);
 billing: `bill_date xkey ([] bill_date: n?dates`bill_date; bill: n?100; vat: n?0.0f);

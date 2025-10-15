@@ -1,11 +1,11 @@
-----
+---
 title: Keycloak + Spring Security OAuth 2.0 Resource Server
 date: 2024-12-19T23:00+09:00
 tags:
 - Keycloak
 - Spring Security
 - OAuth 2.0 Resource Server
-----
+---
 
 프론트엔드 채널에서 Keycloak 를 통해 발급하여 백엔드 요청으로 전달되는 JWT 토큰에 대한 검증을 위해 Spring Security의 [OAuth 2.0 Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/index.html)를 사용하여 JWT 토큰이 신뢰할 수 있는 곳에서 서명되었는지 확인하는 것을 알아보자. 본 글에서는 사용자 인증에 대한 Authorization Code Flow를 백엔드 채널로 전달하여 토큰을 교환하는 과정을 거치지 않고 [JavaScript Keycloak Adapter](https://www.keycloak.org/securing-apps/javascript-adapter)를 사용하여 PKCE 기반으로 발급된 토큰을 전달받는다고 가정한다.
 

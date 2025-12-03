@@ -38,6 +38,14 @@ Claude Code는 많은 개발자들이 선호하고 있는 코딩 에이전트로
 
 > Junie 코딩 에이전트는 [.junie/guidelines.md](https://blog.jetbrains.com/idea/2025/05/coding-guidelines-for-your-ai-agents/) 파일을 참조합니다.
 
+## Google Antigravity
+
+```md [.agent/rules/agents.md]
+See `AGENTS.md` in project root directory
+```
+
+[Google Antigravity](https://antigravity.google/)는 구글에서 만들기 시작해서 개인 프리뷰 단계로 공개된 코딩 에이전트가 포함된 AI 에디터에요. 안티그래비티에서는 규칙(Rules)와 워크플로우(Workflow)로 프롬프트를 커스터마이징할 수 있게 지원해요. 다만, 아직은 파일 참조를 변경할 순 없나봐요. 
+
 ## 마지막으로
 
-[AGENTS.md](https://agents.md/)는 코딩 에이전트를 위한 README 를 제공하기 위한 목적으로 OpenAI에 의해 도입되었는데 사실 상 표준으로 자리잡히고 있는 것 같아요. 사실은 아직까지도 애플리케이션 개발을 위해 AI 도구를 적극적으로 활용해서 ==바이브코딩==이란 것을 해본적이 없습니다. 최근에는 [Google AI Stuido](https://aistudio.google.com/) 와 [Google Antigravity](https://antigravity.google/)라는 AI 에디터도 떠오르는 것 같습니다. 이러한 에이전틱 도구들을 제대로 활용하기 위해서 지침을 잘 작성해두어야 하는데 이것도 쉽지만은 않은 과정 같습니다.
+[AGENTS.md](https://agents.md/)는 코딩 에이전트를 위한 README 를 제공하기 위한 목적으로 OpenAI에 의해 도입되었는데 사실 상 표준으로 자리잡히고 있는 것 같아요. AI 코딩 에이전트 도구마다 참조하는 지침 파일들이 다르기 때문에 생각보다 복잡한 것 같이 느껴집니다.

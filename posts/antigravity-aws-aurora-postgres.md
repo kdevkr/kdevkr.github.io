@@ -23,10 +23,9 @@ AI 코딩 에이전트인 `Antigravity`를 사용하면서 데이터베이스 �
 
 ## 기존 MCP 서버의 한계
 
-많은 사용자들이 사용하는 오픈소스 MCP 서버들은 로컬 도커 환경에는 적합하지만, 규모가 크거나 복잡한 클라우드 서비스를 이용하는 실무 운영 환경(Production)에서 사용하기에는 제약사항이 많습니다.
+[crystaldba/postgres-mcp](https://github.com/crystaldba/postgres-mcp) 같은 유명한 서버들도 AWS Aurora의 IAM Database Authentication을 기본적으로 지원하지 않습니다. 또한, [awslabs/mcp](https://github.com/awslabs/mcp)에서 제공하는 기능조차 특정 사용자로 접속할 수 있는 방법이 없다는 [이슈(Issue #2505)](https://github.com/awslabs/mcp/issues/2505)가 있습니다.
 
-- **IAM 인증 미지원**: [crystaldba/postgres-mcp](https://github.com/crystaldba/postgres-mcp) 같은 유명한 서버들도 AWS Aurora의 IAM Database Authentication을 기본적으로 지원하지 않습니다.
-- **유연한 설정 부족**: [awslabs/mcp](https://github.com/awslabs/mcp)에서 제공하는 기능조차 특정 사용자로 접속하여 특정 스키마(`search_path`)를 지정하는 기능이 부족하다는 [이슈(Issue #2505)](https://github.com/awslabs/mcp/issues/2505)가 제기되고 있습니다.
+AWS 공식 기술 블로그의 [AWS MCP로 Aurora PostgreSQL 데이터베이스 관리하기](https://aws.amazon.com/ko/blogs/tech/aws-mcp-aurora-postgresql/)와 같은 글을 참고해봐도, 실제 우리 조직에서 필수적으로 사용하는 [AWS IAM 데이터베이스 인증(IAM DB Auth)](https://docs.aws.amazon.com/ko_kr/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) 방식과 [AWS Advanced Python Wrapper](https://github.com/aws/aws-advanced-python-wrapper)에서 제공하는 특정 사용자(`db-user`) 기반의 **Federated Authentication Plugin** 등 복잡한 실무 환경 설정은 충분히 지원하지 않는다는 한계를 확인했습니다.
 
 이러한 제약 사항 때문에, 우리는 Antigravity의 숨겨진 기능인 **'에이전트 스킬(Agent Skills)'** 을 활용하여 우리만의 맞춤형 DB 접근 도구를 직접 구현하는 것이 더 나은 선택이 될 수 있습니다.
 
@@ -208,4 +207,4 @@ if __name__ == "__main__":
 
 ## 마치며
 
-기성품처럼 제공되는 MCP 서버가 우리의 모든 가려운 곳을 긁어주지는 못합니다. 특히 클라우드 네이티브 환경(AWS)의 복잡한 인증 체계나 세밀한 설정이 필요한 경우, Antigravity의 **에이전트 스킬**은 우리만의 커스텀 MCP를 가장 쉽게 만드는 방법이 될 수 있습니다.
+일반적으로 **MCP 서버를 활용하면 엄청나게 유용해요!** 라고 말하지만 모든 것을 커버하진 못합니다. Antigravity의 **에이전트 스킬**은 우리만의 커스텀 MCP를 가장 쉽게 만드는 방법이 될 수 있습니다.

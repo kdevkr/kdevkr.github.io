@@ -6,7 +6,6 @@ import 'virtual:group-icons.css'
 import './tailwind.css'; // Import your Tailwind CSS file
 import './style.css'
 import './font.css'
-
 export default {
   extends: DefaultTheme,
   Layout: () => {
@@ -14,7 +13,6 @@ export default {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
     })
   },
-  enhanceApp({ app, router, siteData }) {
-    // ...
+  enhanceApp({ app }) {
   }
 } satisfies Theme

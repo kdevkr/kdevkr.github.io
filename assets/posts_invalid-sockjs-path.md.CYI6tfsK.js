@@ -1,0 +1,39 @@
+import{_ as a,c as n,o as p,ag as e}from"./chunks/framework.Sr95JMjc.js";const _=JSON.parse('{"title":"Invalid SockJS path.","description":"","frontmatter":{"title":"Invalid SockJS path.","date":"2023-10-16T22:00+0900","tags":["Spring","Nginx","SockJS","Stomp"]},"headers":[],"relativePath":"posts/invalid-sockjs-path.md","filePath":"posts/invalid-sockjs-path.md","lastUpdated":1774774404000}'),t={name:"posts/invalid-sockjs-path.md"};function o(l,s,r,i,c,d){return p(),n("div",null,[...s[0]||(s[0]=[e(`<blockquote><p>Invalid SockJS path &#39;XXX&#39; required to have 3 path segments.</p></blockquote><p>구글에 <a href="https://www.google.com/search?q=Invalid+SockJS+path" target="_blank" rel="noreferrer">Invalid SockJS path</a> 라는 키워드로 검색해보면 이와 같은 오류 로그에 대한 조치로 <a href="https://stackoverflow.com/a/64576478" target="_blank" rel="noreferrer">Stomp 클라이언트를 사용하라는 답변</a>이나 <a href="https://github.com/spring-projects/spring-framework/issues/28103" target="_blank" rel="noreferrer">스택 오버플로우에 질문하라는 답변</a>을 찾아볼 수 있다. 아무튼 위 상황에 대한 원인은 명확히 알 수 없는 상황에서 아래와 같은 구조에서 해당 오류가 발생했다.</p><ol><li>Nginx Websocket Proxy</li><li>Spring WebSocket with Stomp + SockJS</li><li><code>sockjs-client@1.6.1</code></li><li><code>@stomp/stompjs@7.0.0</code></li></ol><h4 id="이슈-파악" tabindex="-1">이슈 파악 <a class="header-anchor" href="#이슈-파악" aria-label="Permalink to &quot;이슈 파악&quot;">​</a></h4><p><a href="https://github.com/kdevkr/nginx.conf" target="_blank" rel="noreferrer">nginx.conf</a>와 같이 엔진엑스에서 웹소켓 주소 패턴에 대해 백엔드 애플리케이션으로의 리버스 프록시 구성을 아래와 같이 해둔 상태였다. 그리고 Stomp 방식의 웹 소켓 연결을 수행하는 엔드포인트는 <code>/ws/stomp</code> 로 정의되어있었다. 본래 <code>/ws</code> 는 일반적인 웹 소켓 연결을 수행하고 <code>/ws/stmop</code>로 시작되는 것은 Stomp로 동작하는 것을 의도한 것이다.</p><div class="language-txt vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">txt</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>http {</span></span>
+<span class="line"><span>    upstream backend {</span></span>
+<span class="line"><span>        server app:8080;</span></span>
+<span class="line"><span>        keepalive 128;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    server {</span></span>
+<span class="line"><span>        location /ws/ {</span></span>
+<span class="line"><span>            proxy_pass http://backend;</span></span>
+<span class="line"><span>            proxy_set_header Host $host;</span></span>
+<span class="line"><span>            proxy_set_header X-Real-IP $remote_addr;</span></span>
+<span class="line"><span>            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span></span>
+<span class="line"><span>            # hop-by-hop</span></span>
+<span class="line"><span>            proxy_http_version 1.1;</span></span>
+<span class="line"><span>            proxy_set_header Connection &quot;upgrade&quot;;</span></span>
+<span class="line"><span>            proxy_set_header Upgrade $http_upgrade;</span></span>
+<span class="line"><span>            proxy_read_timeout 65s;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span></code></pre></div><blockquote><p>Vite 개발 서버에서의 Proxy 구성의 경우 올바르게 Stomp 방식의 웹소켓 연결을 수행된다.</p></blockquote><p>하지만, 엔진엑스와 함께 동작중인 배포 환경에서는 Stomp 클라이언트가 SockJS를 사용하여 연결을 수행하려고 할때 <code>/ws/stomp/info?t=0</code> 엔드포인트에 대해 404 응답을 받게되고 애플리케이션 로그에는 <code>Invalid SockJS path ...</code>가 출력되는 것을 확인했다.</p><h4 id="솔루션" tabindex="-1">솔루션 <a class="header-anchor" href="#솔루션" aria-label="Permalink to &quot;솔루션&quot;">​</a></h4><p>이리저리 시도해본 결과 해결책은 일반적인 웹 소켓 연결과 Stomp 방식의 연결을 아예 분리하는 것이다. <code>/ws/</code> 이외에 <code>/ws-stomp/</code>로 Stomp 방식의 웹 소켓 연결을 위한 별도의 엔드포인트 패턴을 사용하고 리버스 프록시 구성을 하고나니 해당 증상은 발생하지 않았다.</p><div class="language-txt vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">txt</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>http {</span></span>
+<span class="line"><span>    upstream backend {</span></span>
+<span class="line"><span>        server app:8080;</span></span>
+<span class="line"><span>        keepalive 128;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    server {</span></span>
+<span class="line"><span>        location ~ ^/(ws|ws-stomp)/ {</span></span>
+<span class="line"><span>            proxy_pass http://backend;</span></span>
+<span class="line"><span>            proxy_set_header Host $host;</span></span>
+<span class="line"><span>            proxy_set_header X-Real-IP $remote_addr;</span></span>
+<span class="line"><span>            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span></span>
+<span class="line"><span>            # hop-by-hop</span></span>
+<span class="line"><span>            proxy_http_version 1.1;</span></span>
+<span class="line"><span>            proxy_set_header Connection &quot;upgrade&quot;;</span></span>
+<span class="line"><span>            proxy_set_header Upgrade $http_upgrade;</span></span>
+<span class="line"><span>            proxy_read_timeout 65s;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>}</span></span></code></pre></div><p>아무튼 정확한 원인에 대해서는 별도로 찾아보아야겠지만 기록으로 남기고자 한다.</p>`,12)])])}const k=a(t,[["render",o]]);export{_ as __pageData,k as default};

@@ -5,18 +5,15 @@
         <a :href="prev.url">
           <span class="desc">이전 글</span>
           <span class="title">{{ prev.title }}</span>
+          <span class="date">{{ prev.date.string }}</span>
         </a>
       </div>
       <div class="pager-link next" v-if="next">
         <a :href="next.url">
           <span class="desc">다음 글</span>
           <span class="title">{{ next.title }}</span>
+          <span class="date">{{ next.date.string }}</span>
         </a>
-      </div>
-    </div>
-    <div class="edit-info">
-      <div class="last-updated" v-if="lastUpdated">
-        <p class="VPLastUpdated">마지막 수정: <time :datetime="String(lastUpdated)">{{ formattedLastUpdated }}</time></p>
       </div>
     </div>
   </footer>
@@ -44,7 +41,7 @@ const currentIndex = computed(() => {
 // 다음 글 = 더 최신 글 = posts[i - 1]
 const prev = computed(() => {
     const i = currentIndex.value
-    return i !== -1 && i < posts.length - 1 ? posts[i + 1] : undefined
+    return i > -1 && i < posts.length - 1 ? posts[i + 1] : undefined
 })
 
 const next = computed(() => {
@@ -52,16 +49,7 @@ const next = computed(() => {
     return i > 0 ? posts[i - 1] : undefined
 })
 
-const lastUpdated = computed(() => page.value.lastUpdated)
-const formattedLastUpdated = computed(() => {
-    const lu = lastUpdated.value
-    if (!lu) return ''
-    return new Date(lu).toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-})
+
 </script>
 
 <style scoped>
@@ -83,4 +71,14 @@ const formattedLastUpdated = computed(() => {
     display: block;
     font-weight: 600;
 }
+.pager-link .date {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    background-color: var(--vp-c-default-soft);
+    color: var(--vp-c-text-2);
+}
+
 </style>

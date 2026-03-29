@@ -5,3 +5,4 @@ node_modules/
 .vitepress/config.mts.*.mjs
 .vitepress/cache
 .vitepress/dist
+.claude/settings.local.json

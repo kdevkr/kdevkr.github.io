@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { withSidebar } from 'vitepress-sidebar';
+import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
@@ -22,6 +23,14 @@ const vitePressOptions = {
         }
       }),
     ],
+    resolve: {
+      alias: [
+        {
+          find: /^.*\/VPDocFooter\.vue$/,
+          replacement: fileURLToPath(new URL('./theme/components/DocFooter.vue', import.meta.url))
+        }
+      ]
+    },
   },
 
   lang: 'ko-KR',
@@ -89,6 +98,7 @@ const vitePressSideBarOptions = {
   // sidebar options
   documentRootPath: '/',
   collapsed: true,
+  rootGroupLink: true,
   capitalizeFirst: true,
 
   scanStartPath: '/posts',

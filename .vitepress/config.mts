@@ -1,12 +1,12 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type UserConfig } from 'vitepress'
 import { withSidebar } from 'vitepress-sidebar';
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
-import { groupIconMdPlugin, groupIconVitePlugin, localIconLoader } from 'vitepress-plugin-group-icons'
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
-const vitePressOptions = {
+const vitePressOptions: UserConfig = {
   vite: {
     css: {
         preprocessorOptions: {
@@ -84,12 +84,12 @@ const vitePressOptions = {
 
   cleanUrls: true,
   lastUpdated: true,
-  srcExclude: ['archive/**'],
+  srcExclude: ['archive/**', '**/.agents/**', '**/.claude/**'],
 
   head: [
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
-    ['script', { async: true, src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }],
-    ["script", { async: true, src: "https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF" }],
+    ['script', { async: '', src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }],
+    ["script", { async: '', src: "https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF" }],
     ["script", {}, "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-V8LF04VMBF');"],
   ]
 }
@@ -98,7 +98,7 @@ const vitePressSideBarOptions = {
   // sidebar options
   documentRootPath: '/',
   collapsed: true,
-  rootGroupLink: true,
+  rootGroupLink: '/',
   capitalizeFirst: true,
 
   scanStartPath: '/posts',
@@ -108,7 +108,7 @@ const vitePressSideBarOptions = {
   sortMenusByFrontmatterDate: true,
   sortMenusOrderByDescending: true,
 
-  excludeByGlobPattern: ['README.md', 'archive/**'],
+  excludeByGlobPattern: ['README.md', 'archive/**', '**/.agents/**', '**/.claude/**'],
 }
 
 // https://vitepress.dev/reference/site-config

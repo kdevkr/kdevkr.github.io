@@ -1,3 +1,21 @@
 {
-  "vue.server.includeLanguages": ["vue", "markdown"]
+  "vue.server.includeLanguages": [
+    "vue"
+  ],
+  "files.exclude": {
+    "**/.agents": true,
+    "**/.claude": true
+  },
+  "search.exclude": {
+    "**/.agents": true,
+    "**/.claude": true
+  },
+  "[markdown]": {
+    "editor.quickSuggestions": {
+      "comments": false,
+      "strings": false,
+      "other": false
+    },
+    "typescript.validate.enable": false
+  }
 }

@@ -42,10 +42,32 @@ def check_markdown(file_path):
         pass
 
     # 3. Code Block Language Check
-    code_blocks = re.findall(r'```(.*)\n', body_content)
-    for i, lang in enumerate(code_blocks):
-        if not lang.strip():
-            errors.append(f"Missing language specification for code block #{i+1}")
+    # Match starting backticks with optional language and title
+    code_blocks = re.findall(r'```([^\n]*)', body_content)
+    
+    # In Markdown, code blocks appear in pairs (start/end). 
+    # We only care about the starting one (odd indices 0, 2, 4...).
+    # However, some snippets might not have closing backticks in view.
+    # A better way is to track state or assume the check is only for the opening.
+    # Actually, the original script was catching BOTH opening and closing backticks.
+    
+    # Fixed logic: Find all code block starts that are NOT just closing backticks.
+    # We use a state-based approach or simply filter out empty matches that follow a non-empty one.
+    
+    is_inside_block = False
+    block_count = 0
+    for line in body_content.splitlines():
+        if line.strip().startswith('```'):
+            if not is_inside_block:
+                # This is a starting block
+                is_inside_block = True
+                block_count += 1
+                lang_part = line.strip()[3:].split('[')[0].strip()
+                if not lang_part:
+                    errors.append(f"Missing language specification for code block #{block_count}")
+            else:
+                # This is a closing block
+                is_inside_block = False
 
     if errors:
         print(f"Validation failed for {file_path}:")

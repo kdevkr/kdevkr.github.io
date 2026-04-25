@@ -29,6 +29,7 @@
     ".claude",
     ".claude/**/*",
     ".vitepress/dist",
-    ".vitepress/cache"
+    ".vitepress/cache",
+    "**/*.timestamp-*"
   ]
 }

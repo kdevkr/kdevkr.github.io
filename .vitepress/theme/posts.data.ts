@@ -7,24 +7,23 @@ interface Post {
     time: number
     string: string
   }
-  excerpt: string | undefined
+  description: string
 }
 
 declare const data: Post[]
 export { data }
 
 export default createContentLoader('posts/*.md', {
-  excerpt: true,
   transform(raw): Post[] {
     return raw
-      .map(({ url, frontmatter, excerpt }) => ({
+      .map(({ url, frontmatter }) => ({
         title: frontmatter.title,
         url: url.replace('.html', '/'),
-        excerpt,
+        description: frontmatter.description ?? '',
         date: formatDate(frontmatter.date)
       }))
       .sort((a, b) => {
-        return isNaN(b.date.time) ? -1 : b.date.time - a.date.time
+        return Number.isNaN(b.date.time) ? -1 : b.date.time - a.date.time
       })
   }
 })

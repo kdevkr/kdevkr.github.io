@@ -1,6 +1,7 @@
 ---
 title: 리눅스 프로세스를 안전하게 종료시키는 방법
 date: 2026-04-25T20:00+09:00
+description: 빈 변수와 `pgrep -f`가 만나 서버의 모든 프로세스를 종료시킨 사고를 복기하고, lsof·ss·fuser와 SIGTERM 기반 안전한 프로세스 종료 패턴을 정리합니다.
 tags:
     - Linux
     - Shell Script

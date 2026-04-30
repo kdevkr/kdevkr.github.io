@@ -1,6 +1,7 @@
 ---
 title: Antigravity 에서 AWS Aurora Postgres 에 접근하기
 date: 2026-03-27T07:30:00+09:00
+description: AI 에이전트 Antigravity에서 AWS Aurora PostgreSQL에 IAM 인증으로 접근해 스키마 조회와 쿼리 검증을 안전하게 수행하기 위한 환경 구성을 정리합니다.
 tags:
 - Antigravity
 - AWS

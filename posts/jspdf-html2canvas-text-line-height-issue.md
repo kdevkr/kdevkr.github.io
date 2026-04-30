@@ -1,6 +1,7 @@
 ---
 title: 브라우저 PDF 생성 시 텍스트 밀림 현상
 date: 2026-02-19T12:00+09:00
+description: jsPDF와 html2canvas로 PDF를 만들 때 Tailwind CSS Preflight 충돌로 텍스트 행간이 밀리는 현상의 원인과 해결 방법을 정리합니다.
 tags:
 - jspdf
 - html2canvas

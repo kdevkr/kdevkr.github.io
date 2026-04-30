@@ -1,6 +1,7 @@
 ---
 title: 비트마스크를 활용한 설비 디바이스 Fault 처리
 date: 2026-04-30T07:00+09:00
+description: 산업 설비의 결함·경고 상태를 16비트 정수로 압축해 효율적으로 처리하는 방법을 비트마스크, Java BitSet, kdb+/q 예시로 정리합니다.
 tags:
     - Bitmask
     - BitSet

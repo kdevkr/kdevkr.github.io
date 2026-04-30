@@ -84,7 +84,7 @@ const vitePressOptions: UserConfig = {
 
   cleanUrls: true,
   lastUpdated: true,
-  srcExclude: ['archive/**', '**/.agents/**', '**/.claude/**'],
+  srcExclude: ['archive/**', '**/.agents/**', '**/.claude/**', 'CLAUDE.md', 'CLAUDE.local.md', 'AGENTS.md', 'README.md'],
 
   head: [
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
@@ -108,7 +108,7 @@ const vitePressSideBarOptions = {
   sortMenusByFrontmatterDate: true,
   sortMenusOrderByDescending: true,
 
-  excludeByGlobPattern: ['README.md', 'archive/**', '**/.agents/**', '**/.claude/**'],
+  excludeByGlobPattern: ['README.md', 'CLAUDE.md', 'CLAUDE.local.md', 'AGENTS.md', 'archive/**', '**/.agents/**', '**/.claude/**'],
 }
 
 // https://vitepress.dev/reference/site-config

@@ -2,21 +2,23 @@
   "type": "module",
   "name": "kdevkr.github.io",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mambo의 기술 블로그 — Today I Learned",
   "scripts": {
-    "l": "vitepress dev",
-    "build": "vitepress build"
+    "dev": "vitepress dev",
+    "l": "pnpm dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kdevkr/kdevkr.github.io.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Mambo (kdevkr)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kdevkr/kdevkr.github.io/issues"
   },
-  "homepage": "https://github.com/kdevkr/kdevkr.github.io#readme",
+  "homepage": "https://kdev.ing",
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/noto-sans-mono": "^5.2.10",
@@ -29,11 +31,8 @@
   },
   "devDependencies": {
     "@mdit/plugin-mark": "^0.22.1",
-    "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^25.6.0",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
     "sass": "^1.93.2",
     "tailwindcss": "^4.1.13",
     "typescript": "^6.0.3",

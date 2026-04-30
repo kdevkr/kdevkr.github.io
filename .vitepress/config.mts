@@ -6,6 +6,21 @@ import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
+const SITE_URL = 'https://kdev.ing'
+const SITE_TITLE = 'Mambo Blog'
+const SITE_DESCRIPTION = 'Today I Learned — 백엔드, 프론트엔드, 인프라 개발 노트'
+const DEFAULT_OG_IMAGE = `${SITE_URL}/images/logo/snorlax-111.jpg`
+
+const EXCLUDED_PATTERNS = [
+  'archive/**',
+  '**/.agents/**',
+  '**/.claude/**',
+  'CLAUDE.md',
+  'CLAUDE.local.md',
+  'AGENTS.md',
+  'README.md',
+]
+
 const vitePressOptions: UserConfig = {
   vite: {
     css: {
@@ -80,14 +95,56 @@ const vitePressOptions: UserConfig = {
 
   cleanUrls: true,
   lastUpdated: true,
-  srcExclude: ['archive/**', '**/.agents/**', '**/.claude/**', 'CLAUDE.md', 'CLAUDE.local.md', 'AGENTS.md', 'README.md'],
+  srcExclude: EXCLUDED_PATTERNS,
+
+  sitemap: {
+    hostname: SITE_URL,
+  },
 
   head: [
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
+    ['meta', { name: 'description', content: SITE_DESCRIPTION }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: SITE_TITLE }],
+    ['meta', { property: 'og:title', content: SITE_TITLE }],
+    ['meta', { property: 'og:description', content: SITE_DESCRIPTION }],
+    ['meta', { property: 'og:image', content: DEFAULT_OG_IMAGE }],
+    ['meta', { property: 'og:url', content: SITE_URL }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: SITE_TITLE }],
+    ['meta', { name: 'twitter:description', content: SITE_DESCRIPTION }],
+    ['meta', { name: 'twitter:image', content: DEFAULT_OG_IMAGE }],
     ['script', { async: '', src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }],
     ["script", { async: '', src: "https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF" }],
     ["script", {}, "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-V8LF04VMBF');"],
-  ]
+  ],
+
+  transformHead({ pageData }) {
+    const fm = pageData.frontmatter
+    const isPost = pageData.relativePath.startsWith('posts/')
+    if (!isPost && pageData.relativePath !== 'index.md') return []
+
+    const title = fm.title ? `${fm.title} | ${SITE_TITLE}` : SITE_TITLE
+    const description = fm.description || SITE_DESCRIPTION
+    const resolveImage = (raw?: string) => {
+      if (!raw) return DEFAULT_OG_IMAGE
+      return raw.startsWith('http') ? raw : `${SITE_URL}${raw}`
+    }
+    const image = resolveImage(fm.image)
+    const url = `${SITE_URL}/${pageData.relativePath.replace(/\.md$/, '').replace(/^index$/, '')}`
+    const type = isPost ? 'article' : 'website'
+
+    return [
+      ['meta', { property: 'og:type', content: type }],
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: description }],
+      ['meta', { property: 'og:image', content: image }],
+      ['meta', { property: 'og:url', content: url }],
+      ['meta', { name: 'twitter:title', content: title }],
+      ['meta', { name: 'twitter:description', content: description }],
+      ['meta', { name: 'twitter:image', content: image }],
+    ]
+  },
 }
 
 const vitePressSideBarOptions = {
@@ -104,7 +161,7 @@ const vitePressSideBarOptions = {
   sortMenusByFrontmatterDate: true,
   sortMenusOrderByDescending: true,
 
-  excludeByGlobPattern: ['README.md', 'CLAUDE.md', 'CLAUDE.local.md', 'AGENTS.md', 'archive/**', '**/.agents/**', '**/.claude/**'],
+  excludeByGlobPattern: EXCLUDED_PATTERNS,
 }
 
 // https://vitepress.dev/reference/site-config

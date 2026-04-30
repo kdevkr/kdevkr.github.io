@@ -3,12 +3,12 @@
     "vue"
   ],
   "files.exclude": {
-    "**/.agents": true,
-    "**/.claude": true
+    "**/.agents": false,
+    "**/.claude": false
   },
   "search.exclude": {
-    "**/.agents": true,
-    "**/.claude": true
+    "**/.agents": false,
+    "**/.claude": false
   },
   "[markdown]": {
     "editor.quickSuggestions": {

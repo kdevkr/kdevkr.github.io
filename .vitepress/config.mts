@@ -17,11 +17,7 @@ const vitePressOptions: UserConfig = {
     },
     plugins: [
       tailwindcss(),
-      groupIconVitePlugin({
-        customIcon: {
-          'terminal': 'https://raw.githubusercontent.com/microsoft/terminal/refs/heads/main/res/terminal/Terminal.svg',
-        }
-      }),
+      groupIconVitePlugin(),
     ],
     resolve: {
       alias: [

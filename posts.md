@@ -22,7 +22,7 @@ const years = Object.keys(postsByYear).reverse().filter(year => year !== 'Invali
   <ul>
     <li v-for="post in postsByYear[year]" :key="post.url">
       <a :href="post.url">{{ post.title }}</a> <small>({{ post.date?.string }})</small>
-      <p v-if="post.description">{{ post.description }}</p>
+      <p v-if="post.description" class="text-xs! opacity-90 my-1! line-clamp-1">{{ post.description }}</p>
     </li>
   </ul>
 </div>

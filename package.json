@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Mambo의 기술 블로그 — Today I Learned",
   "scripts": {
-    "dev": "vitepress dev",
+    "dev": "vitepress dev --host",
     "l": "pnpm dev",
     "build": "vitepress build",
     "preview": "vitepress preview"

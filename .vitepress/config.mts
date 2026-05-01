@@ -23,6 +23,9 @@ const EXCLUDED_PATTERNS = [
 
 const vitePressOptions: UserConfig = {
   vite: {
+    server: {
+      allowedHosts: ['.ts.net'],
+    },
     css: {
         preprocessorOptions: {
             scss: {

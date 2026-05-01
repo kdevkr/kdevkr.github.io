@@ -1,10 +1,14 @@
+name: Build and Deploy
+
 on:
   push:
     branches:
       - local
   workflow_dispatch:
 
-name: Build and Deploy
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -38,6 +42,6 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GP_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.vitepress/dist
           publish_branch: gh-pages

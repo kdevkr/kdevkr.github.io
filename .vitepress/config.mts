@@ -52,7 +52,7 @@ const vitePressOptions: UserConfig = {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Posts', link: '/posts', activeMatch: '^/posts/' },
-      { text: 'About', link: 'https://kdev.ing/about/' }
+      { text: 'About', link: '/about' }
     ],
 
     socialLinks: [

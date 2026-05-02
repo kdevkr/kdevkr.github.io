@@ -107,11 +107,20 @@ https://pc.tailxxxx.ts.net/
 Press Ctrl+C to exit.
 ```
 
+### Tailscale Funnel is ready to use
+
 이제 Tailscale 이 [Let's Encrypt](https://letsencrypt.org/) 인증서를 설정한 `https://pc.tailxxxx.ts.net/` 주소를 제공하므로 tailnet 에 연결되지 않은 디바이스에서도 접근할 수 있습니다.
 
 > [!CAUTION]
 > Funnel 은 인터넷에 노출하는 기능이므로 작업이 끝나면 `tailscale funnel reset` 으로 즉시 닫아 주세요!
 
-## 5. 마치며
+## 5. 갤럭시 사용자라면 — 삼성 페이 충돌 주의
+
+삼성 갤럭시에서 Tailscale 앱을 사용하는 경우, **VPN 이 상시 동작하는 상태로 인식되어 삼성 월렛의 삼성 페이 기능이 차단** 되는 이슈가 있습니다. 결제 시점에 삼성 페이가 열리지 않거나 결제 화면에서 오류가 표시될 수 있어요.
+
+> [!WARNING]
+> 삼성 페이를 사용해야 한다면 Tailscale 앱에서 일시적으로 연결을 해제하거나, 네이버페이·카카오페이 같은 서드파티 결제 앱을 대신 사용하세요. **로컬 환경 접근이 필요 없다면 평소에는 연결을 해제해 두는 것을 권장** 합니다.
+
+## 6. 마치며
 
 Tailscale 이 [개인용 무료](https://tailscale.com/blog/pricing-v4) 정책을 확대했다는 소식을 보고 로컬 환경에 접속하기라는 주제로 다루어보았습니다. 여러분도 필요할 때 유용하게 활용할 수 있을 것 같습니다.

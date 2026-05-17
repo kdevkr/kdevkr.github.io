@@ -28,7 +28,7 @@
 
 - `pnpm install` — 의존성 설치 (이 프로젝트의 패키지 매니저는 pnpm 입니다. CI는 pnpm 9, Node 24.x를 사용합니다).
 - `pnpm l` / `pnpm dev` — VitePress 개발 서버 실행 (`vitepress dev --host`). `--host` 플래그가 붙어 있어 같은 네트워크의 외부 디바이스에서도 접근할 수 있습니다.
-- `pnpm build` / `npm run build` — [.vitepress/dist/](.vitepress/dist/)로 프로덕션 빌드.
+- `pnpm build` / `npm run build` — 프로덕션 빌드 명령어입니다. **(주의: 글 작성 및 수정 도중에 로컬 검증 등의 목적으로 이 명령어를 실행하는 것은 금지되어 있습니다. 절대 실행하지 마십시오.)**
 - 테스트, 린터, 타입 체크 스크립트는 별도로 연결되어 있지 않습니다. `tsc`도 실행되지 않으며, [tsconfig.json](tsconfig.json)은 에디터/Vue 툴링이 타입을 해석하는 방식만 정의합니다.
 
 ## 아키텍처

@@ -38,6 +38,44 @@ export default {
   enhanceApp({ router }) {
     if (globalThis.window !== undefined) {
       router.onAfterRouteChange = updateActiveSidebarItem
+
+      // 서드파티 스크립트 (AdSense, Analytics) 지연 로딩
+      const initThirdParty = () => {
+        let initialized = false
+        const events = ['mouseover', 'keydown', 'touchmove', 'touchstart', 'scroll']
+        const loadScripts = () => {
+          if (initialized) return
+          initialized = true
+          events.forEach(event => window.removeEventListener(event, loadScripts))
+
+          // Google Analytics
+          const gaScript = document.createElement('script')
+          gaScript.async = true
+          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF'
+          document.head.appendChild(gaScript)
+
+          const gaConfig = document.createElement('script')
+          gaConfig.textContent = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-V8LF04VMBF');
+          `
+          document.head.appendChild(gaConfig)
+
+          // Google AdSense
+          const adsScript = document.createElement('script')
+          adsScript.async = true
+          adsScript.crossOrigin = 'anonymous'
+          adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145'
+          document.head.appendChild(adsScript)
+        }
+        events.forEach(event => {
+          window.addEventListener(event, loadScripts, { passive: true, once: true })
+        })
+      }
+
+      initThirdParty()
     }
   }
 } satisfies Theme

@@ -199,7 +199,7 @@ onMounted(() => nextTick(applyFilter))
   padding: 1px 6px;
   border-radius: 10px;
   background: var(--vp-c-default-soft);
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-2);
   line-height: 1.6;
 }
 

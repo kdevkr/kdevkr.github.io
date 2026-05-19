@@ -117,9 +117,6 @@ const vitePressOptions: UserConfig = {
     ['meta', { name: 'twitter:title', content: SITE_TITLE }],
     ['meta', { name: 'twitter:description', content: SITE_DESCRIPTION }],
     ['meta', { name: 'twitter:image', content: DEFAULT_OG_IMAGE }],
-    ['script', { async: '', src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9304279418886145', crossorigin: 'anonymous' }],
-    ["script", { async: '', src: "https://www.googletagmanager.com/gtag/js?id=G-V8LF04VMBF" }],
-    ["script", {}, "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-V8LF04VMBF');"],
   ],
 
   transformHead({ pageData }) {

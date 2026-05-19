@@ -78,7 +78,7 @@ const next = computed(() => {
     font-size: 11px;
     border-radius: 4px;
     background-color: var(--vp-c-default-soft);
-    color: var(--vp-c-text-2);
+    color: var(--vp-c-text-1);
 }
 
 </style>

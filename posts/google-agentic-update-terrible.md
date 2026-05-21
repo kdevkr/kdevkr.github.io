@@ -22,16 +22,17 @@ tags:
 > Google has made the decision to simplify subscriptions by removing AI credits as part of the base Google AI plans. Accordingly, we have adjusted the base plan entitlements upwards for Gemini models on Antigravity. 
 
 구글이 [새로운 Google AI Ultra 티어](https://blog.google/intl/ko-kr/company-news/technology/google-ai-subscriptions-kr/)를 소개하면서 [제미나이 모델 간 사용량 공유](https://antigravity.google/blog/changes-to-antigravity-plans)한다는 소식을 공지하면서 모델을 더 사용해보라고 제공하던 월 AI 크레딧도 없애버렸습니다. 문제는 [Gemini 3.5 Flash의 가격](https://ai.google.dev/gemini-api/docs/pricing?hl=ko#gemini-3.5-flash)이 Pro 대비 그리 싸진 않다는 겁니다.
- 그리고 오늘 주간 사용량 제한을 경험하는 사용자가 많아서인지 ==사용량 한도를 초기화했다==는 팝업이 표시되었습니다.
 
-![Gemini 쿼터 증가 알림](/images/posts/google-agentic-update-terrible/003.png)
+그리고 오늘 주간 사용량 제한을 경험하는 사용자가 많아서인지 ==사용량 한도를 초기화했다==는 팝업이 표시되었습니다.
+
+![Gemini 쿼터 증가 알림](/images/posts/google-agentic-update-terrible/001.png)
 
 ## Introducing Google Antigravity 2.0
 
 대표적인 개발자 경험은 [Antigravity 2.0](https://antigravity.google/blog/introducing-google-antigravity-2-0)으로 자동으로 ==업그레이드==되면서 발생했습니다. `Restart to Update` 버튼으로 기존 VSCode 기반의 Antigravity 를 Antigravity IDE 가 아닌 독립 데스크톱 애플리케이션으로 강제 전환해버렸습니다. 구글은 제품 업데이트 과정에서 다음을 고려하지 않았어요.
 
 - Antigravity 2.0 전환에 대한 사전 고지가 없었음
-- Antigravtiy IDE 로 유지하는 선택지를 제공하지 않음
+- Antigravity IDE 로 유지하는 선택지를 제공하지 않음
 - Antigravity 업그레이드 시 발생하는 문제점을 해결하는 방안을 공식적으로 안내하지 않음
 
 [AGY 2.0 Bug Fixes](https://antigravity.google/changelog)로 구글이 Antigravity 2.0 을 출시하자마자 급하게 패치를 진행했지만 이미 많은 개발자들은 잘못된 업데이트로 개발 환경을 잃어버렸죠. 제가 본것은 워크스페이스에서 진행한 대화마다 개별 프로젝트로 만들어졌고 이를 정리하려면 하나씩 삭제해야했어요. 결국은 Antigravity 2.0 업데이트로 인한 문제를 해결하는 방법을 공식적으로 안내하지 않았고 [Google AI 개발자 포럼](https://discuss.ai.google.dev/c/antigravity/64) 을 통해 개발자들 스스로 방법을 찾아 공유했습니다.
@@ -44,7 +45,7 @@ tags:
 
 ## 나는 무엇을 경험했는가?
 
-![업데이트가 없는데도 Restart to Update가 표시되는 Antigravity IDE](/images/posts/google-agentic-update-terrible/001.png)
+![업데이트가 없는데도 Restart to Update가 표시되는 Antigravity IDE](/images/posts/google-agentic-update-terrible/002.png)
 
 사무실에 도착해서 `Restart Update` 버튼을 누르자마자 Antigravity 2.0 의 새로운 로딩창이 보였고 Antigravity 2.0 전환으로 인해 인증을 다시 해야했습니다. 프로젝트 파일을 함께 볼 수 있는 화면은 없었고 하나의 워크스페이스 ==대화마다 개별 프로젝트로 만들어져서 프로젝트를 하나씩 지워야== 한다는 걸 알았어요.
 
@@ -54,7 +55,7 @@ _(긴급 패치로 해결된 문제이지만 이미 돌이킬 수 없는...)_
 
 더구나, 최신버전을 설치한 Antigravity IDE 에서 **업데이트가 없는데도 불구하고 Restart to Update 가** 지금도 표시되며 누르면 다음과 같이 업데이트가 실패합니다.
 
-![Antigravity IDE 업데이트 설치 실패 오류](/images/posts/google-agentic-update-terrible/002.png)
+![Antigravity IDE 업데이트 설치 실패 오류](/images/posts/google-agentic-update-terrible/003.png)
 
 ## 제품 안정화에 대하여
 

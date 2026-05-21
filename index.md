@@ -17,18 +17,12 @@ hero:
     src: /images/logo/snorlax-111.jpg
 
 features:
-  - icon: ⚡️
-    title: Backend
-    details: 스프링 부트로 안정적이고 확장성 있는 서버 애플리케이션을 개발하고 있어요.
-  - icon:
-      src: /icons/vite.svg
-      alt: Vite
-      width: 30
-    title: Frontend
-    details: Vite와 Vue를 활용해 빠르고 직관적인 사용자 경험을 제공하려고 노력해요.
-  - icon: 🚀
-    title: Infrastructure
-    details: 리눅스와 AWS 인프라 기반으로 시스템을 효율적으로 운영하고 있습니다.
+  - icon: 🛠️
+    title: Fullstack
+    details: Spring Boot로 안정적인 백엔드 서버를 설계하고, Vite와 Vue로 쾌적한 프론트엔드를 개발해요. AWS 클라우드를 통해 최적의 인프라 경험을 늘리고 있어요.
+  - icon: 🤖
+    title: AI Ops
+    details: Claude, Gemini 같은 AI 도구를 개발 워크플로우에 적극 활용하고 있어요. 코드 리뷰, 커밋 자동화, 작업 내용 공유 등 반복 작업을 최소화할 수 있는 개발 환경을 설정해요.
 ---
 
 <script setup>

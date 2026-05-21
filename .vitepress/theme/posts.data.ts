@@ -8,6 +8,7 @@ interface Post {
     string: string
   }
   description: string
+  tags?: string[]
 }
 
 declare const data: Post[]
@@ -20,7 +21,8 @@ export default createContentLoader('posts/*.md', {
         title: frontmatter.title,
         url: url.replace('.html', '/'),
         description: frontmatter.description ?? '',
-        date: formatDate(frontmatter.date)
+        date: formatDate(frontmatter.date),
+        tags: frontmatter.tags ?? []
       }))
       .sort((a, b) => {
         return Number.isNaN(b.date.time) ? -1 : b.date.time - a.date.time

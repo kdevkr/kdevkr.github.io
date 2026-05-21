@@ -197,10 +197,10 @@ if __name__ == "__main__":
 
 위에서 설명한 에이전트 스킬은 특정 프로젝트에만 국한되지 않고, 모든 프로젝트에서 공통으로 사용할 수 있도록 **글로벌하게 설치**할 수 있습니다.
 
-오픈소스 리포지토리(예: `SuperAntigravity`, `antigravity-skills`)에서 가져온 설정들을 사용자 홈 디렉토리인 **`~/.gemini/antigravity`** 경로에 추가하면 됩니다.
+오픈소스 리포지토리(예: `SuperAntigravity`, `antigravity-skills`)에서 가져온 설정들을 다음과 같이 사용자 홈 디렉토리 경로에 추가하면 됩니다.
 
-- **스킬**: `skills/` 폴더 내에 위치시킵니다. 에이전트가 필요할 때 자동으로 로드합니다.
-- **워크플로우**: `global_workflows/` 폴더 내에 위치시킵니다. 
+- **스킬**: **`~/.gemini/antigravity/skills/`** 폴더 내에 위치시킵니다. 에이전트가 필요할 때 자동으로 로드합니다.
+- **워크플로우**: **`~/.gemini/config/global_workflows/`** 폴더 내에 위치시킵니다. 
 
 ### 💡 알아두면 좋은 점
 - 글로벌 워크플로우를 호출할 때는 일반적인 `/workflow` 형식이 아니라, 특이하게 **`global_`** 접두사가 붙어 **`/global_workflow`** 형태로 나타납니다.

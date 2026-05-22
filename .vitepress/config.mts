@@ -92,7 +92,6 @@ const vitePressOptions: UserConfig = {
       md.use(groupIconMdPlugin)
     },
     languageAlias: {
-      // 'q': 'plaintext'
     }
   },
 

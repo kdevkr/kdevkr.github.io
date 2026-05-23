@@ -55,6 +55,7 @@ const vitePressOptions: UserConfig = {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Posts', link: '/posts', activeMatch: '^/posts/' },
+      { text: 'Sleep', link: '/sleep/', activeMatch: '^/sleep/' },
       { text: 'About', link: '/about' }
     ],
 
@@ -72,6 +73,14 @@ const vitePressOptions: UserConfig = {
           text: 'Posts',
           items: [
             { text: '전체 보기', link: '/posts' }
+          ]
+        }
+      ],
+      '/sleep/': [
+        {
+          text: 'Sleep',
+          items: [
+            { text: '전체 보기', link: '/sleep/' }
           ]
         }
       ]
@@ -146,22 +155,44 @@ const vitePressOptions: UserConfig = {
   },
 }
 
-const vitePressSideBarOptions = {
-  // sidebar options
-  documentRootPath: '/',
-  collapsed: true,
-  rootGroupLink: '/',
-  capitalizeFirst: true,
+const vitePressSideBarOptions = [
+  {
+    // sidebar options for posts
+    documentRootPath: '/',
+    collapsed: true,
+    rootGroupLink: '/',
+    capitalizeFirst: true,
 
-  scanStartPath: '/posts',
-  resolvePath: '/posts',
+    scanStartPath: '/posts',
+    resolvePath: '/posts',
 
-  useTitleFromFrontmatter: true,
-  sortMenusByFrontmatterDate: true,
-  sortMenusOrderByDescending: true,
+    useTitleFromFrontmatter: true,
+    sortMenusByFrontmatterDate: true,
+    sortMenusOrderByDescending: true,
 
-  excludeByGlobPattern: EXCLUDED_PATTERNS,
-}
+    excludeByGlobPattern: EXCLUDED_PATTERNS,
+  },
+  {
+    // sidebar options for sleep
+    documentRootPath: '/',
+    collapsed: true,
+    rootGroupLink: '/',
+    capitalizeFirst: true,
+
+    scanStartPath: '/sleep',
+    resolvePath: '/sleep',
+
+    useTitleFromFrontmatter: true,
+    sortMenusByFrontmatterDate: true,
+    sortMenusOrderByDescending: true,
+
+    excludeByGlobPattern: [
+      ...EXCLUDED_PATTERNS,
+      'sleep/index.md',
+      'index.md'
+    ],
+  }
+]
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig(withSidebar(vitePressOptions, vitePressSideBarOptions));

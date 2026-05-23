@@ -5,7 +5,7 @@ tags:
  - Spring MVC
 ---
 
-![](/images/logo/spring.png#compact)
+![](/images/posts/when-do-i-use-the-handler-interceptor/001.png#compact)
 
 안녕하세요 Mambo입니다. 오늘은 스프링 MVC 모듈에 포함되어있는 HandlerInterceptor 인터페이스를 언제 사용하는가에 대해서 알아보겠습니다.
 

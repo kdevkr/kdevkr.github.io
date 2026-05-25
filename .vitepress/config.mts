@@ -163,8 +163,8 @@ const vitePressSideBarOptions = [
     rootGroupLink: '/',
     capitalizeFirst: true,
 
-    scanStartPath: '/posts',
-    resolvePath: '/posts',
+    scanStartPath: 'posts',
+    resolvePath: '/posts/',
 
     useTitleFromFrontmatter: true,
     sortMenusByFrontmatterDate: true,
@@ -179,8 +179,8 @@ const vitePressSideBarOptions = [
     rootGroupLink: '/',
     capitalizeFirst: true,
 
-    scanStartPath: '/sleep',
-    resolvePath: '/sleep',
+    scanStartPath: 'sleep',
+    resolvePath: '/sleep/',
 
     useTitleFromFrontmatter: true,
     sortMenusByFrontmatterDate: true,

@@ -11,11 +11,28 @@
     "**/.claude": false
   },
   "[markdown]": {
-    "editor.quickSuggestions": {
+    "editor.quickSuggestions": {  
       "comments": false,
       "strings": false,
       "other": false
     },
     "typescript.validate.enable": false
-  }
+  },
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Always use Conventional Commits."
+    },
+    {
+      "text": "Limit the subject line to 50 characters."
+    },
+    {
+      "text": "Emojis are not allowed."
+    },
+    {
+      "text": "Only base commit messages on staged changes."
+    },
+    {
+      "text": "Should be use korean language for commit messages."
+    }
+  ]
 }

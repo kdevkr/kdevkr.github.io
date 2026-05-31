@@ -180,22 +180,25 @@ mark {
   max-width: 100% !important;
 }
 
-/* VPHero Image Layout Fix (Sleep Page Only) */
-.sleep-page .VPHero .image-src {
+/* VPHero Image Layout Fix (Sleep & Posts Page Only) */
+.sleep-page .VPHero .image-src,
+.posts-page .VPHero .image-src {
   max-height: 240px !important;
   object-fit: contain;
   margin-top: 1.5rem;
 }
 
 @media (min-width: 640px) {
-  .sleep-page .VPHero .image-src {
+  .sleep-page .VPHero .image-src,
+  .posts-page .VPHero .image-src {
     max-height: 280px !important;
     margin-top: 2rem;
   }
 }
 
 @media (min-width: 960px) {
-  .sleep-page .VPHero .image-src {
+  .sleep-page .VPHero .image-src,
+  .posts-page .VPHero .image-src {
     max-height: 280px !important;
     margin-top: 3.5rem !important;
   }

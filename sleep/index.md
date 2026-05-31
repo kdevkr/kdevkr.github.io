@@ -4,9 +4,9 @@ pageClass: sleep-page
 
 hero:
     name: Sleep
-    tagline: Everyday Scribbles ☕
+    tagline: 포근한 이불 속에서 끄적이는 나른한 일상 기록 💤
     image:
-        src: /images/logo/1600.jpg
+        src: /images/logo/sleep.jpg
 ---
 
 <script setup>

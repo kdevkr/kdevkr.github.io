@@ -1,11 +1,12 @@
 ---
 layout: home
+pageClass: posts-page
 
 hero:
     name: Posts
-    tagline: Today I Learned 🔥
+    tagline: 에러와 삽질을 냠냠 씹어 삼키며 든든하게 성장하는 기록 🛠️
     image:
-        src: /images/logo/143_f2.png
+        src: /images/logo/posts.jpg
 ---
 
 <script setup>

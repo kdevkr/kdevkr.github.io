@@ -10,7 +10,7 @@ tags:
 
 # EaaS 사용자 피드백 제출
 
-[최근 업데이트로 인해 사용자 경험에 문제가 많았던](/google-agentic-update-terrible) Antigravity 에도 **Provide Feedback** 이라는 피드백 채널이 포함되어 있어요. 그런데 이와 비교해서 회사에서 만든 `EaaS(Energy as a Service)` 제품에는 사용자 의견을 받을 채널이 없더라구요. 비록 사용자 규모가 적더라도 의견을 전달할 수 있는 채널은 만들어두는 게 중요하지 않을까 생각해요.
+[최근 업데이트로 인해 사용자 경험에 문제가 많았던](/posts/google-agentic-update-terrible) Antigravity 에도 **Provide Feedback** 이라는 피드백 채널이 포함되어 있어요. 그런데 이와 비교해서 회사에서 만든 `EaaS(Energy as a Service)` 제품에는 사용자 의견을 받을 채널이 없더라구요. 비록 사용자 규모가 적더라도 의견을 전달할 수 있는 채널은 만들어두는 게 중요하지 않을까 생각해요.
 
 ## 피드백 채널이 있어도 사용자는 이탈해요
 

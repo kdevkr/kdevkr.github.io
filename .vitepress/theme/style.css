@@ -247,3 +247,143 @@ mark {
 .dark .VPLocalSearchBox mark {
   color: #1b1b1f !important;
 }
+
+/* Navigation Search Button Premium Design */
+.VPNavBarSearchButton {
+  background-color: rgba(246, 246, 247, 0.7) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 20px !important; /* 부드러운 라운드 처리 */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+.dark .VPNavBarSearchButton {
+  background-color: rgba(22, 22, 24, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 호버 효과 강화 (위로 살짝 뜨는 동작 + 그림자 + 브랜드 테두리) */
+.VPNavBarSearchButton:hover {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: var(--vp-c-brand-1) !important;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.1) !important;
+}
+
+.dark .VPNavBarSearchButton:hover {
+  background-color: rgba(30, 30, 34, 0.9) !important;
+  border-color: var(--vp-c-brand-1) !important;
+  box-shadow: 0 4px 12px rgba(168, 177, 255, 0.15) !important;
+}
+
+/* 검색창 플레이스홀더 텍스트 */
+.VPNavBarSearchButton-placeholder {
+  font-weight: 500 !important;
+  color: var(--vp-c-text-2) !important;
+  transition: color 0.2s ease;
+}
+.VPNavBarSearchButton:hover .VPNavBarSearchButton-placeholder {
+  color: var(--vp-c-brand-1) !important;
+}
+
+/* 검색 아이콘 */
+.VPNavBarSearchButton .DocSearch-Search-Icon {
+  color: var(--vp-c-text-3) !important;
+  transition: color 0.2s ease;
+}
+.VPNavBarSearchButton:hover .DocSearch-Search-Icon {
+  color: var(--vp-c-brand-1) !important;
+}
+
+/* 단축키 키보드 배지(Kbd) 디자인 개선 */
+.VPNavBarSearchButton-keys {
+  border: none !important;
+  background-color: transparent !important;
+  gap: 2px;
+}
+
+.VPNavBarSearchButton-key {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 4px !important;
+  padding: 1px 4px !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: var(--vp-c-text-3) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease;
+}
+
+.dark .VPNavBarSearchButton-key {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: var(--vp-c-text-2) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.VPNavBarSearchButton:hover .VPNavBarSearchButton-key {
+  background-color: var(--vp-c-brand-soft) !important;
+  border-color: rgba(100, 108, 255, 0.1) !important;
+  color: var(--vp-c-brand-1) !important;
+}
+
+/* Local Search Modal Premium Design */
+/* 1. 배경 어두운 레이어 글래스모피즘 처리 */
+.VPLocalSearchBox .backdrop {
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  transition: all 0.3s ease;
+}
+.dark .VPLocalSearchBox .backdrop {
+  background-color: rgba(10, 10, 12, 0.6) !important;
+}
+
+/* 2. 검색 모달 쉘 디자인 (라운드 처리 및 입체적 섀도우) */
+.VPLocalSearchBox .shell {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dark .VPLocalSearchBox .shell {
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4) !important;
+  background-color: rgba(30, 30, 34, 0.95) !important;
+}
+
+/* 3. 검색 인풋바 디자인 (둥근 곡선 + 포커스 광채 효과) */
+.VPLocalSearchBox .search-bar {
+  border-radius: 10px !important;
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 2px 8px !important;
+  transition: all 0.25s ease !important;
+}
+.dark .VPLocalSearchBox .search-bar {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 검색창 포커스 시 테두리 색상 및 광채 효과 */
+.VPLocalSearchBox .search-bar:focus-within {
+  border-color: var(--vp-c-brand-1) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.15) !important;
+}
+.dark .VPLocalSearchBox .search-bar:focus-within {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(168, 177, 255, 0.2) !important;
+}
+
+/* 4. 검색 결과 카드 아이템 둥글기 통일 */
+.VPLocalSearchBox .result {
+  border-radius: 8px !important;
+  border-width: 1.5px !important;
+}

@@ -26,7 +26,7 @@ features:
 ---
 
 <script setup>
-import { data as posts } from '.vitepress/theme/posts.data.ts';
+import { data as posts } from './.vitepress/theme/posts.data.ts';
 
 const top5 = posts.slice(0, 5)
 </script>

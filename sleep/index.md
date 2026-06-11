@@ -177,12 +177,11 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   margin: 0 0 0.6rem 0;
   line-height: 1.4;
   text-wrap: pretty;
-  transition: color 0.25s ease, transform 0.25s ease;
+  transition: color 0.25s ease;
 }
 
 .vp-doc .archive-container .post-card:hover .post-card-title {
   color: var(--vp-c-brand-1);
-  transform: translateX(4px);
 }
 
 .archive-container .post-card-description {
@@ -201,10 +200,6 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   .vp-doc .archive-container .post-card {
     padding: 1.5rem;
     border-radius: 12px;
-  }
-  
-  .vp-doc .archive-container .post-card:hover .post-card-title {
-    transform: none;
   }
 }
 </style>

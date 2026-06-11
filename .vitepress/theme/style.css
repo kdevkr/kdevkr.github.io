@@ -179,11 +179,109 @@ mark {
 .VPDoc .content-container {
   max-width: 100% !important;
 }
-/* Sleep & Posts Hero: text 없어서 이미지 컨테이너가 축소되는 문제 수정 (데스크톱만) */
+/* Posts & Sleep Hero: floating 이미지 박스를 배경 레이어로 전환.
+   마크업/frontmatter는 그대로 두고, 렌더링된 .image 요소만 CSS로 재배치.
+   카드 이미지는 contain으로 전체가 잘림 없이 보임. */
+.posts-page .VPHero,
+.sleep-page .VPHero {
+  position: relative; /* z-index 미지정: stacking context를 만들지 않아야 이미지가 뒤 콘텐츠 아래로 깔림 */
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  /* 좌측 기준선을 아카이브 컨테이너와 일치시키기 위해 VPHero 자체의 좌우 패딩 제거
+     (아카이브는 1152px 박스 '안쪽'에 패딩을 두므로 hero도 컨테이너 내부 패딩으로 통일) */
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.posts-page .VPHero .container,
+.sleep-page .VPHero .container {
+  width: 100%;
+  max-width: 1152px;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .posts-page .VPHero .container,
+  .sleep-page .VPHero .container {
+    padding: 0 48px;
+  }
+}
+
 @media (min-width: 960px) {
-  .sleep-page .VPHero .image-container,
-  .posts-page .VPHero .image-container {
-    height: 320px;
+  .posts-page .VPHero .container,
+  .sleep-page .VPHero .container {
+    /* 오른쪽은 이미지 겹침 방지용 여백 */
+    padding: 0 500px 0 64px;
+  }
+}
+
+.posts-page .VPHero .main,
+.sleep-page .VPHero .main {
+  position: relative;
+  z-index: 1;
+}
+
+.posts-page .VPHero .image,
+.sleep-page .VPHero .image {
+  position: absolute;
+  /* 상단: nav 바 아래부터 시작 / 하단: hero를 넘어 포스트 목록 뒤까지 확장 */
+  inset: var(--vp-nav-height) 0 -360px 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: -1; /* 포스트 카드 배경 뒤로 */
+}
+
+.posts-page .VPHero .image-container,
+.sleep-page .VPHero .image-container {
+  position: static;
+  width: 100%;
+  height: 100% !important;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  transform: none;
+}
+
+/* 기본 테마의 블러 그라데이션 원형 배경 제거 */
+.posts-page .VPHero .image-bg,
+.sleep-page .VPHero .image-bg {
+  display: none;
+}
+
+/* 카드 이미지: 오른쪽 정렬, 세로로 꽉 차되 잘리지 않음. 왼쪽 가장자리만 살짝 페이드 */
+.posts-page .VPHero .image-src,
+.sleep-page .VPHero .image-src {
+  position: absolute;
+  top: 50%;
+  right: 48px;
+  left: auto;
+  transform: translateY(-50%);
+  width: auto;
+  height: calc(100% - 56px);
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  border-radius: 12px;
+  /* 왼쪽 가장자리 + 하단 페이드를 교집합으로 합성 → 목록 뒤로 깔리며 서서히 사라짐 */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%),
+    linear-gradient(180deg, #000 55%, transparent 96%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%),
+    linear-gradient(180deg, #000 55%, transparent 96%);
+  mask-composite: intersect;
+}
+
+/* 좁은 화면: 텍스트와 겹치므로 이미지를 은은하게 깔아 워터마크처럼 처리 */
+@media (max-width: 959px) {
+  .posts-page .VPHero .image-src,
+  .sleep-page .VPHero .image-src {
+    right: 50%;
+    transform: translate(50%, -50%);
+    opacity: 0.18;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 

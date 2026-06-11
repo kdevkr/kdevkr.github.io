@@ -179,27 +179,23 @@ mark {
 .VPDoc .content-container {
   max-width: 100% !important;
 }
-
-/* VPHero Image Layout Fix (Sleep & Posts Page Only) */
-.sleep-page .VPHero .image-src,
-.posts-page .VPHero .image-src {
-  max-height: 240px !important;
-  object-fit: contain;
-  margin-top: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .sleep-page .VPHero .image-src,
-  .posts-page .VPHero .image-src {
-    max-height: 280px !important;
-    margin-top: 2rem;
-  }
-}
-
+/* Sleep & Posts Hero: text 없어서 이미지 컨테이너가 축소되는 문제 수정 (데스크톱만) */
 @media (min-width: 960px) {
-  .sleep-page .VPHero .image-src,
-  .posts-page .VPHero .image-src {
-    max-height: 280px !important;
-    margin-top: 3.5rem !important;
+  .sleep-page .VPHero .image-container,
+  .posts-page .VPHero .image-container {
+    height: 320px;
   }
+}
+
+
+
+/* Local Search color fixes for VitePress 2.0 */
+/* 비선택 항목의 # 아이콘은 회색으로 */
+.VPLocalSearchBox .result:not(.selected) .title-icon {
+  color: var(--vp-c-text-3) !important;
+}
+
+/* 선택된 항목의 일반 텍스트는 기본 색상 유지 */
+.VPLocalSearchBox .result.selected .titles .text {
+  color: var(--vp-c-text-1) !important;
 }

@@ -190,12 +190,27 @@ mark {
 
 
 /* Local Search color fixes for VitePress 2.0 */
+.VPLocalSearchBox .result {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
 /* 비선택 항목의 # 아이콘은 회색으로 */
 .VPLocalSearchBox .result:not(.selected) .title-icon {
   color: var(--vp-c-text-3) !important;
 }
 
-/* 선택된 항목의 일반 텍스트는 기본 색상 유지 */
+/* 선택된 항목 스타일 강화 */
+.VPLocalSearchBox .result.selected {
+  background-color: var(--vp-c-brand-soft) !important;
+  border-color: var(--vp-c-brand-1) !important;
+}
+
+/* 선택된 항목의 텍스트 색상 강조 */
 .VPLocalSearchBox .result.selected .titles .text {
   color: var(--vp-c-text-1) !important;
+}
+
+/* 비선택 항목의 텍스트는 약간 부드럽게 */
+.VPLocalSearchBox .result:not(.selected) .titles .text {
+  color: var(--vp-c-text-2) !important;
 }

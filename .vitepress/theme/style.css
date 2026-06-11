@@ -203,6 +203,7 @@ mark {
 .VPLocalSearchBox .result.selected {
   background-color: var(--vp-c-brand-soft) !important;
   border-color: var(--vp-c-brand-1) !important;
+  --vp-local-search-result-bg: var(--vp-c-brand-soft) !important; /* 그라데이션 라인 제거 */
 }
 
 /* 선택된 항목의 텍스트 색상 강조 */
@@ -210,7 +211,39 @@ mark {
   color: var(--vp-c-text-1) !important;
 }
 
-/* 비선택 항목의 텍스트는 약간 부드럽게 */
-.VPLocalSearchBox .result:not(.selected) .titles .text {
+/* 경로(상위 타이틀)만 연하게 유지하고, 메인 타이틀은 비선택 상태에서도 선명하게 표시 */
+.VPLocalSearchBox .result:not(.selected) .titles .title:not(.main) .text {
   color: var(--vp-c-text-2) !important;
+}
+.VPLocalSearchBox .result:not(.selected) .titles .title.main .text {
+  color: var(--vp-c-text-1) !important;
+}
+
+/* 본문 매칭 텍스트(excerpt) 가독성 극대화: opacity를 높여 선명하게 만듦 */
+.VPLocalSearchBox .result .excerpt {
+  opacity: 0.85 !important;
+}
+.VPLocalSearchBox .result.selected .excerpt {
+  opacity: 1 !important;
+}
+
+/* 선택 영역의 그라데이션 중첩으로 인한 미세 가로선(라인) 버그 완벽 제거 */
+.VPLocalSearchBox .result.selected .excerpt-gradient-top,
+.VPLocalSearchBox .result.selected .excerpt-gradient-bottom {
+  display: none !important;
+}
+
+/* 로컬 검색창 내의 매칭 단어(mark) 가독성 수정: 라이트/다크 테마 모두에서 흰색 글자 + 브랜드 배경으로 가독성 보장 */
+.VPLocalSearchBox mark {
+  background-image: none !important; /* 글로벌 mark 그라디언트 제거 */
+  background-color: var(--vp-c-brand-1) !important; /* 브랜드 주 색상 배경 */
+  color: #ffffff !important; /* 라이트 모드에서는 짙은 파란색 배경이므로 흰색 글씨 */
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+/* 다크 모드일 때는 브랜드 색상(연보라)이 밝으므로 어두운 색 글자로 대비 극대화 */
+.dark .VPLocalSearchBox mark {
+  color: #1b1b1f !important;
 }

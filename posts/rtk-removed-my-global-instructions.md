@@ -1,7 +1,7 @@
 ---
 title: RTK 가 내 글로벌 지침을 없애버렸다
 date: 2026-06-27T10:55+09:00
-description: RTK 도입 후 글로벌 지침(GEMINI.md) 덮어쓰기와 무책임한 훅 삭제로 겪은 AX 경험 훼손을 공유합니다.
+description: RTK 도입 후 글로벌 지침(GEMINI.md) 덮어쓰기와 파일 삭제로 겪은 AX 경험 훼손을 공유합니다.
 tags:
     - RTK
     - Gemini

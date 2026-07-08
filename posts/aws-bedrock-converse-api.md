@@ -95,6 +95,12 @@ AI 모델은 국내 전력 요금제가 어떻게 바뀌는지와 같은 최신 
 
 Gemini의 File Search 기능처럼 복잡한 데이터 파이프라인이나 임베딩 로직을 직접 구현할 필요 없이, ==S3 버킷에 관련 문서 파일 업로드== 하여 연동하는 방식의 ==S3 벡터 스토어== 형태로 지식 베이스를 구성해 두면 `BedrockAgentRuntimeClient`를 통해 손쉽게 관련 문서(Retrieve)를 조회할 수 있어요.
 
+지식 베이스 조회를 위해서는 대상 지식 베이스 리소스(`arn:aws:bedrock:...:knowledge-base/...`)에 대해 `bedrock:Retrieve` 작업을 허용하는 IAM 정책이 해당 API를 호출하는 Identity에 부여되어 있어야 해요. 권한이 없을 경우 아래와 같은 예외가 발생합니다.
+
+```
+software.amazon.awssdk.services.bedrockagentruntime.model.AccessDeniedException: User: arn:aws:iam::123456789012:user/my-user is not authorized to perform: bedrock:Retrieve on resource: arn:aws:bedrock:ap-northeast-2:123456789012:knowledge-base/YOUR_KNOWLEDGE_BASE_ID (Service: BedrockAgentRuntime, Status Code: 403, Request ID: ...)
+```
+
 ```java
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrockagentruntime.BedrockAgentRuntimeClient;
@@ -126,6 +132,12 @@ retrieveResponse.retrievalResults().forEach(result -> {
 ## Converse API 요청 시 가드레일 추가
 
 `ConverseRequest`에 `GuardrailConfiguration`을 추가하면, Converse API 호출 시 실시간으로 가드레일 필터링이 작동하여 응답에서 민감한 정보가 포함되지 않도록 방어할 수 있어요. 본 글에서 반드시 필요한 건 아니지만 혹시나 모를 누출을 방지하기 위해서 알아두면 좋을 것 같아요.
+
+가드레일을 적용하여 모델을 호출하기 위해서는 대상 가드레일 리소스(`arn:aws:bedrock:...:guardrail/...`)에 대해 `bedrock:ApplyGuardrail` 작업을 허용하는 IAM 정책이 부여되어 있어야 해요. 권한이 없을 경우 아래와 같은 예외가 발생합니다.
+
+```
+software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException: User: arn:aws:iam::123456789012:user/my-user is not authorized to perform: bedrock:ApplyGuardrail on resource: arn:aws:bedrock:ap-northeast-2:123456789012:guardrail/YOUR_GUARDRAIL_ID (Service: BedrockRuntime, Status Code: 403, Request ID: ...)
+```
 
 ```java
 import software.amazon.awssdk.services.bedrockruntime.model.GuardrailConfiguration;
@@ -168,6 +180,18 @@ AWS SDK의 [BedrockScenario 예제 코드](https://github.com/awsdocs/aws-doc-sd
 지식 베이스에서 가져온 문서 정보와 조회한 전력사용량 데이터를 프롬프트에 조합해 넣어서 Converse API를 다시 호출하고, 최종 요금 분석 답변을 사용자에게 전달해요.
 
 다만 흐름을 보면 알겠지만 ==AI가 알아서 도구를 스스로 실행하는 구조는 아니에요==. 모델은 어떤 도구를 실행해야 하는지 가이드만 줄 뿐이며, 실제 도구를 실행하여 데이터를 조회하고 전달하는 흐름은 애플리케이션(코드)이 직접 제어해 줘야 해요.
+
+## AWS Bedrock 제약 사항
+
+AWS Bedrock 으로 전환하면서 알게된 몇가지 제약사항에 대해 알아볼게요.
+
+### Global inference ID
+
+[Anthropic Claude Sonnet 5](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-5.html) 모델처럼 서울 리전에서는 지원하지 않을 수 있어요. 이때는 글로벌 추론 ID (`global.anthropic.claude-sonnet-5`) 로 사용해야 해요. 반대로, **Anthropic Claude 3.5 Sonnet** 모델은 글로벌 추론 ID(Global inference ID)를 지원하지 않아서, `global.` 접두사(예: `global.anthropic.claude-3-5-sonnet-20240620-v1:0`)를 사용하여 호출할 수 없어요.
+
+### Amazon Bedrock Mantle (OpenAI 호환 엔드포인트)
+
+Amazon Bedrock Mantle 엔드포인트는 OpenAI 규격 에 대한 호환성을 제공하며 Project Mantle 추론 엔진으로 동작해요. Mantle 엔드포인트에서는 GPT 모델 뿐만 아니라 Gemma, Grok 등 오픈웨이트 모델에 대해서도 지원해요. 다만, 아직은 아시아 태평양 (서울, ap-northeast-2) 리전에서는 사용할 수 없어요. 그리고 가드레일 및 지식 베이스 등도 지원하지 않아요.
 
 ## 참고 자료
 

@@ -331,19 +331,21 @@ mark {
   display: none !important;
 }
 
-/* 로컬 검색창 내의 매칭 단어(mark) 가독성 수정: 라이트/다크 테마 모두에서 흰색 글자 + 브랜드 배경으로 가독성 보장 */
+/* 로컬 검색창 내의 매칭 단어(mark) 가독성 수정: 
+   글자 벌어짐 현상(padding 제거)을 해결하고, 반투명 배경을 적용해 텍스트 가독성 및 정렬 유지 */
 .VPLocalSearchBox mark {
   background-image: none !important; /* 글로벌 mark 그라디언트 제거 */
-  background-color: var(--vp-c-brand-1) !important; /* 브랜드 주 색상 배경 */
-  color: #ffffff !important; /* 라이트 모드에서는 짙은 파란색 배경이므로 흰색 글씨 */
-  font-weight: bold;
-  padding: 0 4px;
-  border-radius: 3px;
+  background-color: rgba(100, 108, 255, 0.25) !important; /* 연한 반투명 브랜드 배경 */
+  color: inherit !important; /* 원본 텍스트 색상 유지로 이질감 최소화 */
+  font-weight: 600;
+  padding: 0; /* 패딩 제거로 단어 중간의 글자가 쪼개지는 버그 수정 */
+  border-radius: 2px;
 }
 
-/* 다크 모드일 때는 브랜드 색상(연보라)이 밝으므로 어두운 색 글자로 대비 극대화 */
+/* 다크 모드일 때 매칭 하이라이트 투명도 최적화 */
 .dark .VPLocalSearchBox mark {
-  color: #1b1b1f !important;
+  background-color: rgba(168, 177, 255, 0.3) !important;
+  color: inherit !important;
 }
 
 /* Navigation Search Button Premium Design */

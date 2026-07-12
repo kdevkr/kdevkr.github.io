@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
+
 const SITE_URL = 'https://kdev.ing'
 const SITE_TITLE = 'Mambo Blog'
 const SITE_DESCRIPTION = 'Today I Learned — 백엔드, 프론트엔드, 인프라 개발 노트'
@@ -36,6 +38,12 @@ const vitePressOptions: UserConfig = {
     plugins: [
       tailwindcss(),
       groupIconVitePlugin(),
+      ViteImageOptimizer({
+        png: { quality: 80 },
+        jpeg: { quality: 80 },
+        webp: { quality: 75 },
+        avif: { quality: 70 },
+      }),
     ],
     resolve: {
       alias: [
@@ -101,6 +109,9 @@ const vitePressOptions: UserConfig = {
       md.use(groupIconMdPlugin)
     },
     languageAlias: {
+    },
+    image: {
+      lazyLoading: true
     }
   },
 

@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 465" width="100%" height="100%">
+  <!-- 배경 -->
+  <rect width="840" height="465" rx="12" fill="#1e1e24"/>
+  
+  <!-- 스타일 -->
+  <style>
+    .title { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 19px; font-weight: bold; fill: #ffffff; }
+    .vpc-title { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 12px; font-weight: bold; fill: #61afef; }
+    .subnet-title { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; font-weight: bold; }
+    .label { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 12px; font-weight: bold; fill: #ffffff; }
+    .desc { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10px; fill: #abb2bf; }
+    .box { stroke-width: 1.5; rx: 6; }
+    .arrow { stroke: #dcdfe4; stroke-width: 2; fill: none; }
+    .vpn-tunnel { stroke: #e5c07b; stroke-width: 2.5; stroke-dasharray: 4,3; fill: none; }
+    .marker { fill: #dcdfe4; }
+    .marker-vpn { fill: #e5c07b; }
+    .line-text { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10.5px; font-weight: bold; fill: #abb2bf; }
+    .outside-text { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10px; font-weight: bold; }
+  </style>
+
+  <!-- 마커 정의 (화살표용) -->
+  <defs>
+    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" class="marker"/>
+    </marker>
+    <marker id="arrowhead-vpn" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" class="marker-vpn"/>
+    </marker>
+  </defs>
+
+  <!-- 제목 -->
+  <text x="30" y="40" class="title">클라우드 가상 네트워크 (VPC) 내부망 구조</text>
+
+  <!-- 1. 외부 사용자 -->
+  <g transform="translate(30, 145)">
+    <rect width="130" height="90" class="box" fill="#2c313c" stroke="#5c6370"/>
+    <text x="12" y="25" class="label">외부 사용자 (인터넷)</text>
+    <text x="12" y="45" class="desc">일반 고객 브라우저</text>
+    <text x="12" y="58" class="desc">공인 IP 환경에서 접속</text>
+  </g>
+
+  <!-- 2. VPC 영역 (점선 가이드) -->
+  <g transform="translate(180, 75)">
+    <rect width="630" height="345" stroke="#61afef" stroke-width="1.5" stroke-dasharray="5,5" fill="none" rx="10"/>
+    <text x="20" y="22" class="vpc-title">클라우드 가상망 공간 (VPC)</text>
+  </g>
+
+  <!-- [VPC 내부] 퍼블릭 서브넷 (인터넷 연결망) -->
+  <g transform="translate(195, 110)">
+    <rect width="295" height="290" stroke="#98c379" stroke-width="1.5" fill="none" rx="8"/>
+    <text x="15" y="22" class="subnet-title" fill="#98c379">퍼블릭 서브넷 (Public Subnet)</text>
+
+    <!-- 인터넷 게이트웨이 (IGW) -->
+    <g transform="translate(15, 35)">
+      <rect width="110" height="90" class="box" fill="#2c313a" stroke="#98c379"/>
+      <text x="12" y="25" class="label">IGW</text>
+      <text x="12" y="45" class="desc">인터넷 게이트웨이</text>
+      <text x="12" y="60" class="desc">외부 인터넷 통로</text>
+    </g>
+
+    <!-- 웹 서버 (Web) -->
+    <g transform="translate(165, 35)">
+      <rect width="115" height="90" class="box" fill="#2d3139" stroke="#abb2bf"/>
+      <text x="12" y="25" class="label">웹서버</text>
+      <text x="12" y="45" class="desc">외부 요청 1차 응대</text>
+      <text x="12" y="58" class="desc">리버스 프록시 작동</text>
+    </g>
+
+    <!-- NAT 게이트웨이 (퍼블릭 서브넷 하단 배치) -->
+    <g transform="translate(15, 160)">
+      <rect width="265" height="110" class="box" fill="#2d3139" stroke="#e06c75"/>
+      <text x="15" y="25" class="label">NAT 게이트웨이</text>
+      <text x="15" y="45" class="desc">프라이빗 서브넷에 위치한 서버들이</text>
+      <text x="15" y="58" class="desc">외부 통신이 필요할 때 중계해주는 임시 통로</text>
+      <text x="15" y="71" class="desc">(예: 외부 라이브러리 보안 패치 등)</text>
+      <text x="15" y="92" class="ip" fill="#e5c07b" font-family="Courier New" font-size="10.5" font-weight="bold">➔ 외부인터넷망으로 연결</text>
+    </g>
+  </g>
+
+  <!-- [VPC 내부] 프라이빗 서브넷 (내부 보안망) -->
+  <g transform="translate(505, 110)">
+    <rect width="290" height="290" stroke="#e06c75" stroke-width="1.5" fill="none" rx="8"/>
+    <text x="15" y="22" class="subnet-title" fill="#e06c75">프라이빗 서브넷 (Private Subnet)</text>
+
+    <!-- WAS -->
+    <g transform="translate(15, 35)">
+      <rect width="260" height="90" class="box" fill="#2d3139" stroke="#61afef"/>
+      <text x="15" y="25" class="label">WAS 서버 (애플리케이션)</text>
+      <text x="15" y="45" class="desc">비즈니스 로직 연산 및 DB 조회 처리</text>
+      <text x="15" y="58" class="desc">외부 접속 원천 차단 (사설 IP 사용)</text>
+    </g>
+
+    <!-- DB -->
+    <g transform="translate(15, 160)">
+      <rect width="260" height="110" class="box" fill="#352e3b" stroke="#c678dd"/>
+      <text x="15" y="25" class="label">데이터베이스 (DB)</text>
+      <text x="15" y="45" class="desc">핵심 데이터 보관 안전 금고</text>
+      <text x="15" y="58" class="desc">외부 접근이 불가능한 가장 깊숙한 망</text>
+      <text x="15" y="75" class="desc">DB접근제어 솔루션(DBSAFER) 통제</text>
+    </g>
+  </g>
+
+  <!-- 3. 회사 컴퓨터 (VPN 접속 영역) -->
+  <g transform="translate(30, 260)">
+    <rect width="130" height="110" class="box" fill="#2c313c" stroke="#e5c07b"/>
+    <text x="12" y="25" class="label" fill="#e5c07b">회사 컴퓨터</text>
+    <text x="12" y="45" class="desc">개발자 또는 운영 PC</text>
+    <text x="12" y="58" class="desc">사무실 및 재택 근무</text>
+    
+    <rect x="10" y="75" width="110" height="25" rx="4" fill="#3b3225"/>
+    <text x="16" y="92" font-family="Pretendard" font-size="10.5" font-weight="bold" fill="#e5c07b">VPN 안전 접속</text>
+  </g>
+
+  <!-- 흐름선 구성 -->
+  <!-- 외부사용자 -> IGW -->
+  <path d="M 160 190 H 205" class="arrow" marker-end="url(#arrowhead)"/>
+  <!-- IGW -> 웹서버 -->
+  <path d="M 320 190 H 353" class="arrow" marker-end="url(#arrowhead)"/>
+  <!-- 웹서버 -> WAS -->
+  <path d="M 475 190 H 513" class="arrow" marker-end="url(#arrowhead)"/>
+  
+  <!-- WAS <-> DB -->
+  <path d="M 640 235 V 270" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M 620 270 V 235" class="arrow" marker-end="url(#arrowhead)"/>
+
+  <!-- WAS -> NAT -->
+  <path d="M 520 190 H 500 V 300 H 480" class="arrow" marker-end="url(#arrowhead)"/>
+
+  <!-- 회사 컴퓨터 -> VPN -> DB (VPC 경계선 아래로 넉넉하게 y=430 우회 배치하여 겹침 차단) -->
+  <path d="M 160 350 H 175 V 430 H 650 V 385" class="vpn-tunnel" marker-end="url(#arrowhead-vpn)"/>
+  <text x="210" y="445" class="outside-text" fill="#e5c07b">VPN 암호화 터널: 회사 컴퓨터에서 프라이빗 망으로 안전하게 직접 연결</text>
+</svg>

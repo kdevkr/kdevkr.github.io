@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 450" width="100%" height="100%">
+  <!-- Style Definition -->
+  <style>
+    .title { font-family: 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 15px; fill: #f8fafc; }
+    .label { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 13px; fill: #f8fafc; }
+    .sub-label { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #cbd5e1; }
+    .desc { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; fill: #64748b; }
+    
+    .box-hw { fill: #1e293b; stroke: #475569; stroke-width: 2; rx: 8; }
+    .box-hypervisor { fill: #0369a1; stroke: #0ea5e9; stroke-width: 2; rx: 8; }
+    .box-vm { fill: #1e1b4b; stroke: #4f46e5; stroke-dasharray: 4,4; stroke-width: 2; rx: 12; }
+    .box-os { fill: #334155; stroke: #64748b; stroke-width: 2; rx: 8; }
+    .box-runtime { fill: #b45309; stroke: #f59e0b; stroke-width: 2; rx: 8; }
+    .box-app { fill: #0f766e; stroke: #14b8a6; stroke-width: 2; rx: 6; }
+  </style>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#0b0f19" rx="16" />
+
+  <!-- Main Title -->
+  <text x="25" y="35" class="title">현대 IT 인프라 구동 아키텍처</text>
+  <text x="25" y="52" class="desc">가상 머신(VM)과 컨테이너 런타임의 계층 구조</text>
+
+  <!-- Group containing the stack -->
+  <g transform="translate(50, 80)">
+    
+    <!-- 1. Physical Hardware -->
+    <rect x="0" y="280" width="400" height="45" class="box-hw" />
+    <text x="200" y="307" class="label" text-anchor="middle">물리 하드웨어 (Bare-metal CPU / Memory)</text>
+
+    <!-- 2. Physical Hypervisor -->
+    <rect x="0" y="225" width="400" height="45" class="box-hypervisor" />
+    <text x="200" y="252" class="label" text-anchor="middle">하이퍼바이저 (Type 1 - KVM / ESXi 등)</text>
+
+    <!-- 3. Virtual Machine Outer Border -->
+    <rect x="15" y="0" width="370" height="215" class="box-vm" />
+    <text x="375" y="22" class="sub-label" text-anchor="end">클라우드 가상 머신 (VM)</text>
+
+    <!-- 4. Guest OS -->
+    <rect x="35" y="150" width="330" height="45" class="box-os" />
+    <text x="200" y="177" class="label" text-anchor="middle">게스트 OS (Linux Kernel 등)</text>
+
+    <!-- 5. Container Runtime -->
+    <rect x="35" y="95" width="330" height="45" class="box-runtime" />
+    <text x="200" y="122" class="label" text-anchor="middle">컨테이너 런타임 (Docker / containerd / CRI-O)</text>
+
+    <!-- 6. Container Apps -->
+    <!-- App A -->
+    <rect x="35" y="35" width="155" height="50" class="box-app" />
+    <text x="112.5" y="60" class="label" text-anchor="middle">컨테이너 앱 A</text>
+    <text x="112.5" y="74" class="sub-label" text-anchor="middle">(Application &amp; Libs)</text>
+
+    <!-- App B -->
+    <rect x="210" y="35" width="155" height="50" class="box-app" />
+    <text x="287.5" y="60" class="label" text-anchor="middle">컨테이너 앱 B</text>
+    <text x="287.5" y="74" class="sub-label" text-anchor="middle">(Application &amp; Libs)</text>
+    
+  </g>
+</svg>

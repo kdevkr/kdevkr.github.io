@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #0f172a; rx: 12px; }
+      .title { fill: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 700; }
+      .subtitle { fill: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; }
+      .box { fill: #1e293b; stroke: #334155; stroke-width: 1.5; rx: 8px; }
+      .box-lb { fill: #1e1b4b; stroke: #6366f1; stroke-width: 2; rx: 8px; }
+      .box-server { fill: #0f2942; stroke: #0ea5e9; stroke-width: 1.5; rx: 8px; }
+      .text-main { fill: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 600; text-anchor: middle; }
+      .text-sub { fill: #cbd5e1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; text-anchor: middle; }
+      .text-badge { fill: #a5b4fc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; text-anchor: middle; }
+      .text-tag { fill: #38bdf8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; text-anchor: middle; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; stroke-dasharray: 4,4; animation: dash 20s linear infinite; }
+      .arrow-line { stroke: #6366f1; stroke-width: 2; fill: none; }
+      .arrow-line-server { stroke: #0ea5e9; stroke-width: 2; fill: none; }
+    </style>
+    <marker id="arrowhead-lb" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#6366f1" />
+    </marker>
+    <marker id="arrowhead-server" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#0ea5e9" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect class="bg" width="760" height="320" />
+
+  <!-- Diagram Title -->
+  <text class="title" x="30" y="36">L4 로드밸런서 동작 방식</text>
+  <text class="subtitle" x="30" y="56">IP 주소 및 TCP/UDP 포트 정보를 기반으로 전송 계층에서 패킷 분산</text>
+
+  <!-- Client Section -->
+  <g transform="translate(40, 110)">
+    <rect class="box" width="120" height="110" />
+    <text class="text-main" x="60" y="45">클라이언트</text>
+    <text class="text-sub" x="60" y="70">Client Request</text>
+    <text class="text-sub" x="60" y="88">(TCP / IP)</text>
+  </g>
+
+  <!-- Arrow: Client -> L4 LB -->
+  <path class="arrow-line" d="M 160 165 L 250 165" marker-end="url(#arrowhead-lb)" />
+  <rect fill="#1e1b4b" x="175" y="148" width="60" height="18" rx="4" stroke="#6366f1" stroke-width="1"/>
+  <text class="text-badge" x="205" y="161">IP:Port</text>
+
+  <!-- L4 Load Balancer Section -->
+  <g transform="translate(260, 95)">
+    <rect class="box-lb" width="160" height="140" />
+    <rect fill="#4338ca" x="15" y="15" width="130" height="22" rx="4" />
+    <text class="text-badge" fill="#ffffff" x="80" y="30">L4 Load Balancer</text>
+    <text class="text-main" x="80" y="68">패킷 수신 &amp; 전달</text>
+    <text class="text-sub" x="80" y="92">IP: 192.168.1.100</text>
+    <text class="text-sub" x="80" y="112">Port: 80 / 443</text>
+  </g>
+
+  <!-- Arrows: L4 LB -> Backend Servers -->
+  <path class="arrow-line-server" d="M 420 135 L 530 95" marker-end="url(#arrowhead-server)" />
+  <path class="arrow-line-server" d="M 420 195 L 530 235" marker-end="url(#arrowhead-server)" />
+
+  <!-- Server 1 -->
+  <g transform="translate(540, 50)">
+    <rect class="box-server" width="170" height="90" />
+    <text class="text-main" x="85" y="38">백엔드 서버 A</text>
+    <text class="text-tag" x="85" y="62">10.0.0.10:8080</text>
+  </g>
+
+  <!-- Server 2 -->
+  <g transform="translate(540, 190)">
+    <rect class="box-server" width="170" height="90" />
+    <text class="text-main" x="85" y="38">백엔드 서버 B</text>
+    <text class="text-tag" x="85" y="62">10.0.0.11:8080</text>
+  </g>
+</svg>

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 160" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+
+    <linearGradient id="gradle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#02303a"/>
+      <stop offset="100%" stop-color="#055465"/>
+    </linearGradient>
+
+    <linearGradient id="api-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f2438"/>
+      <stop offset="100%" stop-color="#2d3558"/>
+    </linearGradient>
+
+    <linearGradient id="graph-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16302b"/>
+      <stop offset="100%" stop-color="#235247"/>
+    </linearGradient>
+
+    <linearGradient id="alert-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3c1e22"/>
+      <stop offset="100%" stop-color="#5c262c"/>
+    </linearGradient>
+
+    <!-- Arrowhead Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#8b949e"/>
+    </marker>
+  </defs>
+
+  <style>
+    .card-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; font-weight: 700; fill: #f0f6fc; }
+    .card-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; fill: #8b949e; }
+    .step-num { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; font-weight: 700; fill: #58a6ff; letter-spacing: 0.5px; }
+    .arrow-line { stroke: #484f58; stroke-width: 2; marker-end: url(#arrow); stroke-dasharray: none; }
+  </style>
+
+  <!-- Background -->
+  <rect width="860" height="160" rx="12" fill="url(#bg-grad)" stroke="#30363d" stroke-width="1"/>
+
+  <!-- Step 1: Gradle Build -->
+  <g transform="translate(20, 25)">
+    <rect width="170" height="110" rx="10" fill="url(#gradle-grad)" stroke="#0969da" stroke-width="1.5"/>
+    <text x="14" y="24" class="step-num">STEP 1</text>
+    <text x="14" y="48" class="card-title">Gradle 빌드</text>
+    <text x="14" y="70" class="card-desc">전이적 의존성 포함</text>
+    <text x="14" y="86" class="card-desc">실제 의존성 트리 추출</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="190" y1="80" x2="230" y2="80" class="arrow-line"/>
+
+  <!-- Step 2: Submission API -->
+  <g transform="translate(230, 25)">
+    <rect width="180" height="110" rx="10" fill="url(#api-grad)" stroke="#388bfd" stroke-width="1.5"/>
+    <text x="14" y="24" class="step-num">STEP 2</text>
+    <text x="14" y="48" class="card-title">Submission API</text>
+    <text x="14" y="70" class="card-desc">스냅샷 생성 및 전송</text>
+    <text x="14" y="86" class="card-desc">gradle-actions 업로드</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="410" y1="80" x2="450" y2="80" class="arrow-line"/>
+
+  <!-- Step 3: GitHub Dependency Graph -->
+  <g transform="translate(450, 25)">
+    <rect width="180" height="110" rx="10" fill="url(#graph-grad)" stroke="#2ea043" stroke-width="1.5"/>
+    <text x="14" y="24" class="step-num">STEP 3</text>
+    <text x="14" y="48" class="card-title">Dependency Graph</text>
+    <text x="14" y="70" class="card-desc">의존성 그래프 등록</text>
+    <text x="14" y="86" class="card-desc">전체 모듈 트리에 반영</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="630" y1="80" x2="670" y2="80" class="arrow-line"/>
+
+  <!-- Step 4: Dependabot Alerts -->
+  <g transform="translate(670, 25)">
+    <rect width="170" height="110" rx="10" fill="url(#alert-grad)" stroke="#f85149" stroke-width="1.5"/>
+    <text x="14" y="24" class="step-num" fill="#ff7b72">STEP 4</text>
+    <text x="14" y="48" class="card-title">Dependabot alerts</text>
+    <text x="14" y="70" class="card-desc">CVE 보안 취약점 매칭</text>
+    <text x="14" y="86" class="card-desc">경고 목록 자동 노출</text>
+  </g>
+</svg>

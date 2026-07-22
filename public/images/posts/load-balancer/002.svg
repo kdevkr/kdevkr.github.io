@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 380" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #0f172a; rx: 12px; }
+      .title { fill: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 700; }
+      .subtitle { fill: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; }
+      .box { fill: #1e293b; stroke: #334155; stroke-width: 1.5; rx: 8px; }
+      .box-lb { fill: #1e1b4b; stroke: #8b5cf6; stroke-width: 2; rx: 8px; }
+      .text-main { fill: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; font-weight: 600; text-anchor: middle; }
+      .text-sub { fill: #cbd5e1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; text-anchor: middle; }
+      .text-badge { fill: #c4b5fd; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; text-anchor: middle; }
+      .arrow-line-t1 { stroke: #38bdf8; stroke-width: 2; fill: none; }
+      .arrow-line-t2 { stroke: #a855f7; stroke-width: 2; fill: none; }
+      .arrow-line-t3 { stroke: #64748b; stroke-width: 2; fill: none; }
+    </style>
+    <marker id="arrowhead-lb" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#8b5cf6" />
+    </marker>
+    <marker id="arrowhead-t1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#38bdf8" />
+    </marker>
+    <marker id="arrowhead-t2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a855f7" />
+    </marker>
+    <marker id="arrowhead-t3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect class="bg" width="780" height="380" />
+
+  <!-- Diagram Title -->
+  <text class="title" x="30" y="36">L7 로드밸런서 동작 방식 (SaaS 다중 테넌트 헤더 라우팅)</text>
+  <text class="subtitle" x="30" y="56">HTTP 요청 헤더의 테넌트 ID(X-Tenant-ID) 정보를 기반으로 해당 전용 서버로 트래픽 분기</text>
+
+  <!-- Client Section -->
+  <g transform="translate(30, 120)">
+    <rect class="box" width="140" height="150" />
+    <text class="text-main" x="70" y="35">클라이언트 요청</text>
+    <rect fill="#0369a1" x="10" y="50" width="120" height="24" rx="4" />
+    <text class="text-sub" fill="#bae6fd" x="70" y="66">X-Tenant-ID: tenant-a</text>
+    
+    <rect fill="#581c87" x="10" y="82" width="120" height="24" rx="4" />
+    <text class="text-sub" fill="#e9d5ff" x="70" y="98">X-Tenant-ID: tenant-b</text>
+    
+    <rect fill="#334155" x="10" y="114" width="120" height="24" rx="4" />
+    <text class="text-sub" fill="#cbd5e1" x="70" y="130">X-Tenant-ID: shared</text>
+  </g>
+
+  <!-- Arrow: Client -> L7 LB -->
+  <path class="arrow-line-t1" d="M 170 195 L 250 195" marker-end="url(#arrowhead-lb)" />
+
+  <!-- L7 Load Balancer Section -->
+  <g transform="translate(260, 105)">
+    <rect class="box-lb" width="190" height="180" />
+    <rect fill="#6d28d9" x="15" y="15" width="160" height="24" rx="4" />
+    <text class="text-badge" fill="#ffffff" x="95" y="31">L7 Load Balancer</text>
+    
+    <rect fill="#0f172a" x="15" y="48" width="160" height="118" rx="4" stroke="#4c1d95" stroke-width="1"/>
+    <text class="text-sub" fill="#a78bfa" x="95" y="66">Tenant ID Header 분석</text>
+    
+    <text class="text-sub" fill="#7dd3fc" x="95" y="90">tenant-a → 테넌트 A 전용</text>
+    <text class="text-sub" fill="#c084fc" x="95" y="115">tenant-b → 테넌트 B 전용</text>
+    <text class="text-sub" fill="#94a3b8" x="95" y="140">shared → 공용 서버 그룹</text>
+  </g>
+
+  <!-- Arrows: L7 LB -> Backend Servers -->
+  <path class="arrow-line-t1" d="M 450 145 L 540 85" marker-end="url(#arrowhead-t1)" />
+  <path class="arrow-line-t2" d="M 450 195 L 540 195" marker-end="url(#arrowhead-t2)" />
+  <path class="arrow-line-t3" d="M 450 245 L 540 305" marker-end="url(#arrowhead-t3)" />
+
+  <!-- Tenant A Dedicated Server -->
+  <g transform="translate(550, 45)">
+    <rect fill="#0c4a6e" stroke="#38bdf8" stroke-width="1.5" rx="8" width="190" height="80" />
+    <text class="text-main" x="95" y="35">테넌트 A 전용 클러스터</text>
+    <text class="text-sub" fill="#7dd3fc" x="95" y="58">tenant-a 격리 인프라</text>
+  </g>
+
+  <!-- Tenant B Dedicated Server -->
+  <g transform="translate(550, 155)">
+    <rect fill="#3b0764" stroke="#a855f7" stroke-width="1.5" rx="8" width="190" height="80" />
+    <text class="text-main" x="95" y="35">테넌트 B 전용 클러스터</text>
+    <text class="text-sub" fill="#c084fc" x="95" y="58">tenant-b 격리 인프라</text>
+  </g>
+
+  <!-- Shared Server Pool -->
+  <g transform="translate(550, 265)">
+    <rect fill="#1e293b" stroke="#64748b" stroke-width="1.5" rx="8" width="190" height="80" />
+    <text class="text-main" x="95" y="35">공용 멀티 테넌트 서버</text>
+    <text class="text-sub" fill="#cbd5e1" x="95" y="58">일반 테넌트 수용 서버</text>
+  </g>
+</svg>

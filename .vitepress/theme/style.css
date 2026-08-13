@@ -250,6 +250,7 @@ mark {
   display: none;
 }
 
+
 /* 카드 이미지: 오른쪽 정렬, 세로로 꽉 차되 잘리지 않음. 왼쪽 가장자리만 살짝 페이드 */
 .posts-page .VPHero .image-src,
 .sleep-page .VPHero .image-src {
@@ -504,4 +505,40 @@ mark {
 .VPLocalSearchBox .result {
   border-radius: 8px !important;
   border-width: 1.5px !important;
+}
+
+/* 타이포그래피 기반의 미니멀 단락 계층 */
+.vp-doc h2 {
+  position: relative;
+  margin: 3.5rem 0 1.25rem !important;
+  padding: 0 !important;
+  border-top: none !important;
+  border-left: none !important;
+  font-size: 1.625rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.vp-doc h2 .header-anchor {
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.vp-doc h3 {
+  position: relative;
+  margin: 2.25rem 0 0.875rem !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.vp-doc h4 {
+  position: relative;
+  margin: 1.75rem 0 0.5rem !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+  color: var(--vp-c-text-2) !important;
 }

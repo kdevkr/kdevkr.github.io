@@ -1,11 +1,13 @@
 ---
 title: AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기
-date: 2021-03-07
+date: 2021-03-07T00:00+09:00
 tags:
 - AWS
 - Beanstalk
 - Deployment
 ---
+
+# AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기
 
 ![](/images/posts/beanstalk-java-se-platform/aws-elastic-beanstalk-logo.jpg#compact)
 

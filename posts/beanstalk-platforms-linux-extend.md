@@ -6,7 +6,7 @@ tags:
 - Java SE Platform
 ---
 
-> 오랜만에 신규 프로젝트로 인하여 아마존 웹 서비스의 빈스톡 환경 구성에 대해서 살펴볼 기회가 있어 리눅스 플랫폼의 확장에 대해 더 자세하게 학습하고 어떻게 이용할 수 있는지 정리해보고자 한다. 예전과 다르게 변경되는 부분이 생각보다 많아서 오래전에 정리했던 [AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기](deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-enviroment)라는 글은 올바르지 않은 내용을 포함하고 있음을 알린다.
+> 오랜만에 신규 프로젝트로 인하여 아마존 웹 서비스의 빈스톡 환경 구성에 대해서 살펴볼 기회가 있어 리눅스 플랫폼의 확장에 대해 더 자세하게 학습하고 어떻게 이용할 수 있는지 정리해보고자 한다. 예전과 다르게 변경되는 부분이 생각보다 많아서 오래전에 정리했던 [AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기](/posts/deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-environment)라는 글은 올바르지 않은 내용을 포함하고 있음을 알린다.
 
 AWS Elastic Beanstalk 은 애플리케이션을 운영하기 위한 인프라를 쉽게 구성하고 배포할 수 있도록 관리해준다. 개발자가 인프라에 대해서 신경쓰지 않아도 트래픽이나 일정 임계값 기반으로 스케일 아웃이 가능하도록 설정할 수 있으며 다양한 언어로 작성되는 애플리케이션에 대해서 지원하고 심지어는 도커 컨테이너 내에서 실행하는 환경까지도 제공한다. Amazon EKS와 같은 쿠버네티스 인프라 환경을 구성할 필요가 없는 작은 규모의 프로젝트라면 AWS Elastic Beanstalk은 좋은 선택에 해당할 수 있다.
 

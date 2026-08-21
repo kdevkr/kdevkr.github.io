@@ -6,7 +6,7 @@ tags:
 - Elastic Beanstalk
 ---
 
-> 오래 전 2017년에 작성한 [AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기](deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-enviroment) 글이 지금에서는 참고할 만한 정보가 아니게 된 부분이 많아서 2023년 기준으로 올바른 정보들을 정리하여 작성한 글입니다. 
+> 오래 전 2017년에 작성한 [AWS Elastic Beanstalk Java SE 플랫폼 환경으로 애플리케이션 배포하기](/posts/deploy-application-to-the-aws-elastic-beanstalk-java-se-platform-environment) 글이 지금에서는 참고할 만한 정보가 아니게 된 부분이 많아서 2023년 기준으로 올바른 정보들을 정리하여 작성한 글입니다. 
 
 ![](/images/posts/beanstalk-java-se-platform/aws-elastic-beanstalk-logo.jpg#compact)
 

@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfig } from 'vitepress'
 import { withSidebar } from 'vitepress-sidebar';
+import { withPwa } from '@vite-pwa/vitepress';
 import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from "@tailwindcss/vite";
@@ -24,6 +25,54 @@ const EXCLUDED_PATTERNS = [
 ]
 
 const vitePressOptions: UserConfig = {
+  pwa: {
+    outDir: '.vitepress/dist',
+    registerType: 'autoUpdate',
+    includeAssets: [
+      'favicon/favicon.ico',
+      'favicon/favicon-16x16.png',
+      'favicon/favicon-32x32.png',
+      'favicon/apple-touch-icon.png',
+      'favicon/android-chrome-192x192.png',
+      'favicon/android-chrome-512x512.png',
+    ],
+    manifest: {
+      id: '/',
+      name: SITE_TITLE,
+      short_name: 'Mambo',
+      description: SITE_DESCRIPTION,
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      scope: '/',
+      icons: [
+        {
+          src: '/favicon/android-chrome-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/favicon/android-chrome-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        },
+        {
+          src: '/favicon/android-chrome-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }
+      ]
+    },
+    workbox: {
+      globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}']
+    },
+    experimental: {
+      includeAllowlist: true
+    }
+  },
+
   vite: {
     server: {
       allowedHosts: ['.ts.net'],
@@ -125,6 +174,12 @@ const vitePressOptions: UserConfig = {
 
   head: [
     ['link', { rel: 'icon', href: '/favicon/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon/favicon-32x32.png' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon/favicon-16x16.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/favicon/apple-touch-icon.png' }],
+    ['meta', { name: 'theme-color', content: '#ffffff' }],
+    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
     ['meta', { name: 'description', content: SITE_DESCRIPTION }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: SITE_TITLE }],
@@ -206,4 +261,5 @@ const vitePressSideBarOptions = [
 ]
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig(withSidebar(vitePressOptions, vitePressSideBarOptions));
+export default withPwa(defineConfig(withSidebar(vitePressOptions, vitePressSideBarOptions)));
+

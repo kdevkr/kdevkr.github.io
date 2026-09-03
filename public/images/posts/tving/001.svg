@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" width="100%" height="100%">
+  <defs>
+    <style>
+      .canvas-bg { fill: #0d1117; }
+      .header-title { fill: #f0f6fc; font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 18px; font-weight: 700; }
+      .header-desc { fill: #8b949e; font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 13px; font-weight: 400; }
+      .node-card { fill: #161b22; stroke: #30363d; stroke-width: 1.2; rx: 12px; }
+      .node-card-alert { fill: #161b22; stroke: #f85149; stroke-width: 1.5; rx: 12px; }
+      .step-tag { font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+      .node-title { fill: #f0f6fc; font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; font-weight: 700; }
+      .node-desc { fill: #8b949e; font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; font-weight: 400; line-height: 1.5; }
+      .flow-line { stroke: #484f58; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+      .flow-line-alert { stroke: #f85149; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+    </style>
+    <marker id="arrow" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
+      <polygon points="0 0, 7 3, 0 6" fill="#8b949e" />
+    </marker>
+    <marker id="arrow-alert" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto">
+      <polygon points="0 0, 7 3, 0 6" fill="#f85149" />
+    </marker>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="880" height="320" class="canvas-bg" rx="14" />
+
+  <!-- 상단 헤더 -->
+  <g transform="translate(32, 38)">
+    <text x="0" y="0" class="header-title">티빙 침해사고 연쇄 공격 흐름</text>
+    <text x="0" y="22" class="header-desc">깃허브 PAT 유출에서 과거 깃 히스토리 및 운영 크레덴셜 노출로 이어진 침해 경로</text>
+  </g>
+
+  <!-- Step 1: 깃허브 PAT 유출 (x: 32) -->
+  <g transform="translate(32, 88)">
+    <rect width="180" height="194" class="node-card" />
+    
+    <!-- 단계 번호 -->
+    <rect x="14" y="14" width="52" height="22" rx="4" fill="#388bfd" fill-opacity="0.15" />
+    <text x="40" y="25" text-anchor="middle" dominant-baseline="central" fill="#58a6ff" class="step-tag">STEP 1</text>
+
+    <!-- 원형 배경 (중심: 90, 64) -->
+    <circle cx="90" cy="64" r="22" fill="#1f293d" stroke="#388bfd" stroke-width="1.2" />
+    <!-- 24x24 키 아이콘 (78, 52에 배치하여 정중앙 정렬) -->
+    <g transform="translate(78, 52)">
+      <path d="M2.5 17.5l2 2 3-3 2 2 2-2-1.5-1.5a6.5 6.5 0 1 1 2-4l-9.5 9.5z" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="16.5" cy="7.5" r="1.5" fill="#58a6ff"/>
+    </g>
+
+    <text x="90" y="116" text-anchor="middle" class="node-title">깃허브 PAT 유출</text>
+    <text x="90" y="142" text-anchor="middle" class="node-desc">개발자 계정의</text>
+    <text x="90" y="160" text-anchor="middle" class="node-desc">인증 토큰 유출 발생</text>
+    <text x="90" y="178" text-anchor="middle" class="node-desc">(최초 침투 관문)</text>
+  </g>
+
+  <!-- 연결선 1 -> 2 -->
+  <path d="M 212 185 L 242 185" class="flow-line" marker-end="url(#arrow)" />
+
+  <!-- Step 2: 깃 히스토리 노출 (x: 244) -->
+  <g transform="translate(244, 88)">
+    <rect width="180" height="194" class="node-card" />
+    
+    <!-- 단계 번호 -->
+    <rect x="14" y="14" width="52" height="22" rx="4" fill="#a371f7" fill-opacity="0.15" />
+    <text x="40" y="25" text-anchor="middle" dominant-baseline="central" fill="#bc8cff" class="step-tag">STEP 2</text>
+
+    <!-- 원형 배경 (중심: 90, 64) -->
+    <circle cx="90" cy="64" r="22" fill="#291e3b" stroke="#a371f7" stroke-width="1.2" />
+    <!-- 24x24 깃 브랜치 아이콘 (78, 52에 배치하여 정중앙 정렬) -->
+    <g transform="translate(78, 52)">
+      <line x1="6" y1="3" x2="6" y2="15" stroke="#bc8cff" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="18" cy="6" r="2.5" fill="none" stroke="#bc8cff" stroke-width="1.8"/>
+      <circle cx="6" cy="18" r="2.5" fill="none" stroke="#bc8cff" stroke-width="1.8"/>
+      <path d="M18 8.5c0 4.5-4 8-12 8" stroke="#bc8cff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <text x="90" y="116" text-anchor="middle" class="node-title">과거 깃 히스토리 노출</text>
+    <text x="90" y="142" text-anchor="middle" class="node-desc">전체 저장소 접근 및</text>
+    <text x="90" y="160" text-anchor="middle" class="node-desc">과거 커밋 로그 열람</text>
+    <text x="90" y="178" text-anchor="middle" class="node-desc">(무분별한 권한 오픈)</text>
+  </g>
+
+  <!-- 연결선 2 -> 3 -->
+  <path d="M 424 185 L 454 185" class="flow-line" marker-end="url(#arrow)" />
+
+  <!-- Step 3: 운영 크레덴셜 탈취 (x: 456) -->
+  <g transform="translate(456, 88)">
+    <rect width="180" height="194" class="node-card" />
+    
+    <!-- 단계 번호 -->
+    <rect x="14" y="14" width="52" height="22" rx="4" fill="#d29922" fill-opacity="0.15" />
+    <text x="40" y="25" text-anchor="middle" dominant-baseline="central" fill="#e3b341" class="step-tag">STEP 3</text>
+
+    <!-- 원형 배경 (중심: 90, 64) -->
+    <circle cx="90" cy="64" r="22" fill="#352815" stroke="#d29922" stroke-width="1.2" />
+    <!-- 24x24 설정 파일/자물쇠 아이콘 (78, 52에 배치하여 정중앙 정렬) -->
+    <g transform="translate(78, 52)">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="#e3b341" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="14 2 14 8 20 8" fill="none" stroke="#e3b341" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="9" y1="13" x2="15" y2="13" stroke="#e3b341" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="9" y1="17" x2="13" y2="17" stroke="#e3b341" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+
+    <text x="90" y="116" text-anchor="middle" class="node-title">운영 크레덴셜 탈취</text>
+    <text x="90" y="142" text-anchor="middle" class="node-desc">하드코딩된 설정 파일과</text>
+    <text x="90" y="160" text-anchor="middle" class="node-desc">데이터 암호화 키 확보</text>
+    <text x="90" y="178" text-anchor="middle" class="node-desc">(편의 중심의 운영 파일)</text>
+  </g>
+
+  <!-- 연결선 3 -> 4 -->
+  <path d="M 636 185 L 666 185" class="flow-line-alert" marker-end="url(#arrow-alert)" />
+
+  <!-- Step 4: 운영 환경 침해 (x: 668) -->
+  <g transform="translate(668, 88)">
+    <rect width="180" height="194" class="node-card-alert" />
+    
+    <!-- 단계 번호 -->
+    <rect x="14" y="14" width="52" height="22" rx="4" fill="#f85149" fill-opacity="0.15" />
+    <text x="40" y="25" text-anchor="middle" dominant-baseline="central" fill="#ff7b72" class="step-tag">STEP 4</text>
+
+    <!-- 원형 배경 (중심: 90, 64) -->
+    <circle cx="90" cy="64" r="22" fill="#38191e" stroke="#f85149" stroke-width="1.2" />
+    <!-- 24x24 데이터베이스 아이콘 (78, 52에 배치하여 정중앙 정렬) -->
+    <g transform="translate(78, 52)">
+      <ellipse cx="12" cy="5" rx="8" ry="3" fill="none" stroke="#ff7b72" stroke-width="1.8"/>
+      <path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5" fill="none" stroke="#ff7b72" stroke-width="1.8"/>
+      <path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" fill="none" stroke="#ff7b72" stroke-width="1.8"/>
+    </g>
+
+    <text x="90" y="116" text-anchor="middle" class="node-title">운영 환경 침해</text>
+    <text x="90" y="142" text-anchor="middle" class="node-desc">운영 DB 접속 및</text>
+    <text x="90" y="160" text-anchor="middle" class="node-desc">암호화 데이터 평문화</text>
+    <text x="90" y="178" text-anchor="middle" class="node-desc" fill="#f85149">(3,954만 건 유출)</text>
+  </g>
+</svg>

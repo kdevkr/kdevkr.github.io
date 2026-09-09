@@ -1,6 +1,6 @@
 ---
 title: 자바 날짜 및 시간 포맷
-date: 2022-03-19
+date: 2022-03-19T00:00+09:00
 tags:
 - TimeZone
 - ZoneId

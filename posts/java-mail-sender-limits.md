@@ -1,6 +1,6 @@
 ---
 title: 자바 메일 발송 시 장애 처리
-date: 2024-06-16T20:00+0900
+date: 2024-06-16T20:00+09:00
 tags:
 - JavaMailSenderImpl
 - Simple Email Service

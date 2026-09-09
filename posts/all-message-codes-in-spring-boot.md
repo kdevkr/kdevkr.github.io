@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트에서 모든 메시지 코드 가져오기
-date: 2021-01-25
+date: 2021-01-25T00:00+09:00
 tags:
 - Spring Boot
 - Message Source

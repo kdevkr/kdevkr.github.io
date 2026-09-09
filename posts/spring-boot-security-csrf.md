@@ -1,6 +1,6 @@
 ---
 title: Cross Site Request Forgery (CSRF)
-date: 2023-10-21T09:00+0900
+date: 2023-10-21T09:00+09:00
 tags:
 - Spring Security
 - Axios

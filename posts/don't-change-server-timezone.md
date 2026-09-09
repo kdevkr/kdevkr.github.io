@@ -1,6 +1,6 @@
 ---
 title: 서버 타임존을 바꾸지 말자 (feat. 글로벌)
-date: 2023-05-27
+date: 2023-05-27T00:00+09:00
 tags:
 - Timezone
 - UTC

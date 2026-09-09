@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트 보안 설정
-date: 2023-10-17T22:00+0900
+date: 2023-10-17T22:00+09:00
 tags:
 - Spring Security
 - Protection Aganinst Exploits

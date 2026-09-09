@@ -1,6 +1,6 @@
 ---
 title: Spring Session
-date: 2022-12-04
+date: 2022-12-04T00:00+09:00
 tags:
 - Session
 - Redis

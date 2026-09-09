@@ -1,6 +1,6 @@
 ---
 title: IP 대역 그리고 위치추적
-date: 2021-09-05
+date: 2021-09-05T00:00+09:00
 tags:
 - IP Band
 - NAT

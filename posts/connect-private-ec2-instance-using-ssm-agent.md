@@ -1,6 +1,6 @@
 ---
 title: AWS SSM 에이전트로 프라이빗 EC2 인스턴스에 연결하기
-date: 2021-02-19
+date: 2021-02-19T00:00+09:00
 tags:
 - AWS
 - SSM Agent

@@ -1,6 +1,6 @@
 ---
 title: Systemd 서비스로 자바 애플리케이션 실행하기
-date: 2023-10-12T23:00+0900
+date: 2023-10-12T23:00+09:00
 tags:
 - Systemd
 - Java

@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트 오류 페이지
-date: 2023-10-02T12:00+0900
+date: 2023-10-02T12:00+09:00
 tags:
 - ThymeleafViewResolver
 - FreeMarkerViewResolver

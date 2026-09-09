@@ -1,6 +1,6 @@
 ---
 title: AWS Elastic Beanstalk 로그 알아보기
-date: 2024-03-01T23:00+0900
+date: 2024-03-01T23:00+09:00
 tags:
 - Beanstalk
 - TailLogs

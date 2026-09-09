@@ -1,6 +1,6 @@
 ---
 title: 프로젝트의 노드 버전 제한하기
-date: 2021-12-26
+date: 2021-12-26T00:00+09:00
 tags:
 - package.json
 - npmrc

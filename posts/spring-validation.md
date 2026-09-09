@@ -1,6 +1,6 @@
 ---
 title: 스프링 벨리데이션
-date: 2022-02-17
+date: 2022-02-17T00:00+09:00
 tags:
 - Jakarta Bean Validation
 - Hibernate Validator

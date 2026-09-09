@@ -1,6 +1,6 @@
 ---
 title: 재부팅 시 Crontab에 의해 프로세스를 자동으로 실행하기
-date: 2022-05-06
+date: 2022-05-06T00:00+09:00
 tags:
 - Autorun
 - Crontab

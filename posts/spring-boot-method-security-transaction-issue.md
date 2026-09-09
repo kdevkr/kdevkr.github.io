@@ -1,6 +1,6 @@
 ---
 title: 메소드 보안에 의한 트랜잭션 이슈
-date: 2024-01-28T22:00+0900
+date: 2024-01-28T22:00+09:00
 tags:
 - Transactional
 - EnableGlobalMethodSecurity

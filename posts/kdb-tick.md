@@ -1,6 +1,6 @@
 ---
 title: KDB Tick
-date: 2022-04-30
+date: 2022-04-30T00:00+09:00
 tags:
 - KDB+/q
 - TP

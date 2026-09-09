@@ -1,6 +1,6 @@
 ---
 title: Immutable Configuration Properties
-date: 2024-02-01T23:00+0900
+date: 2024-02-01T23:00+09:00
 tags:
 - Spring Boot
 - Configuration Properties

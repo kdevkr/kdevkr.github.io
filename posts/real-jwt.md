@@ -1,6 +1,6 @@
 ---
 title: Real JWT (feat. 쿠키 세션)
-date: 2023-06-27T20:00+0900
+date: 2023-06-27T20:00+09:00
 tags:
 - JWT
 - Session

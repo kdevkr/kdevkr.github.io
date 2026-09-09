@@ -1,6 +1,6 @@
 ---
 title: 모드버스 TCP
-date: 2023-09-10T21:00+0900
+date: 2023-09-10T21:00+09:00
 tags:
 - Modbus
 - TCP/IP

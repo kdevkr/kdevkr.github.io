@@ -1,6 +1,6 @@
 ---
 title: AWS ALB 에서 mTLS를 지원하지 않았다고?!
-date: 2024-01-20T17:00+0900
+date: 2024-01-20T17:00+09:00
 tags:
 - ALB
 - Mutual TLS

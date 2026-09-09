@@ -1,6 +1,6 @@
 ---
 title: 개발자를 위한 인프라 지식
-date: 2022-05-15
+date: 2022-05-15T00:00+09:00
 tags:
 - Infrastructure
 - Microarchitecture

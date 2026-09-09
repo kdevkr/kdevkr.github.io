@@ -1,6 +1,6 @@
 ---
 title: Webpack 5 기반의 Vue 개발 환경
-date: 2021-12-28
+date: 2021-12-28T00:00+09:00
 tags:
 - Webpack5
 ---

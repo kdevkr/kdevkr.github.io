@@ -1,6 +1,6 @@
 ---
 title: 스프링 백엔드 개발자가 CORS를 테스트 하는 방법
-date: 2023-07-22T21:00+0900
+date: 2023-07-22T21:00+09:00
 tags:
 - CORS
 - Preflight Request

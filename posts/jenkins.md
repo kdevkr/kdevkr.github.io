@@ -1,6 +1,6 @@
 ---
 title: 젠킨스 프로젝트 빌드
-date: 2023-02-23
+date: 2023-02-23T00:00+09:00
 ---
 
 ![](/images/posts/jenkins/01.png)

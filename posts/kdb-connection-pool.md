@@ -1,6 +1,6 @@
 ---
 title: KDB Connection Pool
-date: 2022-12-10
+date: 2022-12-10T00:00+09:00
 tags:
 - TCP
 - Connection Pool

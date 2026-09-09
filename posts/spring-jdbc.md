@@ -1,6 +1,6 @@
 ---
 title: Spring JDBC
-date: 2022-09-05
+date: 2022-09-05T00:00+09:00
 tags:
 - JDBC
 - RowMapper

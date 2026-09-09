@@ -1,6 +1,6 @@
 ---
 title: 롬복 어노테이션 프로세서
-date: 2021-12-29
+date: 2021-12-29T00:00+09:00
 tags:
 - IntelliJ
 - Lombok

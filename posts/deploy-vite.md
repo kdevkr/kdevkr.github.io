@@ -1,6 +1,6 @@
 ---
 title: Nginx로 Vite 프로젝트 배포하기
-date: 2023-10-10T20:00+0900
+date: 2023-10-10T20:00+09:00
 tags:
 - Nginx
 - Vite

@@ -1,6 +1,6 @@
 ---
 title: Sentry
-date: 2023-05-19
+date: 2023-05-19T00:00+09:00
 tags:
 - sentry-java
 - sentry-javascript

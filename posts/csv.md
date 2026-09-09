@@ -1,6 +1,6 @@
 ---
 title: CSV, Comma Separated Values
-date: 2022-05-07
+date: 2022-05-07T00:00+09:00
 tags:
 - RFC 4180
 - CSV

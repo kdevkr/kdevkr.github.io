@@ -1,6 +1,6 @@
 ---
 title: Amazon Linux 2023을 VirtualBox에서 실행하기
-date: 2024-01-29T23:00+0900
+date: 2024-01-29T23:00+09:00
 tags:
 - Oracle VirtualBox
 - AL2023

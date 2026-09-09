@@ -1,6 +1,6 @@
 ---
 title: Spring Boot commons-logging Conflicts
-date: 2023-12-28T23:00+0900
+date: 2023-12-28T23:00+09:00
 tags:
 - Spring
 - Logging

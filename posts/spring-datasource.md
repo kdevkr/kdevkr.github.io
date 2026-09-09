@@ -1,6 +1,6 @@
 ---
 title: 스프링 데이터소스
-date: 2024-01-19T07:00+0900
+date: 2024-01-19T07:00+09:00
 tags:
 - DataSourceBuilder
 - DataSourceProperties

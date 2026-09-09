@@ -1,6 +1,6 @@
 ---
 title: X-Accel-Buffering
-date: 2022-12-26
+date: 2022-12-26T00:00+09:00
 tags:
 - SSE
 - X-Accel

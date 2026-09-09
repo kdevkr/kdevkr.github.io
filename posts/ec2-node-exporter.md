@@ -1,6 +1,6 @@
 ---
 title: EC2 Node Exporter
-date: 2022-05-21
+date: 2022-05-21T00:00+09:00
 tags:
 - EC2
 - node-exporter

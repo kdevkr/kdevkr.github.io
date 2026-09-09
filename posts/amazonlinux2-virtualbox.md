@@ -1,6 +1,6 @@
 ---
 title: Amazon Linux 2를 VirtualBox에서 실행하기
-date: 2023-10-04T22:00+0900
+date: 2023-10-04T22:00+09:00
 tags:
 - AL2
 - Oracle VirtualBox

@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트 웹소켓
-date: 2023-10-14T22:00+0900
+date: 2023-10-14T22:00+09:00
 tags:
 - WebSocket
 - SockJS

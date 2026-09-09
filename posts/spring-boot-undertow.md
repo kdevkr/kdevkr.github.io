@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트 언더토우
-date: 2023-03-16
+date: 2023-03-16T00:00+09:00
 tags:
 - Spring Boot
 - Undertow

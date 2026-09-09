@@ -1,6 +1,6 @@
 ---
 title: PathVariable 값을 RequestBody 오브젝트에 주입하기
-date: 2024-02-02T23:00+0900
+date: 2024-02-02T23:00+09:00
 tags:
 - RequestBodyAdviceAdapter
 - LocalVariableTableParameterNameDiscoverer

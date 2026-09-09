@@ -1,6 +1,6 @@
 ---
 title: Simple Java Mail 로 이메일 보내기
-date: 2023-12-30T23:00+0900
+date: 2023-12-30T23:00+09:00
 tags:
 - Gmail SMTP
 - Simple Java Mail

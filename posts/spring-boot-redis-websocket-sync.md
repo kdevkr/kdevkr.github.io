@@ -1,6 +1,6 @@
 ---
 title: 레디스 웹소켓 알람 동기화
-date: 2024-03-14T23:00+0900
+date: 2024-03-14T23:00+09:00
 tags:
 - Redis
 - Websocket

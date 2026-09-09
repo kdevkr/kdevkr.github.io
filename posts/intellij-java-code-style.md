@@ -1,6 +1,6 @@
 ---
 title: 인텔리제이 개발 환경 설정 (feat. Code Style)
-date: 2024-01-21T17:00+0900
+date: 2024-01-21T17:00+09:00
 tags:
 - Code Style
 - Checkstyle

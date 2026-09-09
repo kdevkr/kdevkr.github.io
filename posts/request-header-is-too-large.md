@@ -1,6 +1,6 @@
 ---
 title: Request Header is Too Large
-date: 2024-03-26T23:00+0900
+date: 2024-03-26T23:00+09:00
 ---
 
 > java.lang.IllegalArgumentException: Request header is too large

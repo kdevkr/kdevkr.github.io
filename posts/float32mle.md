@@ -1,6 +1,6 @@
 ---
 title: Float32MLE (Byte Order)
-date: 2023-10-01T09:00+0900
+date: 2023-10-01T09:00+09:00
 tags:
 - Float32
 - IEEE 754

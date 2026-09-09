@@ -1,6 +1,6 @@
 ---
 title: 유닉스 타임스탬프와 시간 정밀도
-date: 2022-09-01
+date: 2022-09-01T00:00+09:00
 tags:
 - Unix Timestamp
 - Unix Epoch

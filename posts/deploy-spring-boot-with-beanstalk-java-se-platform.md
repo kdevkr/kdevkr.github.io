@@ -1,6 +1,6 @@
 ---
 title: Elastic Beanstalk Java SE 플랫폼으로 스프링 부트 배포하기
-date: 2023-12-17T16:00+0900
+date: 2023-12-17T16:00+09:00
 tags:
 - Spring Boot
 - Elastic Beanstalk

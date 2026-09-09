@@ -1,6 +1,6 @@
 ---
 title: Couldn't find FilterChainProxy
-date: 2023-12-29T18:00+0900
+date: 2023-12-29T18:00+09:00
 tags:
 - Spring Security
 - issue-14370

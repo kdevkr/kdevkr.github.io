@@ -1,6 +1,6 @@
 ---
 title: Beanstalk Linux 플랫폼 확장에 대해서
-date: 2023-12-10T22:00+0900
+date: 2023-12-10T22:00+09:00
 tags:
 - AWS Beanstalk
 - Java SE Platform

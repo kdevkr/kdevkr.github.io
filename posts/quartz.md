@@ -1,6 +1,6 @@
 ---
 title: 쿼츠 스케줄러
-date: 2022-11-27
+date: 2022-11-27T00:00+09:00
 tags:
 - Quartz
 - ShedLock

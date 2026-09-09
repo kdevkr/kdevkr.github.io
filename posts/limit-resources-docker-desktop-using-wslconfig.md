@@ -1,6 +1,6 @@
 ---
 title: 도커 데스크탑이 사용하는 WSL 리소스 제한하기
-date: 2021-08-13
+date: 2021-08-13T00:00+09:00
 tags:
 - WSL
 - Docker Desktop

@@ -1,6 +1,6 @@
 ---
 title: SSL 인증서
-date: 2021-08-27
+date: 2021-08-27T00:00+09:00
 tags:
 - HTTPS
 - TLS

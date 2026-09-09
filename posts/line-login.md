@@ -1,6 +1,6 @@
 ---
 title: 라인 로그인 연동
-date: 2024-02-18T22:00+0900
+date: 2024-02-18T22:00+09:00
 ---
 
 > 본 글에 대한 코드는 [kdevkr/spring-boot-line-login](https://github.com/kdevkr/spring-boot-line-login) 에서 확인할 수 있습니다.

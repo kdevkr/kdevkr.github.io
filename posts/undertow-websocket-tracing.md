@@ -1,6 +1,6 @@
 ---
 title: Tracing handshake websocket with undertow
-date: 2022-08-12
+date: 2022-08-12T00:00+09:00
 tags:
 - Undertow
 - WebSocket

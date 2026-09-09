@@ -1,6 +1,6 @@
 ---
 title: AWS SDK for Java BOM
-date: 2023-10-22T15:00+0900
+date: 2023-10-22T15:00+09:00
 tags:
 - Maven BOM
 - aws-java-sdk

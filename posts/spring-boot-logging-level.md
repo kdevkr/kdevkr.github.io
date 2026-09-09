@@ -1,6 +1,6 @@
 ---
 title: 스프링 부트 로깅 레벨 선언 (feat. Yaml)
-date: 2023-06-25T14:00+0900
+date: 2023-06-25T14:00+09:00
 tags:
 - Logging
 - Yaml

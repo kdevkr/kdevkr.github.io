@@ -1,6 +1,6 @@
 ---
 title: MariaDB Timestamp Y2K38
-date: 2023-09-24T14:00+0900
+date: 2023-09-24T14:00+09:00
 tags:
 - MariaDB
 - Y2K38

@@ -1,6 +1,6 @@
 ---
 title: Invalid SockJS path.
-date: 2023-10-16T22:00+0900
+date: 2023-10-16T22:00+09:00
 tags:
 - Spring
 - Nginx

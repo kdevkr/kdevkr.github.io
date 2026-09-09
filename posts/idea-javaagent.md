@@ -1,6 +1,10 @@
 ---
 title: 인텔리제이 자바 에이전트 실행하기
 date: 2022-12-29T00:00+09:00
+tags:
+- IntelliJ IDEA
+- Java
+- Java Agent
 ---
 
 > 본 글의 APM 자바 에이전트 적용 예제는 [kdevkr/spring-demo-apm](https://github.com/kdevkr/spring-demo-apm) 리포지토리를 참고하실 수 있습니다.

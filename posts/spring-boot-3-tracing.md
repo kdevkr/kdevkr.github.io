@@ -1,6 +1,11 @@
 ---
 title: Spring Boot 3.x Micrometer Tracing
 date: 2023-08-27T09:00+09:00
+tags:
+- Spring Boot
+- Micrometer
+- Tracing
+- Observability
 ---
 
 > Spring Cloud Sleuth will not work with Spring Boot 3.x onward. Please check [Spring Cloud Sleuth 3.1 Migration Guide](https://github.com/micrometer-metrics/tracing/wiki/Spring-Cloud-Sleuth-3.1-Migration-Guide).

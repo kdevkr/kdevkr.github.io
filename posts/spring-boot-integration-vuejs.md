@@ -1,6 +1,10 @@
 ---
 title: 스프링 부트 애플리케이션을 Vue와 함께 개발하기
 date: 2021-01-23T00:00+09:00
+tags:
+- Spring Boot
+- Vue.js
+- Integration
 ---
 
 > 관련 소스코드는 Github [spring-boot-integration-vuejs](https://github.com/kdevkr/spring-boot-integration-vuejs) 리포지토리에서 제공합니다.

@@ -2,7 +2,10 @@
 title: SpringDoc UI 인증을 위한 토큰 기본값 표시
 date: 2024-02-03T11:00+09:00
 tags:
-- 
+- Springdoc
+- OpenAPI
+- JWT
+- Bearer Authentication
 ---
 
 [Configure JWT Authentication for OpenAPI](https://www.baeldung.com/openapi-jwt-authentication)를 참고하면 SpringDoc UI를 사용할 때 JWT 인증을 위해 Bearer 스키마 유형을 구성할 수 있음을 쉽게 알 수 있다. 그러나, Bearer와 같은 인증 방식의 경우 OAuth 와는 다르게 기본값을 적용할 수 있는 방안이 없다. 스웨거 문서에서 API를 호출해보고 싶은 경우 대부분 스프링 시큐리티에서 제공하는 HTTP 기본 인증이나 폼 로그인을 하지 못하도록 비활성화하기 때문에 사용자 로그인을 수행할 수 있는 엔드포인트를 만들어서 문서에 노출하여 토큰을 발급할 수 있도록 해야한다.

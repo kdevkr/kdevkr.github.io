@@ -1,6 +1,11 @@
 ---
 title: REST Assured
 date: 2024-08-09T23:00+09:00
+tags:
+- REST Assured
+- Java
+- 테스트
+- API
 ---
 
 [REST Assured](https://rest-assured.io/)를 사용하면 자바 애플리케이션에서 **인수 테스트**를 위한 코드를 작성할 수 있다. 현재 조직은 테스트 커버리지를 체크하지 않고 비즈니스 레이어를 위주로 테스트 코드를 작성하기로 했었다. 온프레미스 형태의 B2B 솔루션이 아닌 **SaaS 서비스**를 준비하면서 **테스트 자동화**를 위해 많은 고민을 하고 있다. 일단 [Playwright](https://playwright.dev/)와 [Allure Report](https://allurereport.org/)를 사용하고자 준비중이라 이에 맞춰 서비스 개발 시 Allure Report와 통합할 수 있는 **JUnit5 + Rest Assured**로 테스트 코드를 작성하려고 한다.

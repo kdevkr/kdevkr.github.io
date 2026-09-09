@@ -1,6 +1,10 @@
 ---
 title: AWS IAM 사용자 리전 제한하기
 date: 2021-10-03T00:00+09:00
+tags:
+- AWS
+- IAM
+- 보안
 ---
 
 안녕하세요 Mambo 입니다.

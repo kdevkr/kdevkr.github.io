@@ -1,6 +1,10 @@
 ---
 title: 프리마커 템플릿으로 이메일 발송하기
 date: 2019-03-19T00:00+09:00
+tags:
+- Spring Boot
+- FreeMarker
+- 이메일
 updated: 2022-03-04
 comments: true
 ---

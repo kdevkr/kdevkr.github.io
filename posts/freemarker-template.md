@@ -1,6 +1,10 @@
 ---
 title: 프리마커 템플릿
 date: 2023-03-08T00:00+09:00
+tags:
+- FreeMarker
+- Template
+- Java
 comments: true
 ---
 

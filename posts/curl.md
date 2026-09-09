@@ -1,6 +1,10 @@
 ---
 title: cURL
 date: 2023-05-21T00:00+09:00
+tags:
+- cURL
+- PowerShell
+- HTTP
 ---
  
 [cURL](https://curl.se/)은 리눅스와 맥 터미널에서 HTTP 요청을 수행해보기 위해서 많이 사용된다. 윈도우에서도 [마이크로소프트에서 제공하는 컬 프로그램](https://curl.se/windows/microsoft.html)이 내장되어있다. 그래서 명령 프롬프트(cmd)로 curl 명령어를 수행해보면 아래와 같이 정상적으로 사용할 수 있음을 알 수 있다. 하지만, 윈도우 터미널에서는 명령 프롬프트가 아니라 파워쉘(Powershll)을 사용하고 있으므로 __Invoke-WebRequest__ 으로 호출되어 기본적으로 알던 명령어가 수행되지 않는다.

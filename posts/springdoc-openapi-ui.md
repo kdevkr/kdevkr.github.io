@@ -1,6 +1,10 @@
 ---
 title: Springdoc OpenAPI UI
 date: 2024-02-04T09:00+09:00
+tags:
+- Springdoc
+- OpenAPI
+- Swagger UI
 ---
 
 Springdoc OpenAPI UI는 OpenAPI 3 기반의 Swagger API 문서를 작성할 수 있게 제공해주는 라이브러리이다. 오늘은 Springdoc OpenAPI UI 를 사용하는 방법에 대해서 학습해보면서 알게된 유용한 정보들 대해서 공유해보고자 한다. 

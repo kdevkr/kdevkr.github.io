@@ -1,6 +1,10 @@
 ---
 title: 스프링 부트 빌드 정보
 date: 2023-03-21T00:00+09:00
+tags:
+- Spring Boot
+- Actuator
+- Build Info
 ---
 
 > 본 글에 대한 관련 코드는 https://github.com/kdevkr/spring-demo 에서 참고할 수 있습니다.

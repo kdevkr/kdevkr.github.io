@@ -1,6 +1,10 @@
 ---
 title: Spring AOP - Self Invocation
 date: 2024-09-05T23:00+09:00
+tags:
+- Spring
+- AOP
+- Self Invocation
 ---
 
 > @Cacheable self-invocation (in effect, a method within the target object calling another method of the target object). 

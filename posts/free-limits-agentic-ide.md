@@ -2,6 +2,9 @@
 title: 무료 할당량을 제공하는 Agentic IDE
 date: 2025-12-08T21:00+09:00
 tags:
+- AI Agent
+- Agentic IDE
+- 개발 도구
 ---
 
 # 무료 할당량을 제공하는 Agentic IDE

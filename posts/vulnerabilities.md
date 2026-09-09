@@ -1,6 +1,11 @@
 ---
 title: 보안 취약점 (Vulnerability)
 date: 2023-08-22T21:00+09:00
+tags:
+- 보안 취약점
+- Maven
+- OWASP
+- Dependency Check
 ---
 
 

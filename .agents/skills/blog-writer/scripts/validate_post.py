@@ -31,9 +31,10 @@ def check_markdown(file_path):
             errors.append("Invalid or missing 'date' (ISO 8601 YYYY-MM-DDTHH:mm+09:00 required)")
 
     # 2. H1 Header Check (Single H1)
-    # Exclude Frontmatter for header check
+    # Exclude Frontmatter and fenced code blocks for header check
     body_content = content[frontmatter_match.end():] if frontmatter_match else content
-    h1_count = len(re.findall(r'^#\s+', body_content, re.MULTILINE))
+    body_without_code = re.sub(r'```.*?```', '', body_content, flags=re.DOTALL)
+    h1_count = len(re.findall(r'^#\s+', body_without_code, re.MULTILINE))
     if h1_count > 1:
         errors.append(f"Multiple <h1> headers found ({h1_count}). Only one is allowed per page.")
     elif h1_count == 0:

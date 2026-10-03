@@ -1,0 +1,138 @@
+---
+title: 코덱스를 사용해본 경험
+date: 2026-10-04T08:00+09:00
+description: 코덱스(Codex)를 실무에 써보며 겪은 경험과 한계를 정리합니다.
+tags:
+    - Codex
+    - AI 에이전트
+    - 코드 리뷰
+    - 테스트 자동화
+---
+
+# 코덱스를 사용해본 경험
+
+회사에서 **코덱스(Codex) 계정** 지원을 받아서 조금씩 사용해보고 있다.
+
+- [GPT-6 아스트라](https://openai.com/ko-KR/index/gpt-6-astra/) 공개 (2026.09.04)
+- [GPT-6.1 Sol](https://openai.com/ko-KR/index/introducing-gpt-6-1-sol/) 및 [OpenAI Dots](https://news.hada.io/topic?id=34501) 공개 (2026.09.29)
+- [ChatGPT Pro 요금제 개편](https://news.hada.io/topic?id=34510) (2026.09.30)
+
+모델 성능이 뛰어나 함부로 공개하면 안 된다는 관점을 강조하던 것과 다르게, 최근 한 달 사이에 새로운 모델과 기능이 연달아 공개되고 있다.
+하지만 기대와 달리 ==직접 질문해 본 결과물의 체감 성능 차이는 크지 않았다== .
+
+## 초기 설정 경험
+
+초기 설정 자체는 기존 클로드 코드를 참고해서 가져오라고 지시하면 되므로 쉬웠다.
+
+하지만 아스트라 모델이 공개되고 [기존 스킬과 프롬프트를 다시 작성하라](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)고 권장하는 것을 보면, 기존 설정을 그대로 사용해서는 좋은 결과를 보지 못할 것으로 보인다. 실제로 아스트라에 맞춰 프롬프트와 지침을 작성해 두더라도 지금은 GPT-6.1 Sol을 선택해서 수행하고 있다.
+
+아무튼, 초기 설정을 마치고 아스트라 모델에 대한 결과물을 확인해 보려고 기존 레거시 프로젝트에 새로운 화면을 추가하도록 요청해 보았다. 하지만 기존 디자인 시스템과 UI 톤을 전혀 고려하지 않은 결과물을 내놓았다.
+
+GPT-6 아스트라 모델에 **추론 성능을 High** 로 설정해 작업을 요청했으나, 생각하는 시간만 길어져 코딩 흐름이 끊기기 일쑤였다. 결국 직접적인 코드 작성보다는 **문서화, 코드 리뷰, 테스트 자동화 같은 검수 과정** 에 집중하는 편이 적합했다.
+
+::: info 아스트라 품질 체감
+아스트라 모델 성능이 미쳤다는 뉴스와는 다르게, ==결과에 대한 품질은 그저 최악이라고 생각될 만큼 기대에 미치지 못했어요== . 대기 시간은 한참 걸리는데 정작 기존 프로젝트의 맥락은 전혀 살리지 못하더라고요.
+:::
+
+## AI Slop 대응과 문체 검증
+
+클로드 문체처럼 코덱스만의 응답 스타일도 존재한다. 코덱스 역시 사람이 읽기 불편할 정도로 글을 장황하게 늘어놓는 AI Slop 문제가 있다. 읽어야 할 내용이 너무 많다 보니 결국 대충 훑고 생략하게 되는 불편함이 있었다.
+
+특히 이슈나 PR 본문, 메시지 초안을 검증할 때도 코덱스에 매번 직접 맡기면 응답을 받기까지 시간이 꽤 걸렸다. 그래서 클로드 코드 훅을 코덱스로 전환하는 과정에서, **TypeSafe AI가 2026년 9월 15일 공개한 Jev** 로 AI 문체를 빠르게 판별하도록 훅을 구성해보기도 했다.
+
+::: code-group
+
+```json [hooks.json]
+{
+    "hooks": {
+        "post_generate": [
+            {
+                "name": "check-ai-slop",
+                "command": "python scripts/check_slop.py",
+                "description": "Fast AI slop detection via jev ai"
+            }
+        ]
+    }
+}
+```
+
+```python [scripts/check_slop.py]
+import sys
+import requests
+
+# Rubric based on no-ai-slop guidelines
+RUBRIC = (
+    "Does this text exhibit AI slop patterns based on no-ai-slop guidelines "
+    "(e.g., formulaic binary contrasts, throat-clearing openers, generic buzzwords, "
+    "or excessively verbose and robotic phrasing)?"
+)
+
+def check_slop(text: str) -> bool:
+    # Fast decision API call via Jev AI
+    response = requests.post(
+        "https://api.typesafe.ai/v1/jev/decision",
+        headers={"Authorization": "Bearer $JEV_API_KEY"},
+        json={
+            "input": text,
+            "rubric": RUBRIC,
+            "type": "noul"
+        }
+    )
+    result = response.json()
+    return result.get("decision") == "yes"
+
+if __name__ == "__main__":
+    content = sys.stdin.read()
+    if check_slop(content):
+        print("[WARN] Potential AI slop patterns detected.", file=sys.stderr)
+        sys.exit(1)
+    sys.exit(0)
+```
+
+:::
+
+다만 Jev는 텍스트를 직접 생성하거나 수정하는 도구가 아니라, 어색한 표현이 포함되어 있는지만 판별하여 알려준다. 결국 어색한 문체가 검출되더라도 초안을 다듬는 과정은 여전히 필요했다.
+
+애초에 코덱스의 느린 결정을 대신하려고 Jev를 도입했던 만큼, 다듬는 작업 역시 코덱스에 다시 맡기지는 않았다. 대신 [nobuzz](https://github.com/adnanakil/nobuzz)를 활용해, 평소 사용량이 넉넉하게 남아 있는 Antigravity로 문장을 손보도록 파이프라인을 엮어 두었다.
+
+::: tip Fast 모드 활용
+코덱스의 느린 응답 속도를 보완하기 위해서 평소에는 Fast 모드를 활성화해서 사용하고 있어요. 복잡한 추론이 필요 없는 일상 작업에서는 이렇게 설정해 두는 편이 작업 흐름을 끊지 않아서 훨씬 쾌적해요.
+:::
+
+## 코드 리뷰
+
+로컬 환경에서는 `/review` 명령어로 **베이스 브랜치 기준 변경 사항(diff)** 을 바로 검토할 수 있고, [Claude Code용 Codex 플러그인](https://news.hada.io/topic?id=28023)을 사용해 클로드 코드 세션 내에서도 호출할 수 있다.
+
+원격 협업을 위한 [GitHub 연동](https://learn.chatgpt.com/docs/third-party/github)도 제공한다. PR 본문이나 댓글에서 `@codex`를 멘션하여 리뷰를 요청하는 방식이다. 다만 ==코덱스에 연결된 깃허브 계정으로 멘션해야만 리뷰를 수행== 하므로, 유료 플랜이 없는 동료는 이 기능을 함께 활용할 수 없었다.
+
+::: tip 협업의 한계
+팀원 전체가 코덱스 유료 계정을 쓰는 게 아니라면 깃허브 PR 멘션 기능은 활용도가 떨어져요. 계정이 연결된 사용자만 호출할 수 있어서 팀 차원의 공통 리뷰 플로우로 정착시키기에는 한계가 있더라고요.
+:::
+
+## QA와 테스트 자동화
+
+클로드 코드와 비교했을 때 상대적으로 만족스러웠던 부분은 브라우저 제어 환경이다. **컴퓨터 사용(Computer Use) 또는 크롬 확장 플러그인** 을 통해 열려 있는 브라우저 탭을 그대로 가져와 제어할 수 있다.
+
+[Codex 활용 사례 모음](https://news.hada.io/topic?id=29847)을 바탕으로 [컴퓨터 사용(Computer Use)](https://learn.chatgpt.com/docs/computer-use) 기능을 연동해, 퇴사한 QA 엔지니어 업무를 대신하도록 스킬을 구성해보기도 했다. 다만, 컴퓨터 사용 기능은 작업 중인 화면을 직접 제어하므로, 에이전트가 동작하는 동안 ==동선이 겹쳐 다른 작업을 동시에 진행하기 불편하다== .
+
+::: info 퇴사자 장비 활용
+에이전트가 화면을 조작하는 동안에는 다른 작업을 동시에 진행하기가 꽤 불편해요. 그래서 회사에 남아 있는 퇴사자 여유 장비에 코덱스를 따로 세팅해 두고 테스트 자동화를 시도해 보고 있어요.
+:::
+
+## 작업 중단
+
+클로드 코드 동작에 익숙해져서 그런지는 몰라도, 코덱스는 **명시적으로 작업을 요청하지 않으면 스스로 수행하지 않았다** .
+
+심지어 작업 도중에 무언가를 물어보면 대답은 해주는데, ==이전 작업을 이어서 수행하지 않고 그대로 멈춰버리는 상황== 도 있었다. 작업을 계속 진행하려면 매번 다시 이어서 해달라고 명시적으로 요청해야 하므로 작업 흐름이 뚝뚝 끊겼다.
+
+::: info 아쉬운 점
+코덱스로 이슈를 처리하다 보면 '이 정도는 알아서 해주었으면 좋겠는데...' 하는 답답한 마음이 들더라고요. 작업 도중 가볍게 질문을 던졌을 때 대답만 해두고 기존 작업을 멈춰버리니, 매번 다시 이어서 해달라고 직접 말해야 해서 번거로웠어요.
+:::
+
+## 미트 프록시
+
+모델 추론 능력이 높아져 응답 대기 시간이 길어지더라도, ==사람이 읽기 편한 직관적인 결과물이 보장되는 것은 아니다== . 길게 늘어진 설명을 줄여달라고 요청하면 필요한 맥락까지 삭제하는 극단적인 결과가 나오기도 한다.
+
+도구가 화면을 조작하고 개선안을 제시하더라도, 결과물을 비판적으로 검토하고 다듬는 주체는 결국 사람이어야 한다. 사람이 중심을 잡지 못하면 개발자는 AI 출력을 그대로 나르는 ==미트 프록시(Meat Proxy)== 로 전락하기 쉽다.
+
+모델 추론 성능이 아무리 좋아진다고 해도 LLM 고유의 특성을 벗어나진 못한다. 에이전트가 만들어내는 결과물을 늘 의심하고 비판적으로 검증해야 하는 것은 여전히 마찬가지다.

@@ -13,193 +13,190 @@ hero:
 import dayjs from 'dayjs';
 import { data as rawPosts } from '../.vitepress/theme/sleep.data.ts';
 
-// 데이터 안전성 검증 및 필터링
-const posts = (rawPosts || []).filter(item => item && item.date && !Number.isNaN(item.date.time));
-
-// 연도별 그룹화 직접 구현
-const postsByYear = posts.reduce((acc, item) => {
-  const year = dayjs(item.date.time).format('YYYY');
-  if (!acc[year]) {
-    acc[year] = [];
-  }
-  acc[year].push(item);
-  return acc;
-}, {});
-
-// 연도 역순 정렬
-const years = Object.keys(postsByYear).sort((a, b) => b - a);
+// 데이터 안전성 검증 및 최신순 정렬
+const posts = (rawPosts || [])
+  .filter(item => item && item.date && !Number.isNaN(item.date.time))
+  .sort((a, b) => b.date.time - a.date.time);
 </script>
 
-<div class="archive-container">
-  <div v-for="year in years" :key="year" class="year-section">
-    <h2 class="year-title">{{ year }}</h2>
-    <div class="posts-feed" role="feed" aria-busy="false">
-      <article v-for="post in postsByYear[year]" :key="post.url" class="post-card-wrapper">
-        <a :href="post.url" class="post-card" :aria-label="`${post.title} 포스트 읽기`">
-          <div class="post-card-meta">
-            <time :datetime="post.date.string" class="post-card-date">{{ post.date.string }}</time>
-            <div v-if="post.tags && post.tags.length" class="post-card-tags">
-              <span v-for="tag in post.tags.slice(0, 3)" :key="tag" class="post-card-tag">
-                #{{ tag }}
-              </span>
-            </div>
-          </div>
-          <h3 class="post-card-title">{{ post.title }}</h3>
-          <p v-if="post.description" class="post-card-description">{{ post.description }}</p>
-        </a>
-      </article>
-    </div>
+<div class="booklet-wrapper">
+  <div class="booklet-note">
+    삶을 지탱하는 주거와 금융, 그리고 일상에서 부딪히며 배운 소소한 경험들을 모아둔 작은 기록장입니다.
   </div>
+  <main class="booklet-stream">
+    <article v-for="post in posts" :key="post.url" class="booklet-entry">
+      <a :href="post.url" class="booklet-link">
+        <div class="booklet-meta">
+          <time :datetime="post.date.string" class="booklet-date">
+            {{ dayjs(post.date.time).format('YYYY년 M월 D일') }}
+          </time>
+          <div v-if="post.tags && post.tags.length" class="booklet-tags">
+            <span v-for="tag in post.tags" :key="tag" class="booklet-tag">
+              #{{ tag }}
+            </span>
+          </div>
+        </div>
+        <h2 class="booklet-title">{{ post.title }}</h2>
+        <p v-if="post.description" class="booklet-desc">
+          {{ post.description }}
+        </p>
+      </a>
+    </article>
+  </main>
 </div>
 
 <style>
-.archive-container {
-  max-width: 1152px;
+/* 
+  포근한 소책자 테마
+  - 거대한 랜딩 스타일을 걷어내고, 손에 쥐는 다이어리 같은 스케일과 온도를 부여
+*/
+.sleep-page {
+  --sleep-bg: #faf7f2;
+  --sleep-text: #2a241f;
+  --sleep-sub: #695e54;
+  --sleep-dim: #9e9386;
+  --sleep-line: #ebe3d6;
+  --sleep-accent: #b45309;
+}
+
+.dark .sleep-page {
+  --sleep-bg: #14161b;
+  --sleep-text: #eee8df;
+  --sleep-sub: #a19a8f;
+  --sleep-dim: #6b665d;
+  --sleep-line: #242730;
+  --sleep-accent: #fbbf24;
+}
+
+/* 페이지 전체 배경을 하나의 포근한 공간으로 일체화 */
+.sleep-page .VPHome {
+  background-color: var(--sleep-bg) !important;
+  min-height: 100vh;
+}
+
+.sleep-page .VPHome > .vp-doc {
+  max-width: none;
+  padding: 0;
+  background-color: var(--sleep-bg) !important;
+}
+
+/* 상단 히어로 스케일 축소 및 단정화 */
+.sleep-page .VPHero {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
+.sleep-page .VPHero .name {
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--sleep-text) !important;
+}
+
+.sleep-page .VPHero .tagline {
+  font-size: 1rem !important;
+  color: var(--sleep-sub) !important;
+  margin-top: 0.5rem !important;
+}
+
+.sleep-page .VPHero .image-src {
+  max-height: 160px !important;
+  border-radius: 20px;
+}
+
+/* 소책자 본문 컨테이너 (640px 안팎의 아늑한 독서 폭) */
+.booklet-wrapper {
+  max-width: 660px;
   margin: 0 auto;
-  padding: 0 1.5rem 5rem;
+  padding: 1rem 1.5rem 7rem;
 }
 
-@media (min-width: 640px) {
-  .archive-container {
-    padding: 0 48px 5rem;
-  }
+/* 소책자 프롤로그 한 줄 */
+.booklet-note {
+  font-size: 0.94rem;
+  color: var(--sleep-sub);
+  line-height: 1.7;
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--sleep-line);
+  letter-spacing: -0.015em;
 }
 
-@media (min-width: 960px) {
-  .archive-container {
-    padding: 0 64px 5rem;
-  }
-}
-
-.archive-container .year-section {
-  margin-top: 4.5rem;
-}
-
-.archive-container .year-section:first-child {
-  margin-top: 2.5rem;
-}
-
-.archive-container .year-title {
-  font-size: 2.2rem;
-  font-weight: 900;
-  color: var(--vp-c-text-1);
-  margin: 0 0 1.8rem 0;
-  border-top: none;
-  border-bottom: none;
-  text-decoration: none;
-  border-left: 6px solid var(--vp-c-brand-1);
-  padding: 0.1rem 0 0.1rem 1rem;
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.archive-container .posts-feed {
+/* 글 목록 */
+.booklet-stream {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 3.5rem;
 }
 
-.archive-container .post-card-wrapper {
-  width: 100%;
-}
-
-.vp-doc .archive-container .post-card {
+.booklet-entry {
   display: block;
-  padding: 1.75rem;
-  background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 16px;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid var(--sleep-line);
+}
+
+.booklet-entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.vp-doc .booklet-link {
+  display: block;
   text-decoration: none !important;
-  color: inherit;
-  transition: border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: inherit !important;
 }
 
-.vp-doc .archive-container .post-card:hover {
-  text-decoration: none !important;
-  border-color: var(--vp-c-brand-1);
-  background-color: var(--vp-c-bg-mute);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -8px rgba(0, 0, 0, 0.08);
-}
-
-.vp-doc .archive-container .post-card:focus-visible {
-  outline: 2px solid var(--vp-c-brand-1);
-  outline-offset: 2px;
-  border-radius: 16px;
-}
-
-.vp-doc .archive-container .post-card-title,
-.vp-doc .archive-container .post-card-description,
-.vp-doc .archive-container .post-card-date,
-.vp-doc .archive-container .post-card-tag {
-  text-decoration: none !important;
-}
-
-.archive-container .post-card-meta {
+.booklet-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.55rem;
 }
 
-.archive-container .post-card-date {
-  font-size: 0.8rem;
-  color: var(--vp-c-text-3);
+.booklet-date {
+  font-size: 0.84rem;
   font-weight: 600;
+  color: var(--sleep-accent);
   letter-spacing: -0.01em;
 }
 
-.archive-container .post-card-tags {
+.booklet-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-.archive-container .post-card-tag {
+.booklet-tag {
   font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--vp-c-text-3);
-  transition: color 0.2s ease;
+  color: var(--sleep-dim);
 }
 
-.vp-doc .archive-container .post-card:hover .post-card-tag {
-  color: var(--vp-c-brand-1);
+.vp-doc .booklet-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--sleep-text);
+  line-height: 1.45;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.7rem 0 !important;
+  border: none !important;
+  padding: 0 !important;
+  transition: color 0.15s ease;
 }
 
-.archive-container .post-card-title {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--vp-c-text-1);
-  margin: 0 0 0.6rem 0;
-  line-height: 1.4;
-  text-wrap: pretty;
-  transition: color 0.25s ease;
+.vp-doc .booklet-link:hover .booklet-title {
+  color: var(--sleep-accent);
 }
 
-.vp-doc .archive-container .post-card:hover .post-card-title {
-  color: var(--vp-c-brand-1);
-}
-
-.archive-container .post-card-description {
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+.booklet-desc {
+  font-size: 0.96rem;
+  color: var(--sleep-sub);
+  line-height: 1.7;
   margin: 0;
-  line-height: 1.6;
+  letter-spacing: -0.01em;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (max-width: 640px) {
-  .vp-doc .archive-container .post-card {
-    padding: 1.5rem;
-    border-radius: 12px;
-  }
 }
 </style>

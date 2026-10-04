@@ -66,10 +66,20 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   --posts-card-bg: var(--vp-c-bg-soft);
 }
 
+.posts-page .VPHome {
+  margin-bottom: 0 !important;
+}
+
 .posts-page .VPHome > .vp-doc {
   max-width: none;
   padding: 0;
   background: linear-gradient(var(--vp-c-bg), var(--posts-list-bg) 80px);
+}
+
+/* 하단 푸터(copyright) 영역 분리 */
+.posts-page .VPFooter {
+  background-color: var(--vp-c-bg) !important;
+  border-top: 1px solid var(--vp-c-divider) !important;
 }
 
 .posts-page .VPHero .image {
@@ -95,33 +105,33 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   }
 }
 
-.archive-container {
+.posts-page .archive-container {
   max-width: 1152px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem 5rem;
 }
 
 @media (min-width: 640px) {
-  .archive-container {
+  .posts-page .archive-container {
     padding: 2.5rem 48px 5rem;
   }
 }
 
 @media (min-width: 960px) {
-  .archive-container {
+  .posts-page .archive-container {
     padding: 2.5rem 64px 5rem;
   }
 }
 
-.archive-container .year-section {
+.posts-page .archive-container .year-section {
   margin-top: 4.5rem;
 }
 
-.archive-container .year-section:first-child {
+.posts-page .archive-container .year-section:first-child {
   margin-top: 0;
 }
 
-.vp-doc .archive-container .year-title {
+.posts-page .vp-doc .archive-container .year-title {
   font-size: 1.625rem;
   font-weight: 700;
   color: var(--vp-c-text-1);
@@ -134,17 +144,17 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   letter-spacing: -0.03em;
 }
 
-.archive-container .posts-feed {
+.posts-page .archive-container .posts-feed {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.archive-container .post-card-wrapper {
+.posts-page .archive-container .post-card-wrapper {
   width: 100%;
 }
 
-.vp-doc .archive-container .post-card {
+.posts-page .vp-doc .archive-container .post-card {
   position: relative;
   display: block;
   padding: 1.5rem 4rem 1.5rem 1.5rem;
@@ -155,24 +165,24 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   color: inherit;
 }
 
-.vp-doc .archive-container .post-card:hover {
+.posts-page .vp-doc .archive-container .post-card:hover {
   text-decoration: none !important;
 }
 
-.vp-doc .archive-container .post-card:focus-visible {
+.posts-page .vp-doc .archive-container .post-card:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
   border-radius: 12px;
 }
 
-.vp-doc .archive-container .post-card-title,
-.vp-doc .archive-container .post-card-description,
-.vp-doc .archive-container .post-card-date,
-.vp-doc .archive-container .post-card-tag {
+.posts-page .vp-doc .archive-container .post-card-title,
+.posts-page .vp-doc .archive-container .post-card-description,
+.posts-page .vp-doc .archive-container .post-card-date,
+.posts-page .vp-doc .archive-container .post-card-tag {
   text-decoration: none !important;
 }
 
-.archive-container .post-card-meta {
+.posts-page .archive-container .post-card-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -180,14 +190,14 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   margin-top: 1rem;
 }
 
-.archive-container .post-card-date {
+.posts-page .archive-container .post-card-date {
   font-size: 0.8rem;
   color: var(--vp-c-text-2);
   font-weight: 400;
   letter-spacing: -0.01em;
 }
 
-.archive-container .post-card-tags {
+.posts-page .archive-container .post-card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -195,13 +205,13 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   overflow-wrap: anywhere;
 }
 
-.archive-container .post-card-tag {
+.posts-page .archive-container .post-card-tag {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--vp-c-text-2);
 }
 
-.vp-doc .archive-container .post-card-title {
+.posts-page .vp-doc .archive-container .post-card-title {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--vp-c-text-1);
@@ -211,12 +221,12 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   transition: color 0.25s ease;
 }
 
-.vp-doc .archive-container .post-card:hover .post-card-title,
-.vp-doc .archive-container .post-card:focus-visible .post-card-title {
+.posts-page .vp-doc .archive-container .post-card:hover .post-card-title,
+.posts-page .vp-doc .archive-container .post-card:focus-visible .post-card-title {
   color: var(--vp-c-brand-1);
 }
 
-.archive-container .post-card-arrow {
+.posts-page .archive-container .post-card-arrow {
   position: absolute;
   right: 1.5rem;
   top: calc(50% - 10px);
@@ -226,20 +236,20 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.archive-container .post-card:hover .post-card-arrow,
-.archive-container .post-card:focus-visible .post-card-arrow {
+.posts-page .archive-container .post-card:hover .post-card-arrow,
+.posts-page .archive-container .post-card:focus-visible .post-card-arrow {
   opacity: 1;
   transform: none;
 }
 
 @media (hover: none) {
-  .archive-container .post-card-arrow {
+  .posts-page .archive-container .post-card-arrow {
     opacity: 1;
     transform: none;
   }
 }
 
-.vp-doc .archive-container .post-card-description {
+.posts-page .vp-doc .archive-container .post-card-description {
   font-size: 0.9rem;
   color: var(--vp-c-text-2);
   margin: 0.5rem 0 0;
@@ -258,22 +268,22 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
     padding-bottom: 32px;
   }
 
-  .archive-container {
+  .posts-page .archive-container {
     padding-top: 1.5rem;
   }
 
-  .vp-doc .archive-container .post-card {
+  .posts-page .vp-doc .archive-container .post-card {
     padding: 1.25rem 3.5rem 1.25rem 1.25rem;
   }
 
-  .archive-container .post-card-arrow {
+  .posts-page .archive-container .post-card-arrow {
     right: 1.25rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .archive-container .post-card-title,
-  .archive-container .post-card-arrow {
+  .posts-page .archive-container .post-card-title,
+  .posts-page .archive-container .post-card-arrow {
     transition: none;
   }
 }

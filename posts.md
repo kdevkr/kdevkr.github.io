@@ -36,6 +36,11 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
     <div class="posts-feed" role="feed" aria-busy="false">
       <article v-for="post in postsByYear[year]" :key="post.url" class="post-card-wrapper">
         <a :href="post.url" class="post-card" :aria-label="`${post.title} 포스트 읽기`">
+          <h3 class="post-card-title">{{ post.title }}</h3>
+          <svg class="post-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M5 12h14m-6-6 6 6-6 6" />
+          </svg>
+          <p v-if="post.description" class="post-card-description">{{ post.description }}</p>
           <div class="post-card-meta">
             <time :datetime="post.date.string" class="post-card-date">{{ post.date.string }}</time>
             <div v-if="post.tags && post.tags.length" class="post-card-tags">
@@ -44,8 +49,6 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
               </span>
             </div>
           </div>
-          <h3 class="post-card-title">{{ post.title }}</h3>
-          <p v-if="post.description" class="post-card-description">{{ post.description }}</p>
         </a>
       </article>
     </div>
@@ -53,21 +56,60 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 </div>
 
 <style>
+.posts-page {
+  --posts-list-bg: #f8f7fc;
+  --posts-card-bg: var(--vp-c-bg);
+}
+
+.dark .posts-page {
+  --posts-list-bg: #1c1b22;
+  --posts-card-bg: var(--vp-c-bg-soft);
+}
+
+.posts-page .VPHome > .vp-doc {
+  max-width: none;
+  padding: 0;
+  background: linear-gradient(var(--vp-c-bg), var(--posts-list-bg) 80px);
+}
+
+.posts-page .VPHero .image {
+  inset: var(--vp-nav-height) 0 0;
+  height: auto;
+  min-height: 0;
+}
+
+.posts-page .VPHero .image-src {
+  right: max(24px, calc((100% - 1024px) / 2));
+  height: calc(100% - 24px);
+}
+
+@media (min-width: 960px) {
+  .posts-page .VPHero .container {
+    padding-right: 360px;
+  }
+}
+
+@media (max-width: 959px) {
+  .posts-page .VPHero .image-src {
+    right: 50%;
+  }
+}
+
 .archive-container {
   max-width: 1152px;
   margin: 0 auto;
-  padding: 0 1.5rem 5rem;
+  padding: 2.5rem 1.5rem 5rem;
 }
 
 @media (min-width: 640px) {
   .archive-container {
-    padding: 0 48px 5rem;
+    padding: 2.5rem 48px 5rem;
   }
 }
 
 @media (min-width: 960px) {
   .archive-container {
-    padding: 0 64px 5rem;
+    padding: 2.5rem 64px 5rem;
   }
 }
 
@@ -76,19 +118,18 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 }
 
 .archive-container .year-section:first-child {
-  margin-top: 2.5rem;
+  margin-top: 0;
 }
 
-.archive-container .year-title {
-  font-size: 2.2rem;
-  font-weight: 900;
+.vp-doc .archive-container .year-title {
+  font-size: 1.625rem;
+  font-weight: 700;
   color: var(--vp-c-text-1);
-  margin: 0 0 1.8rem 0;
+  margin: 0 0 1.25rem !important;
   border-top: none;
   border-bottom: none;
   text-decoration: none;
-  border-left: 6px solid var(--vp-c-brand-1);
-  padding: 0.1rem 0 0.1rem 1rem;
+  padding: 0;
   line-height: 1;
   letter-spacing: -0.03em;
 }
@@ -96,7 +137,7 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 .archive-container .posts-feed {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .archive-container .post-card-wrapper {
@@ -104,31 +145,24 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 }
 
 .vp-doc .archive-container .post-card {
+  position: relative;
   display: block;
-  padding: 1.75rem;
-  background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 16px;
+  padding: 1.5rem 4rem 1.5rem 1.5rem;
+  background-color: var(--posts-card-bg);
+  border: 0;
+  border-radius: 12px;
   text-decoration: none !important;
   color: inherit;
-  transition: border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
-              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .vp-doc .archive-container .post-card:hover {
   text-decoration: none !important;
-  border-color: var(--vp-c-brand-1);
-  background-color: var(--vp-c-bg-mute);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -8px rgba(0, 0, 0, 0.08);
 }
 
 .vp-doc .archive-container .post-card:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .vp-doc .archive-container .post-card-title,
@@ -142,14 +176,14 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.5rem 1.25rem;
+  margin-top: 1rem;
 }
 
 .archive-container .post-card-date {
   font-size: 0.8rem;
-  color: var(--vp-c-text-3);
-  font-weight: 600;
+  color: var(--vp-c-text-2);
+  font-weight: 400;
   letter-spacing: -0.01em;
 }
 
@@ -157,37 +191,58 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .archive-container .post-card-tag {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--vp-c-text-3);
-  transition: color 0.2s ease;
+  color: var(--vp-c-text-2);
 }
 
-.vp-doc .archive-container .post-card:hover .post-card-tag {
-  color: var(--vp-c-brand-1);
-}
-
-.archive-container .post-card-title {
+.vp-doc .archive-container .post-card-title {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--vp-c-text-1);
-  margin: 0 0 0.6rem 0;
+  margin: 0 !important;
   line-height: 1.4;
   text-wrap: pretty;
   transition: color 0.25s ease;
 }
 
-.vp-doc .archive-container .post-card:hover .post-card-title {
+.vp-doc .archive-container .post-card:hover .post-card-title,
+.vp-doc .archive-container .post-card:focus-visible .post-card-title {
   color: var(--vp-c-brand-1);
 }
 
-.archive-container .post-card-description {
+.archive-container .post-card-arrow {
+  position: absolute;
+  right: 1.5rem;
+  top: calc(50% - 10px);
+  color: var(--vp-c-brand-1);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.archive-container .post-card:hover .post-card-arrow,
+.archive-container .post-card:focus-visible .post-card-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none) {
+  .archive-container .post-card-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.vp-doc .archive-container .post-card-description {
   font-size: 0.9rem;
   color: var(--vp-c-text-2);
-  margin: 0;
+  margin: 0.5rem 0 0;
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -196,10 +251,30 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   text-overflow: ellipsis;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 639px) {
+  .posts-page .VPHero {
+    min-height: 280px;
+    padding-top: calc(var(--vp-nav-height) + 32px);
+    padding-bottom: 32px;
+  }
+
+  .archive-container {
+    padding-top: 1.5rem;
+  }
+
   .vp-doc .archive-container .post-card {
-    padding: 1.5rem;
-    border-radius: 12px;
+    padding: 1.25rem 3.5rem 1.25rem 1.25rem;
+  }
+
+  .archive-container .post-card-arrow {
+    right: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-container .post-card-title,
+  .archive-container .post-card-arrow {
+    transition: none;
   }
 }
 </style>

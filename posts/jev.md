@@ -1,9 +1,10 @@
 ---
 title: Jev
-date: 2026-10-04T14:00+09:00
-description: 텍스트 생성을 배제하고 사전 정의된 선택지 중 확률 기반으로 결과를 빠르게 결정하는 TypeSafe AI의 비생성형 모델 Jev를 살펴봅니다.
+date: 2026-10-06T07:00+09:00
+description: 정해진 선택지 중 답을 빠르게 고르는 비생성형 모델 Jev를 살펴봅니다.
 tags:
-    - Jev
+  - Jev
+  - AI
 ---
 
 # Jev
@@ -43,6 +44,7 @@ Jev를 실제로 사용해 보았다는 글조차도 AI 문체를 벗어나긴 �
 - [200배 빠르다는 Jev AI, 진짜 차별점은 무엇일까](https://yozm.wishket.com/magazine/detail/3962/)
 - [초당 10번 판정하는 AI 'Jev'를 한국어 서비스에 붙이는 가장 빠른 길](https://llm-router.cafe24.com/blog/jev-system-one-solar-mini4-llm-router)
 - [Jev를 써보며, AI는 답변보다 판단에 가까워질 수 있겠다고 생각했다](https://mun-jeong-min.github.io/personal-blog/posts/jev-system-one-models.html)
+- [돌 섞인 쌀, 조리질로 돌 고르기: Jev와 LLM 위키](https://alfadur7.github.io/llm-wiki-newsroom/ko/scooping-stones/)
 
 작성자가 AI 문체를 크게 신경 쓰지 않았거나 단순히 Jev로 판단만 거쳤을 뿐이므로, Jev의 검사를 통과했다고 해서 AI 티를 완전히 벗어났다는 보장은 되지 못한다는 점을 보여준다.
 

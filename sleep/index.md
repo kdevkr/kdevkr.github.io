@@ -5,6 +5,7 @@ pageClass: sleep-page
 ---
 
 <script setup>
+import { computed, ref } from 'vue';
 import dayjs from 'dayjs';
 import { data as rawPosts } from '../.vitepress/theme/sleep.data.ts';
 
@@ -23,18 +24,20 @@ const postsByYear = posts.reduce((acc, item) => {
 
 // 연도 역순 정렬
 const years = Object.keys(postsByYear).sort((a, b) => b - a);
+const selectedYear = ref('');
+const filteredYears = computed(() => years.filter(year => !selectedYear.value || year === selectedYear.value));
 </script>
 
+<div class="sleep-layout">
 <div class="editorial-hero-backdrop">
   <div class="editorial-hero-container">
     <header class="editorial-hero-card">
+      <div class="editorial-hero-badge">
+        <span class="badge-icon" aria-hidden="true">📖</span>
+        <span class="badge-text">일상 기록장</span>
+      </div>
       <div class="editorial-hero-content">
-        <div class="editorial-hero-badge">
-          <span class="badge-icon" aria-hidden="true">📖</span>
-          <span class="badge-text">일상 기록장</span>
-        </div>
         <p class="editorial-hero-tagline">포근한 이불 속에서 끄적여보는 나른한 일상 이야기 💤</p>
-        <p class="editorial-hero-desc">기술 포스트에 담기엔 사소한 일상 이야기들을 모아둡니다.</p>
       </div>
       <div class="editorial-hero-media">
         <img src="/images/logo/sleep.jpg" alt="Sleep 잠만보 카드" class="editorial-hero-img" />
@@ -44,8 +47,20 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 </div>
 
 <div class="archive-container">
-  <div v-for="year in years" :key="year" class="year-section">
-    <h2 class="year-title">{{ year }}</h2>
+  <div class="year-filter">
+    <h2 v-if="filteredYears.length" class="year-title">{{ filteredYears[0] }}</h2>
+    <div class="year-select">
+      <select id="sleep-year" v-model="selectedYear" aria-label="포스트 연도">
+        <option value="">전체 연도</option>
+        <option v-for="year in years" :key="year" :value="year">{{ year }}년</option>
+      </select>
+      <svg class="year-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </div>
+  </div>
+  <div v-for="year in filteredYears" :key="year" class="year-section">
+    <h2 v-if="year !== filteredYears[0]" class="year-title">{{ year }}</h2>
     <div class="posts-feed" role="feed" aria-busy="false">
       <article v-for="post in postsByYear[year]" :key="post.url" class="post-card-wrapper">
         <a :href="post.url" class="post-card" :aria-label="`${post.title} 포스트 읽기`">
@@ -66,6 +81,8 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
       </article>
     </div>
   </div>
+</div>
+
 </div>
 
 <style>
@@ -143,10 +160,11 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   box-shadow: 
     0 20px 40px -15px rgba(217, 119, 6, 0.08),
     0 4px 12px rgba(0, 0, 0, 0.02);
-  display: flex;
+  display: grid;
+  grid-template-areas: "badge media" "content media";
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 2.5rem;
+  gap: 0.85rem 2.5rem;
   position: relative;
 }
 
@@ -160,35 +178,36 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 }
 
 .editorial-hero-content {
+  grid-area: content;
   flex: 1;
   min-width: 0;
 }
 
 /* 뱃지 형태의 메인 타이틀 */
 .editorial-hero-badge {
+  grid-area: badge;
+  justify-self: start;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.22);
-  color: #b45309;
-  padding: 0.32rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.92rem;
+  gap: 0.625rem;
+  color: var(--vp-c-text-1);
+  padding: 0;
+  font-size: 1.125rem;
   font-weight: 700;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0;
   line-height: 1.4;
   letter-spacing: -0.015em;
 }
 
-.dark .editorial-hero-badge {
-  background: rgba(251, 191, 36, 0.14);
-  border: 1px solid rgba(251, 191, 36, 0.28);
-  color: #fbbf24;
-}
-
-.badge-icon {
-  font-size: 0.95rem;
+.editorial-hero-badge .badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background-color: var(--vp-c-bg-soft);
+  font-size: 1rem;
 }
 
 /* 서브 태그라인 */
@@ -202,18 +221,11 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   word-break: keep-all;
 }
 
-/* 설명문 */
-.editorial-hero-desc {
-  font-size: 0.95rem;
-  color: var(--vp-c-text-2);
-  line-height: 1.75;
-  margin: 0;
-  letter-spacing: -0.01em;
-  word-break: keep-all;
-}
-
 /* 잠만보 카드 자체 단독 배치 */
 .editorial-hero-media {
+  grid-area: media;
+  min-width: 0;
+  max-width: 100%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -222,7 +234,8 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 
 .editorial-hero-img {
   display: block;
-  width: 145px;
+  width: 220px;
+  max-width: 100%;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.22);
@@ -242,20 +255,113 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
 }
 
 @media (min-width: 960px) {
-  .sleep-page .archive-container {
-    padding: 2.5rem 64px 5rem;
+  .sleep-page .sleep-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: 2rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 48px 5rem;
+  }
+
+  .sleep-page .sleep-layout .editorial-hero-backdrop {
+    min-width: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .sleep-page .sleep-layout .editorial-hero-card {
+    grid-template-areas: "badge" "media" "content";
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 2rem;
+  }
+
+  .sleep-page .sleep-layout .editorial-hero-media {
+    align-self: center;
+  }
+
+  .sleep-page .sleep-layout .editorial-hero-badge {
+    justify-self: center;
+  }
+
+  .sleep-page .sleep-layout .archive-container {
+    min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 }
 
-.sleep-page .archive-container .year-section {
+.sleep-page .archive-container .year-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  color: var(--vp-c-text-1);
+}
+
+.sleep-page .vp-doc .archive-container .year-filter .year-title {
+  margin: 0 !important;
+}
+
+.sleep-page .archive-container .year-select {
+  position: relative;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--vp-c-text-2);
+}
+
+.sleep-page .archive-container .year-filter select {
+  appearance: none;
+  min-height: 44px;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background-color: var(--posts-card-bg);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sleep-page .archive-container .year-filter select:hover,
+.sleep-page .archive-container .year-filter select:focus-visible {
+  border-color: var(--vp-c-text-2);
+}
+
+.sleep-page .archive-container .year-filter option {
+  background-color: var(--posts-card-bg);
+  color: var(--vp-c-text-1);
+}
+
+.sleep-page .archive-container .year-select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 0.875rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.sleep-page .archive-container .year-filter select:focus-visible {
+  outline: 2px solid var(--vp-c-text-2);
+  outline-offset: 2px;
+}
+
+.sleep-page .archive-container .year-section + .year-section {
   margin-top: 4.5rem;
 }
 
-.sleep-page .archive-container .year-section:first-child {
-  margin-top: 0;
-}
-
 .sleep-page .vp-doc .archive-container .year-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
   font-size: 1.625rem;
   font-weight: 700;
   color: var(--vp-c-text-1);
@@ -266,6 +372,17 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   padding: 0;
   line-height: 1;
   letter-spacing: -0.03em;
+}
+
+.sleep-page .vp-doc .archive-container .year-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border: 1.5px solid var(--vp-c-text-2);
+  background-color: var(--vp-c-text-2);
+  border-radius: 50%;
 }
 
 .sleep-page .archive-container .posts-feed {
@@ -390,13 +507,18 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
     padding: 2rem 1rem 1.5rem;
   }
   .editorial-hero-card {
-    flex-direction: column-reverse;
+    grid-template-areas: "badge" "media" "content";
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
     padding: 2rem 1.5rem;
     gap: 1.75rem;
     text-align: center;
   }
   .editorial-hero-img {
-    width: 125px;
+    width: 220px;
+  }
+  .editorial-hero-badge {
+    justify-self: center;
   }
   .sleep-page .archive-container {
     padding-top: 1.5rem;

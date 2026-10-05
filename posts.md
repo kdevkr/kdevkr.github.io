@@ -10,6 +10,7 @@ hero:
 ---
 
 <script setup>
+import { computed, ref } from 'vue';
 import dayjs from 'dayjs';
 import { data as rawPosts } from './.vitepress/theme/posts.data.ts';
 
@@ -28,11 +29,25 @@ const postsByYear = posts.reduce((acc, item) => {
 
 // 연도 역순 정렬
 const years = Object.keys(postsByYear).sort((a, b) => b - a);
+const selectedYear = ref('');
+const filteredYears = computed(() => years.filter(year => !selectedYear.value || year === selectedYear.value));
 </script>
 
 <div class="archive-container">
-  <div v-for="year in years" :key="year" class="year-section">
-    <h2 class="year-title">{{ year }}</h2>
+  <div class="year-filter">
+    <h2 v-if="filteredYears.length" class="year-title">{{ filteredYears[0] }}</h2>
+    <div class="year-select">
+      <select v-model="selectedYear" aria-label="포스트 연도">
+        <option value="">전체 연도</option>
+        <option v-for="year in years" :key="year" :value="year">{{ year }}년</option>
+      </select>
+      <svg class="year-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </div>
+  </div>
+  <div v-for="year in filteredYears" :key="year" class="year-section">
+    <h2 v-if="year !== filteredYears[0]" class="year-title">{{ year }}</h2>
     <div class="posts-feed" role="feed" aria-busy="false">
       <article v-for="post in postsByYear[year]" :key="post.url" class="post-card-wrapper">
         <a :href="post.url" class="post-card" :aria-label="`${post.title} 포스트 읽기`">
@@ -123,12 +138,59 @@ const years = Object.keys(postsByYear).sort((a, b) => b - a);
   }
 }
 
-.posts-page .archive-container .year-section {
+.posts-page .archive-container .year-section + .year-section {
   margin-top: 4.5rem;
 }
 
-.posts-page .archive-container .year-section:first-child {
-  margin-top: 0;
+.posts-page .archive-container .year-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.posts-page .vp-doc .archive-container .year-filter .year-title {
+  margin: 0 !important;
+}
+
+.posts-page .archive-container .year-select {
+  position: relative;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--vp-c-text-2);
+}
+
+.posts-page .archive-container .year-select select {
+  appearance: none;
+  min-height: 44px;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background-color: var(--posts-card-bg);
+  color: var(--vp-c-text-1);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.posts-page .archive-container .year-select select:hover,
+.posts-page .archive-container .year-select select:focus-visible {
+  border-color: var(--vp-c-text-2);
+}
+
+.posts-page .archive-container .year-select select:focus-visible {
+  outline: 2px solid var(--vp-c-text-2);
+  outline-offset: 2px;
+}
+
+.posts-page .archive-container .year-select-arrow {
+  position: absolute;
+  top: 50%;
+  right: 0.875rem;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .posts-page .vp-doc .archive-container .year-title {

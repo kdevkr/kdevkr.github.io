@@ -133,6 +133,7 @@ const top5 = posts.slice(0, 5)
 
 .home-page .recent-posts-header {
   display: flex;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
@@ -140,18 +141,21 @@ const top5 = posts.slice(0, 5)
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
-.home-page .section-title {
+.home-page .vp-doc .recent-posts-header .section-title {
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--vp-c-text-1);
-  margin: 0;
+  margin: 0 !important;
   border: none;
   padding: 0;
   letter-spacing: -0.025em;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .home-page .all-posts-link {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--vp-c-brand-1);

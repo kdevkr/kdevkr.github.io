@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 176" width="100%" height="100%">
+  <defs>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 1 2 L 7 5 L 1 8 z" fill="#94a3b8" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 1 2 L 7 5 L 1 8 z" fill="#0284c7" />
+    </marker>
+  </defs>
+
+  <style>
+    :root {
+      --bg-canvas: #ffffff;
+      --border-canvas: #e2e8f0;
+      --divider: #f1f5f9;
+
+      --node-bg: #f8fafc;
+      --node-border: #cbd5e1;
+      --node-text: #334155;
+
+      --model-llm-bg: #f1f5f9;
+      --model-llm-border: #94a3b8;
+      --model-llm-text: #0f172a;
+
+      --model-jev-bg: #0284c7;
+      --model-jev-border: #0369a1;
+      --model-jev-text: #ffffff;
+
+      --time-slow: #dc2626;
+      --time-fast: #059669;
+
+      --output-jev-bg: #f0fdf4;
+      --output-jev-border: #86efac;
+      --output-jev-text: #166534;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-canvas: #0f172a;
+        --border-canvas: #1e293b;
+        --divider: #1e293b;
+
+        --node-bg: #1e293b;
+        --node-border: #334155;
+        --node-text: #cbd5e1;
+
+        --model-llm-bg: #334155;
+        --model-llm-border: #475569;
+        --model-llm-text: #f8fafc;
+
+        --model-jev-bg: #0284c7;
+        --model-jev-border: #38bdf8;
+        --model-jev-text: #ffffff;
+
+        --time-slow: #f87171;
+        --time-fast: #4ade80;
+
+        --output-jev-bg: #064e3b33;
+        --output-jev-border: #059669;
+        --output-jev-text: #86efac;
+      }
+    }
+
+    text {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, -apple-system, sans-serif;
+    }
+    .label-ko {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Pretendard", sans-serif;
+      font-size: 11px;
+    }
+  </style>
+
+  <!-- Frame Background -->
+  <rect width="680" height="176" rx="10" fill="var(--bg-canvas)" stroke="var(--border-canvas)" stroke-width="1.2" />
+
+  <!-- ================= TOP: LLM FLOW ================= -->
+  <g transform="translate(24, 22)">
+    <!-- Input: Prompt -->
+    <rect x="0" y="6" width="140" height="42" rx="6" fill="var(--node-bg)" stroke="var(--node-border)" stroke-width="1" />
+    <text x="70" y="32" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--node-text)">Prompt</text>
+
+    <!-- Arrow 1 -> 2 -->
+    <path d="M 144 27 L 180 27" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow-gray)" />
+
+    <!-- Model: LLM -->
+    <rect x="188" y="6" width="124" height="42" rx="6" fill="var(--model-llm-bg)" stroke="var(--model-llm-border)" stroke-width="1.2" />
+    <text x="250" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="var(--model-llm-text)">LLM</text>
+
+    <!-- Arrow 2 -> 3 -->
+    <path d="M 316 27 L 352 27" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow-gray)" />
+
+    <!-- Output: Long Text -->
+    <rect x="360" y="6" width="272" height="42" rx="6" fill="var(--node-bg)" stroke="var(--node-border)" stroke-width="1" />
+    <text x="376" y="32" font-size="12" fill="var(--node-text)">Long Text</text>
+    <text x="618" y="32" text-anchor="end" font-size="11.5" font-weight="700" fill="var(--time-slow)">~2.5s</text>
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="24" y1="88" x2="656" y2="88" stroke="var(--divider)" stroke-width="1" />
+
+  <!-- ================= BOTTOM: JEV FLOW ================= -->
+  <g transform="translate(24, 102)">
+    <!-- Input: Prompt + Options -->
+    <rect x="0" y="6" width="140" height="42" rx="6" fill="var(--node-bg)" stroke="var(--node-border)" stroke-width="1" />
+    <text x="70" y="32" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--node-text)">Prompt + Options</text>
+
+    <!-- Arrow 1 -> 2 -->
+    <path d="M 144 27 L 180 27" stroke="#0284c7" stroke-width="1.4" marker-end="url(#arrow-blue)" />
+
+    <!-- Model: Jev -->
+    <rect x="188" y="6" width="124" height="42" rx="6" fill="var(--model-jev-bg)" stroke="var(--model-jev-border)" stroke-width="1.2" />
+    <text x="250" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="var(--model-jev-text)">Jev</text>
+
+    <!-- Arrow 2 -> 3 -->
+    <path d="M 316 27 L 352 27" stroke="#0284c7" stroke-width="1.4" marker-end="url(#arrow-blue)" />
+
+    <!-- Output: JSON -->
+    <rect x="360" y="6" width="272" height="42" rx="6" fill="var(--output-jev-bg)" stroke="var(--output-jev-border)" stroke-width="1.2" />
+    <text x="376" y="32" font-size="11.5" font-weight="600" fill="var(--output-jev-text)">{"choice":"A", "prob":0.94}</text>
+    <text x="618" y="32" text-anchor="end" font-size="11.5" font-weight="700" fill="var(--time-fast)">~0.05s</text>
+  </g>
+</svg>

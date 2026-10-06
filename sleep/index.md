@@ -169,7 +169,7 @@ const filteredYears = computed(() => years.filter(year => !selectedYear.value ||
 }
 
 .dark .editorial-hero-card {
-  background: rgba(19, 27, 42, 0.78);
+  background: var(--vp-c-bg-soft);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: none !important;

@@ -4,6 +4,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import PostDate from './components/PostDate.vue'
 import SidebarFilter from './components/SidebarFilter.vue'
+import SidebarToggle from './components/SidebarToggle.vue'
 import 'virtual:group-icons.css'
 import './tailwind.css'; // Import your Tailwind CSS file
 import './style.css'
@@ -31,6 +32,7 @@ export default {
   extends: DefaultTheme,
   Layout: () => {
     return h(DefaultTheme.Layout, null, {
+      'nav-bar-title-after': () => h(SidebarToggle),
       'sidebar-nav-before': () => h(SidebarFilter),
       'doc-before': () => h(PostDate)
     })

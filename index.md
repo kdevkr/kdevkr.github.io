@@ -92,12 +92,6 @@ const top5 = posts.slice(0, 5)
   background-color: var(--posts-card-bg);
   border: 0;
   border-radius: 16px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.home-page .VPHomeFeatures .VPFeature:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.08);
 }
 
 /* 최근 포스트 영역 */

@@ -156,13 +156,16 @@
 
 mark {
   background-color: transparent;
-  background-image: linear-gradient(transparent 70%,#faede0 70%)
+  background-image: linear-gradient(transparent 65%, #faede0 65%);
 }
 
 .dark {
   mark {
-    color: var(--vp-c-text-1);
-    background-image: linear-gradient(transparent 70%,#4c423a 70%)
+    background: transparent !important;
+    background-image: none !important;
+    color: #e2a558 !important;
+    font-weight: 600;
+    padding: 0;
   }
 }
 
@@ -541,4 +544,52 @@ mark {
   font-weight: 600 !important;
   line-height: 1.45 !important;
   color: var(--vp-c-text-2) !important;
+}
+
+/* ==========================================================================
+   Desktop Sidebar Collapse
+   ========================================================================== */
+@media (min-width: 960px) {
+  .VPNavBarTitle {
+    display: flex;
+    align-items: center;
+  }
+
+  .VPSidebar {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, visibility 0.25s !important;
+  }
+
+  .VPContent.has-sidebar {
+    transition: padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .VPNavBar.has-sidebar .content {
+    transition: padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  html.sidebar-collapsed {
+    --vp-sidebar-width: 0px !important;
+  }
+
+  html.sidebar-collapsed .VPSidebar {
+    transform: translateX(-100%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  html.sidebar-collapsed .VPContent.has-sidebar {
+    padding-left: 0 !important;
+  }
+
+  /* 접혔을 때 네비바 본문은 타이틀과 토글 버튼 공간(190px)을 남겨두고 부드럽게 이동 */
+  html.sidebar-collapsed .VPNavBar.has-sidebar .content {
+    padding-left: 190px !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  html.sidebar-collapsed .VPNavBar.has-sidebar .content {
+    padding-left: calc((100% - var(--vp-layout-max-width)) / 2 + 190px) !important;
+  }
 }

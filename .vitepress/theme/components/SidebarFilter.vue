@@ -1,23 +1,33 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vitepress'
-import { data as posts } from '../posts.data'
+import { data as blogPosts } from '../posts.data'
+import { data as sleepPosts } from '../sleep.data'
 
 const route = useRoute()
 const selectedYear = ref<number | null>(null)
 const open = ref(false)
 const rootEl = ref<HTMLElement | null>(null)
 
+const isSleep = computed(() => route.path.startsWith('/sleep'))
+const currentPosts = computed(() => (isSleep.value ? sleepPosts : blogPosts))
+
 const years = computed(() => {
-  const yearSet = new Set(posts.map(p => new Date(p.date.time).getFullYear()))
+  const yearSet = new Set(
+    currentPosts.value
+      .map(p => new Date(p.date.time).getFullYear())
+      .filter(y => !Number.isNaN(y))
+  )
   return Array.from(yearSet).sort((a, b) => b - a)
 })
 
 const countByYear = computed(() => {
   const map = new Map<number, number>()
-  posts.forEach(p => {
+  currentPosts.value.forEach(p => {
     const y = new Date(p.date.time).getFullYear()
-    map.set(y, (map.get(y) ?? 0) + 1)
+    if (!Number.isNaN(y)) {
+      map.set(y, (map.get(y) ?? 0) + 1)
+    }
   })
   return map
 })
@@ -57,7 +67,7 @@ function applyFilter() {
     return
   }
 
-  const toHide = posts.filter(p => new Date(p.date.time).getFullYear() !== year)
+  const toHide = currentPosts.value.filter(p => new Date(p.date.time).getFullYear() !== year)
   const hideSelectors = toHide.flatMap(p => {
     const base = p.url.replace(/\/+$/, '')
     return [
@@ -73,6 +83,10 @@ function applyFilter() {
       : []),
   ].join('\n')
 }
+
+watch(isSleep, () => {
+  selectedYear.value = null
+})
 
 watch(selectedYear, () => nextTick(applyFilter))
 watch(() => route.path, () => nextTick(applyFilter))
@@ -93,7 +107,7 @@ onMounted(() => nextTick(applyFilter))
         <li>
           <button class="sf-option" :class="{ selected: selectedYear === null }" @click="select(null)">
             <span>전체 연도</span>
-            <span class="sf-badge">{{ posts.length }}</span>
+            <span class="sf-badge">{{ currentPosts.length }}</span>
           </button>
         </li>
         <li v-for="year in years" :key="year">

@@ -62,11 +62,10 @@ VitePress 기반의 한국어 기술 블로그("Mambo Blog" / `kdevkr.github.io`
 모든 글은 [.claude/skills/blog-writer/resources/style-guide.md](.claude/skills/blog-writer/resources/style-guide.md)의 규칙을 따릅니다. 자명하지 않거나 핵심이 되는 부분은 다음과 같습니다.
 
 - **Frontmatter**: `title`, `date`는 `YYYY-MM-DD'T'HH:00+09:00` 형식 (정시 단위, 분 단위는 `00` 고정, KST 오프셋 필수), `tags` 2–4개. 이 날짜 포맷은 `posts.data.ts`와 사이드바 정렬의 기준이므로 어기면 정렬이 깨집니다.
-- **빈 글로 시작**: 새 포스트를 작성할 때는 항상 Frontmatter와 단일 `# 제목`만 포함된 비어 있는 상태의 마크다운 파일을 먼저 생성하여 시작합니다.
-- **H1**: VitePress가 frontmatter title을 자동 렌더링하더라도, 모든 글은 frontmatter 바로 아래에 정확히 하나의 `# 제목`을 둡니다.
-- **이미지**: [public/images/posts/{slug}/](public/images/posts/) 아래에 0으로 채운 `001.png`, `002.png`, … 형식으로 저장합니다. `/images/posts/{slug}/NNN.png` 형태로 참조합니다(`public/` 접두어 없음, `file:///` 경로 금지).
-- **어조**: 글의 성격과 맥락에 맞춰 격식체(한다체), 합쇼체(~합니다), 해요체(~해요)를 유연하게 사용합니다. 군더더기 없이 간결하게 작성합니다.
-- **글 커밋 메시지**: `post: [포스트 제목]` (예: `4e760fd67d`, `91a0eea421` 커밋 참고).
+- **빈 글로 시작**: 새 포스트를 작성할 때는 항상 Frontmatter와 단일 `# {{ $frontmatter.title }}`만 포함된 비어 있는 상태의 마크다운 파일을 먼저 생성하여 시작합니다.
+- **H1**: 모든 글은 Frontmatter 바로 아래에 정확히 하나의 `# {{ $frontmatter.title }}`을 두어 메타데이터 title과 화면 표시를 연동합니다.
+- **이미지 및 도식화**: [public/images/posts/{slug}/](public/images/posts/) 아래에 0으로 채운 `001.png`, `002.png`, … 형식으로 저장하고 `/images/posts/{slug}/NNN.png` 형태로 참조합니다(`public/` 접두어 없음, `file:///` 경로 금지). 포스트 내 `mermaid` 블록 사용은 금지되어 있으므로 도식화는 SVG·이미지 파일로 생성해 연결합니다.
+- **문체 및 커밋**: 문체·윤문 규칙은 [.claude/rules/writing.md](.claude/rules/writing.md), 커밋 메시지(`post: [포스트 제목]`)는 [.claude/rules/git.md](.claude/rules/git.md)를 따릅니다.
 
 ## 배포
 

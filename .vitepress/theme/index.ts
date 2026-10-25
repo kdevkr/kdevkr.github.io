@@ -5,6 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import PostDate from './components/PostDate.vue'
 import SidebarFilter from './components/SidebarFilter.vue'
 import SidebarToggle from './components/SidebarToggle.vue'
+import { initImageZoom } from './imageZoom'
 import 'virtual:group-icons.css'
 import './tailwind.css'; // Import your Tailwind CSS file
 import './style.css'
@@ -40,6 +41,7 @@ export default {
   enhanceApp({ router }) {
     if (globalThis.window !== undefined) {
       router.onAfterRouteChange = updateActiveSidebarItem
+      initImageZoom()
 
       // 서드파티 스크립트 (AdSense, Analytics) 지연 로딩
       const initThirdParty = () => {

@@ -28,7 +28,7 @@
     "photoswipe": "^5.4.4",
     "vitepress-plugin-group-icons": "^1.7.5",
     "vitepress-sidebar": "^1.36.1",
-    "vue": "^3.5.39"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@mdit/plugin-mark": "^2.0.0",
@@ -36,14 +36,17 @@
     "@types/node": "^26.1.1",
     "@vite-pwa/vitepress": "^1.1.0",
     "sass": "^1.101.0",
-    "sharp": "^0.35.3",
-    "svgo": "^4.0.2",
+    "sharp": "^0.35.5",
+    "svgo": "^4.1.0",
     "tailwindcss": "^4.3.2",
     "typescript": "^7.0.2",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vitepress": "2.0.0-alpha.18"
   },
   "pnpm": {
+    "overrides": {
+      "vite@<8.1.6": "8.1.6"
+    },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@tailwindcss/oxide",

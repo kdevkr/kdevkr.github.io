@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .bg-border { fill: none; stroke: #30363d; stroke-width: 1.2; }
+      .header-title { fill: #f0f6fc; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 17px; font-weight: 700; }
+      .header-desc { fill: #8b949e; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12.5px; font-weight: 400; }
+      .tag-text { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
+      .col-title { fill: #f0f6fc; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 15px; font-weight: 700; }
+      .col-sub { fill: #8b949e; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; font-weight: 400; }
+      .box-title { fill: #e6edf3; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 12.5px; font-weight: 700; }
+      .box-pkg { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 600; }
+      .box-desc { fill: #8b949e; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11px; font-weight: 400; }
+      .flow-label { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; }
+    </style>
+
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6e7681" />
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399" />
+    </marker>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="880" height="420" rx="14" class="bg" />
+  <rect x="1" y="1" width="878" height="418" rx="13" class="bg-border" />
+
+  <!-- Header -->
+  <text x="32" y="38" class="header-title">타입스크립트 기반 독립 MCP 서버 아키텍처</text>
+  <text x="32" y="58" class="header-desc">기존 스프링 부트 백엔드와 분리된 실행 환경 및 주요 기술 스택</text>
+
+  <!-- ========================================== -->
+  <!-- 1. Left Column: MCP Client                 -->
+  <!-- ========================================== -->
+  <g transform="translate(32, 84)">
+    <rect width="176" height="304" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="176" height="4" rx="2" fill="#38bdf8" />
+
+    <rect x="16" y="18" width="58" height="20" rx="4" fill="#38bdf8" fill-opacity="0.15" />
+    <text x="45" y="32" text-anchor="middle" class="tag-text" fill="#38bdf8">CLIENT</text>
+
+    <text x="16" y="60" class="col-title">MCP 클라이언트</text>
+    <text x="16" y="80" class="col-sub">AI Host &amp; Inspector</text>
+
+    <!-- Sub-card 1 -->
+    <rect x="16" y="102" width="144" height="82" rx="7" fill="#0d1117" stroke="#21262d" />
+    <text x="88" y="130" text-anchor="middle" class="box-title">Claude / AI Host</text>
+    <text x="88" y="152" text-anchor="middle" class="box-pkg" fill="#38bdf8">Streamable HTTP</text>
+    <text x="88" y="172" text-anchor="middle" class="box-desc">도구 호출 · 질의</text>
+
+    <!-- Sub-card 2 -->
+    <rect x="16" y="200" width="144" height="82" rx="7" fill="#0d1117" stroke="#21262d" />
+    <text x="88" y="228" text-anchor="middle" class="box-title">MCP Inspector</text>
+    <text x="88" y="250" text-anchor="middle" class="box-pkg" fill="#38bdf8">localhost:3000/mcp</text>
+    <text x="88" y="270" text-anchor="middle" class="box-desc">로컬 검증 · 디버깅</text>
+  </g>
+
+  <!-- Flow Arrows: Client <-> MCP Server -->
+  <g>
+    <line x1="214" y1="215" x2="268" y2="215" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arr-blue)" />
+    <text x="242" y="205" text-anchor="middle" class="flow-label" fill="#38bdf8">HTTP</text>
+
+    <line x1="270" y1="255" x2="216" y2="255" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-gray)" />
+    <text x="242" y="272" text-anchor="middle" class="flow-label" fill="#8b949e">JSON-RPC</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 2. Center Column: sample-mcp               -->
+  <!-- ========================================== -->
+  <g transform="translate(276, 84)">
+    <rect width="348" height="304" rx="10" fill="#161b22" stroke="#6366f1" stroke-width="1.5" />
+    <rect width="348" height="4" rx="2" fill="#818cf8" />
+
+    <rect x="18" y="18" width="142" height="20" rx="4" fill="#6366f1" fill-opacity="0.18" />
+    <text x="89" y="32" text-anchor="middle" class="tag-text" fill="#a5b4fc">NODE 24 · TYPESCRIPT</text>
+
+    <text x="18" y="60" class="col-title">독립 MCP 서버 (sample-mcp)</text>
+    <text x="18" y="80" class="col-sub">별도 프로세스 · AWS Lambda 배포 호환</text>
+
+    <!-- Grid (1,1): Web & Serverless -->
+    <g transform="translate(18, 102)">
+      <rect width="150" height="82" rx="7" fill="#0d1117" stroke="#30363d" />
+      <text x="75" y="26" text-anchor="middle" class="box-title">웹 프레임워크</text>
+      <text x="75" y="48" text-anchor="middle" class="box-pkg" fill="#a5b4fc">hono · aws-lambda</text>
+      <text x="75" y="68" text-anchor="middle" class="box-desc">라우팅 · 서버리스 어댑터</text>
+    </g>
+
+    <!-- Grid (1,2): MCP & Schema -->
+    <g transform="translate(180, 102)">
+      <rect width="150" height="82" rx="7" fill="#0d1117" stroke="#30363d" />
+      <text x="75" y="26" text-anchor="middle" class="box-title">MCP · 스키마</text>
+      <text x="75" y="48" text-anchor="middle" class="box-pkg" fill="#93c5fd">mcp/server · zod</text>
+      <text x="75" y="68" text-anchor="middle" class="box-desc">도구 등록 · 파라미터 검증</text>
+    </g>
+
+    <!-- Grid (2,1): Auth -->
+    <g transform="translate(18, 200)">
+      <rect width="150" height="82" rx="7" fill="#0d1117" stroke="#30363d" />
+      <text x="75" y="26" text-anchor="middle" class="box-title">인증 · 토큰</text>
+      <text x="75" y="48" text-anchor="middle" class="box-pkg" fill="#c4b5fd">oidc-provider · jose</text>
+      <text x="75" y="68" text-anchor="middle" class="box-desc">OAuth 인가 · JWT 서명</text>
+    </g>
+
+    <!-- Grid (2,2): Dev & Test -->
+    <g transform="translate(180, 200)">
+      <rect width="150" height="82" rx="7" fill="#0d1117" stroke="#30363d" />
+      <text x="75" y="26" text-anchor="middle" class="box-title">품질 · 테스트</text>
+      <text x="75" y="48" text-anchor="middle" class="box-pkg" fill="#fbbf24">biome · vitest · k6</text>
+      <text x="75" y="68" text-anchor="middle" class="box-desc">린트 · 단위 · 부하 테스트</text>
+    </g>
+  </g>
+
+  <!-- Flow Arrows: MCP Server -> Storage/Infra -->
+  <g>
+    <path d="M 624 236 L 650 236 L 650 130 L 672 130" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arr-green)" />
+    <path d="M 624 236 L 672 236" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arr-green)" />
+    <path d="M 650 236 L 650 342 L 672 342" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arr-green)" />
+  </g>
+
+  <!-- ========================================== -->
+  <!-- 3. Right Column: External Storage & AWS    -->
+  <!-- ========================================== -->
+  <!-- Card 1: PostgreSQL / RDS -->
+  <g transform="translate(680, 84)">
+    <rect width="168" height="92" rx="8" fill="#161b22" stroke="#238636" stroke-width="1.2" />
+    <text x="84" y="28" text-anchor="middle" class="box-title">PostgreSQL (RDS)</text>
+    <text x="84" y="50" text-anchor="middle" class="box-pkg" fill="#34d399">pg · jkdb · rds-signer</text>
+    <text x="84" y="72" text-anchor="middle" class="box-desc">데이터 조회 · IAM 인증</text>
+  </g>
+
+  <!-- Card 2: Redis -->
+  <g transform="translate(680, 190)">
+    <rect width="168" height="92" rx="8" fill="#161b22" stroke="#238636" stroke-width="1.2" />
+    <text x="84" y="28" text-anchor="middle" class="box-title">Redis</text>
+    <text x="84" y="50" text-anchor="middle" class="box-pkg" fill="#34d399">redis (^6.3.0)</text>
+    <text x="84" y="72" text-anchor="middle" class="box-desc">인증 세션 · 상태 캐시</text>
+  </g>
+
+  <!-- Card 3: Amazon S3 -->
+  <g transform="translate(680, 296)">
+    <rect width="168" height="92" rx="8" fill="#161b22" stroke="#238636" stroke-width="1.2" />
+    <text x="84" y="28" text-anchor="middle" class="box-title">Amazon S3</text>
+    <text x="84" y="50" text-anchor="middle" class="box-pkg" fill="#34d399">@aws-sdk/client-s3</text>
+    <text x="84" y="72" text-anchor="middle" class="box-desc">리포트 · 파일 스토리지</text>
+  </g>
+</svg>

@@ -12,3 +12,5 @@ CLAUDE.local.md
 
 # playwright-cli
 .playwright-cli/
+# Private security investigation records
+/archive/security/

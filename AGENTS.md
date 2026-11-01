@@ -50,7 +50,7 @@ VitePress 기반의 한국어 기술 블로그("Mambo Blog" / `kdevkr.github.io`
 - `PostDate`는 `doc-before` 슬롯에 주입되어 frontmatter의 날짜를 렌더링합니다 ([PostDate.vue](.vitepress/theme/components/PostDate.vue)).
 - 기본 `VPDocFooter.vue`는 Vite alias로 커스텀 [DocFooter.vue](.vitepress/theme/components/DocFooter.vue)로 교체됩니다. 푸터 디버깅 시 VitePress 원본 컴포넌트가 가려져 있다는 점에 유의하세요.
 - `enhanceApp`은 `router.onAfterRouteChange` 훅을 패치해 활성 사이드바 항목을 화면에 보이게 스크롤합니다. 기본 테마의 CSS 클래스(`.VPSidebarItem`, `.VPLink`)에 의존합니다.
-- 스타일링 스택: Tailwind CSS v4 (`@tailwindcss/vite` 경유), SCSS(modern-compiler API). 폰트는 [font.css](.vitepress/theme/font.css)에서 Pretendard(`@fontsource/pretendard`)와 JetBrains Mono · Noto Sans Mono(`@fontsource-variable/*` 가변 폰트)를 로드합니다.
+- 스타일링 스택: Tailwind CSS v4 (`@tailwindcss/vite` 경유), CSS. 폰트는 [font.css](.vitepress/theme/font.css)에서 Pretendard(`@fontsource/pretendard`)와 JetBrains Mono · Noto Sans Mono(`@fontsource-variable/*` 가변 폰트)를 로드합니다.
 
 ### 마크다운 확장
 

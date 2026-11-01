@@ -11,7 +11,6 @@ hero:
 
 <script setup>
 import { computed, ref } from 'vue';
-import dayjs from 'dayjs';
 import { data as rawPosts } from './.vitepress/theme/posts.data.ts';
 
 // 데이터 안전성 검증 및 필터링 (반드시 date와 date.time이 유효한 객체만 수집)
@@ -19,7 +18,7 @@ const posts = (rawPosts || []).filter(item => item && item.date && !Number.isNaN
 
 // 연도별 그룹화 직접 구현
 const postsByYear = posts.reduce((acc, item) => {
-  const year = dayjs(item.date.time).format('YYYY');
+  const year = String(new Date(item.date.time).getFullYear());
   if (!acc[year]) {
     acc[year] = [];
   }

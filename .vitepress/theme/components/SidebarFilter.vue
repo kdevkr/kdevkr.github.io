@@ -51,8 +51,42 @@ onUnmounted(() => document.removeEventListener('click', onOutsideClick))
 // --- 필터링 ---
 const STYLE_ID = 'vp-sidebar-filter-style'
 
+function normalizeHref(path: string) {
+  return path.replace(/\/$/, '').replace(/\.html$/, '') || '/'
+}
+
+function syncSidebarDataYears() {
+  const urlToYearMap = new Map<string, string>()
+  currentPosts.value.forEach(p => {
+    const normalized = normalizeHref(p.url)
+    const y = new Date(p.date.time).getFullYear()
+    if (!Number.isNaN(y)) {
+      urlToYearMap.set(normalized, String(y))
+    }
+  })
+
+  const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>('.VPSidebar .VPSidebarItem a')
+  sidebarLinks.forEach(link => {
+    const href = normalizeHref(link.getAttribute('href') ?? '')
+    const year = urlToYearMap.get(href)
+    const itemEl = link.closest('.VPSidebarItem') as HTMLElement | null
+    if (itemEl) {
+      if (year) {
+        if (itemEl.dataset.postYear !== year) {
+          itemEl.dataset.postYear = year
+        }
+      } else if (itemEl.dataset.postYear) {
+        delete itemEl.dataset.postYear
+      }
+    }
+  })
+}
+
 function applyFilter() {
   if (typeof document === 'undefined') return
+
+  const sidebarEl = document.querySelector('.VPSidebar') as HTMLElement | null
+  syncSidebarDataYears()
 
   let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null
   if (!styleEl) {
@@ -63,24 +97,15 @@ function applyFilter() {
 
   const year = selectedYear.value
   if (year === null) {
+    if (sidebarEl) sidebarEl.removeAttribute('data-filter-year')
     styleEl.textContent = ''
     return
   }
 
-  const toHide = currentPosts.value.filter(p => new Date(p.date.time).getFullYear() !== year)
-  const hideSelectors = toHide.flatMap(p => {
-    const base = p.url.replace(/\/+$/, '')
-    return [
-      `.VPSidebarItem:has(> .item > a.link[href="${base}"])`,
-      `.VPSidebarItem:has(> .item > a.link[href="${base}/"])`,
-    ]
-  })
-
+  if (sidebarEl) sidebarEl.dataset.filterYear = String(year)
   styleEl.textContent = [
     `.VPSidebarItem.collapsed > .items { display: block !important; }`,
-    ...(hideSelectors.length
-      ? [`${hideSelectors.join(', ')} { display: none !important; }`]
-      : []),
+    `.VPSidebar[data-filter-year] .VPSidebarItem[data-post-year]:not([data-post-year="${year}"]) { display: none !important; }`
   ].join('\n')
 }
 
@@ -90,7 +115,12 @@ watch(isSleep, () => {
 
 watch(selectedYear, () => nextTick(applyFilter))
 watch(() => route.path, () => nextTick(applyFilter))
-onMounted(() => nextTick(applyFilter))
+onMounted(() => {
+  nextTick(() => {
+    applyFilter()
+    setTimeout(applyFilter, 50)
+  })
+})
 </script>
 
 <template>

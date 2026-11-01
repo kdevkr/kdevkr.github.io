@@ -77,13 +77,6 @@ const vitePressOptions: UserConfig = {
     server: {
       allowedHosts: ['.ts.net'],
     },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                api: "modern-compiler",
-            },
-        },
-    },
     plugins: [
       tailwindcss(),
       groupIconVitePlugin(),

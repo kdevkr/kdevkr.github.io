@@ -1,0 +1,10 @@
+# pnpm audit 무시 설정 및 사유 기록
+auditConfig:
+  ignoreGhsas:
+    # [vitepress-sidebar > glob] AbortSignal 취소 우회 취약점
+    # 제외 사유: SSG 정적 사이트 로컬 파일(posts/*.md) 스캔 용도로만 실행되며, 외부 사용자 입력 주입 경로가 없어 공격 불가능
+    - GHSA-3g3m-2fjr-6pw4
+
+    # [vitepress-sidebar > glob > minimatch] ReDoS(서비스 거부) 취약점
+    # 제외 사유: 빌드 타임 로컬 고정 패턴 매칭에만 사용되며, 비신뢰 입력이 유입되지 않아 DoS 영향 없음
+    - GHSA-g3hv-75wg-m249

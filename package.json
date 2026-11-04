@@ -21,22 +21,22 @@
   },
   "homepage": "https://kdev.ing",
   "dependencies": {
-    "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "@fontsource-variable/noto-sans-mono": "^5.2.10",
-    "@fontsource/pretendard": "^5.2.5",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/noto-sans-mono": "^5.3.0",
+    "@fontsource/pretendard": "^5.3.0",
     "photoswipe": "^5.4.4",
-    "vitepress-plugin-group-icons": "^1.7.5",
-    "vitepress-sidebar": "^1.36.1",
+    "vitepress-plugin-group-icons": "^1.8.1",
+    "vitepress-sidebar": "^1.41.0",
     "vue": "^3.5.42"
   },
   "devDependencies": {
-    "@mdit/plugin-mark": "^2.0.0",
-    "@tailwindcss/vite": "^4.3.2",
-    "@types/node": "^26.1.1",
-    "@vite-pwa/vitepress": "^1.1.0",
+    "@mdit/plugin-mark": "^2.1.4",
+    "@tailwindcss/vite": "^4.3.4",
+    "@types/node": "^26.6.6",
+    "@vite-pwa/vitepress": "^2.0.1",
     "sharp": "^0.35.5",
     "svgo": "^4.1.0",
-    "tailwindcss": "^4.3.2",
+    "tailwindcss": "^4.3.4",
     "typescript": "^7.0.2",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vitepress": "2.0.0-alpha.18"
@@ -50,9 +50,6 @@
       "@parcel/watcher",
       "@tailwindcss/oxide",
       "esbuild"
-    ],
-    "patchedDependencies": {
-      "deepmerge@4.3.1": "patches/deepmerge@4.3.1.patch"
-    }
+    ]
   }
 }

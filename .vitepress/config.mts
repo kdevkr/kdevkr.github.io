@@ -231,7 +231,6 @@ const vitePressSideBarOptions = [
     // sidebar options for posts
     documentRootPath: '/',
     collapsed: true,
-    rootGroupLink: '/',
     capitalizeFirst: true,
 
     scanStartPath: 'posts',
@@ -247,7 +246,6 @@ const vitePressSideBarOptions = [
     // sidebar options for sleep
     documentRootPath: '/',
     collapsed: true,
-    rootGroupLink: '/',
     capitalizeFirst: true,
 
     scanStartPath: 'sleep',

@@ -8,3 +8,7 @@ auditConfig:
     # [vitepress-sidebar > glob > minimatch] ReDoS(서비스 거부) 취약점
     # 제외 사유: 빌드 타임 로컬 고정 패턴 매칭에만 사용되며, 비신뢰 입력이 유입되지 않아 DoS 영향 없음
     - GHSA-g3hv-75wg-m249
+
+    # [workbox-build > @rollup/plugin-node-resolve > deepmerge] prototype pollution 취약점
+    # 제외 사유: patches/deepmerge@4.3.1.patch 로컬 패치 적용 및 SSG 빌드 타임 한정 실행
+    - GHSA-gcqx-w48m-w2h4

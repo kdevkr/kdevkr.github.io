@@ -32,8 +32,10 @@
   "devDependencies": {
     "@mdit/plugin-mark": "^2.1.4",
     "@tailwindcss/vite": "^4.3.4",
+    "@types/markdown-it-footnote": "^3.0.4",
     "@types/node": "^26.6.6",
     "@vite-pwa/vitepress": "^2.0.1",
+    "markdown-it-footnote": "^4.0.0",
     "sharp": "^0.35.5",
     "svgo": "^4.1.0",
     "tailwindcss": "^4.3.4",

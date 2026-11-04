@@ -5,6 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
+import footnote from 'markdown-it-footnote';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons'
 
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
@@ -139,6 +140,16 @@ const vitePressOptions: UserConfig = {
     footer: {
       message: 'Released under the MIT License.',
       copyright: 'Copyright © 2017-present Mambo'
+    },
+
+    giscus: {
+      repo: 'kdevkr/kdevkr.github.io',
+      repoId: 'MDEwOlJlcG9zaXRvcnkxNTQxNjA4OTA=',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOCTBO-s4CYmQM',
+      mapping: 'pathname',
+      inputPosition: 'bottom',
+      lang: 'ko'
     }
     
   },
@@ -148,6 +159,7 @@ const vitePressOptions: UserConfig = {
   markdown: {
     config: (md) => {
       md.use(mark)
+      md.use(footnote)
       md.use(groupIconMdPlugin)
     },
     languageAlias: {

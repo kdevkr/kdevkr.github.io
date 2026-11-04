@@ -1,5 +1,6 @@
 <template>
   <footer class="VPDocFooter" v-if="isPostPage">
+    <GiscusComment />
     <div class="pager">
       <div class="pager-link prev" v-if="prev">
         <a :href="prev.url" class="pager-card">
@@ -38,6 +39,7 @@
 import { computed } from 'vue'
 import { useData } from 'vitepress'
 import { data as posts } from '../posts.data.ts'
+import GiscusComment from './GiscusComment.vue'
 
 const { page } = useData()
 

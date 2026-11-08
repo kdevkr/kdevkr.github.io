@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .bg-border { fill: none; stroke: #30363d; stroke-width: 1.2; }
+      .header-title { fill: #f0f6fc; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 17px; font-weight: 700; }
+      .header-desc { fill: #8b949e; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12.5px; font-weight: 400; }
+      .tag-text { font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
+      .col-title { fill: #f0f6fc; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 13.5px; font-weight: 700; }
+      .col-sub { fill: #8b949e; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11px; font-weight: 400; }
+      .box-title { fill: #e6edf3; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 11.5px; font-weight: 700; }
+      .box-desc { fill: #8b949e; font-family: 'Pretendard', -apple-system, sans-serif; font-size: 10.5px; font-weight: 400; }
+      .badge-pass { fill: #34d399; font-family: 'Pretendard', sans-serif; font-size: 10px; font-weight: 700; }
+      .badge-block { fill: #f87171; font-family: 'Pretendard', sans-serif; font-size: 10px; font-weight: 700; }
+    </style>
+
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6e7681" />
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34d399" />
+    </marker>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="960" height="440" rx="14" class="bg" />
+  <rect x="1" y="1" width="958" height="438" rx="13" class="bg-border" />
+
+  <!-- Header -->
+  <text x="28" y="38" class="header-title">무단 가입 방지를 위한 다계층 회원가입 검증 파이프라인</text>
+  <text x="28" y="58" class="header-desc">봇 차단과 속도 제한부터 이메일 도메인 분석, VoIP 가상 번호 차단, SMS 인증까지의 단계별 방어 전략</text>
+
+  <!-- Step 1: User Request -->
+  <g transform="translate(28, 86)">
+    <rect width="144" height="314" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="144" height="4" rx="2" fill="#38bdf8" />
+    <rect x="10" y="16" width="54" height="20" rx="4" fill="#38bdf8" fill-opacity="0.15" />
+    <text x="37" y="30" text-anchor="middle" class="tag-text" fill="#38bdf8">CLIENT</text>
+
+    <text x="10" y="56" class="col-title">가입 요청</text>
+    <text x="10" y="74" class="col-sub">회원 정보 입력</text>
+
+    <rect x="10" y="96" width="124" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="118" class="box-title">이메일 주소</text>
+    <text x="18" y="136" class="box-desc">user@domain.com</text>
+
+    <rect x="10" y="172" width="124" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="194" class="box-title">전화번호</text>
+    <text x="18" y="212" class="box-desc">+82 10-XXXX-XXXX</text>
+
+    <rect x="10" y="248" width="124" height="50" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="270" class="box-title">요청 클라이언트</text>
+    <text x="18" y="286" class="box-desc">IP, 브라우저 환경</text>
+  </g>
+
+  <!-- Flow Arrow 1 -->
+  <line x1="172" y1="243" x2="196" y2="243" stroke="#6e7681" stroke-width="1.5" marker-end="url(#arr-gray)" />
+
+  <!-- Step 2: Bot & Rate Limit Inspection -->
+  <g transform="translate(196, 86)">
+    <rect width="168" height="314" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="168" height="4" rx="2" fill="#f43f5e" />
+    <rect x="10" y="16" width="70" height="20" rx="4" fill="#f43f5e" fill-opacity="0.15" />
+    <text x="45" y="30" text-anchor="middle" class="tag-text" fill="#f43f5e">BOT / IP 검증</text>
+
+    <text x="10" y="56" class="col-title">봇 탐지 &amp; 속도 제한</text>
+    <text x="10" y="74" class="col-sub">자동화 스크립트 차단</text>
+
+    <rect x="10" y="96" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="118" class="box-title">스마트 캡차 검증</text>
+    <text x="18" y="134" class="box-desc">Turnstile / trycap.dev</text>
+    <text x="18" y="148" class="box-desc">백그라운드 봇 판별</text>
+
+    <rect x="10" y="172" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="194" class="box-title">동일 IP Rate Limit</text>
+    <text x="18" y="210" class="box-desc">단시간 연속 요청 제한</text>
+    <text x="18" y="224" class="box-desc">SMS Toll Fraud 방어</text>
+
+    <rect x="10" y="248" width="148" height="50" rx="6" fill="#7f1d1d" fill-opacity="0.2" stroke="#f87171" stroke-width="1" />
+    <text x="18" y="268" class="badge-block">봇 또는 빈도 초과 시</text>
+    <text x="18" y="284" class="box-desc" fill="#fca5a5">429 / 403 즉시 차단</text>
+  </g>
+
+  <!-- Flow Arrow 2 -->
+  <line x1="364" y1="243" x2="388" y2="243" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+  <!-- Step 3: Email Inspection -->
+  <g transform="translate(388, 86)">
+    <rect width="168" height="314" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="168" height="4" rx="2" fill="#fbbf24" />
+    <rect x="10" y="16" width="66" height="20" rx="4" fill="#fbbf24" fill-opacity="0.15" />
+    <text x="43" y="30" text-anchor="middle" class="tag-text" fill="#fbbf24">도메인 검증</text>
+
+    <text x="10" y="56" class="col-title">이메일 도메인 분석</text>
+    <text x="10" y="74" class="col-sub">일회용 임시 메일 차단</text>
+
+    <rect x="10" y="96" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="118" class="box-title">도메인 신뢰도 / MX</text>
+    <text x="18" y="134" class="box-desc">메이저 허용 도메인 관리</text>
+    <text x="18" y="148" class="box-desc">MX 레코드 유효성 검사</text>
+
+    <rect x="10" y="172" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="194" class="box-title">Kickbox API 판별</text>
+    <text x="18" y="210" class="box-desc">Disposable 여부 조회</text>
+    <text x="18" y="224" class="box-desc">블랙리스트 DB 캐시</text>
+
+    <rect x="10" y="248" width="148" height="50" rx="6" fill="#7f1d1d" fill-opacity="0.2" stroke="#f87171" stroke-width="1" />
+    <text x="18" y="268" class="badge-block">임시 메일 감지 시</text>
+    <text x="18" y="284" class="box-desc" fill="#fca5a5">400 오류 (가입 거부)</text>
+  </g>
+
+  <!-- Flow Arrow 3 -->
+  <line x1="556" y1="243" x2="580" y2="243" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+  <!-- Step 4: Phone / VoIP Inspection -->
+  <g transform="translate(580, 86)">
+    <rect width="168" height="314" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="168" height="4" rx="2" fill="#a78bfa" />
+    <rect x="10" y="16" width="60" height="20" rx="4" fill="#a78bfa" fill-opacity="0.15" />
+    <text x="40" y="30" text-anchor="middle" class="tag-text" fill="#a78bfa">회선 검증</text>
+
+    <text x="10" y="56" class="col-title">전화번호 회선 분석</text>
+    <text x="10" y="74" class="col-sub">가상 번호 (VoIP) 차단</text>
+
+    <rect x="10" y="96" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="118" class="box-title">Twilio Lookup API</text>
+    <text x="18" y="134" class="box-desc">Line Type Intelligence</text>
+    <text x="18" y="148" class="box-desc">통신사 및 회선 유형 확인</text>
+
+    <rect x="10" y="172" width="148" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="194" class="box-title">Mobile 회선 필터</text>
+    <text x="18" y="210" class="box-desc">실제 스마트폰만 허용</text>
+    <text x="18" y="224" class="box-desc">VoIP / 유선 전화 거부</text>
+
+    <rect x="10" y="248" width="148" height="50" rx="6" fill="#7f1d1d" fill-opacity="0.2" stroke="#f87171" stroke-width="1" />
+    <text x="18" y="268" class="badge-block">VoIP 가상 번호 감지 시</text>
+    <text x="18" y="284" class="box-desc" fill="#fca5a5">SMS 발송 중단 및 차단</text>
+  </g>
+
+  <!-- Flow Arrow 4 -->
+  <line x1="748" y1="243" x2="772" y2="243" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-green)" />
+
+  <!-- Step 5: Final Verification & Approval -->
+  <g transform="translate(772, 86)">
+    <rect width="160" height="314" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <rect width="160" height="4" rx="2" fill="#34d399" />
+    <rect x="10" y="16" width="60" height="20" rx="4" fill="#34d399" fill-opacity="0.15" />
+    <text x="40" y="30" text-anchor="middle" class="tag-text" fill="#34d399">최종 승인</text>
+
+    <text x="10" y="56" class="col-title">인증 &amp; 권한 승인</text>
+    <text x="10" y="74" class="col-sub">실소유자 확인 및 제한</text>
+
+    <rect x="10" y="96" width="140" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="118" class="box-title">Twilio Verify (SMS)</text>
+    <text x="18" y="134" class="box-desc">검증된 번호로 OTP 발송</text>
+    <text x="18" y="148" class="box-desc">비용 낭비 방지</text>
+
+    <rect x="10" y="172" width="140" height="66" rx="6" fill="#0d1117" stroke="#21262d" />
+    <text x="18" y="194" class="box-title">수동 승인 (선택/권장)</text>
+    <text x="18" y="210" class="box-desc">PENDING_APPROVAL 대기</text>
+    <text x="18" y="224" class="box-desc">관리자 검토 후 권한 부여</text>
+
+    <rect x="10" y="248" width="140" height="50" rx="6" fill="#064e3b" fill-opacity="0.25" stroke="#34d399" stroke-width="1" />
+    <text x="18" y="268" class="badge-pass">최종 가입 완료</text>
+    <text x="18" y="284" class="box-desc" fill="#a7f3d0">검증된 계정 활성화</text>
+  </g>
+</svg>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vitepress'
+import { useLayout } from 'vitepress/theme'
 import { data as blogPosts } from '../posts.data'
 import { data as sleepPosts } from '../sleep.data'
 
 const route = useRoute()
+const { sidebarGroups } = useLayout()
 const selectedYear = ref<number | null>(null)
 const open = ref(false)
 const rootEl = ref<HTMLElement | null>(null)
@@ -113,8 +115,13 @@ watch(isSleep, () => {
   selectedYear.value = null
 })
 
-watch(selectedYear, () => nextTick(applyFilter))
-watch(() => route.path, () => nextTick(applyFilter))
+watch(
+  [selectedYear, () => route.path, currentPosts, sidebarGroups],
+  () => {
+    nextTick(() => nextTick(applyFilter))
+  },
+  { flush: 'post', deep: true }
+)
 onMounted(() => {
   nextTick(() => {
     applyFilter()

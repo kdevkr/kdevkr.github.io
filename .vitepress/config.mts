@@ -1,5 +1,5 @@
-import { defineConfig, type UserConfig } from 'vitepress'
-import { withSidebar } from 'vitepress-sidebar';
+import { defineConfig, type Plugin, type UserConfig } from 'vitepress'
+import { withSidebar, generateSidebar } from 'vitepress-sidebar';
 import { withPwa } from '@vite-pwa/vitepress';
 import { fileURLToPath, URL } from 'node:url'
 
@@ -87,6 +87,7 @@ const vitePressOptions: UserConfig = {
         webp: { quality: 75 },
         avif: { quality: 70 },
       }),
+      sidebarHmrPlugin(),
     ],
     resolve: {
       alias: [
@@ -224,6 +225,74 @@ const vitePressOptions: UserConfig = {
       ['meta', { name: 'twitter:image', content: image }],
     ]
   },
+}
+
+function sidebarHmrPlugin(): Plugin {
+  let siteConfig: any
+  let lastSidebarJson = ''
+
+  const normalizeFsPath = (filePath: string) =>
+    filePath
+      .replace(/\\/g, '/')
+      .replace(/^[A-Z]:/, (drive) => drive.toLowerCase())
+      .replace(/\/+$/, '')
+
+  return {
+    name: 'kdev:sidebar-hmr',
+    apply: 'serve',
+    configResolved(config) {
+      siteConfig = (config as any).vitepress
+      lastSidebarJson = JSON.stringify(siteConfig?.site?.themeConfig?.sidebar ?? {})
+    },
+    configureServer(server) {
+      const rootDir = normalizeFsPath(siteConfig?.srcDir ?? process.cwd())
+
+      const isTargetMarkdown = (file: string) => {
+        const normalized = normalizeFsPath(file)
+        if (!normalized.endsWith('.md')) return false
+        return (
+          normalized.startsWith(`${rootDir}/posts/`) ||
+          normalized.startsWith(`${rootDir}/sleep/`)
+        )
+      }
+
+      const updateSidebar = (file: string) => {
+        if (!isTargetMarkdown(file)) return
+
+        try {
+          const newSidebar = generateSidebar(vitePressSideBarOptions)
+          const nextSidebarJson = JSON.stringify(newSidebar)
+          if (nextSidebarJson === lastSidebarJson) return
+
+          lastSidebarJson = nextSidebarJson
+          if (siteConfig?.site?.themeConfig) {
+            siteConfig.site.themeConfig.sidebar = newSidebar
+          }
+
+          const clientModuleGraph =
+            server.environments?.client?.moduleGraph ?? server.moduleGraph
+          const siteDataMod = clientModuleGraph.getModuleById('/@siteData')
+          if (siteDataMod) {
+            clientModuleGraph.invalidateModule(siteDataMod)
+          }
+
+          server.ws.send({
+            type: 'custom',
+            event: 'vitepress:sidebar-update',
+            data: newSidebar,
+          })
+        } catch (err) {
+          server.config.logger.warn(
+            `[kdev:sidebar-hmr] 사이드바 갱신 실패: ${err instanceof Error ? err.message : String(err)}`
+          )
+        }
+      }
+
+      server.watcher.on('add', updateSidebar)
+      server.watcher.on('change', updateSidebar)
+      server.watcher.on('unlink', updateSidebar)
+    },
+  }
 }
 
 const vitePressSideBarOptions = [

@@ -1,7 +1,8 @@
+/// <reference types="vitepress/client" />
 // https://vitepress.dev/guide/custom-theme
 import { h, nextTick } from 'vue'
 import type { Theme } from 'vitepress'
-import DefaultTheme from 'vitepress/theme'
+import DefaultTheme, { type DefaultTheme as VPDefaultTheme } from 'vitepress/theme'
 import PostDate from './components/PostDate.vue'
 import SidebarFilter from './components/SidebarFilter.vue'
 import SidebarToggle from './components/SidebarToggle.vue'
@@ -17,15 +18,17 @@ function normalizePath(path: string) {
 
 function updateActiveSidebarItem(href: string) {
   nextTick(() => {
-    const currentPath = normalizePath(href)
-    document.querySelector('.VPSidebarItem.is-active')?.classList.remove('is-active')
-    for (const link of document.querySelectorAll<HTMLAnchorElement>('.VPSidebarItem a.VPLink')) {
-      if (normalizePath(link.getAttribute('href') ?? '') === currentPath) {
-        link.closest('.VPSidebarItem')?.classList.add('is-active')
-        link.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-        break
+    nextTick(() => {
+      const currentPath = normalizePath(href)
+      document.querySelector('.VPSidebarItem.is-active')?.classList.remove('is-active')
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('.VPSidebarItem a.VPLink')) {
+        if (normalizePath(link.getAttribute('href') ?? '') === currentPath) {
+          link.closest('.VPSidebarItem')?.classList.add('is-active')
+          link.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+          break
+        }
       }
-    }
+    })
   })
 }
 
@@ -38,10 +41,24 @@ export default {
       'doc-before': () => h(PostDate)
     })
   },
-  enhanceApp({ router }) {
+  enhanceApp({ router, siteData }) {
     if (globalThis.window !== undefined) {
       router.onAfterRouteChange = updateActiveSidebarItem
+      updateActiveSidebarItem(router.route.path)
       initImageZoom()
+
+      if (import.meta.hot) {
+        import.meta.hot.on('vitepress:sidebar-update', (sidebar: VPDefaultTheme.Sidebar) => {
+          siteData.value = {
+            ...siteData.value,
+            themeConfig: {
+              ...siteData.value.themeConfig,
+              sidebar,
+            },
+          }
+          updateActiveSidebarItem(router.route.path)
+        })
+      }
 
       // 서드파티 스크립트 (AdSense, Analytics) 지연 로딩
       const initThirdParty = () => {

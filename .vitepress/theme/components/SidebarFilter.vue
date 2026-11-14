@@ -53,33 +53,47 @@ onUnmounted(() => document.removeEventListener('click', onOutsideClick))
 // --- 필터링 ---
 const STYLE_ID = 'vp-sidebar-filter-style'
 
+const kstDateFormatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' })
+
 function normalizeHref(path: string) {
   return path.replace(/\/$/, '').replace(/\.html$/, '') || '/'
 }
 
-function syncSidebarDataYears() {
-  const urlToYearMap = new Map<string, string>()
+function syncSidebarPostMeta() {
+  const todayKey = kstDateFormatter.format(Date.now())
+  const postMetaByUrl = new Map<string, { year: string; isNew: boolean }>()
+
   currentPosts.value.forEach(p => {
     const normalized = normalizeHref(p.url)
-    const y = new Date(p.date.time).getFullYear()
-    if (!Number.isNaN(y)) {
-      urlToYearMap.set(normalized, String(y))
-    }
+    const time = p.date.time
+    if (Number.isNaN(time)) return
+    postMetaByUrl.set(normalized, {
+      year: String(new Date(time).getFullYear()),
+      isNew: kstDateFormatter.format(time) === todayKey,
+    })
   })
 
   const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>('.VPSidebar .VPSidebarItem a')
   sidebarLinks.forEach(link => {
     const href = normalizeHref(link.getAttribute('href') ?? '')
-    const year = urlToYearMap.get(href)
+    const meta = postMetaByUrl.get(href)
     const itemEl = link.closest('.VPSidebarItem') as HTMLElement | null
-    if (itemEl) {
-      if (year) {
-        if (itemEl.dataset.postYear !== year) {
-          itemEl.dataset.postYear = year
-        }
-      } else if (itemEl.dataset.postYear) {
-        delete itemEl.dataset.postYear
+    if (!itemEl) return
+
+    if (meta) {
+      if (itemEl.dataset.postYear !== meta.year) {
+        itemEl.dataset.postYear = meta.year
       }
+      if (meta.isNew) {
+        if (itemEl.dataset.postNew !== 'true') {
+          itemEl.dataset.postNew = 'true'
+        }
+      } else if (itemEl.dataset.postNew) {
+        delete itemEl.dataset.postNew
+      }
+    } else {
+      if (itemEl.dataset.postYear) delete itemEl.dataset.postYear
+      if (itemEl.dataset.postNew) delete itemEl.dataset.postNew
     }
   })
 }
@@ -88,7 +102,7 @@ function applyFilter() {
   if (typeof document === 'undefined') return
 
   const sidebarEl = document.querySelector('.VPSidebar') as HTMLElement | null
-  syncSidebarDataYears()
+  syncSidebarPostMeta()
 
   let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null
   if (!styleEl) {

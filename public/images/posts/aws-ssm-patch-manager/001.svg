@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 350" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <linearGradient id="ssmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+
+    <linearGradient id="ebGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6" />
+      <stop offset="100%" stop-color="#db2777" />
+    </linearGradient>
+
+    <linearGradient id="lambdaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+
+    <linearGradient id="chatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <filter id="cardShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+
+    <marker id="arr-sky" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arr-pink" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f472b6" />
+    </marker>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#fb923c" />
+    </marker>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="920" height="350" rx="16" fill="url(#bgGrad)" />
+
+  <!-- Title -->
+  <text x="460" y="38" text-anchor="middle" fill="#f8fafc" font-family="Pretendard, -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="700">
+    SSM Patch Manager 패치 자동화 및 알림 흐름
+  </text>
+
+  <!-- Step 1: SSM Patch Manager -->
+  <g filter="url(#cardShadow)">
+    <rect x="35" y="72" width="175" height="94" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5" />
+    <rect x="35" y="72" width="175" height="30" rx="12" fill="url(#ssmGrad)" />
+    <rect x="35" y="90" width="175" height="12" fill="url(#ssmGrad)" />
+    <text x="122.5" y="92" text-anchor="middle" fill="#ffffff" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="700">SSM Patch Manager</text>
+    <text x="122.5" y="124" text-anchor="middle" fill="#e2e8f0" font-family="Pretendard, -apple-system, sans-serif" font-size="11.5" font-weight="600">AWS-RunPatchBaseline</text>
+    <text x="122.5" y="145" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">정기 · 수동 패치 실행</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="210" y1="119" x2="253" y2="119" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr-sky)" />
+  <text x="232" y="106" text-anchor="middle" fill="#7dd3fc" font-family="Pretendard, -apple-system, sans-serif" font-size="10">완료</text>
+
+  <!-- Step 2: Amazon EventBridge -->
+  <g filter="url(#cardShadow)">
+    <rect x="259" y="72" width="175" height="94" rx="12" fill="#1e293b" stroke="#f472b6" stroke-width="1.5" />
+    <rect x="259" y="72" width="175" height="30" rx="12" fill="url(#ebGrad)" />
+    <rect x="259" y="90" width="175" height="12" fill="url(#ebGrad)" />
+    <text x="346.5" y="92" text-anchor="middle" fill="#ffffff" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="700">Amazon EventBridge</text>
+    <text x="346.5" y="124" text-anchor="middle" fill="#e2e8f0" font-family="Pretendard, -apple-system, sans-serif" font-size="11.5" font-weight="600">상태 변경 이벤트 감지</text>
+    <text x="346.5" y="145" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">Maintenance Window</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="434" y1="119" x2="477" y2="119" stroke="#f472b6" stroke-width="2" marker-end="url(#arr-pink)" />
+  <text x="456" y="106" text-anchor="middle" fill="#f9a8d4" font-family="Pretendard, -apple-system, sans-serif" font-size="10">트리거</text>
+
+  <!-- Step 3: AWS Lambda -->
+  <g filter="url(#cardShadow)">
+    <rect x="483" y="72" width="175" height="94" rx="12" fill="#1e293b" stroke="#fb923c" stroke-width="1.5" />
+    <rect x="483" y="72" width="175" height="30" rx="12" fill="url(#lambdaGrad)" />
+    <rect x="483" y="90" width="175" height="12" fill="url(#lambdaGrad)" />
+    <text x="570.5" y="92" text-anchor="middle" fill="#ffffff" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="700">AWS Lambda</text>
+    <text x="570.5" y="124" text-anchor="middle" fill="#e2e8f0" font-family="Pretendard, -apple-system, sans-serif" font-size="11.5" font-weight="600">패치 결과 메시지 가공</text>
+    <text x="570.5" y="145" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">패치 내역 · 성공/실패</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="658" y1="119" x2="701" y2="119" stroke="#fb923c" stroke-width="2" marker-end="url(#arr-orange)" />
+  <text x="680" y="106" text-anchor="middle" fill="#fdba74" font-family="Pretendard, -apple-system, sans-serif" font-size="10">POST</text>
+
+  <!-- Step 4: Google Chat -->
+  <g filter="url(#cardShadow)">
+    <rect x="707" y="72" width="178" height="94" rx="12" fill="#1e293b" stroke="#34d399" stroke-width="1.5" />
+    <rect x="707" y="72" width="178" height="30" rx="12" fill="url(#chatGrad)" />
+    <rect x="707" y="90" width="178" height="12" fill="url(#chatGrad)" />
+    <text x="796" y="92" text-anchor="middle" fill="#ffffff" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="700">Google Chat</text>
+    <text x="796" y="124" text-anchor="middle" fill="#e2e8f0" font-family="Pretendard, -apple-system, sans-serif" font-size="11.5" font-weight="600">Webhook 알림 수신</text>
+    <text x="796" y="145" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">콘솔 접속 없이 확인</text>
+  </g>
+
+  <!-- Bottom Row: EC2, S3, Baseline/IAM -->
+  <g filter="url(#cardShadow)">
+    <rect x="35" y="242" width="215" height="68" rx="10" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+    <text x="142.5" y="269" text-anchor="middle" fill="#f1f5f9" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="600">EC2 (AlmaLinux)</text>
+    <text x="142.5" y="290" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">커널·JDK·Redis 패치 및 재부팅</text>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="285" y="242" width="215" height="68" rx="10" fill="#1e293b" stroke="#64748b" stroke-width="1.2" />
+    <text x="392.5" y="269" text-anchor="middle" fill="#f1f5f9" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="600">Amazon S3</text>
+    <text x="392.5" y="290" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">패치 실행 로그 · 결과 저장</text>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="535" y="242" width="350" height="68" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1.2" stroke-dasharray="5 3" />
+    <text x="710" y="269" text-anchor="middle" fill="#cbd5e1" font-family="Pretendard, -apple-system, sans-serif" font-size="12" font-weight="600">기반 설정 (IAM &amp; Custom Baseline)</text>
+    <text x="710" y="290" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10.5">AmazonSSMManagedInstanceCore + S3 권한 · 자체 기준선</text>
+  </g>
+
+  <!-- Connectors to EC2 and S3 -->
+  <line x1="100" y1="166" x2="100" y2="236" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-gray)" />
+  <text x="108" y="206" text-anchor="start" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10">패치 적용</text>
+
+  <path d="M 175 166 L 175 204 L 392.5 204 L 392.5 236" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arr-gray)" />
+  <text x="295" y="196" text-anchor="middle" fill="#94a3b8" font-family="Pretendard, -apple-system, sans-serif" font-size="10">로그 적재</text>
+</svg>

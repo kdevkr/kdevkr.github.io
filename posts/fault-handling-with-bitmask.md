@@ -90,7 +90,7 @@ void main() throws Exception {
 
 대용량 데이터 처리에 특화된 **kdb+/q** 환경에서는 `vs`(Vector from Scalar) 키워드로 대규모 장비 상태 정수를 비트 벡터로 쉽게 변환할 수 있습니다.
 
-```q
+```q [kdb+/q]
 // 16비트 정수 상태(5)를 비트 벡터로 복원
 q) flags: 0b vs 5h
 q) flags

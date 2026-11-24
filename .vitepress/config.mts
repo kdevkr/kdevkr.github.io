@@ -3,6 +3,9 @@ import { withSidebar, generateSidebar } from 'vitepress-sidebar';
 import { withPwa } from '@vite-pwa/vitepress';
 import { fileURLToPath, URL } from 'node:url'
 
+// https://github.com/KxSystems/kx-vscode/blob/9e8d27c2148eca662a1eff681ca7ff7c8f4f1176/syntaxes/q.tmLanguage.json
+import qGrammar from './grammars/q.tmLanguage.json'
+
 import tailwindcss from "@tailwindcss/vite";
 import { mark } from '@mdit/plugin-mark';
 import footnote from 'markdown-it-footnote';
@@ -163,8 +166,22 @@ const vitePressOptions: UserConfig = {
       md.use(footnote)
       md.use(groupIconMdPlugin)
     },
-    languageAlias: {
-    },
+    languages: [qGrammar, {
+      name: 'redis',
+      scopeName: 'source.redis',
+      patterns: [
+        { name: 'comment.line.number-sign.redis', match: String.raw`^\s*#.*$` },
+        { name: 'keyword.control.directive.redis', match: String.raw`^\s*[a-zA-Z][\w-]*(?=\s|$)` },
+        { name: 'string.quoted.double.redis', begin: '"', end: '"', patterns: [
+          { name: 'constant.character.escape.redis', match: String.raw`\\.` },
+        ] },
+        { name: 'string.quoted.single.redis', begin: "'", end: "'", patterns: [
+          { name: 'constant.character.escape.redis', match: String.raw`\\'` },
+        ] },
+        { name: 'constant.numeric.redis', match: String.raw`(?<!\S)[+-]?\d+(?:\.\d+)?(?:[kKmMgGtT][bB]?)?(?!\S)` },
+        { name: 'constant.language.boolean.redis', match: String.raw`(?<!\S)(?i:yes|no)(?!\S)` },
+      ],
+    }],
     image: {
       lazyLoading: true
     }

@@ -1,3 +1,15 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@tailwindcss/oxide': true
+  'esbuild': true
+
+overrides:
+  'ejs@3.1.10>jake': '-'
+  'vite@8.1.6>stylus': '-'
+
+patchedDependencies:
+  'deepmerge@4.3.1': 'patches/deepmerge@4.3.1.patch'
+
 # pnpm audit 무시 설정 및 사유 기록
 auditConfig:
   ignoreGhsas:
